@@ -5,6 +5,8 @@
  */
 package voxels;
 
+import org.lwjgl.util.vector.Vector3f;
+
 /**
  *
  * @author otso
@@ -12,7 +14,8 @@ package voxels;
 public class Chunk {
 
     public static final int CHUNK_WIDTH = 16;
-    public static final int CHUNK_HEIGHT = 16;
+    public static final int CHUNK_HEIGHT = 2;
+    
 
     public Block[][][] blocks;
 

@@ -15,7 +15,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.util.glu.GLU.gluPerspective;
-import voxels.Camera.Camera;
+
 import voxels.Camera.EulerCamera;
 import voxels.Noise.FastNoise;
 
@@ -25,9 +25,9 @@ import voxels.Noise.FastNoise;
  */
 public class Voxels {
 
-    public static EulerCamera camera;
-    public static int displayListHandle;
-    public static int vertexCount = 0;
+    private static EulerCamera camera;
+    private static int displayListHandle;
+    private static int vertexCount = 0;
 
     public static void main(String[] args) {
         initDisplay();
@@ -66,6 +66,12 @@ public class Voxels {
         glEndList();
         System.out.println(displayListHandle);
 
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        gluPerspective((float) 90, 1, 0.3f, 5000);
+        glMatrixMode(GL_MODELVIEW);
+        glEnable(GL_DEPTH_TEST);
+
         while (!Display.isCloseRequested()) {
             startTime = System.nanoTime();
             glViewport(0, 0, Display.getWidth(), Display.getHeight());
@@ -88,18 +94,20 @@ public class Voxels {
                     generateChunks = !generateChunks;
                 }
             }
+            
+            glLoadIdentity();
             if (generateChunks)
                 checkChunkUpdates(map);
-
-            glLoadIdentity();
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             camera.applyTranslations();
+            
             if (Mouse.isGrabbed()) {
                 camera.processMouse();
                 camera.processKeyboard(16, 5);
             }
             processKeyboard();
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glTranslatef(0, -Chunk.CHUNK_HEIGHT - FastNoise.noise(0, 0, 7) / 5-5, 0);
+
+            glTranslatef(0, -Chunk.CHUNK_HEIGHT - FastNoise.noise(0, 0, 7) / 5 - 5, 0);
             for (int i = 1; i <= displayListHandle; i++) {
                 glCallList(i);
             }
@@ -130,9 +138,9 @@ public class Voxels {
     }
 
     private static EulerCamera InitCamera() {
-        EulerCamera camera = new EulerCamera.Builder().setAspectRatio((float) Display.getWidth() / (float) Display.getHeight()).setFieldOfView(60).build();
+        camera = new EulerCamera.Builder().setAspectRatio((float) Display.getWidth() / (float) Display.getHeight()).setFieldOfView(60).build();
         camera.applyPerspectiveMatrix();
-        camera.applyOptimalStates();
+        camera.applyOptimalStates(); 
         Mouse.setGrabbed(true);
         return camera;
     }
@@ -232,54 +240,54 @@ public class Voxels {
     }
 
     public static void drawFullCube(Chunk chunk, float x, float y, float z, float size) {
-        int noise = FastNoise.noise(x/50, z/50, 7) / 5;
+        int noise = FastNoise.noise(x / 50, z / 50, 7) / 5;
         glBegin(GL_QUADS);
         // front face
         glNormal3f(0f, 0f, 1f);
         glColor3f(1.0f, 0.0f, 0.0f);
-        glVertex3f(size / 2 + x, size / 2 + y + noise, size / 2 + z);
-        glVertex3f(-size / 2 + x, size / 2 + y + noise, size / 2 + z);
-        glVertex3f(-size / 2 + x, -size / 2 + y + noise, size / 2 + z);
-        glVertex3f(size / 2 + x, -size / 2 + y + noise, size / 2 + z);
+        glVertex3f((int) (size / 2 + x), (int) (size / 2 + y + noise), (int) (size / 2 + z));
+        glVertex3f((int) (-size / 2 + x), (int) (size / 2 + y + noise), (int) (size / 2 + z));
+        glVertex3f((int) (-size / 2 + x), (int) (-size / 2 + y + noise), (int) (size / 2 + z));
+        glVertex3f((int) (size / 2 + x), (int) (-size / 2 + y + noise), (int) (size / 2 + z));
         // left face
         glNormal3f(-1f, 0f, 0f);
         glColor3f(0.0f, 1.0f, 0.0f);
-        glVertex3f(-size / 2 + x, size / 2 + y + noise, size / 2 + z);
-        glVertex3f(-size / 2 + x, -size / 2 + y + noise, size / 2 + z);
-        glVertex3f(-size / 2 + x, -size / 2 + y + noise, -size / 2 + z);
-        glVertex3f(-size / 2 + x, size / 2 + y + noise, -size / 2 + z);
+        glVertex3f((int) (-size / 2 + x), (int) (size / 2 + y + noise), (int) (size / 2 + z));
+        glVertex3f((int) (-size / 2 + x), (int) (-size / 2 + y + noise), (int) (size / 2 + z));
+        glVertex3f((int) (-size / 2 + x), (int) (-size / 2 + y + noise), (int) (-size / 2 + z));
+        glVertex3f((int) (-size / 2 + x), (int) (size / 2 + y + noise), (int) (-size / 2 + z));
 
         // back face
         glNormal3f(0f, 0f, -1f);
         glColor3f(0.0f, 0.0f, 1.0f);
-        glVertex3f(size / 2 + x, size / 2 + y + noise, -size / 2 + z);
-        glVertex3f(-size / 2 + x, size / 2 + y + noise, -size / 2 + z);
-        glVertex3f(-size / 2 + x, -size / 2 + y + noise, -size / 2 + z);
-        glVertex3f(size / 2 + x, -size / 2 + y + noise, -size / 2 + z);
+        glVertex3f((int) (size / 2 + x), (int) (size / 2 + y + noise), (int) (-size / 2 + z));
+        glVertex3f((int) (-size / 2 + x), (int) (size / 2 + y + noise), (int) (-size / 2 + z));
+        glVertex3f((int) (-size / 2 + x), (int) (-size / 2 + y + noise), (int) (-size / 2 + z));
+        glVertex3f((int) (size / 2 + x), (int) (-size / 2 + y + noise), (int) (-size / 2 + z));
 
         // right face
         glNormal3f(1f, 0f, 0f);
         glColor3f(1.0f, 1.0f, 0.0f);
-        glVertex3f(size / 2 + x, size / 2 + y + noise, size / 2 + z);
-        glVertex3f(size / 2 + x, -size / 2 + y + noise, size / 2 + z);
-        glVertex3f(size / 2 + x, -size / 2 + y + noise, -size / 2 + z);
-        glVertex3f(size / 2 + x, size / 2 + y + noise, -size / 2 + z);
+        glVertex3f((int) (size / 2 + x), (int) (size / 2 + y + noise), (int) (size / 2 + z));
+        glVertex3f((int) (size / 2 + x), (int) (-size / 2 + y + noise), (int) (size / 2 + z));
+        glVertex3f((int) (size / 2 + x), (int) (-size / 2 + y + noise), (int) (-size / 2 + z));
+        glVertex3f((int) (size / 2 + x), (int) (size / 2 + y + noise), (int) (-size / 2 + z));
 
         // top face
         glNormal3f(0f, 1f, 0f);
         glColor3f(1.0f, 0.0f, 1.0f);
-        glVertex3f(size / 2 + x, size / 2 + y + noise, size / 2 + z);
-        glVertex3f(-size / 2 + x, size / 2 + y + noise, size / 2 + z);
-        glVertex3f(-size / 2 + x, size / 2 + y + noise, -size / 2 + z);
-        glVertex3f(size / 2 + x, size / 2 + y + noise, -size / 2 + z);
+        glVertex3f((int) (size / 2 + x), (int) (size / 2 + y + noise), (int) (size / 2 + z));
+        glVertex3f((int) (-size / 2 + x), (int) (size / 2 + y + noise), (int) (size / 2 + z));
+        glVertex3f((int) (-size / 2 + x), (int) (size / 2 + y + noise), (int) (-size / 2 + z));
+        glVertex3f((int) (size / 2 + x), (int) (size / 2 + y + noise), (int) (-size / 2 + z));
 
         // bottom face
         glNormal3f(0f, -1f, 0f);
         glColor3f(0.0f, 1.0f, 1.0f);
-        glVertex3f(size / 2 + x, -size / 2 + y + noise, size / 2 + z);
-        glVertex3f(-size / 2 + x, -size / 2 + y + noise, size / 2 + z);
-        glVertex3f(-size / 2 + x, -size / 2 + y + noise, -size / 2 + z);
-        glVertex3f(size / 2 + x, -size / 2 + y + noise, -size / 2 + z);
+        glVertex3f((int) (size / 2 + x), (int) (-size / 2 + y + noise), (int) (size / 2 + z));
+        glVertex3f((int) (-size / 2 + x), (int) (-size / 2 + y + noise), (int) (size / 2 + z));
+        glVertex3f((int) (-size / 2 + x), (int) (-size / 2 + y + noise), (int) (-size / 2 + z));
+        glVertex3f((int) (size / 2 + x), (int) (-size / 2 + y + noise), (int) (-size / 2 + z));
 
         glEnd();
         vertexCount += 4;
@@ -296,13 +304,15 @@ public class Voxels {
 
     }
 
+
     private static void initLighting() {
         glEnable(GL_LIGHTING);
         glEnable(GL_LIGHT0);
+        glEnable(GL_COLOR_MATERIAL);
 
         float lightAmbient[] = {0.1f, 0.1f, 0.1f, 1.0f};
         float lightDiffuse[] = {0.6f, 0.6f, 0.6f, 1.0f};
-        float light0Position[] = {30.0f, 30.0f, 30.0f, 1.0f};
+        float light0Position[] = {-5000.0f, 5000.0f, -5000.0f, 1.0f};
 
         glLightModel(GL_LIGHT_MODEL_AMBIENT, asFloatBuffer(lightAmbient));
         glLight(GL_LIGHT0, GL_DIFFUSE, asFloatBuffer(lightDiffuse));             // Setup The Diffuse Light         
@@ -333,7 +343,7 @@ public class Voxels {
     }
 
     private static void checkChunkUpdates(HashMap<Integer, Chunk> map) {
-        int chunkRadius = 1; // check 5*5 grid around camera for new Chunks
+        int chunkRadius = 2; // check 5*5 grid around camera for new Chunks
         Chunk chunk;
         for (int x = -chunkRadius; x <= chunkRadius; x++) {
             for (int z = -chunkRadius; z <= chunkRadius; z++) {

@@ -6,6 +6,7 @@
 package voxels;
 
 import java.nio.FloatBuffer;
+import java.util.HashMap;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -14,6 +15,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.util.glu.GLU.gluPerspective;
+import voxels.Camera.Camera;
 import voxels.Camera.EulerCamera;
 
 /**
@@ -21,6 +23,9 @@ import voxels.Camera.EulerCamera;
  * @author otso
  */
 public class Voxels {
+
+    public static EulerCamera camera;
+    public static int displayListHandle;
 
     public static void main(String[] args) {
         initDisplay();
@@ -47,12 +52,16 @@ public class Voxels {
         long endTime;
         long totalTime = 0;
         int fps = 0;
-        EulerCamera camera = InitCamera();
-        Chunk chunk = new Chunk();
-        int displayListHandle = glGenLists(1);
+        camera = InitCamera();
+        HashMap<Integer, Chunk> map = new HashMap<>();
+
+        map.put(new Pair(getCamChunkX(), getCamChunkZ()).hashCode(), new Chunk());
+        //System.out.println("x: " + (int) camera.x() / 4 + " z: " + (int) camera.z() / 4);
+        displayListHandle = glGenLists(1);
         glNewList(displayListHandle, GL_COMPILE);
-        drawChunk(chunk);
+        drawChunk(map.get(new Pair(getCamChunkX(), getCamChunkZ()).hashCode()), 0, 0);
         glEndList();
+        System.out.println(displayListHandle);
 
         while (!Display.isCloseRequested()) {
             startTime = System.nanoTime();
@@ -67,7 +76,10 @@ public class Voxels {
                     Mouse.setGrabbed(false);
                 }
             }
-            System.out.println(camera);
+            //System.out.println("Chunk x: " + getCamChunkX() + " z: " + getCamChunkZ());
+            checkChunkUpdates(map);
+            //System.out.println("x: " + getCamChunkX() + " z: " + getCamChunkZ());
+            //System.out.println(camera);
             glLoadIdentity();
             camera.applyTranslations();
             if (Mouse.isGrabbed()) {
@@ -76,8 +88,10 @@ public class Voxels {
             }
             processKeyboard();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glTranslatef(-0, -5, -20);
-            glCallList(displayListHandle);
+            glTranslatef(0, -10, 0);
+            for (int i = 1; i <= displayListHandle; i++) {
+                glCallList(i);
+            }
             Display.update();
             Display.sync(60);
             fps++;
@@ -93,11 +107,11 @@ public class Voxels {
         System.exit(0);
     }
 
-    private static void drawChunk(Chunk chunk) {
+    private static void drawChunk(Chunk chunk, int xOff, int zOff) {
         for (int x = 0; x < chunk.blocks.length; x++) {
             for (int y = 0; y < chunk.blocks[x].length; y++) {
                 for (int z = 0; z < chunk.blocks[x][y].length; z++) {
-                    drawCube(x, y, z, 1);
+                    drawCube(x + getCamChunkX() * chunk.blocks.length + xOff, y, z + getCamChunkZ() * chunk.blocks.length + zOff, 1);
                 }
             }
         }
@@ -244,4 +258,37 @@ public class Voxels {
         return buffer;
     }
 
+    private static int getCamChunkX() {
+        int size = Chunk.CHUNK_WIDTH;
+        int x = (int) camera.x();
+        if (camera.x() < 0)
+            x -= size;
+        return x / size;
+    }
+
+    private static int getCamChunkZ() {
+        int size = Chunk.CHUNK_WIDTH;
+        int z = (int) camera.z();
+        if (camera.z() < 0)
+            z -= size;
+        return z / size;
+    }
+
+    private static void checkChunkUpdates(HashMap<Integer, Chunk> map) {
+        int chunkRadius = 0; // check 5*5 grid around camera for new Chunks
+        Chunk chunk;
+        for (int x = -chunkRadius; x <= chunkRadius; x++) {
+            for (int z = -chunkRadius; z <= chunkRadius; z++) {
+                if (map.containsKey(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode()) == false) {
+                    chunk = new Chunk();
+                    displayListHandle = glGenLists(1);
+                    System.out.println(displayListHandle);
+                    glNewList(displayListHandle, GL_COMPILE);
+                    drawChunk(chunk, x, z);
+                    glEndList();
+                    map.put(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode(), chunk);
+                }
+            }
+        }
+    }
 }

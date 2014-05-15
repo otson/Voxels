@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package voxels;
 
 /**
@@ -11,14 +10,24 @@ package voxels;
  * @author otso
  */
 public class Chunk {
-    
-    private static final int CHUNK_WIDTH = 16;
-    private static final int CHUNK_HEIGHT = 32;
-    
+
+    public static final int CHUNK_WIDTH = 3;
+    public static final int CHUNK_HEIGHT = 1;
+
     public Block[][][] blocks;
-    
-    public Chunk(){
+
+    public Chunk() {
         blocks = new Block[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_WIDTH];
+
+//        for (int i = 0; i < blocks.length; i++) {
+//            blocks[i] = new Block[CHUNK_HEIGHT][CHUNK_WIDTH];
+//            for (int j = 0; j < blocks[i].length; j++) {
+//                blocks[i][j] = new Block[CHUNK_WIDTH];
+//                for (int z = 0; z < blocks[i][j].length; z++) {
+//                    blocks[i][j][z] = new Block();
+//                }
+//            }
+//        }
     }
-    
+
 }

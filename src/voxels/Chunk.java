@@ -11,8 +11,8 @@ package voxels;
  */
 public class Chunk {
 
-    public static final int CHUNK_WIDTH = 3;
-    public static final int CHUNK_HEIGHT = 1;
+    public static final int CHUNK_WIDTH = 4;
+    public static final int CHUNK_HEIGHT = 4;
 
     public Block[][][] blocks;
 

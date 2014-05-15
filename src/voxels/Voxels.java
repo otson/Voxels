@@ -52,6 +52,7 @@ public class Voxels {
         long endTime;
         long totalTime = 0;
         int fps = 0;
+        boolean generateChunks = true;
         camera = InitCamera();
         HashMap<Integer, Chunk> map = new HashMap<>();
 
@@ -75,11 +76,19 @@ public class Voxels {
                 if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
                     Mouse.setGrabbed(false);
                 }
+                if (Keyboard.isKeyDown(Keyboard.KEY_1)) {
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                }
+                if (Keyboard.isKeyDown(Keyboard.KEY_2)) {
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                }
+                if (Keyboard.isKeyDown(Keyboard.KEY_G)) {
+                    generateChunks = !generateChunks;
+                }
             }
-            //System.out.println("Chunk x: " + getCamChunkX() + " z: " + getCamChunkZ());
-            checkChunkUpdates(map);
-            //System.out.println("x: " + getCamChunkX() + " z: " + getCamChunkZ());
-            //System.out.println(camera);
+            if (generateChunks)
+                checkChunkUpdates(map);
+
             glLoadIdentity();
             camera.applyTranslations();
             if (Mouse.isGrabbed()) {
@@ -111,7 +120,14 @@ public class Voxels {
         for (int x = 0; x < chunk.blocks.length; x++) {
             for (int y = 0; y < chunk.blocks[x].length; y++) {
                 for (int z = 0; z < chunk.blocks[x][y].length; z++) {
-                    drawCube(x + getCamChunkX() * chunk.blocks.length + xOff, y, z + getCamChunkZ() * chunk.blocks.length + zOff, 1);
+                    if (x == 0 || x == chunk.blocks.length - 1)
+                        drawFullCube(chunk, x + getCamChunkX() * chunk.blocks.length + xOff, y, z + getCamChunkZ() * chunk.blocks.length + zOff, 1);
+                    else if (y == 0 || y == chunk.blocks[x].length - 1)
+                        drawFullCube(chunk, x + getCamChunkX() * chunk.blocks.length + xOff, y, z + getCamChunkZ() * chunk.blocks.length + zOff, 1);
+                    else if (z == 0 || z == chunk.blocks[x][y].length - 1)
+                        drawFullCube(chunk, x + getCamChunkX() * chunk.blocks.length + xOff, y, z + getCamChunkZ() * chunk.blocks.length + zOff, 1);
+                    else
+                        drawCube(chunk, x, y, z, getCamChunkX() * chunk.blocks.length + xOff, 0, getCamChunkZ() * chunk.blocks.length + zOff, 1);
                 }
             }
         }
@@ -131,55 +147,69 @@ public class Voxels {
         glEnable(GL_DEPTH_TEST);
     }
 
-    public static void drawCube(float size) {
+    public static void drawCube(Chunk chunk, float x, float y, float z, float xOff, float yOff, float zOff, float size) {
+        //System.out.println("x: " + x + " y: " + y + " z: " + z);
         glBegin(GL_QUADS);
         // front face
-        glNormal3f(0f, 0f, 1f);
-        glColor3f(1.0f, 0.0f, 0.0f);
-        glVertex3f(size / 2, size / 2, size / 2);
-        glVertex3f(-size / 2, size / 2, size / 2);
-        glVertex3f(-size / 2, -size / 2, size / 2);
-        glVertex3f(size / 2, -size / 2, size / 2);
+        if (!chunk.blocks[(int) x][(int) y][(int) z + 1].isActive()) {
+            glNormal3f(0f, 0f, 1f);
+            glColor3f(1.0f, 0.0f, 0.0f);
+            glVertex3f(size / 2 + x+xOff, size / 2 + y+yOff, size / 2 + z+zOff);
+            glVertex3f(-size / 2 + x+xOff, size / 2 + y+yOff, size / 2 + z+zOff);
+            glVertex3f(-size / 2 + x+xOff, -size / 2 + y+yOff, size / 2 + z+zOff);
+            glVertex3f(size / 2 + x+xOff, -size / 2 + y+yOff, size / 2 + z+zOff);
+        }
         // left face
-        glNormal3f(-1f, 0f, 0f);
-        glColor3f(0.0f, 1.0f, 0.0f);
-        glVertex3f(-size / 2, size / 2, size / 2);
-        glVertex3f(-size / 2, -size / 2, size / 2);
-        glVertex3f(-size / 2, -size / 2, -size / 2);
-        glVertex3f(-size / 2, size / 2, -size / 2);
+        if (!chunk.blocks[(int) x - 1][(int) y][(int) z].isActive()) {
+            glNormal3f(-1f, 0f, 0f);
+            glColor3f(0.0f, 1.0f, 0.0f);
+            glVertex3f(-size / 2 + x+xOff, size / 2 + y+yOff, size / 2 + z+zOff);
+            glVertex3f(-size / 2 + x+xOff, -size / 2 + y+yOff, size / 2 + z+zOff);
+            glVertex3f(-size / 2 + x+xOff, -size / 2 + y+yOff, -size / 2 + z+zOff);
+            glVertex3f(-size / 2 + x+xOff, size / 2 + y+yOff, -size / 2 + z+zOff);
+        }
         // back face
-        glNormal3f(0f, 0f, -1f);
-        glColor3f(0.0f, 0.0f, 1.0f);
-        glVertex3f(size / 2, size / 2, -size / 2);
-        glVertex3f(-size / 2, size / 2, -size / 2);
-        glVertex3f(-size / 2, -size / 2, -size / 2);
-        glVertex3f(size / 2, -size / 2, -size / 2);
+        if (!chunk.blocks[(int) x][(int) y][(int) z - 1].isActive()) {
+            glNormal3f(0f, 0f, -1f);
+            glColor3f(0.0f, 0.0f, 1.0f);
+            glVertex3f(size / 2 + x+xOff, size / 2 + y+yOff, -size / 2 + z+zOff);
+            glVertex3f(-size / 2 + x+xOff, size / 2 + y+yOff, -size / 2 + z+zOff);
+            glVertex3f(-size / 2 + x+xOff, -size / 2 + y+yOff, -size / 2 + z+zOff);
+            glVertex3f(size / 2 + x+xOff, -size / 2 + y+yOff, -size / 2 + z+zOff);
+        }
         // right face
-        glNormal3f(1f, 0f, 0f);
-        glColor3f(1.0f, 1.0f, 0.0f);
-        glVertex3f(size / 2, size / 2, size / 2);
-        glVertex3f(size / 2, -size / 2, size / 2);
-        glVertex3f(size / 2, -size / 2, -size / 2);
-        glVertex3f(size / 2, size / 2, -size / 2);
+        if (!chunk.blocks[(int) x + 1][(int) y][(int) z].isActive()) {
+            glNormal3f(1f, 0f, 0f);
+            glColor3f(1.0f, 1.0f, 0.0f);
+            glVertex3f(size / 2 + x+xOff, size / 2 + y+yOff, size / 2 + z+zOff);
+            glVertex3f(size / 2 + x+xOff, -size / 2 + y+yOff, size / 2 + z+zOff);
+            glVertex3f(size / 2 + x+xOff, -size / 2 + y+yOff, -size / 2 + z+zOff);
+            glVertex3f(size / 2 + x+xOff, size / 2 + y+yOff, -size / 2 + z+zOff);
+        }
         // top face
-        glNormal3f(0f, 1f, 0f);
-        glColor3f(1.0f, 0.0f, 1.0f);
-        glVertex3f(size / 2, size / 2, size / 2);
-        glVertex3f(-size / 2, size / 2, size / 2);
-        glVertex3f(-size / 2, size / 2, -size / 2);
-        glVertex3f(size / 2, size / 2, -size / 2);
+        if (!chunk.blocks[(int) x][(int) y + 1][(int) z].isActive()) {
+            glNormal3f(0f, 1f, 0f);
+            glColor3f(1.0f, 0.0f, 1.0f);
+            glVertex3f(size / 2 + x+xOff, size / 2 + y+yOff, size / 2 + z+zOff);
+            glVertex3f(-size / 2 + x+xOff, size / 2 + y+yOff, size / 2 + z+zOff);
+            glVertex3f(-size / 2 + x+xOff, size / 2 + y+yOff, -size / 2 + z+zOff);
+            glVertex3f(size / 2 + x+xOff, size / 2 + y+yOff, -size / 2 + z+zOff);
+        }
         // bottom face
+        if (!chunk.blocks[(int)x][(int)y - 1][(int)z].isActive()) {
         glNormal3f(0f, -1f, 0f);
         glColor3f(0.0f, 1.0f, 1.0f);
-        glVertex3f(size / 2, -size / 2, size / 2);
-        glVertex3f(-size / 2, -size / 2, size / 2);
-        glVertex3f(-size / 2, -size / 2, -size / 2);
-        glVertex3f(size / 2, -size / 2, -size / 2);
+        glVertex3f(size / 2 + x+xOff, -size / 2 + y+yOff, size / 2 + z+zOff);
+        glVertex3f(-size / 2 + x+xOff, -size / 2 + y+yOff, size / 2 + z+zOff);
+        glVertex3f(-size / 2 + x+xOff, -size / 2 + y+yOff, -size / 2 + z+zOff);
+        glVertex3f(size / 2 + x+xOff, -size / 2 + y+yOff, -size / 2 + z+zOff);
+        }
 
         glEnd();
     }
 
-    public static void drawCube(float x, float y, float z, float size) {
+    public static void drawFullCube(Chunk chunk, float x, float y, float z, float size) {
+
         glBegin(GL_QUADS);
         // front face
         glNormal3f(0f, 0f, 1f);
@@ -195,6 +225,7 @@ public class Voxels {
         glVertex3f(-size / 2 + x, -size / 2 + y, size / 2 + z);
         glVertex3f(-size / 2 + x, -size / 2 + y, -size / 2 + z);
         glVertex3f(-size / 2 + x, size / 2 + y, -size / 2 + z);
+
         // back face
         glNormal3f(0f, 0f, -1f);
         glColor3f(0.0f, 0.0f, 1.0f);
@@ -202,6 +233,7 @@ public class Voxels {
         glVertex3f(-size / 2 + x, size / 2 + y, -size / 2 + z);
         glVertex3f(-size / 2 + x, -size / 2 + y, -size / 2 + z);
         glVertex3f(size / 2 + x, -size / 2 + y, -size / 2 + z);
+
         // right face
         glNormal3f(1f, 0f, 0f);
         glColor3f(1.0f, 1.0f, 0.0f);
@@ -209,6 +241,7 @@ public class Voxels {
         glVertex3f(size / 2 + x, -size / 2 + y, size / 2 + z);
         glVertex3f(size / 2 + x, -size / 2 + y, -size / 2 + z);
         glVertex3f(size / 2 + x, size / 2 + y, -size / 2 + z);
+
         // top face
         glNormal3f(0f, 1f, 0f);
         glColor3f(1.0f, 0.0f, 1.0f);
@@ -216,6 +249,7 @@ public class Voxels {
         glVertex3f(-size / 2 + x, size / 2 + y, size / 2 + z);
         glVertex3f(-size / 2 + x, size / 2 + y, -size / 2 + z);
         glVertex3f(size / 2 + x, size / 2 + y, -size / 2 + z);
+
         // bottom face
         glNormal3f(0f, -1f, 0f);
         glColor3f(0.0f, 1.0f, 1.0f);
@@ -275,7 +309,7 @@ public class Voxels {
     }
 
     private static void checkChunkUpdates(HashMap<Integer, Chunk> map) {
-        int chunkRadius = 2; // check 5*5 grid around camera for new Chunks
+        int chunkRadius = 0; // check 5*5 grid around camera for new Chunks
         Chunk chunk;
         for (int x = -chunkRadius; x <= chunkRadius; x++) {
             for (int z = -chunkRadius; z <= chunkRadius; z++) {
@@ -284,7 +318,7 @@ public class Voxels {
                     displayListHandle = glGenLists(1);
                     System.out.println(displayListHandle);
                     glNewList(displayListHandle, GL_COMPILE);
-                    drawChunk(chunk, x*Chunk.CHUNK_WIDTH, z*Chunk.CHUNK_WIDTH);
+                    drawChunk(chunk, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
                     glEndList();
                     map.put(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode(), chunk);
                 }

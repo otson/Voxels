@@ -275,7 +275,7 @@ public class Voxels {
     }
 
     private static void checkChunkUpdates(HashMap<Integer, Chunk> map) {
-        int chunkRadius = 0; // check 5*5 grid around camera for new Chunks
+        int chunkRadius = 1; // check 5*5 grid around camera for new Chunks
         Chunk chunk;
         for (int x = -chunkRadius; x <= chunkRadius; x++) {
             for (int z = -chunkRadius; z <= chunkRadius; z++) {
@@ -284,7 +284,7 @@ public class Voxels {
                     displayListHandle = glGenLists(1);
                     System.out.println(displayListHandle);
                     glNewList(displayListHandle, GL_COMPILE);
-                    drawChunk(chunk, x, z);
+                    drawChunk(chunk, x*Chunk.CHUNK_WIDTH, z*Chunk.CHUNK_WIDTH);
                     glEndList();
                     map.put(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode(), chunk);
                 }

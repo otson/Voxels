@@ -25,7 +25,7 @@ public class Voxels {
         initOpenGL();
         gameLoop();
     }
-    
+
     private static void initDisplay() {
         try {
             Display.setDisplayMode(new DisplayMode(640, 480));
@@ -39,15 +39,15 @@ public class Voxels {
             System.exit(1);
         }
     }
-    
 
     private static void gameLoop() {
         EulerCamera camera = InitCamera();
+        Chunk chunk = new Chunk();
 
         while (!Display.isCloseRequested()) {
             glViewport(0, 0, Display.getWidth(), Display.getHeight());
             camera.setAspectRatio((float) Display.getWidth() / Display.getHeight());
-            
+
             if (Display.wasResized()) {
                 camera.applyPerspectiveMatrix();
             }
@@ -63,10 +63,23 @@ public class Voxels {
                 camera.processMouse();
                 camera.processKeyboard(16);
             }
+            processKeyboard();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glTranslatef(0,-0,-5);
+            glTranslatef(-0, -5, -20);
 
-            drawCube(1);
+            for (int x = 0; x < chunk.blocks.length; x++) {
+                for (int y = 0; y < chunk.blocks[x].length; y++) {
+                    for (int z = 0; z < chunk.blocks[x][y].length; z++) {
+                        drawCube(1);
+                        glTranslatef(0, 0, 1);
+                    }
+                    glTranslatef(0, 0, -chunk.blocks[x][y].length);
+                    glTranslatef(0, -1, 0);
+                }
+                glTranslatef(0, chunk.blocks[x].length, 0);
+                glTranslatef(-1, 0, 0);
+            }
+            //drawCube(1);
             Display.update();
             Display.sync(60);
         }
@@ -135,6 +148,17 @@ public class Voxels {
         glVertex3f(size / 2, -size / 2, -size / 2);
 
         glEnd();
+    }
+
+    private static void processKeyboard() {
+        boolean wireFrame = Keyboard.isKeyDown(Keyboard.KEY_1);
+        boolean notWireFrame = Keyboard.isKeyDown(Keyboard.KEY_2);
+            
+        if(wireFrame && !notWireFrame)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        if(notWireFrame && !wireFrame)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        
     }
 
 }

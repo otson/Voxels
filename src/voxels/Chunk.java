@@ -15,7 +15,7 @@ public class Chunk {
     private static final int CHUNK_WIDTH = 16;
     private static final int CHUNK_HEIGHT = 16;
     
-    private Block[][][] blocks;
+    public Block[][][] blocks;
     
     public Chunk(){
         blocks = new Block[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_WIDTH];

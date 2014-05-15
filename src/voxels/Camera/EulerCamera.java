@@ -92,7 +92,7 @@ public final class EulerCamera implements Camera {
         }
         this.aspectRatio = aspectRatio;
         this.zNear = 0.3f;
-        this.zFar = 100;
+        this.zFar = 5000;
     }
 
     /**
@@ -578,7 +578,7 @@ public final class EulerCamera implements Camera {
         private float aspectRatio = 1;
         private float x = 0, y = 0, z = 0, pitch = 0, yaw = 0, roll = 0;
         private float zNear = 0.3f;
-        private float zFar = 100;
+        private float zFar = 1000;
         private float fov = 90;
 
         public Builder() {

@@ -28,7 +28,7 @@ public class Voxels {
     private static EulerCamera camera;
     private static int displayListHandle;
     private static int vertexCount = 0;
-    private static float light0Position[] = {-1000.0f, 5000.0f, -1000.0f, 1.0f};
+    private static float light0Position[] = {-200.0f, 5000.0f, -800.0f, 1.0f};
 
     public static void main(String[] args) {
         initDisplay();
@@ -131,8 +131,8 @@ public class Voxels {
         for (int x = 0; x < chunk.blocks.length; x++) {
             for (int y = 0; y < chunk.blocks[x].length; y++) {
                 for (int z = 0; z < chunk.blocks[x][y].length; z++) {
-                    drawFullCube(chunk, x + getCamChunkX() * chunk.blocks.length + xOff, y, z + getCamChunkZ() * chunk.blocks.length + zOff, 1);
-                    //drawCube(chunk, x, y, z, getCamChunkX() * chunk.blocks.length + xOff, 0, getCamChunkZ() * chunk.blocks.length + zOff, 1);
+                    //drawFullCube(chunk, x + getCamChunkX() * chunk.blocks.length + xOff, y, z + getCamChunkZ() * chunk.blocks.length + zOff, 1);
+                    drawCube(chunk, x, y, z, getCamChunkX() * chunk.blocks.length + xOff, 0, getCamChunkZ() * chunk.blocks.length + zOff, 1);
                 }
             }
         }
@@ -342,7 +342,7 @@ public class Voxels {
     }
 
     private static void checkChunkUpdates(HashMap<Integer, Chunk> map) {
-        int chunkRadius = 5; // check 5*5 grid around camera for new Chunks
+        int chunkRadius = 0; // check 5*5 grid around camera for new Chunks
         Chunk chunk;
         for (int x = -chunkRadius; x <= chunkRadius; x++) {
             for (int z = -chunkRadius; z <= chunkRadius; z++) {

@@ -56,7 +56,7 @@ public final class EulerCamera implements Camera {
     private final float zNear;
     private final float zFar;
     private float fallSpeed = 0.015f;
-    private float currentFallSpeed = 0;
+    private float currentFallingSpeed = 0;
 
     private boolean flying = true;
     private boolean falling = false;
@@ -635,19 +635,24 @@ public final class EulerCamera implements Camera {
 
     public void fall(float target) {
         falling = true;
-        currentFallSpeed += fallSpeed;
-        y -= currentFallSpeed;
+        currentFallingSpeed += fallSpeed;
+        y -= currentFallingSpeed;
         if (y <= target) {
             y = target;
             falling = false;
-            currentFallSpeed = 0;
+            currentFallingSpeed = 0;
+            System.out.println("Stopped falling");
         }
     }
 
     private void jump() {
-        falling = true;
-        currentFallSpeed = -0.4f;
-        y -= currentFallSpeed;
+        currentFallingSpeed = -0.4f;
+        fall(y);
+    }
+
+    public void stopFalling() {
+        falling = false;
+        currentFallingSpeed = 0;
     }
 
     /**
@@ -778,6 +783,9 @@ public final class EulerCamera implements Camera {
 
     public void setFlying(boolean flying) {
         this.flying = flying;
+        if(flying){
+            falling = false;
+            currentFallingSpeed = 0;
+        }
     }
-
 }

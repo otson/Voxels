@@ -33,6 +33,7 @@ public class Voxels {
      */
     public static final String TITLE = "Voxels";
     public static final int TERRAINS_SMOOTHESS = 15;
+    public static final int PLAYER_HEIGHT = 5;
 
     private static EulerCamera camera;
     private static int displayListHandle;
@@ -64,10 +65,11 @@ public class Voxels {
         long endTime;
         long totalTime = 0;
         int fps = 0;
-        int camSpeed = 6;
+        int camSpeed = 4;
         boolean generateChunks = true;
         boolean running = true;
-        boolean canFly = false;
+        boolean moveFaster;
+        boolean canFly = true;
         camera = InitCamera();
         HashMap<Integer, Chunk> map = new HashMap<>();
 
@@ -80,9 +82,10 @@ public class Voxels {
 
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        gluPerspective((float) 90, 1, 0.3f, 5000);
+        gluPerspective((float) 90, 1.6f, 0.3f, 5000);
         glMatrixMode(GL_MODELVIEW);
         glEnable(GL_DEPTH_TEST);
+        camera.setPosition(camera.x(), 256f, camera.z());
         while (!Display.isCloseRequested() && running) {
             startTime = System.nanoTime();
             glViewport(0, 0, Display.getWidth(), Display.getHeight());
@@ -91,7 +94,7 @@ public class Voxels {
             if (Display.wasResized()) {
                 camera.applyPerspectiveMatrix();
             }
-
+            moveFaster = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
             while (Keyboard.next()) {
 
                 if (Keyboard.isKeyDown(Keyboard.KEY_1)) {
@@ -106,33 +109,46 @@ public class Voxels {
 
                 if (Keyboard.isKeyDown(Keyboard.KEY_F)) {
                     canFly = !canFly;
+                    camera.setFlying(canFly);
                 }
+
                 if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
                     running = false;
                 }
             }
+            if (moveFaster)
+                camSpeed *= 4;
             glLoadIdentity();
             if (generateChunks)
                 checkChunkUpdates(map);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            System.out.println("Chunk x: " + getCamChunkX() + " z: " + getCamChunkZ());
-            System.out.println("Player x: " + camera.x() + " z: " + camera.z());
+            //System.out.println("Chunk x: " + getCamChunkX() + " z: " + getCamChunkZ());
+            //System.out.println("Player x: " + camera.x() + " z: " + camera.z());
             if (canFly == false) {
                 int[][] temp = map.get(new Pair(getCamChunkX(), getCamChunkZ()).hashCode()).getMaxHeights();
                 float y = temp[(int) (camera.x() - getCamChunkX() * Chunk.CHUNK_WIDTH)][(int) (camera.z() - getCamChunkZ() * Chunk.CHUNK_WIDTH)];
-                camera.setPosition(camera.x(), y - Chunk.CHUNK_HEIGHT + 37, camera.z());
+                if (camera.y() > y + PLAYER_HEIGHT) {
+                    camera.fall(y + PLAYER_HEIGHT);
+
+                }
+                if (camera.y() < y + PLAYER_HEIGHT){
+                    camera.setPosition(camera.x(), y + PLAYER_HEIGHT, camera.z());
+                }
             }
             camera.applyTranslations();
+
             if (Mouse.isGrabbed()) {
                 camera.processMouse();
                 camera.processKeyboard(16, camSpeed);
             }
             processKeyboard();
             glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
-            glTranslatef(0, -getNoise(0, 0) - 5, 0);
+            //glTranslatef(0, -getNoise(0, 0) - 5, 0);
             for (int i = 1; i <= displayListHandle; i++) {
                 glCallList(i);
             }
+            if (moveFaster)
+                camSpeed /= 4;
             Display.update();
             Display.sync(60);
             fps++;
@@ -376,13 +392,14 @@ public class Voxels {
     }
 
     private static void checkChunkUpdates(HashMap<Integer, Chunk> map) {
-        int chunkRadius = 1; // check 5*5 grid around camera for new Chunks
+        int chunkRadius = 0; // check 5*5 grid around camera for new Chunks
         Chunk chunk;
         for (int x = -chunkRadius; x <= chunkRadius; x++) {
             for (int z = -chunkRadius; z <= chunkRadius; z++) {
                 if (map.containsKey(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode()) == false) {
                     chunk = new Chunk(getCamChunkX() + x, getCamChunkZ() + z);
                     displayListHandle = glGenLists(1);
+                    System.out.println("Chunks: " + displayListHandle);
                     glNewList(displayListHandle, GL_COMPILE);
                     drawChunk(chunk, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
                     glEndList();
@@ -394,6 +411,6 @@ public class Voxels {
     }
 
     public static int getNoise(float x, float z) {
-        return (FastNoise.noise(x / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS), z / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS), 7));
+        return (int) ((FastNoise.noise(x / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS), z / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS), 7)) * (Chunk.CHUNK_HEIGHT / 256f));
     }
 }

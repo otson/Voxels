@@ -26,7 +26,6 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the FreeBSD Project.
  */
-
 package voxels.Camera;
 
 import org.lwjgl.input.Keyboard;
@@ -39,7 +38,8 @@ import static org.lwjgl.opengl.ARBDepthClamp.GL_DEPTH_CLAMP;
 import static org.lwjgl.opengl.GL11.*;
 
 /**
- * A camera set in 3D perspective. The camera uses Euler angles internally, so beware of a gimbal lock.
+ * A camera set in 3D perspective. The camera uses Euler angles internally, so
+ * beware of a gimbal lock.
  *
  * @author Oskar Veerhoek
  */
@@ -55,6 +55,11 @@ public final class EulerCamera implements Camera {
     private float aspectRatio = 1;
     private final float zNear;
     private final float zFar;
+    private float fallSpeed = 0.015f;
+    private float currentFallSpeed = 0;
+
+    private boolean flying = true;
+    private boolean falling = false;
 
     private EulerCamera(Builder builder) {
         this.x = builder.x;
@@ -70,8 +75,9 @@ public final class EulerCamera implements Camera {
     }
 
     /**
-     * Creates a new camera with the given aspect ratio. It's located at [0 0 0] with the orientation [0 0 0]. It has a
-     * zNear of 0.3, a zFar of 100.0, and an fov of 90.
+     * Creates a new camera with the given aspect ratio. It's located at [0 0 0]
+     * with the orientation [0 0 0]. It has a zNear of 0.3, a zFar of 100.0, and
+     * an fov of 90.
      */
     public EulerCamera() {
         this.zNear = 0.3f;
@@ -79,8 +85,9 @@ public final class EulerCamera implements Camera {
     }
 
     /**
-     * Creates a new camera with the given aspect ratio. It's located at [0 0 0] with the orientation [0 0 0]. It has a
-     * zNear of 0.3, a zFar of 100.0, and an fov of 90.
+     * Creates a new camera with the given aspect ratio. It's located at [0 0 0]
+     * with the orientation [0 0 0]. It has a zNear of 0.3, a zFar of 100.0, and
+     * an fov of 90.
      *
      * @param aspectRatio the aspect ratio (width/height) of the camera
      *
@@ -113,7 +120,8 @@ public final class EulerCamera implements Camera {
     }
 
     /**
-     * Creates a new camera with the given aspect ratio, location, and orientation.
+     * Creates a new camera with the given aspect ratio, location, and
+     * orientation.
      *
      * @param aspectRatio the aspect ratio (width/height) of the camera
      * @param x the first location coordinate
@@ -133,7 +141,8 @@ public final class EulerCamera implements Camera {
     }
 
     /**
-     * Creates a new camera with the given aspect ratio, location, zNear, zFar and orientation.
+     * Creates a new camera with the given aspect ratio, location, zNear, zFar
+     * and orientation.
      *
      * @param aspectRatio the aspect ratio (width/height) of the camera
      * @param x the first location coordinate
@@ -143,11 +152,12 @@ public final class EulerCamera implements Camera {
      * @param yaw the yaw (rotation on the y-axis)
      * @param roll the roll (rotation on the z-axis)
      *
-     * @throws IllegalArgumentException if aspectRatio is 0 or smaller than 0 or if zNear is 0 or smaller than 0 or if
-     * zFar is the same or smaller than zNear
+     * @throws IllegalArgumentException if aspectRatio is 0 or smaller than 0 or
+     * if zNear is 0 or smaller than 0 or if zFar is the same or smaller than
+     * zNear
      */
     public EulerCamera(float aspectRatio, float x, float y, float z, float pitch, float yaw, float roll, float zNear,
-                       float zFar) {
+            float zFar) {
         if (aspectRatio <= 0) {
             throw new IllegalArgumentException("aspectRatio " + aspectRatio + " was 0 or was smaller than 0");
         }
@@ -168,7 +178,9 @@ public final class EulerCamera implements Camera {
         this.zFar = zFar;
     }
 
-    /** Processes mouse input and converts it in to camera movement. */
+    /**
+     * Processes mouse input and converts it in to camera movement.
+     */
     public void processMouse() {
         final float MAX_LOOK_UP = 90;
         final float MAX_LOOK_DOWN = -90;
@@ -176,16 +188,20 @@ public final class EulerCamera implements Camera {
         float mouseDY = Mouse.getDY() * 0.16f;
         if (yaw + mouseDX >= 360) {
             yaw = yaw + mouseDX - 360;
-        } else if (yaw + mouseDX < 0) {
+        }
+        else if (yaw + mouseDX < 0) {
             yaw = 360 - yaw + mouseDX;
-        } else {
+        }
+        else {
             yaw += mouseDX;
         }
         if (pitch - mouseDY >= MAX_LOOK_DOWN && pitch - mouseDY <= MAX_LOOK_UP) {
             pitch += -mouseDY;
-        } else if (pitch - mouseDY < MAX_LOOK_DOWN) {
+        }
+        else if (pitch - mouseDY < MAX_LOOK_DOWN) {
             pitch = MAX_LOOK_DOWN;
-        } else if (pitch - mouseDY > MAX_LOOK_UP) {
+        }
+        else if (pitch - mouseDY > MAX_LOOK_UP) {
             pitch = MAX_LOOK_UP;
         }
     }
@@ -193,7 +209,8 @@ public final class EulerCamera implements Camera {
     /**
      * Processes mouse input and converts it in to camera movement.
      *
-     * @param mouseSpeed the speed (sensitivity) of the mouse, 1.0 should suffice
+     * @param mouseSpeed the speed (sensitivity) of the mouse, 1.0 should
+     * suffice
      */
     public void processMouse(float mouseSpeed) {
         final float MAX_LOOK_UP = 90;
@@ -202,16 +219,20 @@ public final class EulerCamera implements Camera {
         float mouseDY = Mouse.getDY() * mouseSpeed * 0.16f;
         if (yaw + mouseDX >= 360) {
             yaw = yaw + mouseDX - 360;
-        } else if (yaw + mouseDX < 0) {
+        }
+        else if (yaw + mouseDX < 0) {
             yaw = 360 - yaw + mouseDX;
-        } else {
+        }
+        else {
             yaw += mouseDX;
         }
         if (pitch - mouseDY >= MAX_LOOK_DOWN && pitch - mouseDY <= MAX_LOOK_UP) {
             pitch += -mouseDY;
-        } else if (pitch - mouseDY < MAX_LOOK_DOWN) {
+        }
+        else if (pitch - mouseDY < MAX_LOOK_DOWN) {
             pitch = MAX_LOOK_DOWN;
-        } else if (pitch - mouseDY > MAX_LOOK_UP) {
+        }
+        else if (pitch - mouseDY > MAX_LOOK_UP) {
             pitch = MAX_LOOK_UP;
         }
     }
@@ -219,25 +240,31 @@ public final class EulerCamera implements Camera {
     /**
      * Processes mouse input and converts it into camera movement.
      *
-     * @param mouseSpeed the speed (sensitivity) of the mouse, 1.0 should suffice
+     * @param mouseSpeed the speed (sensitivity) of the mouse, 1.0 should
+     * suffice
      * @param maxLookUp the maximum angle in degrees at which you can look up
-     * @param maxLookDown the maximum angle in degrees at which you can look down
+     * @param maxLookDown the maximum angle in degrees at which you can look
+     * down
      */
     public void processMouse(float mouseSpeed, float maxLookUp, float maxLookDown) {
         float mouseDX = Mouse.getDX() * mouseSpeed * 0.16f;
         float mouseDY = Mouse.getDY() * mouseSpeed * 0.16f;
         if (yaw + mouseDX >= 360) {
             yaw = yaw + mouseDX - 360;
-        } else if (yaw + mouseDX < 0) {
+        }
+        else if (yaw + mouseDX < 0) {
             yaw = 360 - yaw + mouseDX;
-        } else {
+        }
+        else {
             yaw += mouseDX;
         }
         if (pitch - mouseDY >= maxLookDown && pitch - mouseDY <= maxLookUp) {
             pitch += -mouseDY;
-        } else if (pitch - mouseDY < maxLookDown) {
+        }
+        else if (pitch - mouseDY < maxLookDown) {
             pitch = maxLookDown;
-        } else if (pitch - mouseDY > maxLookUp) {
+        }
+        else if (pitch - mouseDY > maxLookUp) {
             pitch = maxLookUp;
         }
     }
@@ -305,7 +332,6 @@ public final class EulerCamera implements Camera {
         if (delta <= 0) {
             throw new IllegalArgumentException("delta " + delta + " is 0 or is smaller than 0");
         }
-
         boolean keyUp = Keyboard.isKeyDown(Keyboard.KEY_UP) || Keyboard.isKeyDown(Keyboard.KEY_W);
         boolean keyDown = Keyboard.isKeyDown(Keyboard.KEY_DOWN) || Keyboard.isKeyDown(Keyboard.KEY_S);
         boolean keyLeft = Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.KEY_A);
@@ -337,12 +363,19 @@ public final class EulerCamera implements Camera {
         if (keyRight && !keyLeft && !keyUp && !keyDown) {
             moveFromLook(speed * delta * 0.003f, 0, 0);
         }
-        if (flyUp && !flyDown) {
-            y += speed * delta * 0.003f;
+
+        if (!falling) {
+            if (flyUp && !flyDown) {
+                if (flying == false)
+                    jump();
+                else if (!falling)
+                    y += speed * delta * 0.003f;
+            }
+            if (flyDown && !flyUp) {
+                y -= speed * delta * 0.003f;
+            }
         }
-        if (flyDown && !flyUp) {
-            y -= speed * delta * 0.003f;
-        }
+
     }
 
     /**
@@ -392,16 +425,21 @@ public final class EulerCamera implements Camera {
             moveFromLook(speedX * delta * 0.003f, 0, 0);
         }
         if (flyUp && !flyDown) {
-            y += speedY * delta * 0.003f;
+            if (flying == false)
+                jump();
+            else if (!falling)
+                y += speedY * delta * 0.003f;
         }
         if (flyDown && !flyUp) {
             y -= speedY * delta * 0.003f;
         }
+
     }
 
     /**
-     * Move in the direction you're looking. That is, this method assumes a new coordinate system where the axis you're
-     * looking down is the z-axis, the axis to your left is the x-axis, and the upward axis is the y-axis.
+     * Move in the direction you're looking. That is, this method assumes a new
+     * coordinate system where the axis you're looking down is the z-axis, the
+     * axis to your left is the x-axis, and the upward axis is the y-axis.
      *
      * @param dx the movement along the x-axis
      * @param dy the movement along the y-axis
@@ -440,8 +478,8 @@ public final class EulerCamera implements Camera {
     }
 
     /**
-     * Sets GL_PROJECTION to an orthographic projection matrix. The matrix mode will be returned it its previous value
-     * after execution.
+     * Sets GL_PROJECTION to an orthographic projection matrix. The matrix mode
+     * will be returned it its previous value after execution.
      */
     public void applyOrthographicMatrix() {
         glPushAttrib(GL_TRANSFORM_BIT);
@@ -452,8 +490,8 @@ public final class EulerCamera implements Camera {
     }
 
     /**
-     * Enables or disables OpenGL states that will enhance the camera appearance. Enable GL_DEPTH_CLAMP if
-     * ARB_depth_clamp is supported
+     * Enables or disables OpenGL states that will enhance the camera
+     * appearance. Enable GL_DEPTH_CLAMP if ARB_depth_clamp is supported
      */
     public void applyOptimalStates() {
         if (GLContext.getCapabilities().GL_ARB_depth_clamp) {
@@ -462,8 +500,8 @@ public final class EulerCamera implements Camera {
     }
 
     /**
-     * Sets GL_PROJECTION to an perspective projection matrix. The matrix mode will be returned it its previous value
-     * after execution.
+     * Sets GL_PROJECTION to an perspective projection matrix. The matrix mode
+     * will be returned it its previous value after execution.
      */
     public void applyPerspectiveMatrix() {
         glPushAttrib(GL_TRANSFORM_BIT);
@@ -473,7 +511,9 @@ public final class EulerCamera implements Camera {
         glPopAttrib();
     }
 
-    /** Applies the camera translations and rotations to GL_MODELVIEW. */
+    /**
+     * Applies the camera translations and rotations to GL_MODELVIEW.
+     */
     public void applyTranslations() {
         glPushAttrib(GL_TRANSFORM_BIT);
         glMatrixMode(GL_MODELVIEW);
@@ -497,44 +537,59 @@ public final class EulerCamera implements Camera {
         this.roll = roll;
     }
 
-    /** @return the x-coordinate of the camera */
+    /**
+     * @return the x-coordinate of the camera
+     */
     public float x() {
         return x;
     }
 
-    /** @return y the y-coordinate of the camera */
+    /**
+     * @return y the y-coordinate of the camera
+     */
     public float y() {
         return y;
     }
 
-    /** @return the z-coordinate of the camera */
+    /**
+     * @return the z-coordinate of the camera
+     */
     public float z() {
         return z;
     }
 
-    /** @return the pitch of the camera in degrees */
+    /**
+     * @return the pitch of the camera in degrees
+     */
     public float pitch() {
         return pitch;
     }
 
-    /** @return the yaw of the camera in degrees */
+    /**
+     * @return the yaw of the camera in degrees
+     */
     public float yaw() {
         return yaw;
     }
 
-    /** @return the roll of the camera in degrees */
+    /**
+     * @return the roll of the camera in degrees
+     */
     public float roll() {
         return roll;
     }
 
-    /** @return the fov of the camera in degrees in the y direction */
+    /**
+     * @return the fov of the camera in degrees in the y direction
+     */
     public float fieldOfView() {
         return fov;
     }
 
     /**
-     * Sets the field of view angle in degrees in the y direction. Note that this.applyPerspectiveMatrix() must be
-     * applied in order to see any difference.
+     * Sets the field of view angle in degrees in the y direction. Note that
+     * this.applyPerspectiveMatrix() must be applied in order to see any
+     * difference.
      *
      * @param fov the field of view angle in degrees in the y direction
      */
@@ -550,29 +605,54 @@ public final class EulerCamera implements Camera {
         this.aspectRatio = aspectRatio;
     }
 
-    /** @return the aspect ratio of the camera */
+    /**
+     * @return the aspect ratio of the camera
+     */
     public float aspectRatio() {
         return aspectRatio;
     }
 
-    /** @return the distance from the camera to the near clipping pane */
+    /**
+     * @return the distance from the camera to the near clipping pane
+     */
     public float nearClippingPane() {
         return zNear;
     }
 
-    /** @return the distance from the camera to the far clipping pane */
+    /**
+     * @return the distance from the camera to the far clipping pane
+     */
     public float farClippingPane() {
         return zFar;
     }
 
     @Override
     public String toString() {
-        return "EulerCamera [x=" + x + ", y=" + y + ", z=" + z + ", pitch=" + pitch + ", yaw=" + yaw + ", " +
-                "roll=" + roll + ", fov=" + fov + ", aspectRatio=" + aspectRatio + ", zNear=" + zNear + ", " +
-                "zFar=" + zFar + "]";
+        return "EulerCamera [x=" + x + ", y=" + y + ", z=" + z + ", pitch=" + pitch + ", yaw=" + yaw + ", "
+                + "roll=" + roll + ", fov=" + fov + ", aspectRatio=" + aspectRatio + ", zNear=" + zNear + ", "
+                + "zFar=" + zFar + "]";
     }
 
-    /** A builder helper class for the EulerCamera class. */
+    public void fall(float target) {
+        falling = true;
+        currentFallSpeed += fallSpeed;
+        y -= currentFallSpeed;
+        if (y <= target) {
+            y = target;
+            falling = false;
+            currentFallSpeed = 0;
+        }
+    }
+
+    private void jump() {
+        falling = true;
+        currentFallSpeed = -0.4f;
+        y -= currentFallSpeed;
+    }
+
+    /**
+     * A builder helper class for the EulerCamera class.
+     */
     public static class Builder {
 
         private float aspectRatio = 1;
@@ -588,7 +668,8 @@ public final class EulerCamera implements Camera {
         /**
          * Sets the aspect ratio of the camera.
          *
-         * @param aspectRatio the aspect ratio of the camera (window width / window height)
+         * @param aspectRatio the aspect ratio of the camera (window width /
+         * window height)
          *
          * @return this
          */
@@ -603,7 +684,8 @@ public final class EulerCamera implements Camera {
         /**
          * Sets the distance from the camera to the near clipping pane.
          *
-         * @param nearClippingPane the distance from the camera to the near clipping pane
+         * @param nearClippingPane the distance from the camera to the near
+         * clipping pane
          *
          * @return this
          *
@@ -620,7 +702,8 @@ public final class EulerCamera implements Camera {
         /**
          * Sets the distance from the camera to the far clipping pane.
          *
-         * @param farClippingPane the distance from the camera to the far clipping pane
+         * @param farClippingPane the distance from the camera to the far
+         * clipping pane
          *
          * @return this
          *
@@ -681,14 +764,20 @@ public final class EulerCamera implements Camera {
          *
          * @return an instance of EulerCamera
          *
-         * @throws IllegalArgumentException if farClippingPane is the same or less than nearClippingPane
+         * @throws IllegalArgumentException if farClippingPane is the same or
+         * less than nearClippingPane
          */
         public EulerCamera build() {
             if (zFar <= zNear) {
-                throw new IllegalArgumentException("farClippingPane " + zFar + " is the same or less than " +
-                        "nearClippingPane " + zNear);
+                throw new IllegalArgumentException("farClippingPane " + zFar + " is the same or less than "
+                        + "nearClippingPane " + zNear);
             }
             return new EulerCamera(this);
         }
     }
+
+    public void setFlying(boolean flying) {
+        this.flying = flying;
+    }
+
 }

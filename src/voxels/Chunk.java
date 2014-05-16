@@ -38,7 +38,7 @@ public class Chunk {
                 }
             }
         }
-        System.out.println("Total blocks in the chunk: " + blockCount);
+        //System.out.println("Total blocks in the chunk: " + blockCount);
         setActiveBlocks();
     }
 
@@ -65,7 +65,7 @@ public class Chunk {
                 }
             }
         }
-        System.out.println("Blocks activated in the first loop: " + activeBlocks);
+        //System.out.println("Blocks activated in the first loop: " + activeBlocks);
         activeBlocks = 0;
         // second loop, activate blocks in steps that are higher than one block
         int heightDifference;
@@ -81,6 +81,11 @@ public class Chunk {
             // second loop, activate blocks in steps that are higher than one block
 
         }
-        System.out.println("Blocks activated in the second loop: " + activeBlocks);
+        //System.out.println("Blocks activated in the second loop: " + activeBlocks);
     }
+
+    public int[][] getMaxHeights() {
+        return maxHeights;
+    }
+    
 }

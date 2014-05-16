@@ -18,12 +18,14 @@ public class Chunk {
     public final int Z_OFF;
 
     public Block[][][] blocks;
+    private int[][] maxHeights;
 
     public Chunk(int xOff, int zOff) {
 
         X_OFF = xOff * (CHUNK_WIDTH);
         Z_OFF = zOff * (CHUNK_WIDTH);
         blocks = new Block[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_WIDTH];
+        maxHeights = new int[CHUNK_WIDTH][CHUNK_WIDTH];
 
         int blockCount = 0;
         for (int x = 0; x < blocks.length; x++) {
@@ -46,6 +48,7 @@ public class Chunk {
         for (int x = 0; x < blocks.length; x++) {
             for (int z = 0; z < blocks[x][0].length; z++) {
                 maxHeight = Voxels.getNoise(x + X_OFF, z + Z_OFF);
+                maxHeights[x][z] = maxHeight;
                 for (int y = 0; y < blocks[x].length; y++) {
                     if (y == 0 || y == maxHeight) {
                         blocks[x][y][z].activate();
@@ -62,6 +65,22 @@ public class Chunk {
                 }
             }
         }
-        System.out.println("Active blocks in the chunk: " + activeBlocks);
+        System.out.println("Blocks activated in the first loop: " + activeBlocks);
+        activeBlocks = 0;
+        // second loop, activate blocks in steps that are higher than one block
+        int heightDifference;
+        for (int x = 1; x < blocks.length-1; x++) {
+            for (int z = 1; z < blocks[x][0].length-1; z++) {
+                heightDifference = maxHeights[x][z] - Math.min(Math.min(maxHeights[x + 1][z], maxHeights[x - 1][z]), Math.min(maxHeights[x][z + 1], maxHeights[x][z - 1]));
+                if (heightDifference > 1)
+                    for (int y = maxHeights[x][z] - heightDifference; y < maxHeights[x][z]; y++) {
+                        blocks[x][y][z].activate();
+                        activeBlocks++;
+                    }
+            }
+            // second loop, activate blocks in steps that are higher than one block
+
+        }
+        System.out.println("Blocks activated in the second loop: " + activeBlocks);
     }
 }

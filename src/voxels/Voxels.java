@@ -27,13 +27,17 @@ import voxels.Noise.FastNoise;
  */
 public class Voxels {
 
+    public static final String TITLE = "Voxels";
     /**
      * Set terrain smoothness. Value of one gives mountains withs a width of one
      * block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final String TITLE = "Voxels";
     public static final int TERRAINS_SMOOTHESS = 15;
-    public static final int PLAYER_HEIGHT = 7;
+    /**
+     * Set player's height. One block's height is 2. Default value for player
+     * height is 7 (3.5 blocks).
+     */
+    public static int PLAYER_HEIGHT = 7;
 
     private static EulerCamera camera;
     private static int displayListHandle;
@@ -70,7 +74,7 @@ public class Voxels {
         boolean generateChunks = true;
         boolean running = true;
         boolean moveFaster;
-        boolean canFly = true;
+        boolean canFly = false;
         camera = InitCamera();
         HashMap<Integer, Chunk> map = new HashMap<>();
 
@@ -132,8 +136,9 @@ public class Voxels {
                     camera.fall(y + PLAYER_HEIGHT);
 
                 }
-                if (camera.y() < y + PLAYER_HEIGHT){
+                if (camera.y() < y + PLAYER_HEIGHT) {
                     camera.setPosition(camera.x(), y + PLAYER_HEIGHT, camera.z());
+                    camera.stopFalling();
                 }
             }
             camera.applyTranslations();
@@ -368,7 +373,7 @@ public class Voxels {
 
         glLightModel(GL_LIGHT_MODEL_AMBIENT, asFloatBuffer(lightAmbient));
         glLight(GL_LIGHT0, GL_DIFFUSE, asFloatBuffer(lightDiffuse));             // Setup The Diffuse Light  
-        glLight(GL_LIGHT1, GL_DIFFUSE, asFloatBuffer(lightDiffuse)); 
+        glLight(GL_LIGHT1, GL_DIFFUSE, asFloatBuffer(lightDiffuse));
         glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
         glLight(GL_LIGHT1, GL_POSITION, asFloatBuffer(light1Position));
     }

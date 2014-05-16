@@ -138,6 +138,7 @@ public class Voxels {
     }
 
     private static void drawChunk(Chunk chunk, int xOff, int zOff) {
+        long startTime = System.nanoTime();
         int drawnBlocks = 0;
         for (int x = 0; x < chunk.blocks.length; x++) {
             for (int z = 0; z < chunk.blocks[x][0].length; z++) {
@@ -153,6 +154,8 @@ public class Voxels {
         }
         System.out.println("Drawn blocks: " + drawnBlocks);
         System.out.println("Vertex count: " + vertexCount);
+        long endTime = System.nanoTime();
+        System.out.println("One chunk creation took "+((endTime-startTime)/1000000)+ " ms.");
     }
 
     private static EulerCamera InitCamera() {
@@ -362,7 +365,7 @@ public class Voxels {
     }
 
     private static void checkChunkUpdates(HashMap<Integer, Chunk> map) {
-        int chunkRadius = 0; // check 5*5 grid around camera for new Chunks
+        int chunkRadius = 3; // check 5*5 grid around camera for new Chunks
         Chunk chunk;
         for (int x = -chunkRadius; x <= chunkRadius; x++) {
             for (int z = -chunkRadius; z <= chunkRadius; z++) {

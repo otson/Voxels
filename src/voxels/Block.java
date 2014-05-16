@@ -14,7 +14,7 @@ public class Block {
     private boolean active;
 
     public Block() {
-        active = true;
+        active = false;
     }
 
 

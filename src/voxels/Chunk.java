@@ -12,41 +12,54 @@ package voxels;
 public class Chunk {
 
     public static final int CHUNK_WIDTH = 16;
-    public static final int CHUNK_HEIGHT = 4;
-    
+    public static final int CHUNK_HEIGHT = 256;
+
+    public final int X_OFF;
+    public final int Z_OFF;
 
     public Block[][][] blocks;
 
-    public Chunk() {
+    public Chunk(int xOff, int zOff) {
+
+        X_OFF = xOff * (CHUNK_WIDTH);
+        Z_OFF = zOff * (CHUNK_WIDTH);
         blocks = new Block[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_WIDTH];
 
+        int blockCount = 0;
         for (int x = 0; x < blocks.length; x++) {
             blocks[x] = new Block[CHUNK_HEIGHT][CHUNK_WIDTH];
             for (int y = 0; y < blocks[x].length; y++) {
                 blocks[x][y] = new Block[CHUNK_WIDTH];
                 for (int z = 0; z < blocks[x][y].length; z++) {
                     blocks[x][y][z] = new Block();
+                    blockCount++;
                 }
             }
         }
-        updateVisibility();
+        System.out.println("Total blocks in the chunk: " + blockCount);
+        setActiveBlocks();
     }
 
-    private void updateVisibility() {
-        for (int x = 1; x < blocks.length-1; x++) {
-            for (int y = 1; y < blocks[x].length-1; y++) {
-                for (int z = 1; z < blocks[x][y].length-1; z++) {
-                     if(!blocks[x+1][y][z].isActive() && 
-                        !blocks[x-1][y][z].isActive() && 
-                        !blocks[x][y+1][z].isActive() &&
-                        !blocks[x][y-1][z].isActive() && 
-                        !blocks[x][y][z+1].isActive() &&
-                        !blocks[x][y][z-1].isActive())
-                         
-                         blocks[x][y][z].deactivate();
+    private void setActiveBlocks() {
+        int activeBlocks = 0;
+        for (int x = 0; x < blocks.length; x++) {
+            for (int y = 0; y < blocks[x].length; y++) {
+                for (int z = 0; z < blocks[x][y].length; z++) {
+                    if (y == 0 || y == Voxels.getNoise(x + X_OFF, z + Z_OFF)) {
+                        blocks[x][y][z].activate();
+                        activeBlocks++;
+                    }
+                    else if ((x == 0 || x == blocks.length - 1) && y < Voxels.getNoise(x + X_OFF, z + Z_OFF)) {
+                        blocks[x][y][z].activate();
+                        activeBlocks++;
+                    }
+                    else if ((z == 0 || z == blocks[x][y].length - 1) && y < Voxels.getNoise(x + X_OFF, z + Z_OFF)) {
+                        blocks[x][y][z].activate();
+                        activeBlocks++;
+                    }
                 }
             }
         }
+        System.out.println("Active blocks in the chunk: " + activeBlocks);
     }
-
 }

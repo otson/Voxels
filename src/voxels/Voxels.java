@@ -33,12 +33,13 @@ public class Voxels {
      */
     public static final String TITLE = "Voxels";
     public static final int TERRAINS_SMOOTHESS = 15;
-    public static final int PLAYER_HEIGHT = 5;
+    public static final int PLAYER_HEIGHT = 7;
 
     private static EulerCamera camera;
     private static int displayListHandle;
     private static int vertexCount = 0;
     private static float light0Position[] = {-200.0f, 5000.0f, -800.0f, 1.0f};
+    private static float light1Position[] = {200.0f, 5000.0f, 800.0f, 1.0f};
 
     public static void main(String[] args) {
         initDisplay();
@@ -143,6 +144,7 @@ public class Voxels {
             }
             processKeyboard();
             glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
+            glLight(GL_LIGHT1, GL_POSITION, asFloatBuffer(light1Position));
             //glTranslatef(0, -getNoise(0, 0) - 5, 0);
             for (int i = 1; i <= displayListHandle; i++) {
                 glCallList(i);
@@ -358,14 +360,17 @@ public class Voxels {
     private static void initLighting() {
         glEnable(GL_LIGHTING);
         glEnable(GL_LIGHT0);
+        glEnable(GL_LIGHT1);
         glEnable(GL_COLOR_MATERIAL);
 
         float lightAmbient[] = {0.3f, 0.3f, 0.3f, 1.0f};
         float lightDiffuse[] = {1.2f, 1.2f, 1.2f, 1.0f};
 
         glLightModel(GL_LIGHT_MODEL_AMBIENT, asFloatBuffer(lightAmbient));
-        glLight(GL_LIGHT0, GL_DIFFUSE, asFloatBuffer(lightDiffuse));             // Setup The Diffuse Light         
+        glLight(GL_LIGHT0, GL_DIFFUSE, asFloatBuffer(lightDiffuse));             // Setup The Diffuse Light  
+        glLight(GL_LIGHT1, GL_DIFFUSE, asFloatBuffer(lightDiffuse)); 
         glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
+        glLight(GL_LIGHT1, GL_POSITION, asFloatBuffer(light1Position));
     }
 
     private static FloatBuffer asFloatBuffer(float[] values) {
@@ -392,7 +397,7 @@ public class Voxels {
     }
 
     private static void checkChunkUpdates(HashMap<Integer, Chunk> map) {
-        int chunkRadius = 0; // check 5*5 grid around camera for new Chunks
+        int chunkRadius = 1; // check 5*5 grid around camera for new Chunks
         Chunk chunk;
         for (int x = -chunkRadius; x <= chunkRadius; x++) {
             for (int z = -chunkRadius; z <= chunkRadius; z++) {

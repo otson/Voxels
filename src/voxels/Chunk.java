@@ -42,18 +42,20 @@ public class Chunk {
 
     private void setActiveBlocks() {
         int activeBlocks = 0;
+        int maxHeight;
         for (int x = 0; x < blocks.length; x++) {
-            for (int y = 0; y < blocks[x].length; y++) {
-                for (int z = 0; z < blocks[x][y].length; z++) {
-                    if (y == 0 || y == Voxels.getNoise(x + X_OFF, z + Z_OFF)) {
+            for (int z = 0; z < blocks[x][0].length; z++) {
+                maxHeight = Voxels.getNoise(x + X_OFF, z + Z_OFF);
+                for (int y = 0; y < blocks[x].length; y++) {
+                    if (y == 0 || y == maxHeight) {
                         blocks[x][y][z].activate();
                         activeBlocks++;
                     }
-                    else if ((x == 0 || x == blocks.length - 1) && y < Voxels.getNoise(x + X_OFF, z + Z_OFF)) {
+                    else if ((x == 0 || x == blocks.length - 1) && y < maxHeight) {
                         blocks[x][y][z].activate();
                         activeBlocks++;
                     }
-                    else if ((z == 0 || z == blocks[x][y].length - 1) && y < Voxels.getNoise(x + X_OFF, z + Z_OFF)) {
+                    else if ((z == 0 || z == blocks[x][y].length - 1) && y < maxHeight) {
                         blocks[x][y][z].activate();
                         activeBlocks++;
                     }

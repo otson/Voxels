@@ -18,6 +18,7 @@ public class Chunk {
     public final int Z_OFF;
     private int vboColorHandle;
     private int vboVertexHandle;
+    private int vboNormalHandle;
     private int vertices;
 
     public Block[][][] blocks;
@@ -115,5 +116,14 @@ public class Chunk {
     public void setVertices(int vertices) {
         this.vertices = vertices;
     }
+
+    public void setVboNormalHandle(int vboNormalHandle) {
+        this.vboNormalHandle = vboNormalHandle;
+    }
+
+    public int getVboNormalHandle() {
+        return vboNormalHandle;
+    }
+    
 
 }

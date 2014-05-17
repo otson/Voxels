@@ -70,6 +70,7 @@ public class Voxels {
     private static boolean[][][] back = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH];
     private static int vertexSize = 3;
     private static int colorSize = 3;
+    private static int normalSize = 3;
 
     public static void main(String[] args) {
         initDisplay();
@@ -205,16 +206,23 @@ public class Voxels {
                             Chunk currentChunk = map.get(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode());
                             int vboVertexHandle = currentChunk.getVboVertexHandle();
                             int vboColorHandle = currentChunk.getVboColorHandle();
+                            int vboNormalHandle = currentChunk.getVboNormalHandle();
                             int vertices = currentChunk.getVertices();
+
                             glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
                             glVertexPointer(vertexSize, GL_FLOAT, 0, 0L);
 
                             glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
                             glColorPointer(colorSize, GL_FLOAT, 0, 0L);
 
+                            glBindBuffer(GL_ARRAY_BUFFER, vboNormalHandle);
+                            glNormalPointer(GL_FLOAT, 0, 0L);
+
                             glEnableClientState(GL_VERTEX_ARRAY);
                             glEnableClientState(GL_COLOR_ARRAY);
+                            glEnableClientState(GL_NORMAL_ARRAY);
                             glDrawArrays(GL_QUADS, 0, vertices);
+                            glDisableClientState(GL_NORMAL_ARRAY);
                             glDisableClientState(GL_COLOR_ARRAY);
                             glDisableClientState(GL_VERTEX_ARRAY);
                         }
@@ -282,18 +290,28 @@ public class Voxels {
         System.out.println("Vertices: " + vertices);
         float[] vertexArray = new float[vertices * vertexSize];
         float[] colorArray = new float[vertices * vertexSize];
+        float[] normalArray = new float[vertices * vertexSize];
 
         int vArrayPos = 0;
         int cArrayPos = 0;
+        int nArrayPos = 0;
 
         FloatBuffer vertexData = BufferUtils.createFloatBuffer(vertices * vertexSize);
         FloatBuffer colorData = BufferUtils.createFloatBuffer(vertices * colorSize);
+        FloatBuffer normalData = BufferUtils.createFloatBuffer(vertices * vertexSize);
 
         for (int x = 0; x < chunk.blocks.length; x++) {
             for (int z = 0; z < chunk.blocks[x][0].length; z++) {
                 for (int y = 0; y < chunk.blocks[x].length; y++) {
                     if (chunk.blocks[x][y][z].isActive()) {
                         if (front[x][y][z]) {
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 1;
+                            nArrayPos++;
+
                             colorArray[cArrayPos] = 100f / 255f;
                             cArrayPos++;
                             colorArray[cArrayPos] = 69f / 255f;
@@ -308,6 +326,13 @@ public class Voxels {
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
+
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 1;
+                            nArrayPos++;
 
                             colorArray[cArrayPos] = 100f / 255f;
                             cArrayPos++;
@@ -324,6 +349,13 @@ public class Voxels {
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
 
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 1;
+                            nArrayPos++;
+
                             colorArray[cArrayPos] = 100f / 255f;
                             cArrayPos++;
                             colorArray[cArrayPos] = 69f / 255f;
@@ -338,6 +370,13 @@ public class Voxels {
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
+
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 1;
+                            nArrayPos++;
 
                             colorArray[cArrayPos] = 100f / 255f;
                             cArrayPos++;
@@ -356,6 +395,13 @@ public class Voxels {
 
                         }
                         if (back[x][y][z]) {
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = -1;
+                            nArrayPos++;
+
                             colorArray[cArrayPos] = 100f / 255f;
                             cArrayPos++;
                             colorArray[cArrayPos] = 69f / 255f;
@@ -371,6 +417,13 @@ public class Voxels {
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
 
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = -1;
+                            nArrayPos++;
+
                             colorArray[cArrayPos] = 100f / 255f;
                             cArrayPos++;
                             colorArray[cArrayPos] = 69f / 255f;
@@ -385,6 +438,13 @@ public class Voxels {
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
 
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = -1;
+                            nArrayPos++;
+
                             colorArray[cArrayPos] = 100f / 255f;
                             cArrayPos++;
                             colorArray[cArrayPos] = 69f / 255f;
@@ -398,6 +458,13 @@ public class Voxels {
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
+
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = -1;
+                            nArrayPos++;
 
                             colorArray[cArrayPos] = 100f / 255f;
                             cArrayPos++;
@@ -415,6 +482,13 @@ public class Voxels {
 
                         }
                         if (right[x][y][z]) {
+                            normalArray[nArrayPos] = 1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+
                             colorArray[cArrayPos] = 100f / 255f;
                             cArrayPos++;
                             colorArray[cArrayPos] = 69f / 255f;
@@ -430,6 +504,13 @@ public class Voxels {
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
 
+                            normalArray[nArrayPos] = 1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+
                             colorArray[cArrayPos] = 100f / 255f;
                             cArrayPos++;
                             colorArray[cArrayPos] = 69f / 255f;
@@ -444,6 +525,13 @@ public class Voxels {
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
 
+                            normalArray[nArrayPos] = 1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+
                             colorArray[cArrayPos] = 100f / 255f;
                             cArrayPos++;
                             colorArray[cArrayPos] = 69f / 255f;
@@ -457,6 +545,13 @@ public class Voxels {
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
+
+                            normalArray[nArrayPos] = 1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
 
                             colorArray[cArrayPos] = 100f / 255f;
                             cArrayPos++;
@@ -474,6 +569,13 @@ public class Voxels {
 
                         }
                         if (left[x][y][z]) {
+                            normalArray[nArrayPos] = -1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+
                             colorArray[cArrayPos] = 100f / 255f;
                             cArrayPos++;
                             colorArray[cArrayPos] = 69f / 255f;
@@ -489,6 +591,13 @@ public class Voxels {
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
 
+                            normalArray[nArrayPos] = -1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+
                             colorArray[cArrayPos] = 100f / 255f;
                             cArrayPos++;
                             colorArray[cArrayPos] = 69f / 255f;
@@ -503,6 +612,13 @@ public class Voxels {
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
 
+                            normalArray[nArrayPos] = -1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+
                             colorArray[cArrayPos] = 100f / 255f;
                             cArrayPos++;
                             colorArray[cArrayPos] = 69f / 255f;
@@ -516,6 +632,13 @@ public class Voxels {
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
+
+                            normalArray[nArrayPos] = -1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
 
                             colorArray[cArrayPos] = 100f / 255f;
                             cArrayPos++;
@@ -532,6 +655,13 @@ public class Voxels {
                             vArrayPos++;
                         }
                         if (top[x][y][z]) {
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+
                             colorArray[cArrayPos] = 0f / 255f;
                             cArrayPos++;
                             colorArray[cArrayPos] = 92f / 255f;
@@ -547,6 +677,13 @@ public class Voxels {
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
 
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+
                             colorArray[cArrayPos] = 0f / 255f;
                             cArrayPos++;
                             colorArray[cArrayPos] = 92f / 255f;
@@ -561,6 +698,13 @@ public class Voxels {
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
 
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+
                             colorArray[cArrayPos] = 0f / 255f;
                             cArrayPos++;
                             colorArray[cArrayPos] = 92f / 255f;
@@ -574,6 +718,13 @@ public class Voxels {
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
+
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
 
                             colorArray[cArrayPos] = 0f / 255f;
                             cArrayPos++;
@@ -590,6 +741,13 @@ public class Voxels {
                             vArrayPos++;
                         }
                         if (bottom[x][y][z]) {
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = -1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+
                             colorArray[cArrayPos] = 64f / 255f;
                             cArrayPos++;
                             colorArray[cArrayPos] = 64f / 255f;
@@ -605,6 +763,13 @@ public class Voxels {
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
 
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = -1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+
                             colorArray[cArrayPos] = 64f / 255f;
                             cArrayPos++;
                             colorArray[cArrayPos] = 64f / 255f;
@@ -619,6 +784,13 @@ public class Voxels {
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
 
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = -1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+
                             colorArray[cArrayPos] = 64f / 255f;
                             cArrayPos++;
                             colorArray[cArrayPos] = 64f / 255f;
@@ -632,6 +804,13 @@ public class Voxels {
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
+
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = -1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
 
                             colorArray[cArrayPos] = 64f / 255f;
                             cArrayPos++;
@@ -657,6 +836,9 @@ public class Voxels {
         colorData.put(colorArray);
         colorData.flip();
 
+        normalData.put(normalArray);
+        normalData.flip();
+
         int vboVertexHandle = glGenBuffers();
         chunk.setVboVertexHandle(vboVertexHandle);
 
@@ -669,6 +851,13 @@ public class Voxels {
         System.out.println("Chunks created: " + vboColorHandle / 2);
         glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
         glBufferData(GL_ARRAY_BUFFER, colorData, GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        int vboNormalHandle = glGenBuffers();
+        chunk.setVboNormalHandle(vboNormalHandle);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vboNormalHandle);
+        glBufferData(GL_ARRAY_BUFFER, normalData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         long endTime = System.nanoTime();

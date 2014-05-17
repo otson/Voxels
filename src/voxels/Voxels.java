@@ -71,12 +71,13 @@ public class Voxels {
     private static int vertexSize = 3;
     private static int colorSize = 3;
     private static int normalSize = 3;
+    private static int texSize = 2;
 
     public static void main(String[] args) {
         initDisplay();
         initOpenGL();
         initLighting();
-        //initTextures();
+        initTextures();
         initBooleanArrays();
         gameLoop();
     }
@@ -207,7 +208,9 @@ public class Voxels {
                             int vboVertexHandle = currentChunk.getVboVertexHandle();
                             int vboColorHandle = currentChunk.getVboColorHandle();
                             int vboNormalHandle = currentChunk.getVboNormalHandle();
+                            int vboTexHandle = currentChunk.getVboTexHandle();
                             int vertices = currentChunk.getVertices();
+                            
 
                             glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
                             glVertexPointer(vertexSize, GL_FLOAT, 0, 0L);
@@ -217,11 +220,16 @@ public class Voxels {
 
                             glBindBuffer(GL_ARRAY_BUFFER, vboNormalHandle);
                             glNormalPointer(GL_FLOAT, 0, 0L);
+                            
+                            glBindBuffer(GL_ARRAY_BUFFER, vboTexHandle);
+                            glTexCoordPointer(texSize, GL_FLOAT, 0, 0L);
 
                             glEnableClientState(GL_VERTEX_ARRAY);
                             glEnableClientState(GL_COLOR_ARRAY);
                             glEnableClientState(GL_NORMAL_ARRAY);
+                            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
                             glDrawArrays(GL_QUADS, 0, vertices);
+                            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
                             glDisableClientState(GL_NORMAL_ARRAY);
                             glDisableClientState(GL_COLOR_ARRAY);
                             glDisableClientState(GL_VERTEX_ARRAY);
@@ -289,22 +297,45 @@ public class Voxels {
         chunk.setVertices(vertices);
         System.out.println("Vertices: " + vertices);
         float[] vertexArray = new float[vertices * vertexSize];
-        float[] colorArray = new float[vertices * vertexSize];
-        float[] normalArray = new float[vertices * vertexSize];
+        float[] colorArray = new float[vertices * colorSize];
+        float[] normalArray = new float[vertices * normalSize];
+        float[] texArray = new float[vertices * texSize];
 
         int vArrayPos = 0;
         int cArrayPos = 0;
         int nArrayPos = 0;
+        int tArrayPos = 0;
 
         FloatBuffer vertexData = BufferUtils.createFloatBuffer(vertices * vertexSize);
         FloatBuffer colorData = BufferUtils.createFloatBuffer(vertices * colorSize);
         FloatBuffer normalData = BufferUtils.createFloatBuffer(vertices * vertexSize);
+        FloatBuffer texData = BufferUtils.createFloatBuffer(vertices * texSize);
 
         for (int x = 0; x < chunk.blocks.length; x++) {
             for (int z = 0; z < chunk.blocks[x][0].length; z++) {
                 for (int y = 0; y < chunk.blocks[x].length; y++) {
                     if (chunk.blocks[x][y][z].isActive()) {
                         if (front[x][y][z]) {
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
                             normalArray[nArrayPos] = 0;
@@ -395,6 +426,26 @@ public class Voxels {
 
                         }
                         if (back[x][y][z]) {
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
                             normalArray[nArrayPos] = 0;
@@ -482,6 +533,26 @@ public class Voxels {
 
                         }
                         if (right[x][y][z]) {
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+
                             normalArray[nArrayPos] = 1;
                             nArrayPos++;
                             normalArray[nArrayPos] = 0;
@@ -569,6 +640,26 @@ public class Voxels {
 
                         }
                         if (left[x][y][z]) {
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
                             normalArray[nArrayPos] = 0;
@@ -655,6 +746,26 @@ public class Voxels {
                             vArrayPos++;
                         }
                         if (top[x][y][z]) {
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+                            
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
                             normalArray[nArrayPos] = 1;
@@ -741,6 +852,26 @@ public class Voxels {
                             vArrayPos++;
                         }
                         if (bottom[x][y][z]) {
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+                            
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+                            
+                            texArray[tArrayPos] = 0;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+                            
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1;
+                            tArrayPos++;
+                            
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
                             normalArray[nArrayPos] = -1;
@@ -838,6 +969,9 @@ public class Voxels {
 
         normalData.put(normalArray);
         normalData.flip();
+        
+        texData.put(texArray);
+        texData.flip();
 
         int vboVertexHandle = glGenBuffers();
         chunk.setVboVertexHandle(vboVertexHandle);
@@ -858,6 +992,13 @@ public class Voxels {
 
         glBindBuffer(GL_ARRAY_BUFFER, vboNormalHandle);
         glBufferData(GL_ARRAY_BUFFER, normalData, GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        
+        int vboTexHandle = glGenBuffers();
+        chunk.setVboTexHandle(vboTexHandle);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vboTexHandle);
+        glBufferData(GL_ARRAY_BUFFER, texData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         long endTime = System.nanoTime();

@@ -121,14 +121,14 @@ public class Voxels {
             drawChunkVBO(map.get(new Pair(getCamChunkX(), getCamChunkZ()).hashCode()), 0, 0);
 
         glMatrixMode(GL_PROJECTION);
-        
+
         glLoadIdentity();
         gluPerspective((float) 90, 1.6f, 0.3f, 5000);
         glMatrixMode(GL_MODELVIEW);
         glEnable(GL_DEPTH_TEST);
         glClearColor(0f / 255f, 0f / 255f, 190f / 255f, 1.0f);
         camera.setPosition(camera.x(), 256f, camera.z());
-        
+
         while (!Display.isCloseRequested() && running) {
             startTime = System.nanoTime();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -316,26 +316,8 @@ public class Voxels {
                 for (int y = 0; y < chunk.blocks[x].length; y++) {
                     if (chunk.blocks[x][y][z].isActive()) {
                         if (front[x][y][z]) {
-                            texArray[tArrayPos] = 1;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 0;
-                            tArrayPos++;
 
-                            texArray[tArrayPos] = 0;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 0;
-                            tArrayPos++;
-
-                            texArray[tArrayPos] = 0;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 1;
-                            tArrayPos++;
-
-                            texArray[tArrayPos] = 1;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 1;
-                            tArrayPos++;
-
+                            // upper left - +
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
                             normalArray[nArrayPos] = 0;
@@ -350,29 +332,6 @@ public class Voxels {
                             colorArray[cArrayPos] = 1;
                             cArrayPos++;
 
-                            //glVertex3f(size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = size / 2f + x + xOff;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + y;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + z + zOff;
-                            vArrayPos++;
-
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 1;
-                            nArrayPos++;
-
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
-                            //glVertex3f(-size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -380,6 +339,12 @@ public class Voxels {
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
 
+                            texArray[tArrayPos] = 0 + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0 + 0.5f;
+                            tArrayPos++;
+
+                            // lower left - -
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
                             normalArray[nArrayPos] = 0;
@@ -394,7 +359,6 @@ public class Voxels {
                             colorArray[cArrayPos] = 1;
                             cArrayPos++;
 
-                            //glVertex3f(-size / 2 + x + xOff, -size / 2 + y, size / 2 + z + zOff);
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -402,6 +366,12 @@ public class Voxels {
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
 
+                            texArray[tArrayPos] = 0 + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+
+                            // lower right + -
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
                             normalArray[nArrayPos] = 0;
@@ -416,36 +386,68 @@ public class Voxels {
                             colorArray[cArrayPos] = 1;
                             cArrayPos++;
 
-                            //glVertex3f(size / 2 + x + xOff, -size / 2 + y, size / 2 + z + zOff);
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
+
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+
+                            // upper right + +
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 1;
+                            nArrayPos++;
+
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+
+                            vertexArray[vArrayPos] = size / 2f + x + xOff;
+                            vArrayPos++;
+                            vertexArray[vArrayPos] = size / 2f + y;
+                            vArrayPos++;
+                            vertexArray[vArrayPos] = size / 2f + z + zOff;
+                            vArrayPos++;
+
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0 + 0.5f;
+                            tArrayPos++;
 
                         }
                         if (back[x][y][z]) {
-                            texArray[tArrayPos] = 1;
+                            texArray[tArrayPos] = 0 + 0.5f;
                             tArrayPos++;
-                            texArray[tArrayPos] = 0;
-                            tArrayPos++;
-
-                            texArray[tArrayPos] = 0;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 0;
+                            texArray[tArrayPos] = 0 + 0.5f;
                             tArrayPos++;
 
-                            texArray[tArrayPos] = 0;
+                            texArray[tArrayPos] = 0 + 0.5f;
                             tArrayPos++;
-                            texArray[tArrayPos] = 1;
-                            tArrayPos++;
-
-                            texArray[tArrayPos] = 1;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 1;
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
                             tArrayPos++;
 
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0 + 0.5f;
+                            tArrayPos++;
+
+                            // upper left + +
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
                             normalArray[nArrayPos] = 0;
@@ -460,7 +462,6 @@ public class Voxels {
                             colorArray[cArrayPos] = 1;
                             cArrayPos++;
 
-                            //glVertex3f(size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -468,6 +469,7 @@ public class Voxels {
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
 
+                            // lower left + -
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
                             normalArray[nArrayPos] = 0;
@@ -481,79 +483,82 @@ public class Voxels {
                             cArrayPos++;
                             colorArray[cArrayPos] = 1;
                             cArrayPos++;
-                            
-                            //glVertex3f(-size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + y;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
-                            vArrayPos++;
 
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = -1;
-                            nArrayPos++;
-
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            //glVertex3f(-size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2f + y;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
-                            vArrayPos++;
-
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = -1;
-                            nArrayPos++;
-
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            //glVertex3f(size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
+                            vArrayPos++;
+                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
+                            vArrayPos++;
+
+                            // lower right - -
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = -1;
+                            nArrayPos++;
+
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+
+                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
+                            vArrayPos++;
+                            vertexArray[vArrayPos] = -size / 2f + y;
+                            vArrayPos++;
+                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
+                            vArrayPos++;
+
+                            // upper right - +
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = -1;
+                            nArrayPos++;
+
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+
+                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
+                            vArrayPos++;
+                            vertexArray[vArrayPos] = size / 2f + y;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
 
                         }
                         if (right[x][y][z]) {
-                            texArray[tArrayPos] = 1;
+
+                            texArray[tArrayPos] = 0 + 0.5f;
                             tArrayPos++;
-                            texArray[tArrayPos] = 0;
+                            texArray[tArrayPos] = 0 + 0.5f;
                             tArrayPos++;
 
-                            texArray[tArrayPos] = 0;
+                            texArray[tArrayPos] = 0 + 0.5f;
                             tArrayPos++;
-                            texArray[tArrayPos] = 0;
-                            tArrayPos++;
-
-                            texArray[tArrayPos] = 0;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 1;
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
                             tArrayPos++;
 
-                            texArray[tArrayPos] = 1;
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
                             tArrayPos++;
-                            texArray[tArrayPos] = 1;
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
                             tArrayPos++;
 
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0 + 0.5f;
+                            tArrayPos++;
+
+                            // upper left + -
                             normalArray[nArrayPos] = 1;
                             nArrayPos++;
                             normalArray[nArrayPos] = 0;
@@ -568,14 +573,14 @@ public class Voxels {
                             colorArray[cArrayPos] = 1;
                             cArrayPos++;
 
-                            //glVertex3f(size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + z + zOff;
+                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
 
+                            // lower left - -
                             normalArray[nArrayPos] = 1;
                             nArrayPos++;
                             normalArray[nArrayPos] = 0;
@@ -589,28 +594,7 @@ public class Voxels {
                             cArrayPos++;
                             colorArray[cArrayPos] = 1;
                             cArrayPos++;
-                            //glVertex3f(size / 2 + x + xOff, -size / 2 + y, size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = size / 2f + x + xOff;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2f + y;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + z + zOff;
-                            vArrayPos++;
 
-                            normalArray[nArrayPos] = 1;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            //glVertex3f(size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -618,6 +602,7 @@ public class Voxels {
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
 
+                            // lower right - +
                             normalArray[nArrayPos] = 1;
                             nArrayPos++;
                             normalArray[nArrayPos] = 0;
@@ -631,36 +616,59 @@ public class Voxels {
                             cArrayPos++;
                             colorArray[cArrayPos] = 1;
                             cArrayPos++;
-                            //glVertex3f(size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
+
+                            vertexArray[vArrayPos] = size / 2f + x + xOff;
+                            vArrayPos++;
+                            vertexArray[vArrayPos] = -size / 2f + y;
+                            vArrayPos++;
+                            vertexArray[vArrayPos] = size / 2f + z + zOff;
+                            vArrayPos++;
+
+                            // upper right + +
+                            normalArray[nArrayPos] = 1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
+                            vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
 
                         }
                         if (left[x][y][z]) {
-                            texArray[tArrayPos] = 1;
+                            texArray[tArrayPos] = 0 + 0.5f;
                             tArrayPos++;
-                            texArray[tArrayPos] = 0;
-                            tArrayPos++;
-
-                            texArray[tArrayPos] = 0;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 0;
+                            texArray[tArrayPos] = 0 + 0.5f;
                             tArrayPos++;
 
-                            texArray[tArrayPos] = 0;
+                            texArray[tArrayPos] = 0 + 0.5f;
                             tArrayPos++;
-                            texArray[tArrayPos] = 1;
-                            tArrayPos++;
-
-                            texArray[tArrayPos] = 1;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 1;
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
                             tArrayPos++;
 
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0 + 0.5f;
+                            tArrayPos++;
+
+                            // upper left + +
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
                             normalArray[nArrayPos] = 0;
@@ -675,7 +683,6 @@ public class Voxels {
                             colorArray[cArrayPos] = 1;
                             cArrayPos++;
 
-                            //glVertex3f(-size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -683,6 +690,7 @@ public class Voxels {
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
 
+                            // lower left - +
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
                             normalArray[nArrayPos] = 0;
@@ -696,7 +704,7 @@ public class Voxels {
                             cArrayPos++;
                             colorArray[cArrayPos] = 1;
                             cArrayPos++;
-                            //glVertex3f(-size / 2 + x + xOff, -size / 2 + y, size / 2 + z + zOff);
+
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -704,6 +712,7 @@ public class Voxels {
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
 
+                            // lower right - -
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
                             normalArray[nArrayPos] = 0;
@@ -717,7 +726,7 @@ public class Voxels {
                             cArrayPos++;
                             colorArray[cArrayPos] = 1;
                             cArrayPos++;
-                            //glVertex3f(-size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
+
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -725,6 +734,7 @@ public class Voxels {
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
 
+                            // upper right + -
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
                             normalArray[nArrayPos] = 0;
@@ -738,7 +748,7 @@ public class Voxels {
                             cArrayPos++;
                             colorArray[cArrayPos] = 1;
                             cArrayPos++;
-                            //glVertex3f(-size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
+
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -747,26 +757,8 @@ public class Voxels {
                             vArrayPos++;
                         }
                         if (top[x][y][z]) {
-                            texArray[tArrayPos] = 0.5f;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 0.5f;
-                            tArrayPos++;
 
-                            texArray[tArrayPos] = 0;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 0.5f;
-                            tArrayPos++;
-
-                            texArray[tArrayPos] = 0;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 1;
-                            tArrayPos++;
-
-                            texArray[tArrayPos] = 0.5f;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 1;
-                            tArrayPos++;
-                            
+                            // upper left
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
                             normalArray[nArrayPos] = 1;
@@ -780,7 +772,7 @@ public class Voxels {
                             cArrayPos++;
                             colorArray[cArrayPos] = 1;
                             cArrayPos++;
-                            //glVertex3f(-size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
+
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -788,8 +780,12 @@ public class Voxels {
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
 
-                            
+                            texArray[tArrayPos] = 0f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0f;
+                            tArrayPos++;
 
+                            // lower left
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
                             normalArray[nArrayPos] = 1;
@@ -803,14 +799,20 @@ public class Voxels {
                             cArrayPos++;
                             colorArray[cArrayPos] = 1;
                             cArrayPos++;
-                            //glVertex3f(-size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
+
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
-                            
+
+                            texArray[tArrayPos] = 0f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1f / 2f;
+                            tArrayPos++;
+
+                            // lower right
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
                             normalArray[nArrayPos] = 1;
@@ -825,7 +827,6 @@ public class Voxels {
                             colorArray[cArrayPos] = 1;
                             cArrayPos++;
 
-                            //glVertex3f(size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -833,8 +834,12 @@ public class Voxels {
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
 
-                            
+                            texArray[tArrayPos] = 1f / 2f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1f / 2f;
+                            tArrayPos++;
 
+                            // upper right
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
                             normalArray[nArrayPos] = 1;
@@ -848,35 +853,41 @@ public class Voxels {
                             cArrayPos++;
                             colorArray[cArrayPos] = 1;
                             cArrayPos++;
-                            //glVertex3f(size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
+
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
+
+                            texArray[tArrayPos] = 1f / 2f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0f;
+                            tArrayPos++;
                         }
                         if (bottom[x][y][z]) {
-                            texArray[tArrayPos] = 1;
+                            texArray[tArrayPos] = 0 + 0.5f;
                             tArrayPos++;
-                            texArray[tArrayPos] = 0;
-                            tArrayPos++;
-
-                            texArray[tArrayPos] = 0;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 0;
+                            texArray[tArrayPos] = 0 + 0.5f;
                             tArrayPos++;
 
-                            texArray[tArrayPos] = 0;
+                            texArray[tArrayPos] = 0 + 0.5f;
                             tArrayPos++;
-                            texArray[tArrayPos] = 1;
-                            tArrayPos++;
-
-                            texArray[tArrayPos] = 1;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 1;
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
                             tArrayPos++;
 
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0 + 0.5f;
+                            tArrayPos++;
+
+                            // upper left + -
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
                             normalArray[nArrayPos] = -1;
@@ -891,14 +902,14 @@ public class Voxels {
                             colorArray[cArrayPos] = 64f / 255f;
                             cArrayPos++;
 
-                            //glVertex3f(size / 2 + x + xOff, -size / 2 + y, size / 2 + z + zOff);
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + z + zOff;
+                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
 
+                            // lower left - -
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
                             normalArray[nArrayPos] = -1;
@@ -912,28 +923,7 @@ public class Voxels {
                             cArrayPos++;
                             colorArray[cArrayPos] = 64f / 255f;
                             cArrayPos++;
-                            //glVertex3f(-size / 2 + x + xOff, -size / 2 + y, size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2f + y;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + z + zOff;
-                            vArrayPos++;
 
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = -1;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-
-                            colorArray[cArrayPos] = 64f / 255f;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 64f / 255f;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 64f / 255f;
-                            cArrayPos++;
-                            //glVertex3f(-size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -941,6 +931,7 @@ public class Voxels {
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
 
+                            // lower right - +
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
                             normalArray[nArrayPos] = -1;
@@ -954,13 +945,36 @@ public class Voxels {
                             cArrayPos++;
                             colorArray[cArrayPos] = 64f / 255f;
                             cArrayPos++;
-                            //glVertex3f(size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
+
+                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
+                            vArrayPos++;
+                            vertexArray[vArrayPos] = -size / 2f + y;
+                            vArrayPos++;
+                            vertexArray[vArrayPos] = size / 2f + z + zOff;
+                            vArrayPos++;
+
+                            // upper right + +
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = -1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+
+                            colorArray[cArrayPos] = 64f / 255f;
+                            cArrayPos++;
+                            colorArray[cArrayPos] = 64f / 255f;
+                            cArrayPos++;
+                            colorArray[cArrayPos] = 64f / 255f;
+                            cArrayPos++;
+
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
+                            vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
+
                         }
                     }
                 }

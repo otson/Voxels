@@ -51,8 +51,8 @@ public class Voxels {
      */
     public static int PLAYER_HEIGHT = 6;
     public static boolean VBO_ENABLED = true;
-    public static int chunkCreationDistance = 4;
-    public static int chunkRenderDistance = 4;
+    public static int chunkCreationDistance = 2;
+    public static int chunkRenderDistance = 2;
     public static Texture grass;
 
     private static EulerCamera camera;
@@ -74,7 +74,7 @@ public class Voxels {
     public static void main(String[] args) {
         initDisplay();
         initOpenGL();
-        //initLighting();
+        initLighting();
         //initTextures();
         initBooleanArrays();
         gameLoop();
@@ -161,7 +161,7 @@ public class Voxels {
                 camSpeed *= 4;
             glLoadIdentity();
             if (generateChunks) {
-                if (fps % 4 == 0)
+                if (fps % 1 == 0)
                     checkChunkUpdates(map);
             }
 
@@ -192,8 +192,8 @@ public class Voxels {
                 camera.processKeyboard(16, camSpeed);
             }
             processKeyboard();
-            //glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
-            //glLight(GL_LIGHT1, GL_POSITION, asFloatBuffer(light1Position));
+            glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
+            glLight(GL_LIGHT1, GL_POSITION, asFloatBuffer(light1Position));
             if (!VBO_ENABLED)
                 for (int i = 1; i <= displayListHandle; i++) {
                     glCallList(i);
@@ -278,7 +278,6 @@ public class Voxels {
                 }
             }
         }
-        System.out.println("Vertices: " + vertices);
         chunk.setVertices(vertices);
         System.out.println("Vertices: " + vertices);
         float[] vertexArray = new float[vertices * vertexSize];
@@ -286,8 +285,6 @@ public class Voxels {
 
         int vArrayPos = 0;
         int cArrayPos = 0;
-
-        int vPutToArray = 0;
 
         FloatBuffer vertexData = BufferUtils.createFloatBuffer(vertices * vertexSize);
         FloatBuffer colorData = BufferUtils.createFloatBuffer(vertices * colorSize);
@@ -357,8 +354,6 @@ public class Voxels {
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
 
-                            vPutToArray += 12;
-
                         }
                         if (back[x][y][z]) {
                             colorArray[cArrayPos] = 100f / 255f;
@@ -417,7 +412,6 @@ public class Voxels {
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
-                            vPutToArray += 12;
 
                         }
                         if (right[x][y][z]) {
@@ -477,7 +471,6 @@ public class Voxels {
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
-                            vPutToArray += 12;
 
                         }
                         if (left[x][y][z]) {
@@ -537,9 +530,6 @@ public class Voxels {
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
-
-                            vPutToArray += 12;
-
                         }
                         if (top[x][y][z]) {
                             colorArray[cArrayPos] = 0f / 255f;
@@ -598,9 +588,6 @@ public class Voxels {
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
-
-                            vPutToArray += 12;
-
                         }
                         if (bottom[x][y][z]) {
                             colorArray[cArrayPos] = 64f / 255f;
@@ -659,16 +646,11 @@ public class Voxels {
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
-
-                            vPutToArray += 12;
-
                         }
                     }
                 }
             }
         }
-        System.out.println("V array length: " + vertexArray.length);
-        System.out.println("Values put to V array: " + vPutToArray);
         vertexData.put(vertexArray);
         vertexData.flip();
 
@@ -677,14 +659,14 @@ public class Voxels {
 
         int vboVertexHandle = glGenBuffers();
         chunk.setVboVertexHandle(vboVertexHandle);
-        System.out.println("vboVertexHandle: " + vboVertexHandle);
+
         glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
         glBufferData(GL_ARRAY_BUFFER, vertexData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         int vboColorHandle = glGenBuffers();
         chunk.setVboColorHandle(vboColorHandle);
-        System.out.println("vboColorHandle: " + vboColorHandle);
+        System.out.println("Chunks created: " + vboColorHandle / 2);
         glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
         glBufferData(GL_ARRAY_BUFFER, colorData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -1027,25 +1009,21 @@ public class Voxels {
     }
 
     private static void checkChunkUpdates(HashMap<Integer, Chunk> map) {
+        boolean newChunk = false;
         Chunk chunk;
-        
-        int chunks = chunkCreationDistance * 2 + 1;   
         int[] xzCoords;
         chunkCreator.setCurrentChunkX(getCamChunkX());
         chunkCreator.setCurrentChunkZ(getCamChunkZ());
-        
-        for (int i = 0; i < chunks; i++) {
-
+        while (!newChunk && chunkCreator.notAtMax()) {
             xzCoords = chunkCreator.getNewXZ();
             int x = xzCoords[0];
             int z = xzCoords[1];
-            
+
             if (map.containsKey(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode()) == false) {
                 chunk = new Chunk(getCamChunkX() + x, getCamChunkZ() + z);
 
                 if (!VBO_ENABLED) {
                     displayListHandle = glGenLists(1);
-                    System.out.println("Chunks: " + displayListHandle);
                     glNewList(displayListHandle, GL_COMPILE);
                     drawChunk(chunk, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
                     glEndList();
@@ -1054,30 +1032,8 @@ public class Voxels {
                     drawChunkVBO(chunk, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
 
                 map.put(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode(), chunk);
+                newChunk = true;
 
-                return;
-            }
-
-        }
-        for (int x = -chunkCreationDistance; x <= chunkCreationDistance; x++) {
-            for (int z = -chunkCreationDistance; z <= chunkCreationDistance; z++) {
-                if (map.containsKey(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode()) == false) {
-                    chunk = new Chunk(getCamChunkX() + x, getCamChunkZ() + z);
-
-                    if (!VBO_ENABLED) {
-                        displayListHandle = glGenLists(1);
-                        System.out.println("Chunks: " + displayListHandle);
-                        glNewList(displayListHandle, GL_COMPILE);
-                        drawChunk(chunk, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
-                        glEndList();
-                    }
-                    else
-                        drawChunkVBO(chunk, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
-
-                    map.put(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode(), chunk);
-
-                    return;
-                }
             }
         }
     }
@@ -1089,8 +1045,10 @@ public class Voxels {
     public static Texture loadTexture(String key) {
         try {
             return TextureLoader.getTexture("png", new FileInputStream(new File("res/" + key + ".png")));
+
         } catch (IOException ex) {
-            Logger.getLogger(Voxels.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Voxels.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }

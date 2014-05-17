@@ -13,6 +13,7 @@ public class ChunkCreator {
 
     private int currentChunkX;
     private int currentChunkZ;
+    private int maxDistance = Voxels.chunkCreationDistance;
     private int dx = 1;
     private int dz = -1;
     private int x = 0;
@@ -21,13 +22,19 @@ public class ChunkCreator {
     private int length = 1;
     private int count = 0;
     private int turnCount = 0;
+    private boolean needMiddleChunk = false;
 
     public ChunkCreator() {
 
     }
 
     int[] getNewXZ() {
-        if (dz != 0) {
+        if (needMiddleChunk){
+            needMiddleChunk = false;
+            return new int[]{0, 0};
+        }
+        
+        else if (dz != 0) {
             z += dz;
             currentLength++;
             if (currentLength == length) {
@@ -53,8 +60,10 @@ public class ChunkCreator {
                 }
             }
         }
-
-        return new int[]{x, z};
+        if (Math.abs(x) <= maxDistance && Math.abs(z) <= maxDistance)
+            return new int[]{x, z};
+        else
+            return new int[]{0, 0};
     }
 
     public void setCurrentChunkX(int currentChunkX) {
@@ -78,6 +87,10 @@ public class ChunkCreator {
         length = 1;
         count = 0;
         turnCount = 0;
+        needMiddleChunk = true;
     }
 
+    public boolean notAtMax() {
+        return Math.abs(x) <= maxDistance && Math.abs(z) <= maxDistance;
+    }
 }

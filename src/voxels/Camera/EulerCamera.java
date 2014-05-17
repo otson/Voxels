@@ -641,7 +641,6 @@ public final class EulerCamera implements Camera {
             y = target;
             falling = false;
             currentFallingSpeed = 0;
-            System.out.println("Stopped falling");
         }
     }
 

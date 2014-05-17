@@ -12,7 +12,7 @@ package voxels;
 public class Chunk {
 
     public static final int CHUNK_WIDTH = 16;
-    public static final int CHUNK_HEIGHT = 256;
+    public static final int CHUNK_HEIGHT = 16;
 
     public final int X_OFF;
     public final int Z_OFF;

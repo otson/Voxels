@@ -29,6 +29,8 @@ import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 
 import voxels.Camera.EulerCamera;
+import static voxels.Chunk.CHUNK_HEIGHT;
+import static voxels.Chunk.CHUNK_WIDTH;
 import voxels.Noise.FastNoise;
 
 /**
@@ -48,6 +50,7 @@ public class Voxels {
      * height is 7 (3.5 blocks).
      */
     public static int PLAYER_HEIGHT = 6;
+    public static boolean VBO_ENABLED = true;
     public static Texture grass;
 
     private static EulerCamera camera;
@@ -71,8 +74,9 @@ public class Voxels {
     public static void main(String[] args) {
         initDisplay();
         initOpenGL();
-        initLighting();
+        //initLighting();
         //initTextures();
+        initBooleanArrays();
         gameLoop();
     }
 
@@ -96,7 +100,7 @@ public class Voxels {
         long totalTime = 0;
         int fps = 0;
         int camSpeed = 4;
-        boolean generateChunks = true;
+        boolean generateChunks = false;
         boolean running = true;
         boolean moveFaster;
         boolean canFly = false;
@@ -106,10 +110,13 @@ public class Voxels {
 
         map.put(new Pair(getCamChunkX(), getCamChunkZ()).hashCode(), new Chunk(0, 0));
         displayListHandle = glGenLists(1);
-        glNewList(displayListHandle, GL_COMPILE);
-        drawChunk(map.get(new Pair(getCamChunkX(), getCamChunkZ()).hashCode()), 0, 0);
-        glEndList();
-        System.out.println(displayListHandle);
+        if (!VBO_ENABLED) {
+            glNewList(displayListHandle, GL_COMPILE);
+            drawChunk(map.get(new Pair(getCamChunkX(), getCamChunkZ()).hashCode()), 0, 0);
+            glEndList();
+        }
+        else
+            drawChunkVBO(map.get(new Pair(getCamChunkX(), getCamChunkZ()).hashCode()), 0, 0);
 
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
@@ -185,27 +192,26 @@ public class Voxels {
                 camera.processKeyboard(16, camSpeed);
             }
             processKeyboard();
-            glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
-            glLight(GL_LIGHT1, GL_POSITION, asFloatBuffer(light1Position));
-            //glTranslatef(0, -getNoise(0, 0) - 5, 0);
+            //glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
+            //glLight(GL_LIGHT1, GL_POSITION, asFloatBuffer(light1Position));
+            if (!VBO_ENABLED)
+                for (int i = 1; i <= displayListHandle; i++) {
+                    glCallList(i);
+                }
+            else
+                for (int i = 0; i < vboColorHandle / 2; i++) {
+                    glBindBuffer(GL_ARRAY_BUFFER, i + 1);
+                    glVertexPointer(vertexSize, GL_FLOAT, 0, 0L);
 
-            for (int i = 1; i <= displayListHandle; i++) {
-                glCallList(i);
-            }
-            // VBOs -->
-//            for (int i = 0; i < vboColorHandle / 2; i++) {
-//                glBindBuffer(GL_ARRAY_BUFFER, i + 1);
-//                glVertexPointer(vertexSize, GL_FLOAT, 0, 0L);
-//
-//                glBindBuffer(GL_ARRAY_BUFFER, i + 2);
-//                glColorPointer(colorSize, GL_FLOAT, 0, 0L);
-//
-//                glEnableClientState(GL_VERTEX_ARRAY);
-//                glEnableClientState(GL_COLOR_ARRAY);
-//                glDrawArrays(GL_QUADS, 0, vertices);
-//                glDisableClientState(GL_COLOR_ARRAY);
-//                glDisableClientState(GL_VERTEX_ARRAY);
-//            }
+                    glBindBuffer(GL_ARRAY_BUFFER, i + 2);
+                    glColorPointer(colorSize, GL_FLOAT, 0, 0L);
+
+                    glEnableClientState(GL_VERTEX_ARRAY);
+                    glEnableClientState(GL_COLOR_ARRAY);
+                    glDrawArrays(GL_QUADS, 0, vertices);
+                    glDisableClientState(GL_COLOR_ARRAY);
+                    glDisableClientState(GL_VERTEX_ARRAY);
+                }
 
             if (moveFaster)
                 camSpeed /= 4;
@@ -240,7 +246,7 @@ public class Voxels {
             }
         }
         //System.out.println("Drawn blocks: " + drawnBlocks);
-        //System.out.println("Vertex count: " + vertexCount);
+        System.out.println("Vertex count: " + vertexCount);
         long endTime = System.nanoTime();
         //System.out.println("One chunk creation took "+((endTime-startTime)/1000000)+ " ms.");
     }
@@ -263,12 +269,14 @@ public class Voxels {
                 }
             }
         }
-
+        System.out.println("Vertices: " + vertices);
         float[] vertexArray = new float[vertices * vertexSize];
         float[] colorArray = new float[vertices * vertexSize];
 
         int vArrayPos = 0;
         int cArrayPos = 0;
+        
+        int vPutToArray = 0;
 
         FloatBuffer vertexData = BufferUtils.createFloatBuffer(vertices * vertexSize);
         FloatBuffer colorData = BufferUtils.createFloatBuffer(vertices * colorSize);
@@ -276,7 +284,7 @@ public class Voxels {
         for (int x = 0; x < chunk.blocks.length; x++) {
             for (int z = 0; z < chunk.blocks[x][0].length; z++) {
                 for (int y = 0; y < chunk.blocks[x].length; y++) {
-                    if (chunk.blocks[x][y][z].isActive()) {
+                    //if (chunk.blocks[x][y][z].isActive()) {
                         if (front[x][y][z]) {
                             colorArray[cArrayPos] = 100f / 255f;
                             cArrayPos++;
@@ -286,36 +294,38 @@ public class Voxels {
                             cArrayPos++;
 
                             //glVertex3f(size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + y;
+                            vertexArray[vArrayPos] = size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
 
                             //glVertex3f(-size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = -size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + y;
+                            vertexArray[vArrayPos] = size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
 
                             //glVertex3f(-size / 2 + x + xOff, -size / 2 + y, size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = -size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + y;
+                            vertexArray[vArrayPos] = -size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
 
                             //glVertex3f(size / 2 + x + xOff, -size / 2 + y, size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + y;
+                            vertexArray[vArrayPos] = -size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
+                            
+                            vPutToArray+=12;
 
                         }
                         if (back[x][y][z]) {
@@ -327,33 +337,34 @@ public class Voxels {
                             cArrayPos++;
 
                             //glVertex3f(size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + y;
+                            vertexArray[vArrayPos] = size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
                             //glVertex3f(-size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = -size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + y;
+                            vertexArray[vArrayPos] = size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
                             //glVertex3f(-size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = -size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + y;
+                            vertexArray[vArrayPos] = -size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
                             //glVertex3f(size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + y;
+                            vertexArray[vArrayPos] = -size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
+                             vPutToArray+=12;
 
                         }
                         if (right[x][y][z]) {
@@ -365,33 +376,34 @@ public class Voxels {
                             cArrayPos++;
 
                             //glVertex3f(size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + y;
+                            vertexArray[vArrayPos] = size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
                             //glVertex3f(size / 2 + x + xOff, -size / 2 + y, size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + y;
+                            vertexArray[vArrayPos] = -size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
                             //glVertex3f(size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + y;
+                            vertexArray[vArrayPos] = -size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
                             //glVertex3f(size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + y;
+                            vertexArray[vArrayPos] = size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
+                             vPutToArray+=12;
 
                         }
                         if (left[x][y][z]) {
@@ -403,33 +415,35 @@ public class Voxels {
                             cArrayPos++;
 
                             //glVertex3f(-size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = -size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + y;
+                            vertexArray[vArrayPos] = size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
                             //glVertex3f(-size / 2 + x + xOff, -size / 2 + y, size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = -size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + y;
+                            vertexArray[vArrayPos] = -size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
                             //glVertex3f(-size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = -size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + y;
+                            vertexArray[vArrayPos] = -size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
                             //glVertex3f(-size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = -size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + y;
+                            vertexArray[vArrayPos] = size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
+                            
+                             vPutToArray+=12;
 
                         }
                         if (top[x][y][z]) {
@@ -441,33 +455,35 @@ public class Voxels {
                             cArrayPos++;
 
                             //glVertex3f(size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + y;
+                            vertexArray[vArrayPos] = size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
                             //glVertex3f(-size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = -size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + y;
+                            vertexArray[vArrayPos] = size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
                             //glVertex3f(-size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = -size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + y;
+                            vertexArray[vArrayPos] = size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
                             //glVertex3f(size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + y;
+                            vertexArray[vArrayPos] = size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
+                            
+                             vPutToArray+=12;
 
                         }
                         if (bottom[x][y][z]) {
@@ -479,39 +495,43 @@ public class Voxels {
                             cArrayPos++;
 
                             //glVertex3f(size / 2 + x + xOff, -size / 2 + y, size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + y;
+                            vertexArray[vArrayPos] = -size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
                             //glVertex3f(-size / 2 + x + xOff, -size / 2 + y, size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = -size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + y;
+                            vertexArray[vArrayPos] = -size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = size / 2f+ z + zOff;
                             vArrayPos++;
                             //glVertex3f(-size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = -size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + y;
+                            vertexArray[vArrayPos] = -size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
                             //glVertex3f(size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = size / 2 + x + xOff;
+                            vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + y;
+                            vertexArray[vArrayPos] = -size / 2f + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2 + z + zOff;
+                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
+                            
+                             vPutToArray+=12;
 
                         }
-                    }
+                    //}
                 }
             }
         }
+        System.out.println("V array length: "+vertexArray.length);
+        System.out.println("Values put to V array: "+vPutToArray);
         vertexData.put(vertexArray);
         vertexData.flip();
 
@@ -651,7 +671,7 @@ public class Voxels {
         int yy = Math.round(y);
         int zz = Math.round(z);
         boolean render = false;
-        int vertices = 0;
+        int returnVertices = 0;
         // front face
         if (z == zMax)
             render = true;
@@ -664,7 +684,7 @@ public class Voxels {
 //            glVertex3f(-size / 2 + x + xOff, -size / 2 + y, size / 2 + z + zOff);
 //            glVertex3f(size / 2 + x + xOff, -size / 2 + y, size / 2 + z + zOff);
             front[xx][yy][zz] = true;
-            vertices += 4;
+            returnVertices += 4;
         }
         else
             front[xx][yy][zz] = false;
@@ -680,7 +700,7 @@ public class Voxels {
 //            glVertex3f(-size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
 //            glVertex3f(-size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
             left[xx][yy][zz] = true;
-            vertices += 4;
+            returnVertices += 4;
         }
         else
             left[xx][yy][zz] = false;
@@ -696,7 +716,7 @@ public class Voxels {
 //            glVertex3f(-size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
 //            glVertex3f(size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
             back[xx][yy][zz] = true;
-            vertices += 4;
+            returnVertices += 4;
         }
         else
             back[xx][yy][zz] = false;
@@ -712,7 +732,7 @@ public class Voxels {
 //            glVertex3f(size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
 //            glVertex3f(size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
             right[xx][yy][zz] = true;
-            vertices += 4;
+            returnVertices += 4;
         }
         else
             right[xx][yy][zz] = false;
@@ -733,7 +753,7 @@ public class Voxels {
 //            //glTexCoord2f(1, 1);
 //            glVertex3f(size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
             top[xx][yy][zz] = true;
-            vertices += 4;
+            returnVertices += 4;
         }
         else
             top[xx][yy][zz] = false;
@@ -749,11 +769,11 @@ public class Voxels {
 //            glVertex3f(-size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
 //            glVertex3f(size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
             bottom[xx][yy][zz] = true;
-            vertices += 4;
+            returnVertices += 4;
         }
         else
             bottom[xx][yy][zz] = false;
-        return vertices;
+        return returnVertices;
     }
 
     public static void drawFullCube(Chunk chunk, float x, float y, float z, float size) {
@@ -877,13 +897,17 @@ public class Voxels {
                     chunk = new Chunk(getCamChunkX() + x, getCamChunkZ() + z);
                     displayListHandle = glGenLists(1);
                     System.out.println("Chunks: " + displayListHandle);
-                    glNewList(displayListHandle, GL_COMPILE);
-                    drawChunk(chunk, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
-                    glEndList();
+                    if (!VBO_ENABLED) {
+                        glNewList(displayListHandle, GL_COMPILE);
+                        drawChunk(chunk, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
+                        glEndList();
+                    }
+                    else
+                        drawChunkVBO(chunk, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
+
                     map.put(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode(), chunk);
 
-                    return;
-
+                    //return;
                 }
             }
         }
@@ -900,5 +924,67 @@ public class Voxels {
             Logger.getLogger(Voxels.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
+    }
+
+    private static void initBooleanArrays() {
+        for (int x = 0; x < top.length; x++) {
+            top[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
+            for (int y = 0; y < top[x].length; y++) {
+                top[x][y] = new boolean[CHUNK_WIDTH];
+                for (int z = 0; z < top[x][y].length; z++) {
+                    top[x][y][z] = false;
+                }
+            }
+        }
+        for (int x = 0; x < bottom.length; x++) {
+            bottom[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
+            for (int y = 0; y < bottom[x].length; y++) {
+                bottom[x][y] = new boolean[CHUNK_WIDTH];
+                for (int z = 0; z < bottom[x][y].length; z++) {
+                    bottom[x][y][z] = false;
+                }
+            }
+        }
+        for (int x = 0; x < right.length; x++) {
+            right[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
+            for (int y = 0; y < right[x].length; y++) {
+                right[x][y] = new boolean[CHUNK_WIDTH];
+                for (int z = 0; z < right[x][y].length; z++) {
+                    right[x][y][z] = false;
+                }
+            }
+        }
+        for (int x = 0; x < left.length; x++) {
+            left[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
+            for (int y = 0; y < left[x].length; y++) {
+                left[x][y] = new boolean[CHUNK_WIDTH];
+                for (int z = 0; z < left[x][y].length; z++) {
+                    left[x][y][z] = false;
+                }
+            }
+        }
+        for (int x = 0; x < front.length; x++) {
+            front[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
+            for (int y = 0; y < front[x].length; y++) {
+                front[x][y] = new boolean[CHUNK_WIDTH];
+                for (int z = 0; z < front[x][y].length; z++) {
+                    front[x][y][z] = false;
+                }
+            }
+        }
+        for (int x = 0; x < back.length; x++) {
+            back[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
+            for (int y = 0; y < back[x].length; y++) {
+                back[x][y] = new boolean[CHUNK_WIDTH];
+                for (int z = 0; z < back[x][y].length; z++) {
+                    back[x][y][z] = false;
+                }
+            }
+        }
+//        bottom = top.clone();
+//        right = top.clone();
+//        left = top.clone();
+//        front = top.clone();
+//        back  = top.clone();
     }
 }

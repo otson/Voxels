@@ -12,12 +12,16 @@ package voxels;
 public class Chunk {
 
     public static final int CHUNK_WIDTH = 16;
-    public static final int CHUNK_HEIGHT = 64;
+    public static final int CHUNK_HEIGHT = 256;
 
     public final int X_OFF;
     public final int Z_OFF;
+    private int vboColorHandle;
+    private int vboVertexHandle;
+    private int vertices;
 
     public Block[][][] blocks;
+
     private int[][] maxHeights;
 
     public Chunk(int xOff, int zOff) {
@@ -43,7 +47,7 @@ public class Chunk {
     }
 
     private void setActiveBlocks() {
-        int activeBlocks = 0;
+        int activeBlocks = 5;
         int maxHeight;
         for (int x = 0; x < blocks.length; x++) {
             for (int z = 0; z < blocks[x][0].length; z++) {
@@ -69,8 +73,8 @@ public class Chunk {
         activeBlocks = 0;
         // second loop, activate blocks in steps that are higher than one block
         int heightDifference;
-        for (int x = 1; x < blocks.length-1; x++) {
-            for (int z = 1; z < blocks[x][0].length-1; z++) {
+        for (int x = 1; x < blocks.length - 1; x++) {
+            for (int z = 1; z < blocks[x][0].length - 1; z++) {
                 heightDifference = maxHeights[x][z] - Math.min(Math.min(maxHeights[x + 1][z], maxHeights[x - 1][z]), Math.min(maxHeights[x][z + 1], maxHeights[x][z - 1]));
                 if (heightDifference > 1)
                     for (int y = maxHeights[x][z] - heightDifference; y < maxHeights[x][z]; y++) {
@@ -87,5 +91,29 @@ public class Chunk {
     public int[][] getMaxHeights() {
         return maxHeights;
     }
-    
+
+    public int getVboColorHandle() {
+        return vboColorHandle;
+    }
+
+    public void setVboColorHandle(int vboColorHandle) {
+        this.vboColorHandle = vboColorHandle;
+    }
+
+    public int getVboVertexHandle() {
+        return vboVertexHandle;
+    }
+
+    public void setVboVertexHandle(int vboVertexHandle) {
+        this.vboVertexHandle = vboVertexHandle;
+    }
+
+    public int getVertices() {
+        return vertices;
+    }
+
+    public void setVertices(int vertices) {
+        this.vertices = vertices;
+    }
+
 }

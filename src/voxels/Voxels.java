@@ -5,8 +5,13 @@
  */
 package voxels;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -15,6 +20,8 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.util.glu.GLU.gluPerspective;
+import org.newdawn.slick.opengl.Texture;
+import org.newdawn.slick.opengl.TextureLoader;
 
 import voxels.Camera.EulerCamera;
 import voxels.Noise.FastNoise;
@@ -36,6 +43,7 @@ public class Voxels {
      * height is 7 (3.5 blocks).
      */
     public static int PLAYER_HEIGHT = 6;
+    public static Texture grass;
 
     private static EulerCamera camera;
     private static int displayListHandle;
@@ -46,7 +54,9 @@ public class Voxels {
     public static void main(String[] args) {
         initDisplay();
         initOpenGL();
+        
         initLighting();
+        
         gameLoop();
     }
 
@@ -64,6 +74,7 @@ public class Voxels {
     }
 
     private static void gameLoop() {
+
         long startTime;
         long endTime;
         long totalTime = 0;
@@ -74,6 +85,8 @@ public class Voxels {
         boolean moveFaster;
         boolean canFly = false;
         camera = InitCamera();
+        //grass = loadTexture("grass");
+        //grass.bind();
         HashMap<Integer, Chunk> map = new HashMap<>();
 
         map.put(new Pair(getCamChunkX(), getCamChunkZ()).hashCode(), new Chunk(0, 0));
@@ -90,7 +103,7 @@ public class Voxels {
         glEnable(GL_DEPTH_TEST);
         glClearColor(0f / 255f, 0f / 255f, 190f / 255f, 1.0f);
         camera.setPosition(camera.x(), 256f, camera.z());
-
+        //initTextures();
         while (!Display.isCloseRequested() && running) {
             startTime = System.nanoTime();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -280,11 +293,16 @@ public class Voxels {
         if (y == yMax)
             render = true;
         if (render || !chunk.blocks[xx][yy + 1][zz].isActive()) {
+            
             glNormal3f(0f, 1f, 0f);
             glColor3f(0f, 92f / 255f, 9f / 255f);
+            //glTexCoord2f(1, 0);
             glVertex3f(size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
+            //glTexCoord2f(0, 0);
             glVertex3f(-size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
+            //glTexCoord2f(0, 1);
             glVertex3f(-size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
+            //glTexCoord2f(1, 1);
             glVertex3f(size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
             vertexCount += 4;
         }
@@ -371,6 +389,10 @@ public class Voxels {
 
     }
 
+    private static void initTextures() {
+        glEnable(GL_TEXTURE_2D);
+    }
+
     private static void initLighting() {
         glEnable(GL_LIGHTING);
         glEnable(GL_LIGHT0);
@@ -434,5 +456,14 @@ public class Voxels {
 
     public static int getNoise(float x, float z) {
         return (int) ((FastNoise.noise(x / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS), z / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS), 7)) * (Chunk.CHUNK_HEIGHT / 256f));
+    }
+
+    public static Texture loadTexture(String key) {
+        try {
+            return TextureLoader.getTexture("png", new FileInputStream(new File("res/" + key + ".png")));
+        } catch (IOException ex) {
+            Logger.getLogger(Voxels.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 }

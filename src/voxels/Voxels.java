@@ -84,7 +84,7 @@ public class Voxels {
     private static void initDisplay() {
         try {
             Display.setDisplayMode(new DisplayMode(1440, 900));
-            Display.setVSyncEnabled(true);
+            //Display.setVSyncEnabled(true);
             Display.setTitle("Voxels");
             Display.create();
         } catch (LWJGLException e) {
@@ -159,10 +159,10 @@ public class Voxels {
                 }
             }
             if (moveFaster)
-                camSpeed *= 4;
+                camSpeed *= 3;
             glLoadIdentity();
             if (generateChunks) {
-                if (fps % 1 == 0)
+                if (fps % 3 == 0)
                     checkChunkUpdates(map);
             }
 
@@ -231,7 +231,7 @@ public class Voxels {
             }
 
             if (moveFaster)
-                camSpeed /= 4;
+                camSpeed /= 3;
             Display.update();
             Display.sync(60);
             fps++;

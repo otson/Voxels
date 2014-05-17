@@ -766,7 +766,51 @@ public class Voxels {
                             tArrayPos++;
                             texArray[tArrayPos] = 1;
                             tArrayPos++;
+                            
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
 
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+                            //glVertex3f(-size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
+                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
+                            vArrayPos++;
+                            vertexArray[vArrayPos] = size / 2f + y;
+                            vArrayPos++;
+                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
+                            vArrayPos++;
+
+                            
+
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+                            //glVertex3f(-size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
+                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
+                            vArrayPos++;
+                            vertexArray[vArrayPos] = size / 2f + y;
+                            vArrayPos++;
+                            vertexArray[vArrayPos] = size / 2f + z + zOff;
+                            vArrayPos++;
+                            
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
                             normalArray[nArrayPos] = 1;
@@ -789,47 +833,7 @@ public class Voxels {
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
 
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 1;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            //glVertex3f(-size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + y;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + z + zOff;
-                            vArrayPos++;
-
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 1;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            //glVertex3f(-size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
-                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + y;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
-                            vArrayPos++;
+                            
 
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
@@ -1298,6 +1302,7 @@ public class Voxels {
         glEnable(GL_TEXTURE_2D);
         grass = loadTexture("atlas");
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         grass.bind();
     }
 

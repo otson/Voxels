@@ -7,8 +7,6 @@ package voxels;
 
 import java.nio.FloatBuffer;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -32,12 +30,12 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains withs a width of one
      * block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAINS_SMOOTHESS = 15;
+    public static final int TERRAINS_SMOOTHESS = 10;
     /**
      * Set player's height. One block's height is 2. Default value for player
      * height is 7 (3.5 blocks).
      */
-    public static int PLAYER_HEIGHT = 7;
+    public static int PLAYER_HEIGHT = 6;
 
     private static EulerCamera camera;
     private static int displayListHandle;
@@ -90,9 +88,12 @@ public class Voxels {
         gluPerspective((float) 90, 1.6f, 0.3f, 5000);
         glMatrixMode(GL_MODELVIEW);
         glEnable(GL_DEPTH_TEST);
+        glClearColor(0f / 255f, 0f / 255f, 190f / 255f, 1.0f);
         camera.setPosition(camera.x(), 256f, camera.z());
+
         while (!Display.isCloseRequested() && running) {
             startTime = System.nanoTime();
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glViewport(0, 0, Display.getWidth(), Display.getHeight());
             camera.setAspectRatio((float) Display.getWidth() / Display.getHeight());
 
@@ -124,21 +125,29 @@ public class Voxels {
             if (moveFaster)
                 camSpeed *= 4;
             glLoadIdentity();
-            if (generateChunks)
-                checkChunkUpdates(map);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            if (generateChunks) {
+                if (fps % 3 == 0)
+                    checkChunkUpdates(map);
+            }
+
             //System.out.println("Chunk x: " + getCamChunkX() + " z: " + getCamChunkZ());
             //System.out.println("Player x: " + camera.x() + " z: " + camera.z());
             if (canFly == false) {
-                int[][] temp = map.get(new Pair(getCamChunkX(), getCamChunkZ()).hashCode()).getMaxHeights();
-                float y = temp[(int) (camera.x() - getCamChunkX() * Chunk.CHUNK_WIDTH)][(int) (camera.z() - getCamChunkZ() * Chunk.CHUNK_WIDTH)];
-                if (camera.y() > y + PLAYER_HEIGHT) {
-                    camera.fall(y + PLAYER_HEIGHT);
+                if (map.containsKey(new Pair(getCamChunkX(), getCamChunkZ()).hashCode())) {
+                    int[][] temp = map.get(new Pair(getCamChunkX(), getCamChunkZ()).hashCode()).getMaxHeights();
+                    float y = temp[(int) (camera.x() - getCamChunkX() * Chunk.CHUNK_WIDTH)][(int) (camera.z() - getCamChunkZ() * Chunk.CHUNK_WIDTH)];
+                    if (camera.y() > y + PLAYER_HEIGHT) {
+                        camera.fall(y + PLAYER_HEIGHT);
 
+                    }
+                    if (camera.y() < y + PLAYER_HEIGHT) {
+                        camera.setPosition(camera.x(), y + PLAYER_HEIGHT, camera.z());
+                        camera.stopFalling();
+                    }
                 }
-                if (camera.y() < y + PLAYER_HEIGHT) {
-                    camera.setPosition(camera.x(), y + PLAYER_HEIGHT, camera.z());
-                    camera.stopFalling();
+                else {
+                    camera.setPosition(0, 256, 0);
+                    System.out.println("Player tried to enter a chunk that does not exist. \n Position reset to (0, 256, 0)");
                 }
             }
             camera.applyTranslations();
@@ -272,7 +281,7 @@ public class Voxels {
             render = true;
         if (render || !chunk.blocks[xx][yy + 1][zz].isActive()) {
             glNormal3f(0f, 1f, 0f);
-            glColor3f(0f, 127f / 255f, 14f / 255f);
+            glColor3f(0f, 92f / 255f, 9f / 255f);
             glVertex3f(size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
             glVertex3f(-size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
             glVertex3f(-size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
@@ -369,7 +378,7 @@ public class Voxels {
         glEnable(GL_COLOR_MATERIAL);
 
         float lightAmbient[] = {0.3f, 0.3f, 0.3f, 1.0f};
-        float lightDiffuse[] = {1.2f, 1.2f, 1.2f, 1.0f};
+        float lightDiffuse[] = {1f, 1f, 1f, 1.0f};
 
         glLightModel(GL_LIGHT_MODEL_AMBIENT, asFloatBuffer(lightAmbient));
         glLight(GL_LIGHT0, GL_DIFFUSE, asFloatBuffer(lightDiffuse));             // Setup The Diffuse Light  
@@ -402,8 +411,9 @@ public class Voxels {
     }
 
     private static void checkChunkUpdates(HashMap<Integer, Chunk> map) {
-        int chunkRadius = 1; // check 5*5 grid around camera for new Chunks
+        int chunkRadius = 2; // check 5*5 grid around camera for new Chunks
         Chunk chunk;
+
         for (int x = -chunkRadius; x <= chunkRadius; x++) {
             for (int z = -chunkRadius; z <= chunkRadius; z++) {
                 if (map.containsKey(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode()) == false) {
@@ -414,6 +424,8 @@ public class Voxels {
                     drawChunk(chunk, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
                     glEndList();
                     map.put(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode(), chunk);
+
+                    return;
 
                 }
             }

@@ -55,10 +55,10 @@ public final class EulerCamera implements Camera {
     private float aspectRatio = 1;
     private final float zNear;
     private final float zFar;
-    private float fallSpeed = 0.015f;
+    private float fallSpeed = 0.02f;
     private float currentFallingSpeed = 0;
 
-    private boolean flying = true;
+    private boolean flying = false;
     private boolean falling = false;
 
     private EulerCamera(Builder builder) {
@@ -646,7 +646,7 @@ public final class EulerCamera implements Camera {
     }
 
     private void jump() {
-        currentFallingSpeed = -0.4f;
+        currentFallingSpeed = -0.6f;
         fall(y);
     }
 

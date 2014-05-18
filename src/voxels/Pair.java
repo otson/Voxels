@@ -40,6 +40,4 @@ public class Pair {
             return false;
         return true;
     }
-    
-
 }

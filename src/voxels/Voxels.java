@@ -1141,102 +1141,80 @@ public class Voxels {
         int zz = Math.round(z);
         boolean render = false;
         int returnVertices = 0;
+        int difference = 0;
+        int[][] maxHeights = chunk.maxHeights;
+
         // front face
         if (z == zMax)
             render = true;
-        if (render || !chunk.blocks[xx][yy][zz + 1].isActive()) {
-
-//            glNormal3f(0f, 0f, 1f);
-//            glColor3f(100f / 255f, 60f / 255f, 60f / 255f);
-//            glVertex3f(size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
-//            glVertex3f(-size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
-//            glVertex3f(-size / 2 + x + xOff, -size / 2 + y, size / 2 + z + zOff);
-//            glVertex3f(size / 2 + x + xOff, -size / 2 + y, size / 2 + z + zOff);
+        else {
+            difference = maxHeights[xx][zz] - maxHeights[xx][zz + 1];
+        }
+        if (render || !chunk.blocks[xx][yy][zz + 1].isActive() && (maxHeights[xx][zz]-difference < y && y <= maxHeights[xx][zz])) {
             front[xx][yy][zz] = true;
             returnVertices += 4;
         }
         else
             front[xx][yy][zz] = false;
+
         // left face
         render = false;
         if (x == 0)
             render = true;
-        if (render || !chunk.blocks[xx - 1][yy][zz].isActive()) {
-//            glNormal3f(-1f, 0f, 0f);
-//            glColor3f(100f / 255f, 60f / 255f, 60f / 255f);
-//            glVertex3f(-size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
-//            glVertex3f(-size / 2 + x + xOff, -size / 2 + y, size / 2 + z + zOff);
-//            glVertex3f(-size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
-//            glVertex3f(-size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
+        else {
+            difference = maxHeights[xx][zz] - maxHeights[xx - 1][zz];
+        }
+        if (render || !chunk.blocks[xx - 1][yy][zz].isActive() && (maxHeights[xx][zz]-difference < y && y <= maxHeights[xx][zz])) {
             left[xx][yy][zz] = true;
             returnVertices += 4;
         }
         else
             left[xx][yy][zz] = false;
+
         // back face
         render = false;
         if (z == 0)
             render = true;
-        if (render || !chunk.blocks[xx][yy][zz - 1].isActive()) {
-//            glNormal3f(0f, 0f, -1f);
-//            glColor3f(100f / 255f, 60f / 255f, 60f / 255f);
-//            glVertex3f(size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
-//            glVertex3f(-size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
-//            glVertex3f(-size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
-//            glVertex3f(size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
+        else {
+            difference = maxHeights[xx][zz] - maxHeights[xx][zz - 1];
+        }
+        if (render || !chunk.blocks[xx][yy][zz - 1].isActive() && (maxHeights[xx][zz]-difference < y && y <= maxHeights[xx][zz])) {
             back[xx][yy][zz] = true;
             returnVertices += 4;
         }
         else
             back[xx][yy][zz] = false;
+
         // right face
         render = false;
         if (x == xMax)
             render = true;
-        if (render || !chunk.blocks[xx + 1][yy][zz].isActive()) {
-//            glNormal3f(1f, 0f, 0f);
-//            glColor3f(100f / 255f, 60f / 255f, 60f / 255f);
-//            glVertex3f(size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
-//            glVertex3f(size / 2 + x + xOff, -size / 2 + y, size / 2 + z + zOff);
-//            glVertex3f(size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
-//            glVertex3f(size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
+        else {
+            difference = maxHeights[xx][zz] - maxHeights[xx + 1][zz];
+        }
+        if (render || !chunk.blocks[xx + 1][yy][zz].isActive() && (maxHeights[xx][zz]-difference < y && y <= maxHeights[xx][zz])) {
             right[xx][yy][zz] = true;
             returnVertices += 4;
         }
         else
             right[xx][yy][zz] = false;
+
         // top face
         render = false;
         if (y == yMax)
             render = true;
-        if (render || !chunk.blocks[xx][yy + 1][zz].isActive()) {
-//            
-//            glNormal3f(0f, 1f, 0f);
-//            glColor3f(0f, 92f / 255f, 9f / 255f);
-//            //glTexCoord2f(1, 0);
-//            glVertex3f(size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
-//            //glTexCoord2f(0, 0);
-//            glVertex3f(-size / 2 + x + xOff, size / 2 + y, size / 2 + z + zOff);
-//            //glTexCoord2f(0, 1);
-//            glVertex3f(-size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
-//            //glTexCoord2f(1, 1);
-//            glVertex3f(size / 2 + x + xOff, size / 2 + y, -size / 2 + z + zOff);
+        if (render || !chunk.blocks[xx][yy + 1][zz].isActive() && maxHeights[xx][zz] == yy) {
             top[xx][yy][zz] = true;
             returnVertices += 4;
         }
         else
             top[xx][yy][zz] = false;
+
         // bottom face
         render = false;
         if (y == 0)
             render = true;
-        if (render || !chunk.blocks[xx][yy - 1][zz].isActive()) {
-//            glNormal3f(0f, -1f, 0f);
-//            glColor3f(64f / 255f, 64f / 255f, 64f / 255f);
-//            glVertex3f(size / 2 + x + xOff, -size / 2 + y, size / 2 + z + zOff);
-//            glVertex3f(-size / 2 + x + xOff, -size / 2 + y, size / 2 + z + zOff);
-//            glVertex3f(-size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
-//            glVertex3f(size / 2 + x + xOff, -size / 2 + y, -size / 2 + z + zOff);
+        if (render || !chunk.blocks[xx][yy - 1][zz].isActive() && maxHeights[xx][zz] + 1 == yy) {
             bottom[xx][yy][zz] = true;
             returnVertices += 4;
         }
@@ -1442,4 +1420,5 @@ public class Voxels {
             }
         }
     }
+
 }

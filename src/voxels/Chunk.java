@@ -49,8 +49,9 @@ public class Chunk {
             }
         }
         //System.out.println("Total blocks in the chunk: " + blockCount);
-        initOuterLimits();
+
         setActiveBlocks();
+
     }
 
     private void setActiveBlocks() {
@@ -60,16 +61,31 @@ public class Chunk {
             for (int z = 0; z < blocks[x][0].length; z++) {
                 maxHeight = Voxels.getNoise(x + X_OFF, z + Z_OFF);
                 maxHeights[x][z] = maxHeight;
+            }
+        }
+        initOuterLimits();
+
+        for (int x = 0; x < blocks.length; x++) {
+            for (int z = 0; z < blocks[x][0].length; z++) {
                 for (int y = 0; y < blocks[x].length; y++) {
-                    if (y == 0 || y == maxHeight) {
+                    if (y == maxHeights[x][z]) {
                         blocks[x][y][z].activate();
                         activeBlocks++;
                     }
-                    else if ((x == 0 || x == blocks.length - 1) && y < maxHeight) {
+                    
+                    else if (x == 0 && y < maxHeights[x][z] && y >= Math.min(Math.min(Voxels.getNoise(x+X_OFF-1, z+Z_OFF),Voxels.getNoise(x+X_OFF+1, z+Z_OFF)), Math.min(Voxels.getNoise(x+X_OFF, z+Z_OFF+1),Voxels.getNoise(x+X_OFF, z+Z_OFF-1)))) {
                         blocks[x][y][z].activate();
                         activeBlocks++;
                     }
-                    else if ((z == 0 || z == blocks[x][y].length - 1) && y < maxHeight) {
+                    else if (x == blocks.length - 1 && y < maxHeights[x][z] && y >= Math.min(Math.min(Voxels.getNoise(x+X_OFF-1, z+Z_OFF),Voxels.getNoise(x+X_OFF+1, z+Z_OFF)), Math.min(Voxels.getNoise(x+X_OFF, z+Z_OFF+1),Voxels.getNoise(x+X_OFF, z+Z_OFF-1)))) {
+                        blocks[x][y][z].activate();
+                        activeBlocks++;
+                    }
+                    else if (z == 0 && y < maxHeights[x][z] && y >= Math.min(Math.min(Voxels.getNoise(x+X_OFF-1, z+Z_OFF),Voxels.getNoise(x+X_OFF+1, z+Z_OFF)), Math.min(Voxels.getNoise(x+X_OFF, z+Z_OFF+1),Voxels.getNoise(x+X_OFF, z+Z_OFF-1)))+1) {
+                        blocks[x][y][z].activate();
+                        activeBlocks++;
+                    }
+                    else if (z == blocks[x][y].length - 1 && y < maxHeights[x][z] && y >= Math.min(Math.min(Voxels.getNoise(x+X_OFF-1, z+Z_OFF),Voxels.getNoise(x+X_OFF+1, z+Z_OFF)), Math.min(Voxels.getNoise(x+X_OFF, z+Z_OFF+1),Voxels.getNoise(x+X_OFF, z+Z_OFF-1)))) {
                         blocks[x][y][z].activate();
                         activeBlocks++;
                     }
@@ -139,7 +155,7 @@ public class Chunk {
     private void initOuterLimits() {
         for (int x = 0; x < outerLimits.length; x++) {
             for (int z = 0; z < outerLimits[x].length; z++) {
-                outerLimits[x][z] = Voxels.getNoise(x + X_OFF - 1, z + Z_OFF - 1);
+                outerLimits[x][z] = Voxels.getNoise(x + X_OFF + 1, z + Z_OFF + 1);
             }
         }
         for (int x = 0; x < diffToChunks.length; x++) {
@@ -169,9 +185,26 @@ public class Chunk {
                     else if (z == diffToChunks[x].length - 1) {
                         diffToChunks[x][z] = maxHeights[x][z] - outerLimits[x][outerLimits[x].length - 1];
                     }
-                    System.out.println("Difference: " + diffToChunks[x][z]);
                 }
             }
+            System.out.println("This chunks lower left corner: " + maxHeights[0][15]);
         }
+        //int count = 0;
+//        for (int x = 0; x < blocks.length; x++) {
+//            for (int z = 0; z < blocks[x][0].length; z++) {
+//                if (x == 0 || z == 0 || x == blocks.length - 1 || z == blocks[x].length - 1) {
+//                    if (diffToChunks[x][z] > 0) {
+//                        for (int y = maxHeights[x][z] - diffToChunks[x][z]; y < maxHeights[x][z]; y++) {
+//                            if (blocks[x][y][z].isActive() == false) {
+//                                blocks[x][y][z].activate();
+//                                count++;
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+        //System.out.println("Activated blocks in outer limits loop: " + count);
+        System.out.println("front block lower left corner should at height: " + outerLimits[0][1]);
     }
 }

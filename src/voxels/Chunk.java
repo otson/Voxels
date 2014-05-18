@@ -24,7 +24,7 @@ public class Chunk {
 
     public Block[][][] blocks;
 
-    private int[][] maxHeights;
+    public int[][] maxHeights;
 
     public Chunk(int xOff, int zOff) {
 

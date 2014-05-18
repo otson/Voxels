@@ -1,0 +1,15 @@
+Without:
+108104
+
+with all 4:
+59892
+
+with 4+ top:
+59108
+
+with all 6:
+58324
+
+Corrections
+58008
+

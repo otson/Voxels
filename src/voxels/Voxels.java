@@ -46,10 +46,9 @@ public class Voxels {
      */
     public static final int TERRAINS_SMOOTHESS = 20;
     /**
-     * Set player's height. One block's height is 2. Default value for player
-     * height is 7 (3.5 blocks).
+     * Set player's height. One block's height is 1.
      */
-    public static int PLAYER_HEIGHT = 6;
+    public static float PLAYER_HEIGHT = 3.7f + 0.5f;
     public static boolean VBO_ENABLED = true;
     public static int chunkCreationDistance = 2;
     public static int chunkRenderDistance = 2;
@@ -1150,7 +1149,7 @@ public class Voxels {
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx][zz + 1];
         }
-        if (render || !chunk.blocks[xx][yy][zz + 1].isActive() && (maxHeights[xx][zz]-difference < y && y <= maxHeights[xx][zz])) {
+        if (render || !chunk.blocks[xx][yy][zz + 1].isActive() && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             front[xx][yy][zz] = true;
             returnVertices += 4;
         }
@@ -1164,7 +1163,7 @@ public class Voxels {
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx - 1][zz];
         }
-        if (render || !chunk.blocks[xx - 1][yy][zz].isActive() && (maxHeights[xx][zz]-difference < y && y <= maxHeights[xx][zz])) {
+        if (render || !chunk.blocks[xx - 1][yy][zz].isActive() && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             left[xx][yy][zz] = true;
             returnVertices += 4;
         }
@@ -1178,7 +1177,7 @@ public class Voxels {
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx][zz - 1];
         }
-        if (render || !chunk.blocks[xx][yy][zz - 1].isActive() && (maxHeights[xx][zz]-difference < y && y <= maxHeights[xx][zz])) {
+        if (render || !chunk.blocks[xx][yy][zz - 1].isActive() && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             back[xx][yy][zz] = true;
             returnVertices += 4;
         }
@@ -1192,7 +1191,7 @@ public class Voxels {
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx + 1][zz];
         }
-        if (render || !chunk.blocks[xx + 1][yy][zz].isActive() && (maxHeights[xx][zz]-difference < y && y <= maxHeights[xx][zz])) {
+        if (render || !chunk.blocks[xx + 1][yy][zz].isActive() && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             right[xx][yy][zz] = true;
             returnVertices += 4;
         }

@@ -282,9 +282,7 @@ public class Voxels {
         Chunk rightChunk = null;
         Chunk frontChunk = null;
         Chunk backChunk = null;
-        
-        
-        
+
         if (map.containsKey(new Pair(xOff / Chunk.CHUNK_WIDTH - 1, zOff / Chunk.CHUNK_WIDTH).hashCode())) {
             leftChunk = map.get(new Pair(xOff / Chunk.CHUNK_WIDTH - 1, zOff / Chunk.CHUNK_WIDTH).hashCode());
         }
@@ -297,8 +295,8 @@ public class Voxels {
         if (map.containsKey(new Pair(xOff / Chunk.CHUNK_WIDTH, zOff / Chunk.CHUNK_WIDTH - 1).hashCode())) {
             backChunk = map.get(new Pair(xOff / Chunk.CHUNK_WIDTH, zOff / Chunk.CHUNK_WIDTH - 1).hashCode());
         }
-        
-        System.out.println("Frontchunk is null: "+(frontChunk == null));
+
+        System.out.println("Frontchunk is null: " + (frontChunk == null));
         zOff += getCamChunkZ() * chunk.blocks.length;
         xOff += getCamChunkX() * chunk.blocks.length;
         for (int x = 0; x < chunk.blocks.length; x++) {
@@ -1169,8 +1167,7 @@ public class Voxels {
 
         // front face
         if (z == zMax) {
-            if (frontChunk == null || !frontChunk.back[xMax-xx][yy][zMax-zz]) {
-                
+            if (frontChunk == null || !frontChunk.back[xx][yy][zMax - zz]) {
                 chunk.front[xx][yy][zz] = true;
                 returnVertices += 4;
                 frontFaceCount++;
@@ -1190,46 +1187,56 @@ public class Voxels {
         }
 
         // left face
-        render = false;
-        if (x == 0)
-            render = true;
+        if (x == 0) {
+            if (leftChunk == null || !leftChunk.right[xMax - xx][yy][zz]) {
+                chunk.left[xx][yy][zz] = true;
+                returnVertices += 4;
+            }
+        }
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx - 1][zz];
+            if (!chunk.blocks[xx - 1][yy][zz].isActive() && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+                chunk.left[xx][yy][zz] = true;
+                returnVertices += 4;
+            }
+            else
+                chunk.left[xx][yy][zz] = false;
         }
-        if (render || !chunk.blocks[xx - 1][yy][zz].isActive() && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
-            chunk.left[xx][yy][zz] = true;
-            returnVertices += 4;
-        }
-        else
-            chunk.left[xx][yy][zz] = false;
 
         // back face
-        render = false;
-        if (z == 0)
-            render = true;
+        if (z == 0) {
+            if (backChunk == null || !backChunk.front[xx][yy][zMax - zz]) {
+                chunk.back[xx][yy][zz] = true;
+                returnVertices += 4;
+            }
+        }
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx][zz - 1];
+            if (!chunk.blocks[xx][yy][zz - 1].isActive() && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+                chunk.back[xx][yy][zz] = true;
+                returnVertices += 4;
+            }
+            else
+                chunk.back[xx][yy][zz] = false;
         }
-        if (render || !chunk.blocks[xx][yy][zz - 1].isActive() && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
-            chunk.back[xx][yy][zz] = true;
-            returnVertices += 4;
-        }
-        else
-            chunk.back[xx][yy][zz] = false;
 
         // right face
         render = false;
-        if (x == xMax)
-            render = true;
+        if (x == xMax) {
+            if (rightChunk == null || !rightChunk.left[xMax - xx][yy][zz]) {
+                chunk.right[xx][yy][zz] = true;
+                returnVertices += 4;
+            }
+        }
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx + 1][zz];
+            if (render || !chunk.blocks[xx + 1][yy][zz].isActive() && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+                chunk.right[xx][yy][zz] = true;
+                returnVertices += 4;
+            }
+            else
+                chunk.right[xx][yy][zz] = false;
         }
-        if (render || !chunk.blocks[xx + 1][yy][zz].isActive() && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
-            chunk.right[xx][yy][zz] = true;
-            returnVertices += 4;
-        }
-        else
-            chunk.right[xx][yy][zz] = false;
 
         // top face
         render = false;

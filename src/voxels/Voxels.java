@@ -55,29 +55,25 @@ public class Voxels {
     public static Texture grass;
 
     private static EulerCamera camera;
+    private static HashMap<Integer, Chunk> map;
     private static ChunkCreator chunkCreator = new ChunkCreator();
     private static int displayListHandle;
     private static int vertexCount = 0;
     private static float light0Position[] = {-200.0f, 5000.0f, -800.0f, 1.0f};
     private static float light1Position[] = {200.0f, 5000.0f, 800.0f, 1.0f};
 
-    private static boolean[][][] top = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH];
-    private static boolean[][][] bottom = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH];
-    private static boolean[][][] left = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH];
-    private static boolean[][][] right = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH];
-    private static boolean[][][] front = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH];
-    private static boolean[][][] back = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH];
     private static int vertexSize = 3;
     private static int colorSize = 3;
     private static int normalSize = 3;
     private static int texSize = 2;
+
+    static int frontFaceCount = 0;
 
     public static void main(String[] args) {
         initDisplay();
         initOpenGL();
         initLighting();
         initTextures();
-        initBooleanArrays();
         gameLoop();
     }
 
@@ -107,7 +103,7 @@ public class Voxels {
         boolean canFly = false;
         camera = InitCamera();
 
-        HashMap<Integer, Chunk> map = new HashMap<>();
+        map = new HashMap<>();
 
         map.put(new Pair(getCamChunkX(), getCamChunkZ()).hashCode(), new Chunk(0, 0));
         displayListHandle = glGenLists(1);
@@ -255,6 +251,7 @@ public class Voxels {
     }
 
     private static void drawChunk(Chunk chunk, int xOff, int zOff) {
+
         long startTime = System.nanoTime();
         int drawnBlocks = 0;
         for (int x = 0; x < chunk.blocks.length; x++) {
@@ -280,18 +277,42 @@ public class Voxels {
         int drawnBlocks = 0;
         int vertices = 0;
         int size = 1;
+        frontFaceCount = 0;
+        Chunk leftChunk = null;
+        Chunk rightChunk = null;
+        Chunk frontChunk = null;
+        Chunk backChunk = null;
+        
+        
+        
+        if (map.containsKey(new Pair(xOff / Chunk.CHUNK_WIDTH - 1, zOff / Chunk.CHUNK_WIDTH).hashCode())) {
+            leftChunk = map.get(new Pair(xOff / Chunk.CHUNK_WIDTH - 1, zOff / Chunk.CHUNK_WIDTH).hashCode());
+        }
+        if (map.containsKey(new Pair(xOff / Chunk.CHUNK_WIDTH + 1, zOff / Chunk.CHUNK_WIDTH).hashCode())) {
+            rightChunk = map.get(new Pair(xOff / Chunk.CHUNK_WIDTH + 1, zOff / Chunk.CHUNK_WIDTH).hashCode());
+        }
+        if (map.containsKey(new Pair(xOff / Chunk.CHUNK_WIDTH, zOff / Chunk.CHUNK_WIDTH + 1).hashCode())) {
+            frontChunk = map.get(new Pair(xOff / Chunk.CHUNK_WIDTH, zOff / Chunk.CHUNK_WIDTH + 1).hashCode());
+        }
+        if (map.containsKey(new Pair(xOff / Chunk.CHUNK_WIDTH, zOff / Chunk.CHUNK_WIDTH - 1).hashCode())) {
+            backChunk = map.get(new Pair(xOff / Chunk.CHUNK_WIDTH, zOff / Chunk.CHUNK_WIDTH - 1).hashCode());
+        }
+        
+        System.out.println("Frontchunk is null: "+(frontChunk == null));
         zOff += getCamChunkZ() * chunk.blocks.length;
         xOff += getCamChunkX() * chunk.blocks.length;
         for (int x = 0; x < chunk.blocks.length; x++) {
             for (int z = 0; z < chunk.blocks[x][0].length; z++) {
                 for (int y = 0; y < chunk.blocks[x].length; y++) {
                     if (chunk.blocks[x][y][z].isActive()) {
-                        vertices += calculateCubeVertices(chunk, x, y, z, getCamChunkX() * chunk.blocks.length + xOff, 0, getCamChunkZ() * chunk.blocks.length + zOff, 1);
+                        vertices += calculateCubeVertices(chunk, x, y, z, getCamChunkX() * chunk.blocks.length + xOff, 0, getCamChunkZ() * chunk.blocks.length + zOff, 1, leftChunk, rightChunk, frontChunk, backChunk);
                         drawnBlocks++;
                     }
                 }
             }
         }
+        System.out.println("Front face count: " + frontFaceCount);
+
         chunk.setVertices(vertices);
         System.out.println("Vertices: " + vertices);
         float[] vertexArray = new float[vertices * vertexSize];
@@ -313,7 +334,7 @@ public class Voxels {
             for (int z = 0; z < chunk.blocks[x][0].length; z++) {
                 for (int y = 0; y < chunk.blocks[x].length; y++) {
                     if (chunk.blocks[x][y][z].isActive()) {
-                        if (front[x][y][z]) {
+                        if (chunk.front[x][y][z]) {
 
                             // upper left - +
                             normalArray[nArrayPos] = 0;
@@ -424,7 +445,7 @@ public class Voxels {
                             tArrayPos++;
 
                         }
-                        if (back[x][y][z]) {
+                        if (chunk.back[x][y][z]) {
                             texArray[tArrayPos] = 0 + 0.5f;
                             tArrayPos++;
                             texArray[tArrayPos] = 0 + 0.5f;
@@ -534,7 +555,7 @@ public class Voxels {
                             vArrayPos++;
 
                         }
-                        if (right[x][y][z]) {
+                        if (chunk.right[x][y][z]) {
 
                             texArray[tArrayPos] = 0 + 0.5f;
                             tArrayPos++;
@@ -645,7 +666,7 @@ public class Voxels {
                             vArrayPos++;
 
                         }
-                        if (left[x][y][z]) {
+                        if (chunk.left[x][y][z]) {
                             texArray[tArrayPos] = 0 + 0.5f;
                             tArrayPos++;
                             texArray[tArrayPos] = 0 + 0.5f;
@@ -754,7 +775,7 @@ public class Voxels {
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
                         }
-                        if (top[x][y][z]) {
+                        if (chunk.top[x][y][z]) {
 
                             // upper left
                             normalArray[nArrayPos] = 0;
@@ -864,7 +885,7 @@ public class Voxels {
                             texArray[tArrayPos] = 0f;
                             tArrayPos++;
                         }
-                        if (bottom[x][y][z]) {
+                        if (chunk.bottom[x][y][z]) {
                             texArray[tArrayPos] = 0 + 0.5f;
                             tArrayPos++;
                             texArray[tArrayPos] = 0 + 0.5f;
@@ -999,7 +1020,7 @@ public class Voxels {
 
         int vboColorHandle = glGenBuffers();
         chunk.setVboColorHandle(vboColorHandle);
-        System.out.println("Chunks created: " + vboColorHandle / 2);
+
         glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
         glBufferData(GL_ARRAY_BUFFER, colorData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -1010,6 +1031,8 @@ public class Voxels {
         glBindBuffer(GL_ARRAY_BUFFER, vboNormalHandle);
         glBufferData(GL_ARRAY_BUFFER, normalData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        System.out.println("Chunks created: " + (vboNormalHandle / 4 + 1));
 
         int vboTexHandle = glGenBuffers();
         chunk.setVboTexHandle(vboTexHandle);
@@ -1131,7 +1154,8 @@ public class Voxels {
         glEnd();
     }
 
-    public static int calculateCubeVertices(Chunk chunk, float x, float y, float z, float xOff, float yOff, float zOff, float size) {
+    public static int calculateCubeVertices(Chunk chunk, float x, float y, float z, float xOff, float yOff, float zOff, float size, Chunk leftChunk, Chunk rightChunk, Chunk frontChunk, Chunk backChunk) {
+
         int zMax = Chunk.CHUNK_WIDTH - 1;
         int xMax = Chunk.CHUNK_WIDTH - 1;
         int yMax = Chunk.CHUNK_HEIGHT - 1;
@@ -1144,17 +1168,26 @@ public class Voxels {
         int[][] maxHeights = chunk.maxHeights;
 
         // front face
-        if (z == zMax)
-            render = true;
+        if (z == zMax) {
+            if (frontChunk == null || !frontChunk.back[xMax-xx][yy][zMax-zz]) {
+                
+                chunk.front[xx][yy][zz] = true;
+                returnVertices += 4;
+                frontFaceCount++;
+            }
+            else
+                chunk.front[xx][yy][zz] = false;
+        }
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx][zz + 1];
+            if (!chunk.blocks[xx][yy][zz + 1].isActive() && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+                chunk.front[xx][yy][zz] = true;
+                returnVertices += 4;
+                frontFaceCount++;
+            }
+            else
+                chunk.front[xx][yy][zz] = false;
         }
-        if (render || !chunk.blocks[xx][yy][zz + 1].isActive() && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
-            front[xx][yy][zz] = true;
-            returnVertices += 4;
-        }
-        else
-            front[xx][yy][zz] = false;
 
         // left face
         render = false;
@@ -1164,11 +1197,11 @@ public class Voxels {
             difference = maxHeights[xx][zz] - maxHeights[xx - 1][zz];
         }
         if (render || !chunk.blocks[xx - 1][yy][zz].isActive() && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
-            left[xx][yy][zz] = true;
+            chunk.left[xx][yy][zz] = true;
             returnVertices += 4;
         }
         else
-            left[xx][yy][zz] = false;
+            chunk.left[xx][yy][zz] = false;
 
         // back face
         render = false;
@@ -1178,11 +1211,11 @@ public class Voxels {
             difference = maxHeights[xx][zz] - maxHeights[xx][zz - 1];
         }
         if (render || !chunk.blocks[xx][yy][zz - 1].isActive() && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
-            back[xx][yy][zz] = true;
+            chunk.back[xx][yy][zz] = true;
             returnVertices += 4;
         }
         else
-            back[xx][yy][zz] = false;
+            chunk.back[xx][yy][zz] = false;
 
         // right face
         render = false;
@@ -1192,33 +1225,34 @@ public class Voxels {
             difference = maxHeights[xx][zz] - maxHeights[xx + 1][zz];
         }
         if (render || !chunk.blocks[xx + 1][yy][zz].isActive() && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
-            right[xx][yy][zz] = true;
+            chunk.right[xx][yy][zz] = true;
             returnVertices += 4;
         }
         else
-            right[xx][yy][zz] = false;
+            chunk.right[xx][yy][zz] = false;
 
         // top face
         render = false;
         if (y == yMax)
             render = true;
         if (render || !chunk.blocks[xx][yy + 1][zz].isActive() && maxHeights[xx][zz] == yy) {
-            top[xx][yy][zz] = true;
+            chunk.top[xx][yy][zz] = true;
             returnVertices += 4;
         }
         else
-            top[xx][yy][zz] = false;
+            chunk.top[xx][yy][zz] = false;
 
         // bottom face
         render = false;
         if (y == 0)
             render = true;
         if (render || !chunk.blocks[xx][yy - 1][zz].isActive() && maxHeights[xx][zz] + 1 == yy) {
-            bottom[xx][yy][zz] = true;
+            chunk.bottom[xx][yy][zz] = true;
             returnVertices += 4;
         }
         else
-            bottom[xx][yy][zz] = false;
+            chunk.bottom[xx][yy][zz] = false;
+
         return returnVertices;
     }
 
@@ -1380,44 +1414,4 @@ public class Voxels {
         }
         return null;
     }
-
-    private static void initBooleanArrays() {
-        for (int x = 0; x < top.length; x++) {
-            top[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
-            for (int y = 0; y < top[x].length; y++) {
-                top[x][y] = new boolean[CHUNK_WIDTH];
-            }
-        }
-        for (int x = 0; x < bottom.length; x++) {
-            bottom[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
-            for (int y = 0; y < bottom[x].length; y++) {
-                bottom[x][y] = new boolean[CHUNK_WIDTH];
-            }
-        }
-        for (int x = 0; x < right.length; x++) {
-            right[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
-            for (int y = 0; y < right[x].length; y++) {
-                right[x][y] = new boolean[CHUNK_WIDTH];
-            }
-        }
-        for (int x = 0; x < left.length; x++) {
-            left[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
-            for (int y = 0; y < left[x].length; y++) {
-                left[x][y] = new boolean[CHUNK_WIDTH];
-            }
-        }
-        for (int x = 0; x < front.length; x++) {
-            front[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
-            for (int y = 0; y < front[x].length; y++) {
-                front[x][y] = new boolean[CHUNK_WIDTH];
-            }
-        }
-        for (int x = 0; x < back.length; x++) {
-            back[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
-            for (int y = 0; y < back[x].length; y++) {
-                back[x][y] = new boolean[CHUNK_WIDTH];
-            }
-        }
-    }
-
 }

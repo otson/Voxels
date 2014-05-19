@@ -8,7 +8,7 @@ public class Chunk {
 
     public static final int CHUNK_WIDTH = 16;
     public static final int CHUNK_HEIGHT = 256;
-    public static final int WATER_HEIGHT = 100;
+    public static final int WATER_HEIGHT = 150;
 
     public final int X_OFF;
     public final int Z_OFF;
@@ -133,7 +133,7 @@ public class Chunk {
         int waterCount = 0;
         for (int x = 0; x < blocks.length; x++) {
             for (int z = 0; z < blocks[x][0].length; z++) {
-                for (int y = maxHeights[x][z]; y < Chunk.WATER_HEIGHT; y++) {
+                for (int y = maxHeights[x][z]+1; y <= Chunk.WATER_HEIGHT; y++) {
                     if (y > maxHeights[x][z] && y <= Chunk.WATER_HEIGHT) {
                         blocks[x][y][z].setType(Block.WATER);
                         waterCount++;

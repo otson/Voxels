@@ -13,3 +13,6 @@ with all 6:
 Corrections
 58008
 
+Almost all unnecessary vertices removed:
+3776
+

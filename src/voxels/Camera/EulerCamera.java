@@ -36,6 +36,7 @@ import org.lwjgl.util.glu.GLU;
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.ARBDepthClamp.GL_DEPTH_CLAMP;
 import static org.lwjgl.opengl.GL11.*;
+import voxels.Chunk;
 
 /**
  * A camera set in 3D perspective. The camera uses Euler angles internally, so
@@ -55,7 +56,9 @@ public final class EulerCamera implements Camera {
     private float aspectRatio = 1;
     private final float zNear;
     private final float zFar;
-    private float fallSpeed = 0.03f;
+    private float fallSpeedIncrease = 0.005f;
+    private float maxWaterFallSpeed = 0.06f;
+    private float maxAirFallSpeed = 0.7f;
     private float currentFallingSpeed = 0;
 
     private boolean flying = false;
@@ -338,6 +341,9 @@ public final class EulerCamera implements Camera {
         boolean keyRight = Keyboard.isKeyDown(Keyboard.KEY_RIGHT) || Keyboard.isKeyDown(Keyboard.KEY_D);
         boolean flyUp = Keyboard.isKeyDown(Keyboard.KEY_SPACE);
         boolean flyDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
+
+        if (inWater())
+            speed /= 3;
 
         if (keyUp && keyRight && !keyLeft && !keyDown) {
             moveFromLook(speed * delta * 0.003f, 0, -speed * delta * 0.003f);
@@ -635,8 +641,15 @@ public final class EulerCamera implements Camera {
 
     public void fall(float target) {
         falling = true;
-        currentFallingSpeed += fallSpeed;
-        y -= currentFallingSpeed;
+
+        if (inWater()) {
+            currentFallingSpeed += fallSpeedIncrease/4;
+            y -= Math.min(maxWaterFallSpeed, currentFallingSpeed);
+        }
+        else {
+            currentFallingSpeed += fallSpeedIncrease;
+            y -= Math.min(maxAirFallSpeed, currentFallingSpeed);
+        }
         if (y <= target) {
             y = target;
             falling = false;
@@ -645,7 +658,10 @@ public final class EulerCamera implements Camera {
     }
 
     private void jump() {
-        currentFallingSpeed = -1.2f;
+        if (inWater())
+            currentFallingSpeed = -0.07f;
+        else
+            currentFallingSpeed = -0.2f;
         fall(y);
     }
 
@@ -782,9 +798,13 @@ public final class EulerCamera implements Camera {
 
     public void setFlying(boolean flying) {
         this.flying = flying;
-        if(flying){
+        if (flying) {
             falling = false;
             currentFallingSpeed = 0;
         }
+    }
+
+    public boolean inWater() {
+        return this.y - 0.5f < Chunk.WATER_HEIGHT;
     }
 }

@@ -35,7 +35,7 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains withs a width of one
      * block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAINS_SMOOTHESS = 5;
+    public static final int TERRAINS_SMOOTHESS = 15;
     /**
      * Set player's height. One block's height is 1.
      */
@@ -43,9 +43,9 @@ public class Voxels {
     /**
      * Set player's Field of View.
      */
-    public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 5;
-    public static int chunkRenderDistance = 10;
+    public static final int FIELD_OF_VIEW = 120;
+    public static int chunkCreationDistance = 6;
+    public static int chunkRenderDistance = 6;
     public static Texture atlas;
 
     private static EulerCamera camera;
@@ -112,7 +112,7 @@ public class Voxels {
         float lightDiffuse[] = {1f, 1f, 1f, 1.0f};
 
         glLightModel(GL_LIGHT_MODEL_AMBIENT, asFloatBuffer(lightAmbient));
-        glLight(GL_LIGHT0, GL_DIFFUSE, asFloatBuffer(lightDiffuse));             // Setup The Diffuse Light  
+        glLight(GL_LIGHT0, GL_DIFFUSE, asFloatBuffer(lightDiffuse));
         glLight(GL_LIGHT1, GL_DIFFUSE, asFloatBuffer(lightDiffuse));
         glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
         glLight(GL_LIGHT1, GL_POSITION, asFloatBuffer(light1Position));
@@ -134,7 +134,8 @@ public class Voxels {
         long chunkUpdateTime = 0;
         int fps = 0;
         int camSpeed = 4;
-        boolean generateChunks = false;
+        int currentSpeed = camSpeed;
+        boolean generateChunks = true;
         boolean running = true;
         boolean moveFaster;
         boolean canFly = false;
@@ -213,6 +214,42 @@ public class Voxels {
                     camera.setPosition(0, 256, 0);
                     System.out.println("Player tried to enter a chunk that does not exist. \n Position reset to (0, 256, 0)");
                 }
+            }
+            if (canFly == false) {
+                if (map.containsKey(new Pair(getCamChunkX(), getCamChunkZ()).hashCode())) {
+                    int[][] temp = map.get(new Pair(getCamChunkX(), getCamChunkZ()).hashCode()).getMaxHeights();
+                    float y = temp[(int) (camera.x() - getCamChunkX() * Chunk.CHUNK_WIDTH)][(int) (camera.z() - getCamChunkZ() * Chunk.CHUNK_WIDTH)];
+                    if (camera.y() > y + PLAYER_HEIGHT) {
+                        camera.fall(y + PLAYER_HEIGHT);
+
+                    }
+                    if (camera.y() < y + PLAYER_HEIGHT) {
+                        camera.setPosition(camera.x(), y + PLAYER_HEIGHT, camera.z());
+                        camera.stopFalling();
+                    }
+                }
+                else {
+                    camera.setPosition(0, 256, 0);
+                    System.out.println("Player tried to enter a chunk that does not exist. \n Position reset to (0, 256, 0)");
+                }
+            }
+            if (camera.inWater()) {
+
+                float lightAmbient[] = {0, 0, 10f, 1.0f};
+                float lightDiffuse[] = {0.1f, 0.1f, 1f, 1.0f};
+
+                glLightModel(GL_LIGHT_MODEL_AMBIENT, asFloatBuffer(lightAmbient));
+                glLight(GL_LIGHT0, GL_DIFFUSE, asFloatBuffer(lightDiffuse));
+                glLight(GL_LIGHT1, GL_DIFFUSE, asFloatBuffer(lightDiffuse));
+
+            }
+            else {
+                float lightAmbient[] = {0.3f, 0.3f, 0.3f, 1.0f};
+                float lightDiffuse[] = {1f, 1f, 1f, 1.0f};
+
+                glLightModel(GL_LIGHT_MODEL_AMBIENT, asFloatBuffer(lightAmbient));
+                glLight(GL_LIGHT0, GL_DIFFUSE, asFloatBuffer(lightDiffuse));
+                glLight(GL_LIGHT1, GL_DIFFUSE, asFloatBuffer(lightDiffuse));
             }
             camera.applyTranslations();
 

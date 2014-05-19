@@ -35,7 +35,7 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains withs a width of one
      * block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAINS_SMOOTHESS = 15;
+    public static final int TERRAINS_SMOOTHESS = 17;
     /**
      * Set player's height. One block's height is 1.
      */
@@ -43,30 +43,29 @@ public class Voxels {
     /**
      * Set player's Field of View.
      */
-    public static final int FIELD_OF_VIEW = 120;
-    
+    public static final int FIELD_OF_VIEW = 90;
+
     public static HashMap<Integer, Chunk> map;
-    public static int chunkCreationDistance = 6;
-    public static int chunkRenderDistance = 6;
+    public static int chunkCreationDistance = 3;
+    public static int chunkRenderDistance = 4;
     public static Texture atlas;
-    public static final float WaterOffs = 0.2f;
+    public static final float WaterOffs = 0.3f;
 
     private static EulerCamera camera;
     private static ChunkCreator chunkCreator = new ChunkCreator();
     private static float light0Position[] = {-200.0f, 5000.0f, -800.0f, 1.0f};
     private static float light1Position[] = {200.0f, 5000.0f, 800.0f, 1.0f};
 
-    private static boolean[][][] top = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH];
-    private static boolean[][][] bottom = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH];
-    private static boolean[][][] left = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH];
-    private static boolean[][][] right = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH];
-    private static boolean[][][] front = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH];
-    private static boolean[][][] back = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH][Chunk.CHUNK_WIDTH];
+    private static boolean[][][] top = new boolean[Chunk.CHUNK_WIDTH][][];
+    private static boolean[][][] bottom = new boolean[Chunk.CHUNK_WIDTH][][];
+    private static boolean[][][] left = new boolean[Chunk.CHUNK_WIDTH][][];
+    private static boolean[][][] right = new boolean[Chunk.CHUNK_WIDTH][][];
+    private static boolean[][][] front = new boolean[Chunk.CHUNK_WIDTH][][];
+    private static boolean[][][] back = new boolean[Chunk.CHUNK_WIDTH][][];
     private static int vertexSize = 3;
     private static int colorSize = 3;
     private static int normalSize = 3;
     private static int texSize = 2;
-    
 
     public static void main(String[] args) {
         initDisplay();
@@ -123,7 +122,7 @@ public class Voxels {
     }
 
     private static EulerCamera InitCamera() {
-        camera = new EulerCamera.Builder().setAspectRatio((float) Display.getWidth() / (float) Display.getHeight()).setFieldOfView(90).build();
+        camera = new EulerCamera.Builder().setAspectRatio((float) Display.getWidth() / (float) Display.getHeight()).setFieldOfView(FIELD_OF_VIEW).build();
         camera.applyPerspectiveMatrix();
         camera.applyOptimalStates();
         Mouse.setGrabbed(true);
@@ -137,9 +136,10 @@ public class Voxels {
         long totalTime = 0;
         long chunkUpdateTime = 0;
         int fps = 0;
+        long lastLoopTime = 0;
         int camSpeed = 4;
         int currentSpeed = camSpeed;
-        boolean generateChunks = true;
+        boolean generateChunks = false;
         boolean running = true;
         boolean moveFaster;
         boolean canFly = false;
@@ -193,7 +193,7 @@ public class Voxels {
                 camSpeed *= 3;
             glLoadIdentity();
             if (generateChunks) {
-                if (chunkUpdateTime > 1000000000 / 60) {
+                if (fps % 3 == 0) {
                     checkChunkUpdates(map);
                     chunkUpdateTime = 0;
                 }
@@ -255,6 +255,7 @@ public class Voxels {
             endTime = System.nanoTime();
             totalTime += endTime - startTime;
             chunkUpdateTime += endTime - startTime;
+            lastLoopTime = endTime - startTime;
             if (totalTime > 1000000000) {
                 Display.setTitle(TITLE + " - FPS: " + fps);
                 totalTime = 0;
@@ -286,8 +287,11 @@ public class Voxels {
                 }
             }
         }
+        //System.out.println("");
+        //System.out.println("Time to calculate vertices took: "+(System.nanoTime()-startTime)/1000000 +" ms.");
+        startTime = System.nanoTime();
         chunk.setVertices(vertices);
-        System.out.println("Vertices: " + vertices);
+        //System.out.println("Vertices: " + vertices);
         float[] vertexArray = new float[vertices * vertexSize];
         float[] colorArray = new float[vertices * colorSize];
         float[] normalArray = new float[vertices * normalSize];
@@ -989,7 +993,7 @@ public class Voxels {
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + y-WaterOffs;
+                            vertexArray[vArrayPos] = size / 2f + y - WaterOffs;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
@@ -1016,7 +1020,7 @@ public class Voxels {
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + y-WaterOffs;
+                            vertexArray[vArrayPos] = size / 2f + y - WaterOffs;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
@@ -1043,7 +1047,7 @@ public class Voxels {
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + y-WaterOffs;
+                            vertexArray[vArrayPos] = size / 2f + y - WaterOffs;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
@@ -1070,7 +1074,7 @@ public class Voxels {
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + y-WaterOffs;
+                            vertexArray[vArrayPos] = size / 2f + y - WaterOffs;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
@@ -1085,6 +1089,9 @@ public class Voxels {
                 }
             }
         }
+        //System.out.println("Setting array values took: "+(System.nanoTime()-startTime)/1000000 +" ms.");
+        startTime = System.nanoTime();
+
         vertexData.put(vertexArray);
         vertexData.flip();
 
@@ -1106,7 +1113,7 @@ public class Voxels {
 
         int vboColorHandle = glGenBuffers();
         chunk.setVboColorHandle(vboColorHandle);
-        System.out.println("Chunks created: " + vboColorHandle / 2);
+
         glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
         glBufferData(GL_ARRAY_BUFFER, colorData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -1125,8 +1132,10 @@ public class Voxels {
         glBufferData(GL_ARRAY_BUFFER, texData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+        //System.out.println("Chunks created: " + vboTexHandle / 4);
         long endTime = System.nanoTime();
         //System.out.println("One chunk creation took "+((endTime-startTime)/1000000)+ " ms.");
+        //System.out.println("Rest of the loop took: "+(System.nanoTime()-startTime)/1000000 +" ms.");
     }
 
     public static int calculateGroundVertices(Chunk chunk, float x, float y, float z, float xOff, float yOff, float zOff, float size) {
@@ -1289,12 +1298,13 @@ public class Voxels {
 
             if (map.containsKey(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode()) == false) {
                 chunk = new Chunk(getCamChunkX() + x, getCamChunkZ() + z);
-
+                long start = System.nanoTime();
                 drawChunkVBO(chunk, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
 
                 map.put(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode(), chunk);
                 newChunk = true;
-
+                long end = System.nanoTime();
+                System.out.println("Chunk creation took: " + (end - start) / 1000000 + " ms.");
             }
         }
     }

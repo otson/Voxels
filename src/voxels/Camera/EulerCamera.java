@@ -355,10 +355,10 @@ public class EulerCamera implements Camera {
             glLightModel(GL_LIGHT_MODEL_AMBIENT, Voxels.asFloatBuffer(lightAmbient));
             glLight(GL_LIGHT0, GL_DIFFUSE, Voxels.asFloatBuffer(lightDiffuse));
             glLight(GL_LIGHT1, GL_DIFFUSE, Voxels.asFloatBuffer(lightDiffuse));
-            
+
             glDisable(GL_CULL_FACE);
         }
-        
+
         else {
             float lightAmbient[] = {0.3f, 0.3f, 0.3f, 1.0f};
             float lightDiffuse[] = {1f, 1f, 1f, 1.0f};
@@ -366,7 +366,7 @@ public class EulerCamera implements Camera {
             glLightModel(GL_LIGHT_MODEL_AMBIENT, Voxels.asFloatBuffer(lightAmbient));
             glLight(GL_LIGHT0, GL_DIFFUSE, Voxels.asFloatBuffer(lightDiffuse));
             glLight(GL_LIGHT1, GL_DIFFUSE, Voxels.asFloatBuffer(lightDiffuse));
-            
+
             glEnable(GL_CULL_FACE);
             glCullFace(GL_BACK);
 
@@ -497,9 +497,11 @@ public class EulerCamera implements Camera {
      * @param dz the movement along the z-axis
      */
     public void moveFromLook(float dx, float dy, float dz) {
-        this.z += dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw));
+
+        
         this.x -= dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw));
         this.y += dy * (float) sin(toRadians(pitch - 90)) + dz * sin(toRadians(pitch));
+        this.z += dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw));
         //float hypotenuseX = dx;
         //float adjacentX = hypotenuseX * (float) Math.cos(Math.toRadians(yaw - 90));
         //float oppositeX = (float) Math.sin(Math.toRadians(yaw - 90)) * hypotenuseX;
@@ -706,7 +708,7 @@ public class EulerCamera implements Camera {
         if (inWater())
             currentFallingSpeed = -0.14f;
         else
-            currentFallingSpeed = -0.4f;
+            currentFallingSpeed = -0.5f;
         fall(y);
     }
 

@@ -290,7 +290,7 @@ public class Voxels {
         for (int x = 0; x < chunk.blocks.length; x++) {
             for (int z = 0; z < chunk.blocks[x][0].length; z++) {
                 for (int y = 0; y < chunk.blocks[x].length; y++) {
-                    if (chunk.blocks[x][y][z].isActive()) {
+                    if (chunk.blocks[x][y][z].isType(Block.GROUND)) {
                         vertices += calculateCubeVertices(chunk, x, y, z, getCamChunkX() * chunk.blocks.length + xOff, 0, getCamChunkZ() * chunk.blocks.length + zOff, 1);
                         drawnBlocks++;
                     }
@@ -317,7 +317,7 @@ public class Voxels {
         for (int x = 0; x < chunk.blocks.length; x++) {
             for (int z = 0; z < chunk.blocks[x][0].length; z++) {
                 for (int y = 0; y < chunk.blocks[x].length; y++) {
-                    if (chunk.blocks[x][y][z].isActive()) {
+                    if (chunk.blocks[x][y][z].isType(Block.GROUND)) {
                         if (front[x][y][z]) {
 
                             // upper left - +
@@ -1045,7 +1045,7 @@ public class Voxels {
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx][zz + 1];
         }
-        if (render || !chunk.blocks[xx][yy][zz + 1].isActive() && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+        if (render || chunk.blocks[xx][yy][zz + 1].isType(Block.AIR) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             front[xx][yy][zz] = true;
             returnVertices += 4;
         }
@@ -1059,7 +1059,7 @@ public class Voxels {
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx - 1][zz];
         }
-        if (render || !chunk.blocks[xx - 1][yy][zz].isActive() && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+        if (render || chunk.blocks[xx - 1][yy][zz].isType(Block.AIR) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             left[xx][yy][zz] = true;
             returnVertices += 4;
         }
@@ -1073,7 +1073,7 @@ public class Voxels {
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx][zz - 1];
         }
-        if (render || !chunk.blocks[xx][yy][zz - 1].isActive() && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+        if (render || chunk.blocks[xx][yy][zz - 1].isType(Block.AIR) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             back[xx][yy][zz] = true;
             returnVertices += 4;
         }
@@ -1087,7 +1087,7 @@ public class Voxels {
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx + 1][zz];
         }
-        if (render || !chunk.blocks[xx + 1][yy][zz].isActive() && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+        if (render || chunk.blocks[xx + 1][yy][zz].isType(Block.AIR) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             right[xx][yy][zz] = true;
             returnVertices += 4;
         }
@@ -1098,7 +1098,7 @@ public class Voxels {
         render = false;
         if (y == yMax)
             render = true;
-        if (render || !chunk.blocks[xx][yy + 1][zz].isActive() && maxHeights[xx][zz] == yy) {
+        if (render || chunk.blocks[xx][yy + 1][zz].isType(Block.AIR) && maxHeights[xx][zz] == yy) {
             top[xx][yy][zz] = true;
             returnVertices += 4;
         }
@@ -1109,7 +1109,7 @@ public class Voxels {
         render = false;
         if (y == 0)
             render = true;
-        if (render || !chunk.blocks[xx][yy - 1][zz].isActive() && maxHeights[xx][zz] + 1 == yy) {
+        if (render || chunk.blocks[xx][yy - 1][zz].isType(Block.AIR) && maxHeights[xx][zz] + 1 == yy) {
             bottom[xx][yy][zz] = true;
             returnVertices += 4;
         }

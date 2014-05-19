@@ -34,7 +34,7 @@ public class Chunk {
             for (int y = 0; y < blocks[x].length; y++) {
                 blocks[x][y] = new Block[CHUNK_WIDTH];
                 for (int z = 0; z < blocks[x][y].length; z++) {
-                    blocks[x][y][z] = new Block();
+                    blocks[x][y][z] = new Block(Block.AIR);
                     blockCount++;
                 }
             }
@@ -61,27 +61,15 @@ public class Chunk {
                 if (x == 0 || z == 0 || x == blocks.length - 1 || z == blocks[x][0].length - 1)
                     // This shouldn't be min value of all 4 bordering block heights, since it can activate unnecessary blocks. Works for now.
                     difference = Math.min(Math.min(Voxels.getNoise(x + X_OFF - 1, z + Z_OFF), Voxels.getNoise(x + X_OFF + 1, z + Z_OFF)), Math.min(Voxels.getNoise(x + X_OFF, z + Z_OFF + 1), Voxels.getNoise(x + X_OFF, z + Z_OFF - 1)));
+
                 for (int y = 0; y < blocks[x].length; y++) {
 
                     if (y == maxHeights[x][z]) {
-                        blocks[x][y][z].activate();
+                        blocks[x][y][z].setType(Block.GROUND);
                         activeBlocks++;
                     }
-
-                    else if (x == 0 && y < maxHeights[x][z] && y > difference) {
-                        blocks[x][y][z].activate();
-                        activeBlocks++;
-                    }
-                    else if (x == blocks.length - 1 && y < maxHeights[x][z] && y > difference) {
-                        blocks[x][y][z].activate();
-                        activeBlocks++;
-                    }
-                    else if (z == 0 && y < maxHeights[x][z] && y > difference) {
-                        blocks[x][y][z].activate();
-                        activeBlocks++;
-                    }
-                    else if (z == blocks[x][y].length - 1 && y < maxHeights[x][z] && y > difference) {
-                        blocks[x][y][z].activate();
+                    else if ((x == 0 || x == blocks.length - 1 || z == 0 || z == blocks[x][y].length - 1) && y < maxHeights[x][z] && y > difference) {
+                        blocks[x][y][z].setType(Block.GROUND);
                         activeBlocks++;
                     }
                 }
@@ -95,7 +83,7 @@ public class Chunk {
                 heightDifference = maxHeights[x][z] - Math.min(Math.min(maxHeights[x + 1][z], maxHeights[x - 1][z]), Math.min(maxHeights[x][z + 1], maxHeights[x][z - 1]));
                 if (heightDifference > 1)
                     for (int y = maxHeights[x][z] - heightDifference; y < maxHeights[x][z]; y++) {
-                        blocks[x][y][z].activate();
+                        blocks[x][y][z].setType(Block.GROUND);
                         activeBlocks++;
                     }
             }

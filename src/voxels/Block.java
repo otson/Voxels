@@ -6,22 +6,21 @@ package voxels;
  */
 public class Block {
 
-    private boolean active;
+    public static final int AIR = 0;
+    public static final int GROUND = 1;
+    public static final int WATER = 2;
+    private int type;
 
-    public Block() {
-        active = false;
+    public Block(int type) {
+        this.type = type;
     }
 
-    public boolean isActive() {
-        return active;
+    public void setType(int type) {
+        this.type = type;
     }
 
-    public void deactivate() {
-        this.active = false;
-    }
-
-    public void activate() {
-        this.active = true;
+    public boolean isType(int type) {
+        return this.type == type;
     }
 
 }

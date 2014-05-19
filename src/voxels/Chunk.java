@@ -8,6 +8,7 @@ public class Chunk {
 
     public static final int CHUNK_WIDTH = 16;
     public static final int CHUNK_HEIGHT = 256;
+    public static final int WATER_HEIGHT = 100;
 
     public final int X_OFF;
     public final int Z_OFF;
@@ -28,24 +29,22 @@ public class Chunk {
         blocks = new Block[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_WIDTH];
         maxHeights = new int[CHUNK_WIDTH][CHUNK_WIDTH];
 
-        int blockCount = 0;
         for (int x = 0; x < blocks.length; x++) {
             blocks[x] = new Block[CHUNK_HEIGHT][CHUNK_WIDTH];
             for (int y = 0; y < blocks[x].length; y++) {
                 blocks[x][y] = new Block[CHUNK_WIDTH];
                 for (int z = 0; z < blocks[x][y].length; z++) {
                     blocks[x][y][z] = new Block(Block.AIR);
-                    blockCount++;
                 }
             }
         }
-        //System.out.println("Total blocks in the chunk: " + blockCount);
 
-        setActiveBlocks();
+        setGroundBlocks();
+        setWaterBlocks();
 
     }
 
-    private void setActiveBlocks() {
+    private void setGroundBlocks() {
         int activeBlocks = 0;
         int maxHeight;
         for (int x = 0; x < blocks.length; x++) {
@@ -66,16 +65,13 @@ public class Chunk {
 
                     if (y == maxHeights[x][z]) {
                         blocks[x][y][z].setType(Block.GROUND);
-                        activeBlocks++;
                     }
                     else if ((x == 0 || x == blocks.length - 1 || z == 0 || z == blocks[x][y].length - 1) && y < maxHeights[x][z] && y > difference) {
                         blocks[x][y][z].setType(Block.GROUND);
-                        activeBlocks++;
                     }
                 }
             }
         }
-        System.out.println("Blocks activated in the first loop: " + activeBlocks);
         // second loop, activate blocks in steps that are higher than one block
         int heightDifference;
         for (int x = 1; x < blocks.length - 1; x++) {
@@ -84,11 +80,9 @@ public class Chunk {
                 if (heightDifference > 1)
                     for (int y = maxHeights[x][z] - heightDifference; y < maxHeights[x][z]; y++) {
                         blocks[x][y][z].setType(Block.GROUND);
-                        activeBlocks++;
                     }
             }
         }
-        System.out.println("Total blocks activated: " + activeBlocks);
     }
 
     public int[][] getMaxHeights() {
@@ -133,6 +127,21 @@ public class Chunk {
 
     public void setVboTexHandle(int vboTexHandle) {
         this.vboTexHandle = vboTexHandle;
+    }
+
+    private void setWaterBlocks() {
+        int waterCount = 0;
+        for (int x = 0; x < blocks.length; x++) {
+            for (int z = 0; z < blocks[x][0].length; z++) {
+                for (int y = maxHeights[x][z]; y < Chunk.WATER_HEIGHT; y++) {
+                    if (y > maxHeights[x][z] && y <= Chunk.WATER_HEIGHT) {
+                        blocks[x][y][z].setType(Block.WATER);
+                        waterCount++;
+                    }
+                }
+            }
+        }
+        System.out.println("Water blocks: " + waterCount);
     }
 
 }

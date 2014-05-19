@@ -40,15 +40,16 @@ public class Voxels {
      * Set player's height. One block's height is 1.
      */
     public static float PLAYER_HEIGHT = 3.7f + 0.5f;
-    public static boolean VBO_ENABLED = true;
+    /**
+     * Set player's Field of View.
+     */
+    public static final int FIELD_OF_VIEW = 90;
     public static int chunkCreationDistance = 5;
-    public static int chunkRenderDistance = 5;
-    public static Texture grass;
+    public static int chunkRenderDistance = 10;
+    public static Texture atlas;
 
     private static EulerCamera camera;
     private static ChunkCreator chunkCreator = new ChunkCreator();
-    private static int displayListHandle;
-    private static int vertexCount = 0;
     private static float light0Position[] = {-200.0f, 5000.0f, -800.0f, 1.0f};
     private static float light1Position[] = {200.0f, 5000.0f, 800.0f, 1.0f};
 
@@ -95,10 +96,10 @@ public class Voxels {
 
     private static void initTextures() {
         glEnable(GL_TEXTURE_2D);
-        grass = loadTexture("atlas");
+        atlas = loadTexture("atlas");
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        grass.bind();
+        atlas.bind();
     }
 
     private static void initLighting() {
@@ -118,7 +119,7 @@ public class Voxels {
     }
 
     private static EulerCamera InitCamera() {
-        camera = new EulerCamera.Builder().setAspectRatio((float) Display.getWidth() / (float) Display.getHeight()).setFieldOfView(60).build();
+        camera = new EulerCamera.Builder().setAspectRatio((float) Display.getWidth() / (float) Display.getHeight()).setFieldOfView(90).build();
         camera.applyPerspectiveMatrix();
         camera.applyOptimalStates();
         Mouse.setGrabbed(true);
@@ -140,21 +141,13 @@ public class Voxels {
         camera = InitCamera();
 
         HashMap<Integer, Chunk> map = new HashMap<>();
-
         map.put(new Pair(getCamChunkX(), getCamChunkZ()).hashCode(), new Chunk(0, 0));
-        displayListHandle = glGenLists(1);
-        if (!VBO_ENABLED) {
-            glNewList(displayListHandle, GL_COMPILE);
-            //drawChunk(map.get(new Pair(getCamChunkX(), getCamChunkZ()).hashCode()), 0, 0);
-            glEndList();
-        }
-        else
-            drawChunkVBO(map.get(new Pair(getCamChunkX(), getCamChunkZ()).hashCode()), 0, 0);
+        drawChunkVBO(map.get(new Pair(getCamChunkX(), getCamChunkZ()).hashCode()), 0, 0);
 
         glMatrixMode(GL_PROJECTION);
 
         glLoadIdentity();
-        gluPerspective((float) 90, 1.6f, 0.3f, 5000);
+        //gluPerspective((float) 90, 1.6f, 0.3f, 5000);
         glMatrixMode(GL_MODELVIEW);
         glEnable(GL_DEPTH_TEST);
         glClearColor(0f / 255f, 0f / 255f, 190f / 255f, 1.0f);
@@ -195,7 +188,7 @@ public class Voxels {
                 camSpeed *= 3;
             glLoadIdentity();
             if (generateChunks) {
-                if (chunkUpdateTime > 1000000000/60){
+                if (chunkUpdateTime > 1000000000 / 60) {
                     checkChunkUpdates(map);
                     chunkUpdateTime = 0;
                 }
@@ -230,46 +223,41 @@ public class Voxels {
             processKeyboard();
             glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
             glLight(GL_LIGHT1, GL_POSITION, asFloatBuffer(light1Position));
-            if (!VBO_ENABLED)
-                for (int i = 1; i <= displayListHandle; i++) {
-                    glCallList(i);
-                }
-            else {
-                for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
-                    for (int z = -chunkRenderDistance; z <= chunkRenderDistance; z++) {
-                        if (map.containsKey(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode())) {
-                            Chunk currentChunk = map.get(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode());
-                            int vboVertexHandle = currentChunk.getVboVertexHandle();
-                            int vboColorHandle = currentChunk.getVboColorHandle();
-                            int vboNormalHandle = currentChunk.getVboNormalHandle();
-                            int vboTexHandle = currentChunk.getVboTexHandle();
-                            int vertices = currentChunk.getVertices();
-                            glPushMatrix();
-                            glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
-                            glVertexPointer(vertexSize, GL_FLOAT, 0, 0L);
 
-                            glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
-                            glColorPointer(colorSize, GL_FLOAT, 0, 0L);
+            for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
+                for (int z = -chunkRenderDistance; z <= chunkRenderDistance; z++) {
+                    if (map.containsKey(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode())) {
+                        Chunk currentChunk = map.get(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode());
+                        int vboVertexHandle = currentChunk.getVboVertexHandle();
+                        int vboColorHandle = currentChunk.getVboColorHandle();
+                        int vboNormalHandle = currentChunk.getVboNormalHandle();
+                        int vboTexHandle = currentChunk.getVboTexHandle();
+                        int vertices = currentChunk.getVertices();
+                        glPushMatrix();
+                        glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
+                        glVertexPointer(vertexSize, GL_FLOAT, 0, 0L);
 
-                            glBindBuffer(GL_ARRAY_BUFFER, vboNormalHandle);
-                            glNormalPointer(GL_FLOAT, 0, 0L);
+                        glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
+                        glColorPointer(colorSize, GL_FLOAT, 0, 0L);
 
-                            glBindBuffer(GL_ARRAY_BUFFER, vboTexHandle);
-                            glTexCoordPointer(texSize, GL_FLOAT, 0, 0L);
+                        glBindBuffer(GL_ARRAY_BUFFER, vboNormalHandle);
+                        glNormalPointer(GL_FLOAT, 0, 0L);
 
-                            glEnableClientState(GL_VERTEX_ARRAY);
-                            glEnableClientState(GL_COLOR_ARRAY);
-                            glEnableClientState(GL_NORMAL_ARRAY);
-                            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-                            glDrawArrays(GL_QUADS, 0, vertices);
-                            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-                            glDisableClientState(GL_NORMAL_ARRAY);
-                            glDisableClientState(GL_COLOR_ARRAY);
-                            glDisableClientState(GL_VERTEX_ARRAY);
+                        glBindBuffer(GL_ARRAY_BUFFER, vboTexHandle);
+                        glTexCoordPointer(texSize, GL_FLOAT, 0, 0L);
 
-                            glBindBuffer(GL_ARRAY_BUFFER, 0);
-                            glPopMatrix();
-                        }
+                        glEnableClientState(GL_VERTEX_ARRAY);
+                        glEnableClientState(GL_COLOR_ARRAY);
+                        glEnableClientState(GL_NORMAL_ARRAY);
+                        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+                        glDrawArrays(GL_QUADS, 0, vertices);
+                        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+                        glDisableClientState(GL_NORMAL_ARRAY);
+                        glDisableClientState(GL_COLOR_ARRAY);
+                        glDisableClientState(GL_VERTEX_ARRAY);
+
+                        glBindBuffer(GL_ARRAY_BUFFER, 0);
+                        glPopMatrix();
                     }
                 }
             }
@@ -1128,61 +1116,6 @@ public class Voxels {
         else
             bottom[xx][yy][zz] = false;
         return returnVertices;
-    }
-
-    public static void drawFullCube(Chunk chunk, float x, float y, float z, float size) {
-        glBegin(GL_QUADS);
-        // front face
-
-        glNormal3f(0f, 0f, 1f);
-        glColor3f(100f / 255f, 60f / 255f, 60f / 255f);
-        glVertex3f((size / 2 + x), (size / 2 + y), (size / 2 + z));
-        glVertex3f((-size / 2 + x), (size / 2 + y), (size / 2 + z));
-        glVertex3f((-size / 2 + x), (-size / 2 + y), (size / 2 + z));
-        glVertex3f((size / 2 + x), (-size / 2 + y), (size / 2 + z));
-        // left face
-        glNormal3f(-1f, 0f, 0f);
-        glColor3f(100f / 255f, 60f / 255f, 60f / 255f);
-        glVertex3f((-size / 2 + x), (size / 2 + y), (size / 2 + z));
-        glVertex3f((-size / 2 + x), (-size / 2 + y), (size / 2 + z));
-        glVertex3f((-size / 2 + x), (-size / 2 + y), (-size / 2 + z));
-        glVertex3f((-size / 2 + x), (size / 2 + y), (-size / 2 + z));
-
-        // back face
-        glNormal3f(0f, 0f, -1f);
-        glColor3f(100f / 255f, 60f / 255f, 60f / 255f);
-        glVertex3f((size / 2 + x), (size / 2 + y), (-size / 2 + z));
-        glVertex3f((-size / 2 + x), (size / 2 + y), (-size / 2 + z));
-        glVertex3f((-size / 2 + x), (-size / 2 + y), (-size / 2 + z));
-        glVertex3f((size / 2 + x), (-size / 2 + y), (-size / 2 + z));
-
-        // right face
-        glNormal3f(1f, 0f, 0f);
-        glColor3f(100f / 255f, 60f / 255f, 60f / 255f);
-        glVertex3f((size / 2 + x), (size / 2 + y), (size / 2 + z));
-        glVertex3f((size / 2 + x), (-size / 2 + y), (size / 2 + z));
-        glVertex3f((size / 2 + x), (-size / 2 + y), (-size / 2 + z));
-        glVertex3f((size / 2 + x), (size / 2 + y), (-size / 2 + z));
-
-        // top face
-        glNormal3f(0f, 1f, 0f);
-        glColor3f(0f, 127f / 255f, 14f / 255f);
-        glVertex3f((size / 2 + x), (size / 2 + y), (size / 2 + z));
-        glVertex3f((-size / 2 + x), (size / 2 + y), (size / 2 + z));
-        glVertex3f((-size / 2 + x), (size / 2 + y), (-size / 2 + z));
-        glVertex3f((size / 2 + x), (size / 2 + y), (-size / 2 + z));
-
-        // bottom face
-        glNormal3f(0f, -1f, 0f);
-        glColor3f(64f / 255f, 64f / 255f, 64f / 255f);
-        glVertex3f((size / 2 + x), (-size / 2 + y), (size / 2 + z));
-        glVertex3f((-size / 2 + x), (-size / 2 + y), (size / 2 + z));
-        glVertex3f((-size / 2 + x), (-size / 2 + y), (-size / 2 + z));
-        glVertex3f((size / 2 + x), (-size / 2 + y), (-size / 2 + z));
-
-        glEnd();
-        vertexCount += 24;
-
     }
 
     private static void processKeyboard() {

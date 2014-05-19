@@ -44,6 +44,8 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 120;
+    
+    public static HashMap<Integer, Chunk> map;
     public static int chunkCreationDistance = 6;
     public static int chunkRenderDistance = 6;
     public static Texture atlas;
@@ -141,7 +143,7 @@ public class Voxels {
         boolean canFly = false;
         camera = InitCamera();
 
-        HashMap<Integer, Chunk> map = new HashMap<>();
+        map = new HashMap<>();
         map.put(new Pair(getCamChunkX(), getCamChunkZ()).hashCode(), new Chunk(0, 0));
         drawChunkVBO(map.get(new Pair(getCamChunkX(), getCamChunkZ()).hashCode()), 0, 0);
 
@@ -198,41 +200,21 @@ public class Voxels {
             //System.out.println("Chunk x: " + getCamChunkX() + " z: " + getCamChunkZ());
             //System.out.println("Player x: " + camera.x() + " z: " + camera.z());
             if (canFly == false) {
-                if (map.containsKey(new Pair(getCamChunkX(), getCamChunkZ()).hashCode())) {
-                    int[][] temp = map.get(new Pair(getCamChunkX(), getCamChunkZ()).hashCode()).getMaxHeights();
-                    float y = temp[(int) (camera.x() - getCamChunkX() * Chunk.CHUNK_WIDTH)][(int) (camera.z() - getCamChunkZ() * Chunk.CHUNK_WIDTH)];
-                    if (camera.y() > y + PLAYER_HEIGHT) {
-                        camera.fall(y + PLAYER_HEIGHT);
-
-                    }
-                    if (camera.y() < y + PLAYER_HEIGHT) {
-                        camera.setPosition(camera.x(), y + PLAYER_HEIGHT, camera.z());
-                        camera.stopFalling();
-                    }
-                }
-                else {
-                    camera.setPosition(0, 256, 0);
-                    System.out.println("Player tried to enter a chunk that does not exist. \n Position reset to (0, 256, 0)");
-                }
+//                if (map.containsKey(new Pair(getCamChunkX(), getCamChunkZ()).hashCode())) {
+//                    int[][] temp = map.get(new Pair(getCamChunkX(), getCamChunkZ()).hashCode()).getMaxHeights();
+//                    float y = temp[(int) (camera.x() - getCamChunkX() * Chunk.CHUNK_WIDTH)][(int) (camera.z() - getCamChunkZ() * Chunk.CHUNK_WIDTH)];
+//                    if (camera.y() > y + PLAYER_HEIGHT) {
+//                        camera.fall(y + PLAYER_HEIGHT);
+//
+//                    }
+//                    if (camera.y() < y + PLAYER_HEIGHT) {
+//                        camera.setPosition(camera.x(), y + PLAYER_HEIGHT, camera.z());
+//                        camera.stopFalling();
+//                    }
+//                }
+//                
             }
-            if (canFly == false) {
-                if (map.containsKey(new Pair(getCamChunkX(), getCamChunkZ()).hashCode())) {
-                    int[][] temp = map.get(new Pair(getCamChunkX(), getCamChunkZ()).hashCode()).getMaxHeights();
-                    float y = temp[(int) (camera.x() - getCamChunkX() * Chunk.CHUNK_WIDTH)][(int) (camera.z() - getCamChunkZ() * Chunk.CHUNK_WIDTH)];
-                    if (camera.y() > y + PLAYER_HEIGHT) {
-                        camera.fall(y + PLAYER_HEIGHT);
 
-                    }
-                    if (camera.y() < y + PLAYER_HEIGHT) {
-                        camera.setPosition(camera.x(), y + PLAYER_HEIGHT, camera.z());
-                        camera.stopFalling();
-                    }
-                }
-                else {
-                    camera.setPosition(0, 256, 0);
-                    System.out.println("Player tried to enter a chunk that does not exist. \n Position reset to (0, 256, 0)");
-                }
-            }
             if (camera.inWater()) {
 
                 float lightAmbient[] = {0, 0, 10f, 1.0f};
@@ -1313,7 +1295,7 @@ public class Voxels {
         return buffer;
     }
 
-    private static int getCamChunkX() {
+    public final static int getCamChunkX() {
         int size = Chunk.CHUNK_WIDTH;
         int x = (int) (camera.x());
         if (x < 0)
@@ -1321,7 +1303,7 @@ public class Voxels {
         return x / size;
     }
 
-    private static int getCamChunkZ() {
+    public final static int getCamChunkZ() {
         int size = Chunk.CHUNK_WIDTH;
         int z = (int) (camera.z());
         if (z < 0)

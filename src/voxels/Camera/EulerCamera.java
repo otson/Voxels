@@ -346,18 +346,41 @@ public class EulerCamera implements Camera {
         boolean flyUp = Keyboard.isKeyDown(Keyboard.KEY_SPACE);
         boolean flyDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
 
-        if (inWater())
+        if (inWater()) {
             speed /= 3;
+
+            float lightAmbient[] = {0, 0, 10f, 1.0f};
+            float lightDiffuse[] = {0.1f, 0.1f, 1f, 1.0f};
+
+            glLightModel(GL_LIGHT_MODEL_AMBIENT, Voxels.asFloatBuffer(lightAmbient));
+            glLight(GL_LIGHT0, GL_DIFFUSE, Voxels.asFloatBuffer(lightDiffuse));
+            glLight(GL_LIGHT1, GL_DIFFUSE, Voxels.asFloatBuffer(lightDiffuse));
+            
+            glDisable(GL_CULL_FACE);
+        }
+        
+        else {
+            float lightAmbient[] = {0.3f, 0.3f, 0.3f, 1.0f};
+            float lightDiffuse[] = {1f, 1f, 1f, 1.0f};
+
+            glLightModel(GL_LIGHT_MODEL_AMBIENT, Voxels.asFloatBuffer(lightAmbient));
+            glLight(GL_LIGHT0, GL_DIFFUSE, Voxels.asFloatBuffer(lightDiffuse));
+            glLight(GL_LIGHT1, GL_DIFFUSE, Voxels.asFloatBuffer(lightDiffuse));
+            
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_BACK);
+
+        }
         if (flying == false) {
             if (Voxels.map.containsKey(new Pair(Voxels.getCamChunkX(), Voxels.getCamChunkZ()).hashCode())) {
                 int[][] temp = map.get(new Pair(Voxels.getCamChunkX(), Voxels.getCamChunkZ()).hashCode()).getMaxHeights();
-                float y = temp[(int) (x() - Voxels.getCamChunkX() * Chunk.CHUNK_WIDTH)][(int) (z() - Voxels.getCamChunkZ() * Chunk.CHUNK_WIDTH)];
-                if (y() > y + PLAYER_HEIGHT) {
-                    fall(y + PLAYER_HEIGHT);
+                float blockHeight = temp[(int) (x() - Voxels.getCamChunkX() * Chunk.CHUNK_WIDTH)][(int) (z() - Voxels.getCamChunkZ() * Chunk.CHUNK_WIDTH)];
+                if (y() > blockHeight + PLAYER_HEIGHT) {
+                    fall(blockHeight + PLAYER_HEIGHT);
 
                 }
-                if (y() < y + PLAYER_HEIGHT) {
-                    setPosition(x(), y + PLAYER_HEIGHT, z());
+                if (y() < blockHeight + PLAYER_HEIGHT) {
+                    setPosition(x(), blockHeight + PLAYER_HEIGHT, z());
                     stopFalling();
                 }
             }
@@ -827,7 +850,7 @@ public class EulerCamera implements Camera {
     }
 
     public boolean inWater() {
-        return this.y - 0.5f < Chunk.WATER_HEIGHT;
+        return this.y - 0.5f + Voxels.WaterOffs < Chunk.WATER_HEIGHT;
     }
 
     public boolean getFlying() {

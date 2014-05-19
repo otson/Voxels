@@ -49,6 +49,7 @@ public class Voxels {
     public static int chunkCreationDistance = 6;
     public static int chunkRenderDistance = 6;
     public static Texture atlas;
+    public static final float WaterOffs = 0.2f;
 
     private static EulerCamera camera;
     private static ChunkCreator chunkCreator = new ChunkCreator();
@@ -65,6 +66,7 @@ public class Voxels {
     private static int colorSize = 3;
     private static int normalSize = 3;
     private static int texSize = 2;
+    
 
     public static void main(String[] args) {
         initDisplay();
@@ -197,42 +199,6 @@ public class Voxels {
                 }
             }
 
-            //System.out.println("Chunk x: " + getCamChunkX() + " z: " + getCamChunkZ());
-            //System.out.println("Player x: " + camera.x() + " z: " + camera.z());
-            if (canFly == false) {
-//                if (map.containsKey(new Pair(getCamChunkX(), getCamChunkZ()).hashCode())) {
-//                    int[][] temp = map.get(new Pair(getCamChunkX(), getCamChunkZ()).hashCode()).getMaxHeights();
-//                    float y = temp[(int) (camera.x() - getCamChunkX() * Chunk.CHUNK_WIDTH)][(int) (camera.z() - getCamChunkZ() * Chunk.CHUNK_WIDTH)];
-//                    if (camera.y() > y + PLAYER_HEIGHT) {
-//                        camera.fall(y + PLAYER_HEIGHT);
-//
-//                    }
-//                    if (camera.y() < y + PLAYER_HEIGHT) {
-//                        camera.setPosition(camera.x(), y + PLAYER_HEIGHT, camera.z());
-//                        camera.stopFalling();
-//                    }
-//                }
-//                
-            }
-
-            if (camera.inWater()) {
-
-                float lightAmbient[] = {0, 0, 10f, 1.0f};
-                float lightDiffuse[] = {0.1f, 0.1f, 1f, 1.0f};
-
-                glLightModel(GL_LIGHT_MODEL_AMBIENT, asFloatBuffer(lightAmbient));
-                glLight(GL_LIGHT0, GL_DIFFUSE, asFloatBuffer(lightDiffuse));
-                glLight(GL_LIGHT1, GL_DIFFUSE, asFloatBuffer(lightDiffuse));
-
-            }
-            else {
-                float lightAmbient[] = {0.3f, 0.3f, 0.3f, 1.0f};
-                float lightDiffuse[] = {1f, 1f, 1f, 1.0f};
-
-                glLightModel(GL_LIGHT_MODEL_AMBIENT, asFloatBuffer(lightAmbient));
-                glLight(GL_LIGHT0, GL_DIFFUSE, asFloatBuffer(lightDiffuse));
-                glLight(GL_LIGHT1, GL_DIFFUSE, asFloatBuffer(lightDiffuse));
-            }
             camera.applyTranslations();
 
             if (Mouse.isGrabbed()) {
@@ -1004,7 +970,6 @@ public class Voxels {
                         }
                     }
                     if (chunk.blocks[x][y][z].isType(Block.WATER)) {
-
                         if (top[x][y][z]) {
 
                             // upper left
@@ -1024,7 +989,7 @@ public class Voxels {
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + y;
+                            vertexArray[vArrayPos] = size / 2f + y-WaterOffs;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
@@ -1051,7 +1016,7 @@ public class Voxels {
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + y;
+                            vertexArray[vArrayPos] = size / 2f + y-WaterOffs;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
@@ -1078,7 +1043,7 @@ public class Voxels {
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + y;
+                            vertexArray[vArrayPos] = size / 2f + y-WaterOffs;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
@@ -1105,7 +1070,7 @@ public class Voxels {
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + y;
+                            vertexArray[vArrayPos] = size / 2f + y-WaterOffs;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
@@ -1288,7 +1253,7 @@ public class Voxels {
 
     }
 
-    private static FloatBuffer asFloatBuffer(float[] values) {
+    public static FloatBuffer asFloatBuffer(float[] values) {
         FloatBuffer buffer = BufferUtils.createFloatBuffer(values.length);
         buffer.put(values);
         buffer.flip();

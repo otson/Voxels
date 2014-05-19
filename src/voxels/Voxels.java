@@ -35,7 +35,7 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains withs a width of one
      * block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAINS_SMOOTHESS = 15;
+    public static final int TERRAINS_SMOOTHESS = 5;
     /**
      * Set player's height. One block's height is 1.
      */
@@ -291,7 +291,11 @@ public class Voxels {
             for (int z = 0; z < chunk.blocks[x][0].length; z++) {
                 for (int y = 0; y < chunk.blocks[x].length; y++) {
                     if (chunk.blocks[x][y][z].isType(Block.GROUND)) {
-                        vertices += calculateCubeVertices(chunk, x, y, z, getCamChunkX() * chunk.blocks.length + xOff, 0, getCamChunkZ() * chunk.blocks.length + zOff, 1);
+                        vertices += calculateGroundVertices(chunk, x, y, z, getCamChunkX() * chunk.blocks.length + xOff, 0, getCamChunkZ() * chunk.blocks.length + zOff, 1);
+                        drawnBlocks++;
+                    }
+                    else if (chunk.blocks[x][y][z].isType(Block.WATER)) {
+                        vertices += calculateWaterVertices(chunk, x, y, z, getCamChunkX() * chunk.blocks.length + xOff, 0, getCamChunkZ() * chunk.blocks.length + zOff, 1);
                         drawnBlocks++;
                     }
                 }
@@ -980,6 +984,120 @@ public class Voxels {
 
                         }
                     }
+                    if (chunk.blocks[x][y][z].isType(Block.WATER)) {
+
+                        if (top[x][y][z]) {
+
+                            // upper left
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+
+                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
+                            vArrayPos++;
+                            vertexArray[vArrayPos] = size / 2f + y;
+                            vArrayPos++;
+                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
+                            vArrayPos++;
+
+                            texArray[tArrayPos] = 0f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0.5f;
+                            tArrayPos++;
+
+                            // lower left
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+
+                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
+                            vArrayPos++;
+                            vertexArray[vArrayPos] = size / 2f + y;
+                            vArrayPos++;
+                            vertexArray[vArrayPos] = size / 2f + z + zOff;
+                            vArrayPos++;
+
+                            texArray[tArrayPos] = 0f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1f;
+                            tArrayPos++;
+
+                            // lower right
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+
+                            vertexArray[vArrayPos] = size / 2f + x + xOff;
+                            vArrayPos++;
+                            vertexArray[vArrayPos] = size / 2f + y;
+                            vArrayPos++;
+                            vertexArray[vArrayPos] = size / 2f + z + zOff;
+                            vArrayPos++;
+
+                            texArray[tArrayPos] = 1f / 2f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1f;
+                            tArrayPos++;
+
+                            // upper right
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 1;
+                            nArrayPos++;
+                            normalArray[nArrayPos] = 0;
+                            nArrayPos++;
+
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+                            colorArray[cArrayPos] = 1;
+                            cArrayPos++;
+
+                            vertexArray[vArrayPos] = size / 2f + x + xOff;
+                            vArrayPos++;
+                            vertexArray[vArrayPos] = size / 2f + y;
+                            vArrayPos++;
+                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
+                            vArrayPos++;
+
+                            texArray[tArrayPos] = 1f / 2f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0.5f;
+                            tArrayPos++;
+                        }
+
+                    }
                 }
             }
         }
@@ -1027,7 +1145,7 @@ public class Voxels {
         //System.out.println("One chunk creation took "+((endTime-startTime)/1000000)+ " ms.");
     }
 
-    public static int calculateCubeVertices(Chunk chunk, float x, float y, float z, float xOff, float yOff, float zOff, float size) {
+    public static int calculateGroundVertices(Chunk chunk, float x, float y, float z, float xOff, float yOff, float zOff, float size) {
         int zMax = Chunk.CHUNK_WIDTH - 1;
         int xMax = Chunk.CHUNK_WIDTH - 1;
         int yMax = Chunk.CHUNK_HEIGHT - 1;
@@ -1045,7 +1163,7 @@ public class Voxels {
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx][zz + 1];
         }
-        if (render || chunk.blocks[xx][yy][zz + 1].isType(Block.AIR) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+        if (render || chunk.blocks[xx][yy][zz + 1].isType(Block.AIR) || chunk.blocks[xx][yy][zz + 1].isType(Block.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             front[xx][yy][zz] = true;
             returnVertices += 4;
         }
@@ -1059,7 +1177,7 @@ public class Voxels {
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx - 1][zz];
         }
-        if (render || chunk.blocks[xx - 1][yy][zz].isType(Block.AIR) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+        if (render || chunk.blocks[xx - 1][yy][zz].isType(Block.AIR) || chunk.blocks[xx - 1][yy][zz].isType(Block.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             left[xx][yy][zz] = true;
             returnVertices += 4;
         }
@@ -1073,7 +1191,7 @@ public class Voxels {
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx][zz - 1];
         }
-        if (render || chunk.blocks[xx][yy][zz - 1].isType(Block.AIR) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+        if (render || chunk.blocks[xx][yy][zz - 1].isType(Block.AIR) || chunk.blocks[xx][yy][zz - 1].isType(Block.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             back[xx][yy][zz] = true;
             returnVertices += 4;
         }
@@ -1087,7 +1205,7 @@ public class Voxels {
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx + 1][zz];
         }
-        if (render || chunk.blocks[xx + 1][yy][zz].isType(Block.AIR) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+        if (render || chunk.blocks[xx + 1][yy][zz].isType(Block.AIR) || chunk.blocks[xx + 1][yy][zz].isType(Block.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             right[xx][yy][zz] = true;
             returnVertices += 4;
         }
@@ -1098,7 +1216,7 @@ public class Voxels {
         render = false;
         if (y == yMax)
             render = true;
-        if (render || chunk.blocks[xx][yy + 1][zz].isType(Block.AIR) && maxHeights[xx][zz] == yy) {
+        if (render || chunk.blocks[xx][yy + 1][zz].isType(Block.AIR) || chunk.blocks[xx][yy + 1][zz].isType(Block.WATER) && maxHeights[xx][zz] == yy) {
             top[xx][yy][zz] = true;
             returnVertices += 4;
         }
@@ -1109,13 +1227,35 @@ public class Voxels {
         render = false;
         if (y == 0)
             render = true;
-        if (render || chunk.blocks[xx][yy - 1][zz].isType(Block.AIR) && maxHeights[xx][zz] + 1 == yy) {
+        if (render || chunk.blocks[xx][yy - 1][zz].isType(Block.AIR) || chunk.blocks[xx][yy - 1][zz].isType(Block.WATER) && maxHeights[xx][zz] + 1 == yy) {
             bottom[xx][yy][zz] = true;
             returnVertices += 4;
         }
         else
             bottom[xx][yy][zz] = false;
         return returnVertices;
+    }
+
+    public static int calculateWaterVertices(Chunk chunk, float x, float y, float z, float xOff, float yOff, float zOff, float size) {
+        int yMax = Chunk.CHUNK_HEIGHT - 1;
+        int xx = Math.round(x);
+        int yy = Math.round(y);
+        int zz = Math.round(z);
+        int returnVertices = 0;
+        boolean render = false;
+
+        // top face
+        if (y == yMax)
+            render = true;
+        if (render || chunk.blocks[xx][yy + 1][zz].isType(Block.AIR) && y == Chunk.WATER_HEIGHT) {
+            top[xx][yy][zz] = true;
+            returnVertices += 4;
+        }
+        else
+            top[xx][yy][zz] = false;
+
+        return returnVertices;
+
     }
 
     private static void processKeyboard() {

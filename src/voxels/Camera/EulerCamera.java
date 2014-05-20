@@ -858,4 +858,6 @@ public class EulerCamera implements Camera {
     public boolean getFlying() {
         return flying;
     }
+    
+    
 }

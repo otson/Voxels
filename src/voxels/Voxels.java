@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
+import static org.lwjgl.Sys.getTime;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -49,7 +50,7 @@ public class Voxels {
     public static int chunkCreationDistance = 3;
     public static int chunkRenderDistance = 4;
     public static Texture atlas;
-    public static final float WaterOffs = 0.3f;
+    public static final float WaterOffs = 0.28f;
 
     private static EulerCamera camera;
     private static ChunkCreator chunkCreator = new ChunkCreator();
@@ -66,6 +67,10 @@ public class Voxels {
     private static int colorSize = 3;
     private static int normalSize = 3;
     private static int texSize = 2;
+    private static int fps = 0;
+    private static long lastFPS = getTime();
+
+    private static long lastFrame = System.nanoTime();
 
     public static void main(String[] args) {
         initDisplay();
@@ -130,15 +135,12 @@ public class Voxels {
     }
 
     private static void gameLoop() {
-
+        float delta = getDelta();
         long startTime;
         long endTime;
         long totalTime = 0;
-        long chunkUpdateTime = 0;
         int fps = 0;
-        long lastLoopTime = 0;
         int camSpeed = 4;
-        int currentSpeed = camSpeed;
         boolean generateChunks = false;
         boolean running = true;
         boolean moveFaster;
@@ -159,14 +161,9 @@ public class Voxels {
         camera.setPosition(camera.x(), 256f, camera.z());
 
         while (!Display.isCloseRequested() && running) {
-            startTime = System.nanoTime();
+            delta = getDelta();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glViewport(0, 0, Display.getWidth(), Display.getHeight());
-            camera.setAspectRatio((float) Display.getWidth() / Display.getHeight());
 
-            if (Display.wasResized()) {
-                camera.applyPerspectiveMatrix();
-            }
             moveFaster = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
             while (Keyboard.next()) {
 
@@ -195,19 +192,23 @@ public class Voxels {
             if (generateChunks) {
                 if (fps % 3 == 0) {
                     checkChunkUpdates(map);
-                    chunkUpdateTime = 0;
                 }
             }
 
+            glViewport(0, 0, Display.getWidth(), Display.getHeight());
+            camera.setAspectRatio((float) Display.getWidth() / Display.getHeight());
+
+            if (Display.wasResized()) {
+                camera.applyPerspectiveMatrix();
+            }
             camera.applyTranslations();
 
             if (Mouse.isGrabbed()) {
                 camera.processMouse();
-                camera.processKeyboard(16, camSpeed);
+                camera.processKeyboard(delta, camSpeed);
+                glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
+                glLight(GL_LIGHT1, GL_POSITION, asFloatBuffer(light1Position));
             }
-            processKeyboard();
-            glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
-            glLight(GL_LIGHT1, GL_POSITION, asFloatBuffer(light1Position));
 
             for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
                 for (int z = -chunkRenderDistance; z <= chunkRenderDistance; z++) {
@@ -251,16 +252,8 @@ public class Voxels {
                 camSpeed /= 3;
             Display.update();
             Display.sync(60);
-            fps++;
-            endTime = System.nanoTime();
-            totalTime += endTime - startTime;
-            chunkUpdateTime += endTime - startTime;
-            lastLoopTime = endTime - startTime;
-            if (totalTime > 1000000000) {
-                Display.setTitle(TITLE + " - FPS: " + fps);
-                totalTime = 0;
-                fps = 0;
-            }
+            updateFPS();
+
         }
         Display.destroy();
         System.exit(0);
@@ -288,10 +281,9 @@ public class Voxels {
             }
         }
         //System.out.println("");
-        //System.out.println("Time to calculate vertices took: "+(System.nanoTime()-startTime)/1000000 +" ms.");
         startTime = System.nanoTime();
         chunk.setVertices(vertices);
-        //System.out.println("Vertices: " + vertices);
+        System.out.println("Vertices: " + vertices);
         float[] vertexArray = new float[vertices * vertexSize];
         float[] colorArray = new float[vertices * colorSize];
         float[] normalArray = new float[vertices * normalSize];
@@ -1089,8 +1081,6 @@ public class Voxels {
                 }
             }
         }
-        //System.out.println("Setting array values took: "+(System.nanoTime()-startTime)/1000000 +" ms.");
-        startTime = System.nanoTime();
 
         vertexData.put(vertexArray);
         vertexData.flip();
@@ -1132,10 +1122,6 @@ public class Voxels {
         glBufferData(GL_ARRAY_BUFFER, texData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        //System.out.println("Chunks created: " + vboTexHandle / 4);
-        long endTime = System.nanoTime();
-        //System.out.println("One chunk creation took "+((endTime-startTime)/1000000)+ " ms.");
-        //System.out.println("Rest of the loop took: "+(System.nanoTime()-startTime)/1000000 +" ms.");
     }
 
     public static int calculateGroundVertices(Chunk chunk, float x, float y, float z, float xOff, float yOff, float zOff, float size) {
@@ -1364,4 +1350,25 @@ public class Voxels {
         }
     }
 
+    public static float getDelta() {
+        long time = getTime();
+        int delta = (int) (time - lastFrame);
+        lastFrame = time;
+        System.out.println("Delta: " + delta);
+        return Math.max(delta, 1);
+
+    }
+
+    public static long getTime() {
+        return System.nanoTime() / 1000000;
+    }
+
+    public static void updateFPS() {
+        if (getTime() - lastFPS > 1000) {
+            Display.setTitle(TITLE + " - FPS: " + fps);
+            fps = 0; //reset the FPS counter
+            lastFPS += 1000; //add one second
+        }
+        fps++;
+    }
 }

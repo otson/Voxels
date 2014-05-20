@@ -83,7 +83,7 @@ public class Voxels {
         initDisplay();
         initOpenGL();
         initLighting();
-        //initTextures();
+        initTextures();
         initBooleanArrays();
         gameLoop();
     }
@@ -440,11 +440,23 @@ public class Voxels {
                             tArrayPos++;
                             texArray[tArrayPos] = 1 / 2f + 0.5f;
                             tArrayPos++;
+                            
+                            //2nd
+                            
+                            texArray[tArrayPos] = 0 + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0 + 0.5f;
+                            tArrayPos++;
+                            
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
 
-//                            texArray[tArrayPos] = 1 / 2f + 0.5f;
-//                            tArrayPos++;
-//                            texArray[tArrayPos] = 0 + 0.5f;
-//                            tArrayPos++;
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0 + 0.5f;
+                            tArrayPos++;
                             
                             // 1st
                             // upper left + -
@@ -553,11 +565,25 @@ public class Voxels {
                             tArrayPos++;
                             texArray[tArrayPos] = 1 / 2f + 0.5f;
                             tArrayPos++;
+                            
+                            // 2nd
+                            
+                            texArray[tArrayPos] = 0 + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0 + 0.5f;
+                            tArrayPos++;
+                            
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
 
-//                            texArray[tArrayPos] = 1 / 2f + 0.5f;
-//                            tArrayPos++;
-//                            texArray[tArrayPos] = 0 + 0.5f;
-//                            tArrayPos++;
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0 + 0.5f;
+                            tArrayPos++;
+                            
+                            
                             
                             // 1st
                             
@@ -669,11 +695,22 @@ public class Voxels {
                             tArrayPos++;
                             texArray[tArrayPos] = 1 / 2f + 0.5f;
                             tArrayPos++;
-
-//                            texArray[tArrayPos] = 1 / 2f + 0.5f;
-//                            tArrayPos++;
-//                            texArray[tArrayPos] = 0 + 0.5f;
-//                            tArrayPos++;
+                            
+                            // 2nd
+                            texArray[tArrayPos] = 0 + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0 + 0.5f;
+                            tArrayPos++;
+                            
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+                            
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0 + 0.5f;
+                            tArrayPos++;
                             
                             // 1st
                             // upper right + -
@@ -908,11 +945,22 @@ public class Voxels {
                             tArrayPos++;
                             texArray[tArrayPos] = 1 / 2f + 0.5f;
                             tArrayPos++;
-
-//                            texArray[tArrayPos] = 1 / 2f + 0.5f;
-//                            tArrayPos++;
-//                            texArray[tArrayPos] = 0 + 0.5f;
-//                            tArrayPos++;
+                            
+                            // 2nd
+                            texArray[tArrayPos] = 0 + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0 + 0.5f;
+                            tArrayPos++;  
+                            
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+                           
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 0 + 0.5f;
+                            tArrayPos++;
                             
                             // 1st
                             // upper left + -

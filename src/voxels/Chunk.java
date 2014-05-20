@@ -8,11 +8,10 @@ public class Chunk {
 
     public static final int CHUNK_WIDTH = 16;
     public static final int CHUNK_HEIGHT = 256;
-    public static final int WATER_HEIGHT = 64;
+    public static final int WATER_HEIGHT = 60;
 
     public final int X_OFF;
     public final int Z_OFF;
-    private int vboColorHandle;
     private int vboVertexHandle;
     private int vboNormalHandle;
     private int vboTexHandle;
@@ -87,14 +86,6 @@ public class Chunk {
 
     public int[][] getMaxHeights() {
         return maxHeights;
-    }
-
-    public int getVboColorHandle() {
-        return vboColorHandle;
-    }
-
-    public void setVboColorHandle(int vboColorHandle) {
-        this.vboColorHandle = vboColorHandle;
     }
 
     public int getVboVertexHandle() {

@@ -36,7 +36,7 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains withs a width of one
      * block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAINS_SMOOTHESS = 17;
+    public static final int TERRAINS_SMOOTHESS = 9;
     /**
      * Set player's height. One block's height is 1.
      */
@@ -47,8 +47,8 @@ public class Voxels {
     public static final int FIELD_OF_VIEW = 90;
 
     public static HashMap<Integer, Chunk> map;
-    public static int chunkCreationDistance = 1;
-    public static int chunkRenderDistance = 4;
+    public static int chunkCreationDistance = 3;
+    public static int chunkRenderDistance = 3;
     public static Texture atlas;
     public static final float WaterOffs = 0.28f;
 
@@ -64,15 +64,22 @@ public class Voxels {
     private static boolean[][][] front = new boolean[Chunk.CHUNK_WIDTH][][];
     private static boolean[][][] back = new boolean[Chunk.CHUNK_WIDTH][][];
     private static int vertexSize = 3;
-    private static int colorSize = 3;
     private static int normalSize = 3;
     private static int texSize = 2;
     private static int fps = 0;
     private static long lastFPS = getTime();
+    
+    public static int count = 0;
 
     private static long lastFrame = System.nanoTime();
 
     public static void main(String[] args) {
+        long start = System.nanoTime();
+        int temp;
+        for (int i = 0; i < 500; i++) {
+            temp = getNoise(i * i, i * i);
+        }
+        System.out.println("Time taken: "+(System.nanoTime()-start)/1000000+" ms.");
         initDisplay();
         initOpenGL();
         initLighting();
@@ -83,7 +90,7 @@ public class Voxels {
 
     private static void initDisplay() {
         try {
-            Display.setDisplayMode(new DisplayMode(1440, 900));
+            Display.setDisplayMode(new DisplayMode(800, 480));
             Display.setVSyncEnabled(true);
             Display.setTitle("Voxels");
             Display.create();
@@ -139,7 +146,7 @@ public class Voxels {
         long startTime;
         long endTime;
         long totalTime = 0;
-        int camSpeed = 4;
+        int camSpeed = 2;
         boolean generateChunks = false;
         boolean running = true;
         boolean moveFaster;
@@ -189,7 +196,7 @@ public class Voxels {
                 camSpeed *= 3;
             glLoadIdentity();
             if (generateChunks) {
-                if (fps % 10 == 0 && fps != 0) {
+                if (fps %10 == 0) {
                     checkChunkUpdates(map);
                 }
             }
@@ -276,7 +283,7 @@ public class Voxels {
         //System.out.println("");
         startTime = System.nanoTime();
         chunk.setVertices(vertices);
-        System.out.println("Vertices: " + vertices);
+        //System.out.println("Vertices: " + vertices);
         float[] vertexArray = new float[vertices * vertexSize];
         float[] normalArray = new float[vertices * normalSize];
         float[] texArray = new float[vertices * texSize];
@@ -404,7 +411,7 @@ public class Voxels {
                             nArrayPos++;
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
-                            
+
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -671,7 +678,7 @@ public class Voxels {
                             nArrayPos++;
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
-                            
+
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -762,7 +769,7 @@ public class Voxels {
                             nArrayPos++;
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
-                            
+
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -878,7 +885,7 @@ public class Voxels {
 
         vertexData.put(vertexArray);
         vertexData.flip();
-        
+
         normalData.put(normalArray);
         normalData.flip();
 
@@ -891,13 +898,6 @@ public class Voxels {
         glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
         glBufferData(GL_ARRAY_BUFFER, vertexData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-//        int vboColorHandle = glGenBuffers();
-//        chunk.setVboColorHandle(vboColorHandle);
-//
-//        glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
-//        glBufferData(GL_ARRAY_BUFFER, colorData, GL_STATIC_DRAW);
-//        glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         int vboNormalHandle = glGenBuffers();
         chunk.setVboNormalHandle(vboNormalHandle);
@@ -1081,13 +1081,15 @@ public class Voxels {
                 map.put(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode(), chunk);
                 newChunk = true;
                 long end = System.nanoTime();
-                System.out.println("Chunk creation took: " + (end - start) / 1000000 + " ms.");
+                //if((end - start) / 1000000 > 50)
+                    System.out.println("Chunk creation took: " + (end - start) / 1000000 + " ms.");
             }
         }
     }
 
     public static int getNoise(float x, float z) {
-        int noise = (int) ((FastNoise.noise(x / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS), z / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS), 7)) * (Chunk.CHUNK_HEIGHT / 256f)) - 1;
+        int noise = (int) ((FastNoise.noise(x / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS), z / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS), 2)) * (Chunk.CHUNK_HEIGHT / 256f)) - 1;
+        count++;
         return Math.max(noise, 0);
     }
 
@@ -1145,7 +1147,6 @@ public class Voxels {
         long time = getTime();
         int delta = (int) (time - lastFrame);
         lastFrame = time;
-        System.out.println("Delta: " + delta);
         return Math.max(delta, 1);
 
     }

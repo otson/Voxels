@@ -237,7 +237,7 @@ public class Voxels {
                         glEnableClientState(GL_VERTEX_ARRAY);
                         glEnableClientState(GL_NORMAL_ARRAY);
                         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-                        glDrawArrays(GL_QUADS, 0, vertices);
+                        glDrawArrays(GL_TRIANGLE_STRIP, 0, vertices);
                         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
                         glDisableClientState(GL_NORMAL_ARRAY);
                         glDisableClientState(GL_VERTEX_ARRAY);
@@ -362,25 +362,25 @@ public class Voxels {
                             texArray[tArrayPos] = 1 / 2f + 0.5f;
                             tArrayPos++;
 
-                            // upper right + +
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 1;
-                            nArrayPos++;
-
-                            vertexArray[vArrayPos] = size / 2f + x + xOff;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + y;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + z + zOff;
-                            vArrayPos++;
-
-                            texArray[tArrayPos] = 1 / 2f + 0.5f;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 0 + 0.5f;
-                            tArrayPos++;
+//                            // upper right + +
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 1;
+//                            nArrayPos++;
+//
+//                            vertexArray[vArrayPos] = size / 2f + x + xOff;
+//                            vArrayPos++;
+//                            vertexArray[vArrayPos] = size / 2f + y;
+//                            vArrayPos++;
+//                            vertexArray[vArrayPos] = size / 2f + z + zOff;
+//                            vArrayPos++;
+//
+//                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+//                            tArrayPos++;
+//                            texArray[tArrayPos] = 0 + 0.5f;
+//                            tArrayPos++;
 
                         }
                         if (back[x][y][z]) {
@@ -399,10 +399,10 @@ public class Voxels {
                             texArray[tArrayPos] = 1 / 2f + 0.5f;
                             tArrayPos++;
 
-                            texArray[tArrayPos] = 1 / 2f + 0.5f;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 0 + 0.5f;
-                            tArrayPos++;
+//                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+//                            tArrayPos++;
+//                            texArray[tArrayPos] = 0 + 0.5f;
+//                            tArrayPos++;
 
                             // upper left + +
                             normalArray[nArrayPos] = 0;
@@ -449,20 +449,20 @@ public class Voxels {
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
 
-                            // upper right - +
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = -1;
-                            nArrayPos++;
-
-                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + y;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
-                            vArrayPos++;
+//                            // upper right - +
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = -1;
+//                            nArrayPos++;
+//
+//                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
+//                            vArrayPos++;
+//                            vertexArray[vArrayPos] = size / 2f + y;
+//                            vArrayPos++;
+//                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
+//                            vArrayPos++;
 
                         }
                         if (right[x][y][z]) {
@@ -482,10 +482,10 @@ public class Voxels {
                             texArray[tArrayPos] = 1 / 2f + 0.5f;
                             tArrayPos++;
 
-                            texArray[tArrayPos] = 1 / 2f + 0.5f;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 0 + 0.5f;
-                            tArrayPos++;
+//                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+//                            tArrayPos++;
+//                            texArray[tArrayPos] = 0 + 0.5f;
+//                            tArrayPos++;
 
                             // upper right + +
                             normalArray[nArrayPos] = 1;
@@ -532,20 +532,20 @@ public class Voxels {
                             vertexArray[vArrayPos] = -size / 2f + z + zOff;
                             vArrayPos++;
 
-                            // upper left + -
-                            normalArray[nArrayPos] = 1;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-
-                            vertexArray[vArrayPos] = size / 2f + x + xOff;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + y;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
-                            vArrayPos++;
+//                            // upper left + -
+//                            normalArray[nArrayPos] = 1;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//
+//                            vertexArray[vArrayPos] = size / 2f + x + xOff;
+//                            vArrayPos++;
+//                            vertexArray[vArrayPos] = size / 2f + y;
+//                            vArrayPos++;
+//                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
+//                            vArrayPos++;
 
                         }
                         if (left[x][y][z]) {
@@ -564,10 +564,10 @@ public class Voxels {
                             texArray[tArrayPos] = 1 / 2f + 0.5f;
                             tArrayPos++;
 
-                            texArray[tArrayPos] = 1 / 2f + 0.5f;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 0 + 0.5f;
-                            tArrayPos++;
+//                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+//                            tArrayPos++;
+//                            texArray[tArrayPos] = 0 + 0.5f;
+//                            tArrayPos++;
 
                             // upper right + -
                             normalArray[nArrayPos] = -1;
@@ -614,20 +614,20 @@ public class Voxels {
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
 
-                            // upper left + +
-                            normalArray[nArrayPos] = -1;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-
-                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + y;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + z + zOff;
-                            vArrayPos++;
+//                            // upper left + +
+//                            normalArray[nArrayPos] = -1;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//
+//                            vertexArray[vArrayPos] = -size / 2f + x + xOff;
+//                            vArrayPos++;
+//                            vertexArray[vArrayPos] = size / 2f + y;
+//                            vArrayPos++;
+//                            vertexArray[vArrayPos] = size / 2f + z + zOff;
+//                            vArrayPos++;
                         }
                         if (top[x][y][z]) {
 
@@ -691,25 +691,25 @@ public class Voxels {
                             texArray[tArrayPos] = 1f / 2f;
                             tArrayPos++;
 
-                            // upper right
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 1;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-
-                            vertexArray[vArrayPos] = size / 2f + x + xOff;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + y;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
-                            vArrayPos++;
-
-                            texArray[tArrayPos] = 1f / 2f;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 0f;
-                            tArrayPos++;
+//                            // upper right
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 1;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//
+//                            vertexArray[vArrayPos] = size / 2f + x + xOff;
+//                            vArrayPos++;
+//                            vertexArray[vArrayPos] = size / 2f + y;
+//                            vArrayPos++;
+//                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
+//                            vArrayPos++;
+//
+//                            texArray[tArrayPos] = 1f / 2f;
+//                            tArrayPos++;
+//                            texArray[tArrayPos] = 0f;
+//                            tArrayPos++;
                         }
                         if (bottom[x][y][z]) {
                             texArray[tArrayPos] = 0 + 0.5f;
@@ -727,10 +727,10 @@ public class Voxels {
                             texArray[tArrayPos] = 1 / 2f + 0.5f;
                             tArrayPos++;
 
-                            texArray[tArrayPos] = 1 / 2f + 0.5f;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 0 + 0.5f;
-                            tArrayPos++;
+//                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+//                            tArrayPos++;
+//                            texArray[tArrayPos] = 0 + 0.5f;
+//                            tArrayPos++;
 
                             // upper left + -
                             normalArray[nArrayPos] = 0;
@@ -777,20 +777,20 @@ public class Voxels {
                             vertexArray[vArrayPos] = size / 2f + z + zOff;
                             vArrayPos++;
 
-                            // upper right + +
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = -1;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-
-                            vertexArray[vArrayPos] = size / 2f + x + xOff;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2f + y;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + z + zOff;
-                            vArrayPos++;
+//                            // upper right + +
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = -1;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//
+//                            vertexArray[vArrayPos] = size / 2f + x + xOff;
+//                            vArrayPos++;
+//                            vertexArray[vArrayPos] = -size / 2f + y;
+//                            vArrayPos++;
+//                            vertexArray[vArrayPos] = size / 2f + z + zOff;
+//                            vArrayPos++;
 
                         }
                     }
@@ -857,25 +857,25 @@ public class Voxels {
                             texArray[tArrayPos] = 1f;
                             tArrayPos++;
 
-                            // upper right
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 1;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-
-                            vertexArray[vArrayPos] = size / 2f + x + xOff;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = size / 2f + y - WaterOffs;
-                            vArrayPos++;
-                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
-                            vArrayPos++;
-
-                            texArray[tArrayPos] = 1f / 2f;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 0.5f;
-                            tArrayPos++;
+//                            // upper right
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 1;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//
+//                            vertexArray[vArrayPos] = size / 2f + x + xOff;
+//                            vArrayPos++;
+//                            vertexArray[vArrayPos] = size / 2f + y - WaterOffs;
+//                            vArrayPos++;
+//                            vertexArray[vArrayPos] = -size / 2f + z + zOff;
+//                            vArrayPos++;
+//
+//                            texArray[tArrayPos] = 1f / 2f;
+//                            tArrayPos++;
+//                            texArray[tArrayPos] = 0.5f;
+//                            tArrayPos++;
                         }
 
                     }
@@ -935,7 +935,7 @@ public class Voxels {
         }
         if (render || chunk.blocks[xx][yy][zz + 1].isType(Block.AIR) || chunk.blocks[xx][yy][zz + 1].isType(Block.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             front[xx][yy][zz] = true;
-            returnVertices += 4;
+            returnVertices += 3;
         }
         else
             front[xx][yy][zz] = false;
@@ -949,7 +949,7 @@ public class Voxels {
         }
         if (render || chunk.blocks[xx - 1][yy][zz].isType(Block.AIR) || chunk.blocks[xx - 1][yy][zz].isType(Block.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             left[xx][yy][zz] = true;
-            returnVertices += 4;
+            returnVertices += 3;
         }
         else
             left[xx][yy][zz] = false;
@@ -963,7 +963,7 @@ public class Voxels {
         }
         if (render || chunk.blocks[xx][yy][zz - 1].isType(Block.AIR) || chunk.blocks[xx][yy][zz - 1].isType(Block.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             back[xx][yy][zz] = true;
-            returnVertices += 4;
+            returnVertices += 3;
         }
         else
             back[xx][yy][zz] = false;
@@ -977,7 +977,7 @@ public class Voxels {
         }
         if (render || chunk.blocks[xx + 1][yy][zz].isType(Block.AIR) || chunk.blocks[xx + 1][yy][zz].isType(Block.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             right[xx][yy][zz] = true;
-            returnVertices += 4;
+            returnVertices += 3;
         }
         else
             right[xx][yy][zz] = false;
@@ -988,7 +988,7 @@ public class Voxels {
             render = true;
         if (render || chunk.blocks[xx][yy + 1][zz].isType(Block.AIR) || chunk.blocks[xx][yy + 1][zz].isType(Block.WATER) && maxHeights[xx][zz] == yy) {
             top[xx][yy][zz] = true;
-            returnVertices += 4;
+            returnVertices += 3;
         }
         else
             top[xx][yy][zz] = false;
@@ -999,7 +999,7 @@ public class Voxels {
             render = true;
         if (render || chunk.blocks[xx][yy - 1][zz].isType(Block.AIR) || chunk.blocks[xx][yy - 1][zz].isType(Block.WATER) && maxHeights[xx][zz] + 1 == yy) {
             bottom[xx][yy][zz] = true;
-            returnVertices += 4;
+            returnVertices += 3;
         }
         else
             bottom[xx][yy][zz] = false;
@@ -1019,7 +1019,7 @@ public class Voxels {
             render = true;
         if (render || chunk.blocks[xx][yy + 1][zz].isType(Block.AIR) && y == Chunk.WATER_HEIGHT) {
             top[xx][yy][zz] = true;
-            returnVertices += 4;
+            returnVertices += 3;
         }
         else
             top[xx][yy][zz] = false;

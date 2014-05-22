@@ -138,21 +138,13 @@ public class Voxels {
         camera = InitCamera();
         chunkManager.generateChunk(0, 0);
 
-//        map = new HashMap<>();
-//        map.put(new Pair(getCurrentChunkX(), getCurrentChunkZ()).hashCode(), new Chunk(0, 0));
-//        drawChunkVBO(map.get(new Pair(getCurrentChunkX(), getCurrentChunkZ()).hashCode()), 0, 0);
         glMatrixMode(GL_PROJECTION);
-
         glLoadIdentity();
-        //gluPerspective((float) 90, 1.6f, 0.3f, 5000);
         glMatrixMode(GL_MODELVIEW);
         glEnable(GL_DEPTH_TEST);
 
         glClearColor(0f / 255f, 0f / 255f, 190f / 255f, 1.0f);
         camera.setPosition(camera.x(), 256f, camera.z());
-        long timePassed;
-        long oldTime = System.nanoTime();
-        long newTime;
         while (!Display.isCloseRequested() && running) {
             delta = getDelta();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

@@ -21,7 +21,9 @@ import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL32.GL_SYNC_GPU_COMMANDS_COMPLETE;
+import static org.lwjgl.opengl.GL32.GL_TIMEOUT_IGNORED;
 import static org.lwjgl.opengl.GL32.glFenceSync;
+import static org.lwjgl.opengl.GL32.glWaitSync;
 import org.lwjgl.opengl.GLContext;
 import org.lwjgl.opengl.GLSync;
 import org.lwjgl.util.Color;
@@ -76,16 +78,26 @@ public class ChunkMaker extends Thread {
                 if (generate) {
                     // Make the shared context current in the worker thread
                     drawable.makeCurrent();
-
-                    lock.lock();
-                    checkChunkUpdates();
-                    // OpenGL commands from different contexts may be executed in any order. So we need a way to synchronize
                     final boolean useFences = GLContext.getCapabilities().OpenGL32;
 
                     if (useFences)
                         fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
                     else
-                        glFlush(); // Best we can do without fences. This will force rendering on the main thread to happen after we upload the texture.
+                        glFlush();
+
+                    lock.lock();
+                    try {
+                        if (fence != null) {
+                            glWaitSync(fence, 0, GL_TIMEOUT_IGNORED);
+                            fence = null;
+                        }
+                        checkChunkUpdates();
+                    } finally {
+                        lock.unlock();
+                    }
+                    // OpenGL commands from different contexts may be executed in any order. So we need a way to synchronize
+                    // Best we can do without fences. This will force rendering on the main thread to happen after we upload the texture.
+
                 }
                 sleep(100);
             } catch (InterruptedException | LWJGLException ex) {
@@ -98,7 +110,7 @@ public class ChunkMaker extends Thread {
         boolean newChunk = false;
         Chunk chunk;
         int[] xzCoords;
-        
+
         chunkCreator.setCurrentChunkX(getCamChunkX());
         chunkCreator.setCurrentChunkZ(getCamChunkZ());
         while (!newChunk && chunkCreator.notAtMax()) {
@@ -115,7 +127,7 @@ public class ChunkMaker extends Thread {
                 newChunk = true;
                 long end = System.nanoTime();
                 //if((end - start) / 1000000 > 50)
-                System.out.println(map.size()+". chunk creation took: " + (end - start) / 1000000 + " ms.");
+                System.out.println(map.size() + ". chunk creation took: " + (end - start) / 1000000 + " ms.");
             }
         }
     }

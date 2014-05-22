@@ -29,9 +29,14 @@ public class Chunk {
         this.zId = zId;
         xCoordinate = xId * CHUNK_WIDTH;
         zCoordinate = zId * CHUNK_WIDTH;
-        blocks = new Block[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_WIDTH];
-        maxHeights = new int[CHUNK_WIDTH][CHUNK_WIDTH];
 
+        setAirBlocks();
+        setGroundBlocks();
+        setWaterBlocks();
+    }
+
+    private void setAirBlocks() {
+        blocks = new Block[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_WIDTH];
         for (int x = 0; x < blocks.length; x++) {
             blocks[x] = new Block[CHUNK_HEIGHT][CHUNK_WIDTH];
             for (int y = 0; y < blocks[x].length; y++) {
@@ -41,13 +46,10 @@ public class Chunk {
                 }
             }
         }
-
-        setGroundBlocks();
-        setWaterBlocks();
-
     }
 
     private void setGroundBlocks() {
+        maxHeights = new int[CHUNK_WIDTH][CHUNK_WIDTH];
         int activeBlocks = 0;
         int maxHeight;
         for (int x = 0; x < blocks.length; x++) {

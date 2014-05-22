@@ -30,8 +30,8 @@ import org.lwjgl.util.Color;
 import static voxels.Chunk.CHUNK_HEIGHT;
 import static voxels.Chunk.CHUNK_WIDTH;
 import static voxels.Voxels.WaterOffs;
-import static voxels.Voxels.getCamChunkX;
-import static voxels.Voxels.getCamChunkZ;
+import static voxels.Voxels.getCurrentChunkX;
+import static voxels.Voxels.getCurrentChunkZ;
 import static voxels.Voxels.map;
 
 /**
@@ -65,8 +65,8 @@ public class ChunkMaker extends Thread {
         this.map = map;
         this.drawable = drawable;
         initBooleanArrays();
-        map.put(new Pair(getCamChunkX(), getCamChunkZ()).hashCode(), new Chunk(0, 0));
-        drawChunkVBO(map.get(new Pair(getCamChunkX(), getCamChunkZ()).hashCode()), 0, 0);
+        map.put(new Pair(getCurrentChunkX(), getCurrentChunkZ()).hashCode(), new Chunk(0, 0));
+        drawChunkVBO(map.get(new Pair(getCurrentChunkX(), getCurrentChunkZ()).hashCode()), 0, 0);
     }
 
     @Override
@@ -111,19 +111,19 @@ public class ChunkMaker extends Thread {
         Chunk chunk;
         int[] xzCoords;
 
-        chunkCreator.setCurrentChunkX(getCamChunkX());
-        chunkCreator.setCurrentChunkZ(getCamChunkZ());
+        chunkCreator.setCurrentChunkX(getCurrentChunkX());
+        chunkCreator.setCurrentChunkZ(getCurrentChunkZ());
         while (!newChunk && chunkCreator.notAtMax()) {
-            xzCoords = chunkCreator.getNewXZ();
+            xzCoords = chunkCreator.getNewCoordinates();
             int x = xzCoords[0];
             int z = xzCoords[1];
 
-            if (map.containsKey(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode()) == false) {
-                chunk = new Chunk(getCamChunkX() + x, getCamChunkZ() + z);
+            if (map.containsKey(new Pair(getCurrentChunkX() + x, getCurrentChunkZ() + z).hashCode()) == false) {
+                chunk = new Chunk(getCurrentChunkX() + x, getCurrentChunkZ() + z);
                 long start = System.nanoTime();
                 drawChunkVBO(chunk, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
 
-                map.put(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode(), chunk);
+                map.put(new Pair(getCurrentChunkX() + x, getCurrentChunkZ() + z).hashCode(), chunk);
                 newChunk = true;
                 long end = System.nanoTime();
                 //if((end - start) / 1000000 > 50)
@@ -291,17 +291,17 @@ public class ChunkMaker extends Thread {
         int drawnBlocks = 0;
         int vertices = 0;
         int size = 1;
-        zOff += getCamChunkZ() * chunk.blocks.length;
-        xOff += getCamChunkX() * chunk.blocks.length;
+        zOff += getCurrentChunkZ() * chunk.blocks.length;
+        xOff += getCurrentChunkX() * chunk.blocks.length;
         for (int x = 0; x < chunk.blocks.length; x++) {
             for (int z = 0; z < chunk.blocks[x][0].length; z++) {
                 for (int y = 0; y < chunk.blocks[x].length; y++) {
                     if (chunk.blocks[x][y][z].isType(Block.GROUND)) {
-                        vertices += calculateGroundVertices(chunk, x, y, z, getCamChunkX() * chunk.blocks.length + xOff, 0, getCamChunkZ() * chunk.blocks.length + zOff, 1);
+                        vertices += calculateGroundVertices(chunk, x, y, z, getCurrentChunkX() * chunk.blocks.length + xOff, 0, getCurrentChunkZ() * chunk.blocks.length + zOff, 1);
                         drawnBlocks++;
                     }
                     else if (chunk.blocks[x][y][z].isType(Block.WATER)) {
-                        vertices += calculateWaterVertices(chunk, x, y, z, getCamChunkX() * chunk.blocks.length + xOff, 0, getCamChunkZ() * chunk.blocks.length + zOff, 1);
+                        vertices += calculateWaterVertices(chunk, x, y, z, getCurrentChunkX() * chunk.blocks.length + xOff, 0, getCurrentChunkZ() * chunk.blocks.length + zOff, 1);
                         drawnBlocks++;
                     }
                 }

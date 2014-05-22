@@ -23,7 +23,7 @@ public class ChunkCreator {
 
     }
 
-    int[] getNewXZ() {
+    int[] getNewCoordinates() {
         if (needMiddleChunk) {
             needMiddleChunk = false;
             return new int[]{0, 0};

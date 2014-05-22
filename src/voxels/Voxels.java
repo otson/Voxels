@@ -148,8 +148,8 @@ public class Voxels {
         camera = InitCamera();
 
         map = new HashMap<>();
-        map.put(new Pair(getCamChunkX(), getCamChunkZ()).hashCode(), new Chunk(0, 0));
-        drawChunkVBO(map.get(new Pair(getCamChunkX(), getCamChunkZ()).hashCode()), 0, 0);
+        map.put(new Pair(getCurrentChunkX(), getCurrentChunkZ()).hashCode(), new Chunk(0, 0));
+        drawChunkVBO(map.get(new Pair(getCurrentChunkX(), getCurrentChunkZ()).hashCode()), 0, 0);
 
         glMatrixMode(GL_PROJECTION);
 
@@ -214,8 +214,8 @@ public class Voxels {
             }
             for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
                 for (int z = -chunkRenderDistance; z <= chunkRenderDistance; z++) {
-                    if (map.containsKey(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode())) {
-                        Chunk currentChunk = map.get(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode());
+                    if (map.containsKey(new Pair(getCurrentChunkX() + x, getCurrentChunkZ() + z).hashCode())) {
+                        Chunk currentChunk = map.get(new Pair(getCurrentChunkX() + x, getCurrentChunkZ() + z).hashCode());
                         int vboVertexHandle = currentChunk.getVboVertexHandle();
                         int vboNormalHandle = currentChunk.getVboNormalHandle();
                         int vboTexHandle = currentChunk.getVboTexHandle();
@@ -267,17 +267,17 @@ public class Voxels {
         int drawnBlocks = 0;
         int vertices = 0;
         int size = 1;
-        zOff += getCamChunkZ() * chunk.blocks.length;
-        xOff += getCamChunkX() * chunk.blocks.length;
+        zOff += getCurrentChunkZ() * chunk.blocks.length;
+        xOff += getCurrentChunkX() * chunk.blocks.length;
         for (int x = 0; x < chunk.blocks.length; x++) {
             for (int z = 0; z < chunk.blocks[x][0].length; z++) {
                 for (int y = 0; y < chunk.blocks[x].length; y++) {
                     if (chunk.blocks[x][y][z].isType(Block.GROUND)) {
-                        vertices += calculateGroundVertices(chunk, x, y, z, getCamChunkX() * chunk.blocks.length + xOff, 0, getCamChunkZ() * chunk.blocks.length + zOff, 1);
+                        vertices += calculateGroundVertices(chunk, x, y, z, getCurrentChunkX() * chunk.blocks.length + xOff, 0, getCurrentChunkZ() * chunk.blocks.length + zOff, 1);
                         drawnBlocks++;
                     }
                     else if (chunk.blocks[x][y][z].isType(Block.WATER)) {
-                        vertices += calculateWaterVertices(chunk, x, y, z, getCamChunkX() * chunk.blocks.length + xOff, 0, getCamChunkZ() * chunk.blocks.length + zOff, 1);
+                        vertices += calculateWaterVertices(chunk, x, y, z, getCurrentChunkX() * chunk.blocks.length + xOff, 0, getCurrentChunkZ() * chunk.blocks.length + zOff, 1);
                         drawnBlocks++;
                     }
                 }
@@ -1639,7 +1639,7 @@ public class Voxels {
         return buffer;
     }
 
-    public final static int getCamChunkX() {
+    public final static int getCurrentChunkX() {
         int size = Chunk.CHUNK_WIDTH;
         int x = (int) (camera.x());
         if (x < 0)
@@ -1647,7 +1647,7 @@ public class Voxels {
         return x / size;
     }
 
-    public final static int getCamChunkZ() {
+    public final static int getCurrentChunkZ() {
         int size = Chunk.CHUNK_WIDTH;
         int z = (int) (camera.z());
         if (z < 0)
@@ -1659,19 +1659,24 @@ public class Voxels {
         boolean newChunk = false;
         Chunk chunk;
         int[] xzCoords;
-        chunkCreator.setCurrentChunkX(getCamChunkX());
-        chunkCreator.setCurrentChunkZ(getCamChunkZ());
+        int currentChunkX = getCurrentChunkX();
+        int currentChunkZ = getCurrentChunkZ();
+        chunkCreator.setCurrentChunkX(currentChunkX);
+        chunkCreator.setCurrentChunkZ(currentChunkZ);
         while (!newChunk && chunkCreator.notAtMax()) {
-            xzCoords = chunkCreator.getNewXZ();
+            xzCoords = chunkCreator.getNewCoordinates();
             int x = xzCoords[0];
             int z = xzCoords[1];
 
-            if (map.containsKey(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode()) == false) {
-                chunk = new Chunk(getCamChunkX() + x, getCamChunkZ() + z);
+            int newChunkX = currentChunkX + xzCoords[0];
+            int newChunkZ = currentChunkZ + xzCoords[1];
+
+            if (map.containsKey(new Pair(newChunkX, newChunkZ).hashCode()) == false) {
+                chunk = new Chunk(newChunkX, newChunkZ);
                 long start = System.nanoTime();
                 drawChunkVBO(chunk, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
 
-                map.put(new Pair(getCamChunkX() + x, getCamChunkZ() + z).hashCode(), chunk);
+                map.put(new Pair(newChunkX, newChunkZ).hashCode(), chunk);
                 newChunk = true;
                 long end = System.nanoTime();
                 //if((end - start) / 1000000 > 50)
@@ -1740,7 +1745,7 @@ public class Voxels {
         long time = getTime();
         int delta = (int) (time - lastFrame);
         lastFrame = time;
-        return Math.min(Math.max(delta, 1),50);
+        return Math.min(Math.max(delta, 1), 50);
 
     }
 

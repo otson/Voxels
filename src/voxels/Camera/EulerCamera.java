@@ -372,9 +372,9 @@ public class EulerCamera implements Camera {
 
         }
         if (flying == false) {
-            if (Voxels.map.containsKey(new Pair(Voxels.getCamChunkX(), Voxels.getCamChunkZ()).hashCode())) {
-                int[][] temp = map.get(new Pair(Voxels.getCamChunkX(), Voxels.getCamChunkZ()).hashCode()).getMaxHeights();
-                float blockHeight = temp[(int) (x() - Voxels.getCamChunkX() * Chunk.CHUNK_WIDTH)][(int) (z() - Voxels.getCamChunkZ() * Chunk.CHUNK_WIDTH)];
+            if (Voxels.map.containsKey(new Pair(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ()).hashCode())) {
+                int[][] temp = map.get(new Pair(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ()).hashCode()).getMaxHeights();
+                float blockHeight = temp[(int) (x() - Voxels.getCurrentChunkX() * Chunk.CHUNK_WIDTH)][(int) (z() - Voxels.getCurrentChunkZ() * Chunk.CHUNK_WIDTH)];
                 if (y() > blockHeight + PLAYER_HEIGHT) {
                     fall(blockHeight + PLAYER_HEIGHT);
 

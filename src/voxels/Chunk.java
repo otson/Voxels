@@ -10,22 +10,25 @@ public class Chunk {
     public static final int CHUNK_HEIGHT = 256;
     public static final int WATER_HEIGHT = 150;
 
-    public final int X_OFF;
-    public final int Z_OFF;
     private int vboVertexHandle;
     private int vboNormalHandle;
     private int vboTexHandle;
     private int vboColorHandle;
     private int vertices;
 
-    public Block[][][] blocks;
+    public final int xCoordinate;
+    public final int zCoordinate;
+    public final int xId;
+    public final int zId;
 
+    public Block[][][] blocks;
     public int[][] maxHeights;
 
-    public Chunk(int xOff, int zOff) {
-
-        X_OFF = xOff * (CHUNK_WIDTH);
-        Z_OFF = zOff * (CHUNK_WIDTH);
+    public Chunk(int xId, int zId) {
+        this.xId = xId;
+        this.zId = zId;
+        xCoordinate = xId * CHUNK_WIDTH;
+        zCoordinate = zId * CHUNK_WIDTH;
         blocks = new Block[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_WIDTH];
         maxHeights = new int[CHUNK_WIDTH][CHUNK_WIDTH];
 
@@ -49,7 +52,7 @@ public class Chunk {
         int maxHeight;
         for (int x = 0; x < blocks.length; x++) {
             for (int z = 0; z < blocks[x][0].length; z++) {
-                maxHeight = Voxels.getNoise(x + X_OFF, z + Z_OFF);
+                maxHeight = Voxels.getNoise(x + xCoordinate, z + zCoordinate);
                 maxHeights[x][z] = maxHeight;
             }
         }
@@ -59,7 +62,7 @@ public class Chunk {
             for (int z = 0; z < blocks[x][0].length; z++) {
                 if (x == 0 || z == 0 || x == blocks.length - 1 || z == blocks[x][0].length - 1)
                     // This shouldn't be min value of all 4 bordering block heights, since it can activate unnecessary blocks. Works for now.
-                    difference = Math.min(Math.min(Voxels.getNoise(x + X_OFF - 1, z + Z_OFF), Voxels.getNoise(x + X_OFF + 1, z + Z_OFF)), Math.min(Voxels.getNoise(x + X_OFF, z + Z_OFF + 1), Voxels.getNoise(x + X_OFF, z + Z_OFF - 1)));
+                    difference = Math.min(Math.min(Voxels.getNoise(x + xCoordinate - 1, z + zCoordinate), Voxels.getNoise(x + xCoordinate + 1, z + zCoordinate)), Math.min(Voxels.getNoise(x + xCoordinate, z + zCoordinate + 1), Voxels.getNoise(x + xCoordinate, z + zCoordinate - 1)));
 
                 for (int y = 0; y < blocks[x].length; y++) {
 
@@ -128,13 +131,12 @@ public class Chunk {
     public void setVboColorHandle(int vboColorHandle) {
         this.vboColorHandle = vboColorHandle;
     }
-    
 
     private void setWaterBlocks() {
         int waterCount = 0;
         for (int x = 0; x < blocks.length; x++) {
             for (int z = 0; z < blocks[x][0].length; z++) {
-                for (int y = maxHeights[x][z]+1; y <= Chunk.WATER_HEIGHT; y++) {
+                for (int y = maxHeights[x][z] + 1; y <= Chunk.WATER_HEIGHT; y++) {
                     if (y > maxHeights[x][z] && y <= Chunk.WATER_HEIGHT) {
                         blocks[x][y][z].setType(Block.WATER);
                         waterCount++;

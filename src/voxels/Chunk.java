@@ -30,9 +30,17 @@ public class Chunk {
         xCoordinate = xId * CHUNK_WIDTH;
         zCoordinate = zId * CHUNK_WIDTH;
 
+        maxHeights = new int[CHUNK_WIDTH][CHUNK_WIDTH];
+        initMaxHeights();
         setAirBlocks();
         setGroundBlocks();
-        setWaterBlocks();
+    }
+    private void initMaxHeights() {
+        for (int x = 0; x < CHUNK_WIDTH; x++) {
+            for (int z = 0; z < CHUNK_WIDTH; z++) {
+                maxHeights[x][z] = Voxels.getNoise(x + xCoordinate, z + zCoordinate);
+            }
+        }
     }
 
     private void setAirBlocks() {
@@ -42,22 +50,20 @@ public class Chunk {
             for (int y = 0; y < blocks[x].length; y++) {
                 blocks[x][y] = new Block[CHUNK_WIDTH];
                 for (int z = 0; z < blocks[x][y].length; z++) {
-                    blocks[x][y][z] = new Block(Block.AIR);
+                    if (y > maxHeights[x][z] && y <= Chunk.WATER_HEIGHT) {
+                        blocks[x][y][z] = new Block(Block.WATER);
+                    }
+                    else
+
+                        blocks[x][y][z] = new Block(Block.AIR);
                 }
             }
         }
     }
 
     private void setGroundBlocks() {
-        maxHeights = new int[CHUNK_WIDTH][CHUNK_WIDTH];
-        int activeBlocks = 0;
-        int maxHeight;
-        for (int x = 0; x < blocks.length; x++) {
-            for (int z = 0; z < blocks[x][0].length; z++) {
-                maxHeight = Voxels.getNoise(x + xCoordinate, z + zCoordinate);
-                maxHeights[x][z] = maxHeight;
-            }
-        }
+        
+        
 
         int difference = 0;
         for (int x = 0; x < blocks.length; x++) {
@@ -132,21 +138,6 @@ public class Chunk {
 
     public void setVboColorHandle(int vboColorHandle) {
         this.vboColorHandle = vboColorHandle;
-    }
-
-    private void setWaterBlocks() {
-        int waterCount = 0;
-        for (int x = 0; x < blocks.length; x++) {
-            for (int z = 0; z < blocks[x][0].length; z++) {
-                for (int y = maxHeights[x][z] + 1; y <= Chunk.WATER_HEIGHT; y++) {
-                    if (y > maxHeights[x][z] && y <= Chunk.WATER_HEIGHT) {
-                        blocks[x][y][z].setType(Block.WATER);
-                        waterCount++;
-                    }
-                }
-            }
-        }
-//        System.out.println("Water blocks: " + waterCount);
     }
 
 }

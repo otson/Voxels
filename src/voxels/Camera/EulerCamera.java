@@ -37,10 +37,9 @@ import static java.lang.Math.*;
 import static org.lwjgl.opengl.ARBDepthClamp.GL_DEPTH_CLAMP;
 import static org.lwjgl.opengl.GL11.*;
 import voxels.Chunk;
-import voxels.Pair;
+import voxels.ChunkManager;
 import voxels.Voxels;
 import static voxels.Voxels.PLAYER_HEIGHT;
-import static voxels.Voxels.map;
 
 /**
  * A camera set in 3D perspective. The camera uses Euler angles internally, so
@@ -67,6 +66,8 @@ public class EulerCamera implements Camera {
 
     private boolean flying = false;
     private boolean falling = false;
+    
+    private ChunkManager chunkManager;
 
     private EulerCamera(Builder builder) {
         this.x = builder.x;
@@ -372,8 +373,8 @@ public class EulerCamera implements Camera {
 
         }
         if (flying == false) {
-            if (Voxels.map.containsKey(new Pair(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ()).hashCode())) {
-                int[][] temp = map.get(new Pair(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ()).hashCode()).getMaxHeights();
+            if (chunkManager.isChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ())) {
+                int[][] temp = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ()).getMaxHeights();
                 float blockHeight = temp[(int) (x() - Voxels.getCurrentChunkX() * Chunk.CHUNK_WIDTH)][(int) (z() - Voxels.getCurrentChunkZ() * Chunk.CHUNK_WIDTH)];
                 if (y() > blockHeight + PLAYER_HEIGHT) {
                     fall(blockHeight + PLAYER_HEIGHT);
@@ -858,6 +859,11 @@ public class EulerCamera implements Camera {
     public boolean getFlying() {
         return flying;
     }
+
+    public void setChunkManager(ChunkManager chunkManager) {
+        this.chunkManager = chunkManager;
+    }
+    
     
     
 }

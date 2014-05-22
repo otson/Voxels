@@ -23,10 +23,10 @@ public class ChunkCreator {
 
     }
 
-    int[] getNewCoordinates() {
+    Coordinates getNewCoordinates() {
         if (needMiddleChunk) {
             needMiddleChunk = false;
-            return new int[]{0, 0};
+            return new Coordinates(0, null, 0);
         }
 
         else if (dz != 0) {
@@ -56,9 +56,9 @@ public class ChunkCreator {
             }
         }
         if (Math.abs(x) <= maxDistance && Math.abs(z) <= maxDistance)
-            return new int[]{x, z};
+            return new Coordinates(x, null, z);
         else
-            return new int[]{0, 0};
+            return new Coordinates(0, null, 0);
     }
 
     public void setCurrentChunkX(int currentChunkX) {

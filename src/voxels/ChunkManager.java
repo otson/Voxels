@@ -45,10 +45,17 @@ public class ChunkManager {
         chunkCreator = new ChunkCreator();
         initBooleanArrays();
 
-        Chunk chunk = new Chunk(0, 0);
-        drawChunkVBO(chunk, 0, 0);
-        map.put(new Pair(0, 0).hashCode(), chunk);
+    }
 
+    public void generateChunk(int chunkX, int chunkZ) {
+        if (isChunk(chunkX, chunkZ) == false) {
+            Chunk chunk = new Chunk(0, 0);
+            drawChunkVBO(chunk, 0, 0);
+            map.put(new Pair(0, 0).hashCode(), chunk);
+        }
+        else{
+            System.out.println("Chunk already exists!");
+        }
     }
 
     public Block getBlock(int x, int y, int z) {
@@ -63,6 +70,10 @@ public class ChunkManager {
         else {
             return null;
         }
+    }
+
+    public boolean isChunk(int chunkX, int chunkZ) {
+        return map.containsKey(new Pair(chunkX, chunkZ).hashCode());
     }
 
     private void drawChunkVBO(Chunk chunk, int xOff, int zOff) {

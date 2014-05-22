@@ -29,13 +29,14 @@ public class Chunk {
         this.zId = zId;
         xCoordinate = xId * CHUNK_WIDTH;
         zCoordinate = zId * CHUNK_WIDTH;
-
-        maxHeights = new int[CHUNK_WIDTH][CHUNK_WIDTH];
+        
         initMaxHeights();
         setAirBlocks();
         setGroundBlocks();
     }
+
     private void initMaxHeights() {
+        maxHeights = new int[CHUNK_WIDTH][CHUNK_WIDTH];
         for (int x = 0; x < CHUNK_WIDTH; x++) {
             for (int z = 0; z < CHUNK_WIDTH; z++) {
                 maxHeights[x][z] = Voxels.getNoise(x + xCoordinate, z + zCoordinate);
@@ -54,7 +55,6 @@ public class Chunk {
                         blocks[x][y][z] = new Block(Block.WATER);
                     }
                     else
-
                         blocks[x][y][z] = new Block(Block.AIR);
                 }
             }
@@ -62,8 +62,6 @@ public class Chunk {
     }
 
     private void setGroundBlocks() {
-        
-        
 
         int difference = 0;
         for (int x = 0; x < blocks.length; x++) {

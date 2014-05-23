@@ -39,15 +39,14 @@ public class ChunkManager {
     private boolean[][][] back = new boolean[Chunk.CHUNK_WIDTH][][];
 
     private boolean generate = false;
-    private boolean ready = true;
-    private boolean needBuffers = true;
-    private boolean needPut = true;
 
     private ChunkThread chunkThread = new ChunkThread(0, 0, 0, 0);
     private MapThread mapThread = new MapThread(null, null, 0, 0);
 
     private ConcurrentHashMap<Integer, Chunk> map;
     private ChunkCreator chunkCreator;
+    
+    private boolean inLoop;
 
     public ChunkManager() {
         map = new ConcurrentHashMap<>();
@@ -1459,7 +1458,7 @@ public class ChunkManager {
     public void checkChunkUpdates() {
         // neither thread is currently running
         if (generate && !chunkThread.isAlive() && !mapThread.isAlive() && chunkThread.isReady() == false) {
-
+            inLoop = true;
             // request new valid coordinates
             chunkCreator.setCurrentChunkX(getCurrentChunkX());
             chunkCreator.setCurrentChunkZ(getCurrentChunkZ());
@@ -1484,7 +1483,7 @@ public class ChunkManager {
             }
 
         }
-        else if (chunkThread.isReady() && !chunkThread.isAlive()) // has finished chunk and exited the loop
+        else if (inLoop && chunkThread.isReady() && !chunkThread.isAlive()) // has finished chunk and exited the loop
         {
 
             // Create the buffers in main thread
@@ -1495,6 +1494,7 @@ public class ChunkManager {
             mapThread.setPriority(Thread.MIN_PRIORITY);
             mapThread.start();
             chunkThread = new ChunkThread(0, 0, 0, 0);
+            inLoop = false;
         }
     }
 

@@ -1,8 +1,6 @@
 package voxels;
 
 import java.util.concurrent.ConcurrentHashMap;
-import static voxels.Voxels.getCurrentChunkX;
-import static voxels.Voxels.getCurrentChunkZ;
 
 /**
  *
@@ -33,14 +31,14 @@ public class ChunkCreator {
     }
 
     Coordinates getNewCoordinates() {
+        if (needMiddleChunk) {
+            needMiddleChunk = false;
+            if (!map.containsKey(new Pair(currentChunkX, currentChunkZ).hashCode()))
+                return new Coordinates(currentChunkX, null, currentChunkZ);
+        }
 
         while (notAtMax()) {
-            if (needMiddleChunk) {
-                needMiddleChunk = false;
-                return new Coordinates(0, null, 0);
-            }
-
-            else if (dz != 0) {
+            if (dz != 0) {
                 z += dz;
                 currentLength++;
                 if (currentLength == length) {
@@ -66,8 +64,8 @@ public class ChunkCreator {
                     }
                 }
             }
-            if (!map.containsKey(new Pair(x+currentChunkX, z+currentChunkZ).hashCode()))
-                return new Coordinates(x+currentChunkX, null, z+currentChunkZ);
+            if (!map.containsKey(new Pair(x + currentChunkX, z + currentChunkZ).hashCode()))
+                return new Coordinates(x + currentChunkX, null, z + currentChunkZ);
         }
 
         return null;

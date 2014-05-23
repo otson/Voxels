@@ -346,7 +346,11 @@ public class EulerCamera implements Camera {
         boolean keyRight = Keyboard.isKeyDown(Keyboard.KEY_RIGHT) || Keyboard.isKeyDown(Keyboard.KEY_D);
         boolean flyUp = Keyboard.isKeyDown(Keyboard.KEY_SPACE);
         boolean flyDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
-
+        boolean moveFaster = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
+        
+        if(moveFaster)
+            speed*=3;
+        
         if (inWater()) {
             speed /= 3;
 
@@ -864,6 +868,8 @@ public class EulerCamera implements Camera {
         this.chunkManager = chunkManager;
     }
     
-    
+    public void toggleFlight(){
+        flying = !flying;
+    }
     
 }

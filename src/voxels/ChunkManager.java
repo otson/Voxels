@@ -37,6 +37,8 @@ public class ChunkManager {
     private boolean[][][] front = new boolean[Chunk.CHUNK_WIDTH][][];
     private boolean[][][] back = new boolean[Chunk.CHUNK_WIDTH][][];
 
+    private boolean generate = false;
+
     private HashMap<Integer, Chunk> map;
     private ChunkCreator chunkCreator;
 
@@ -53,7 +55,7 @@ public class ChunkManager {
             drawChunkVBO(chunk, 0, 0);
             map.put(new Pair(0, 0).hashCode(), chunk);
         }
-        else{
+        else {
             System.out.println("Chunk already exists!");
         }
     }
@@ -1446,31 +1448,33 @@ public class ChunkManager {
 
     }
 
-    private void checkChunkUpdates() {
-        boolean newChunk = false;
-        Chunk chunk;
-        Coordinates coordinates;
-        int currentChunkX = getCurrentChunkX();
-        int currentChunkZ = getCurrentChunkZ();
-        chunkCreator.setCurrentChunkX(currentChunkX);
-        chunkCreator.setCurrentChunkZ(currentChunkZ);
-        while (!newChunk && chunkCreator.notAtMax()) {
-            coordinates = chunkCreator.getNewCoordinates();
-            int x = coordinates.x;
-            int z = coordinates.z;
+    public void checkChunkUpdates() {
+        if (generate) {
+            boolean newChunk = false;
+            Chunk chunk;
+            Coordinates coordinates;
+            int currentChunkX = getCurrentChunkX();
+            int currentChunkZ = getCurrentChunkZ();
+            chunkCreator.setCurrentChunkX(currentChunkX);
+            chunkCreator.setCurrentChunkZ(currentChunkZ);
+            while (!newChunk && chunkCreator.notAtMax()) {
+                coordinates = chunkCreator.getNewCoordinates();
+                int x = coordinates.x;
+                int z = coordinates.z;
 
-            int newChunkX = currentChunkX + coordinates.x;
-            int newChunkZ = currentChunkZ + coordinates.z;
+                int newChunkX = currentChunkX + coordinates.x;
+                int newChunkZ = currentChunkZ + coordinates.z;
 
-            if (map.containsKey(new Pair(newChunkX, newChunkZ).hashCode()) == false) {
-                chunk = new Chunk(newChunkX, newChunkZ);
-                long start = System.nanoTime();
-                drawChunkVBO(chunk, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
+                if (map.containsKey(new Pair(newChunkX, newChunkZ).hashCode()) == false) {
+                    chunk = new Chunk(newChunkX, newChunkZ);
+                    long start = System.nanoTime();
+                    drawChunkVBO(chunk, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
 
-                map.put(new Pair(newChunkX, newChunkZ).hashCode(), chunk);
-                newChunk = true;
-                long end = System.nanoTime();
-                System.out.println("Chunk creation took: " + (end - start) / 1000000 + " ms.");
+                    map.put(new Pair(newChunkX, newChunkZ).hashCode(), chunk);
+                    newChunk = true;
+                    long end = System.nanoTime();
+                    System.out.println("Chunk creation took: " + (end - start) / 1000000 + " ms.");
+                }
             }
         }
     }
@@ -1512,6 +1516,14 @@ public class ChunkManager {
                 back[x][y] = new boolean[CHUNK_WIDTH];
             }
         }
+    }
+
+    public void stopGeneration() {
+        generate = false;
+    }
+
+    public void startGeneration() {
+        generate = true;
     }
 
 }

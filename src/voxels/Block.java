@@ -1,14 +1,19 @@
 package voxels;
 
+import java.io.Serializable;
+
 /**
  *
  * @author otso
  */
-public class Block {
-
+public class Block implements Serializable{
+    
+    private static final long serialVersionUID = 1L;
+    
     public static final int AIR = 0;
     public static final int GROUND = 1;
     public static final int WATER = 2;
+    
     private int type;
 
     public Block(int type) {

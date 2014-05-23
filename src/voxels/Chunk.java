@@ -1,11 +1,15 @@
 package voxels;
 
+import java.io.Serializable;
+
 /**
  *
  * @author otso
  */
-public class Chunk {
-
+public class Chunk implements Serializable{
+    
+    private static final long serialVersionUID = 1L;
+    
     public static final int CHUNK_WIDTH = 16;
     public static final int CHUNK_HEIGHT = 256;
     public static final int WATER_HEIGHT = 150;

@@ -2,11 +2,14 @@ package voxels;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.GZIPOutputStream;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -43,7 +46,7 @@ public class Voxels {
     /**
      * Set seed for terrain generation.
      */
-    public static final int SEED = (int)(Math.random()*100000);
+    public static final int SEED = (int)(Math.random()*20000)-10000;
     /**
      * Set player's Field of View.
      */
@@ -65,6 +68,25 @@ public class Voxels {
     private static long lastFrame = System.nanoTime();
 
     public static void main(String[] args) {
+        Chunk chunk = new Chunk(0,0);
+        long start = System.nanoTime();
+        try{
+ 
+		   FileOutputStream fos = new FileOutputStream("chunk2.gz");
+		   //GZIPOutputStream gz = new GZIPOutputStream(fos);
+ 
+		   ObjectOutputStream oos = new ObjectOutputStream(fos);
+ 
+		   oos.writeObject(chunk);
+		   oos.close();
+ 
+		   System.out.println("Done");
+                   System.out.println("Time taken: "+(System.nanoTime()-start)/1000000+" ms.");
+                   System.exit(0);
+	   }catch(Exception ex){
+		   ex.printStackTrace();
+	   }
+        
         initDisplay();
         initOpenGL();
         initLighting();

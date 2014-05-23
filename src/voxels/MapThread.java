@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author otso
  */
-public class HelperThread extends Thread {
+public class MapThread extends Thread {
 
     private boolean running = false;
 
@@ -19,7 +19,7 @@ public class HelperThread extends Thread {
     Chunk chunk;
     Integer hash;
 
-    HelperThread(ConcurrentHashMap<Integer, Chunk> map, Chunk chunk, Integer hash) {
+    MapThread(ConcurrentHashMap<Integer, Chunk> map, Chunk chunk, Integer hash) {
         this.map = map;
         this.chunk = chunk;
         this.hash = hash;

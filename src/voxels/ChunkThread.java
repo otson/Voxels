@@ -6,8 +6,6 @@
 package voxels;
 
 import java.nio.FloatBuffer;
-import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
 import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
@@ -24,7 +22,12 @@ import static voxels.Voxels.getCurrentChunkZ;
  *
  * @author otso
  */
-public class ChunkManager {
+public class ChunkThread extends Thread {
+
+    Chunk chunk;
+    private int chunkX;
+    private int chunkZ;
+    boolean running = false;
 
     private static int vertexSize = 3;
     private static int normalSize = 3;
@@ -38,51 +41,138 @@ public class ChunkManager {
     private boolean[][][] front = new boolean[Chunk.CHUNK_WIDTH][][];
     private boolean[][][] back = new boolean[Chunk.CHUNK_WIDTH][][];
 
-    private boolean generate = false;
-    private boolean ready = true;
-    private boolean needBuffers = true;
-    private boolean needPut = true;
-    
-    private MapThread mapThread = new MapThread(null, null, null);
-    private ChunkThread chunkThread = new ChunkThread(0,0);
+    private FloatBuffer vertexData;
+    private FloatBuffer normalData;
+    private FloatBuffer texData;
+    private FloatBuffer colorData;
 
-    private ConcurrentHashMap<Integer, Chunk> map;
-    private ChunkCreator chunkCreator;
+    private float[] vertexArray;
+    private float[] normalArray;
+    private float[] texArray;
+    private float[] colorArray;
 
-    public ChunkManager() {
-        map = new ConcurrentHashMap<>();
-        chunkCreator = new ChunkCreator();
+    public ChunkThread(int chunkX, int chunkZ) {
+        this.chunkX = chunkX;
+        this.chunkZ = chunkZ;
         initBooleanArrays();
-
     }
 
-    public void generateChunk(int chunkX, int chunkZ) {
-        if (isChunk(chunkX, chunkZ) == false) {
-            Chunk chunk = new Chunk(0, 0);
-            drawChunkVBO(chunk, 0, 0);
-            map.put(new Pair(0, 0).hashCode(), chunk);
-        }
+    public void run() {
+        running = true;
+        chunk = new Chunk(chunkX, chunkZ);
+    }
+
+    public int calculateGroundVertices(Chunk chunk, float x, float y, float z, float xOff, float yOff, float zOff, float size) {
+        int zMax = Chunk.CHUNK_WIDTH - 1;
+        int xMax = Chunk.CHUNK_WIDTH - 1;
+        int yMax = Chunk.CHUNK_HEIGHT - 1;
+        int xx = Math.round(x);
+        int yy = Math.round(y);
+        int zz = Math.round(z);
+        boolean render = false;
+        int returnVertices = 0;
+        int difference = 0;
+        int[][] maxHeights = chunk.maxHeights;
+
+        // front face
+        if (z == zMax)
+            render = true;
         else {
-            System.out.println("Chunk already exists!");
+            difference = maxHeights[xx][zz] - maxHeights[xx][zz + 1];
         }
-    }
-
-    public Block getBlock(int x, int y, int z) {
-
-        return null;
-    }
-
-    public Chunk getChunk(int chunkX, int chunkZ) {
-        if (map.containsKey(new Pair(chunkX, chunkZ).hashCode())) {
-            return map.get(new Pair(chunkX, chunkZ).hashCode());
+        if (render || chunk.blocks[xx][yy][zz + 1].isType(Block.AIR) || chunk.blocks[xx][yy][zz + 1].isType(Block.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+            front[xx][yy][zz] = true;
+            returnVertices += 6;
         }
+        else
+            front[xx][yy][zz] = false;
+
+        // left face
+        render = false;
+        if (x == 0)
+            render = true;
         else {
-            return null;
+            difference = maxHeights[xx][zz] - maxHeights[xx - 1][zz];
         }
+        if (render || chunk.blocks[xx - 1][yy][zz].isType(Block.AIR) || chunk.blocks[xx - 1][yy][zz].isType(Block.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+            left[xx][yy][zz] = true;
+            returnVertices += 6;
+        }
+        else
+            left[xx][yy][zz] = false;
+
+        // back face
+        render = false;
+        if (z == 0)
+            render = true;
+        else {
+            difference = maxHeights[xx][zz] - maxHeights[xx][zz - 1];
+        }
+        if (render || chunk.blocks[xx][yy][zz - 1].isType(Block.AIR) || chunk.blocks[xx][yy][zz - 1].isType(Block.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+            back[xx][yy][zz] = true;
+            returnVertices += 6;
+        }
+        else
+            back[xx][yy][zz] = false;
+
+        // right face
+        render = false;
+        if (x == xMax)
+            render = true;
+        else {
+            difference = maxHeights[xx][zz] - maxHeights[xx + 1][zz];
+        }
+        if (render || chunk.blocks[xx + 1][yy][zz].isType(Block.AIR) || chunk.blocks[xx + 1][yy][zz].isType(Block.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+            right[xx][yy][zz] = true;
+            returnVertices += 6;
+        }
+        else
+            right[xx][yy][zz] = false;
+
+        // top face
+        render = false;
+        if (y == yMax)
+            render = true;
+        if (render || chunk.blocks[xx][yy + 1][zz].isType(Block.AIR) || chunk.blocks[xx][yy + 1][zz].isType(Block.WATER) && maxHeights[xx][zz] == yy) {
+            top[xx][yy][zz] = true;
+            returnVertices += 6;
+        }
+        else
+            top[xx][yy][zz] = false;
+
+        // bottom face
+//        render = false;
+//        if (y == 0)
+//            render = true;
+//        if (render || chunk.blocks[xx][yy - 1][zz].isType(Block.AIR) || chunk.blocks[xx][yy - 1][zz].isType(Block.WATER) && maxHeights[xx][zz] + 1 == yy) {
+//            bottom[xx][yy][zz] = true;
+//            returnVertices += 6;
+//        }
+//        else
+        bottom[xx][yy][zz] = false;
+        return returnVertices;
     }
 
-    public boolean isChunk(int chunkX, int chunkZ) {
-        return map.containsKey(new Pair(chunkX, chunkZ).hashCode());
+    public int calculateWaterVertices(Chunk chunk, float x, float y, float z, float xOff, float yOff, float zOff, float size) {
+        int yMax = Chunk.CHUNK_HEIGHT - 1;
+        int xx = Math.round(x);
+        int yy = Math.round(y);
+        int zz = Math.round(z);
+        int returnVertices = 0;
+        boolean render = false;
+
+        // top face
+        if (y == yMax)
+            render = true;
+        if (render || chunk.blocks[xx][yy + 1][zz].isType(Block.AIR) && y == Chunk.WATER_HEIGHT) {
+            top[xx][yy][zz] = true;
+            returnVertices += 6;
+        }
+        else
+            top[xx][yy][zz] = false;
+
+        return returnVertices;
+
     }
 
     private void drawChunkVBO(Chunk chunk, int xOff, int zOff) {
@@ -1310,184 +1400,11 @@ public class ChunkManager {
 
         colorData.put(colorArray);
         colorData.flip();
-        
-        System.out.println("Time taken: "+(System.nanoTime()-startTime)/1000000+" ms.");
 
-        int vboVertexHandle = glGenBuffers();
-        chunk.setVboVertexHandle(vboVertexHandle);
+        System.out.println("Time taken: " + (System.nanoTime() - startTime) / 1000000 + " ms.");
 
-        glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
-        glBufferData(GL_ARRAY_BUFFER, vertexData, GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        running = false;
 
-        int vboNormalHandle = glGenBuffers();
-        chunk.setVboNormalHandle(vboNormalHandle);
-
-        glBindBuffer(GL_ARRAY_BUFFER, vboNormalHandle);
-        glBufferData(GL_ARRAY_BUFFER, normalData, GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        int vboTexHandle = glGenBuffers();
-        chunk.setVboTexHandle(vboTexHandle);
-
-        glBindBuffer(GL_ARRAY_BUFFER, vboTexHandle);
-        glBufferData(GL_ARRAY_BUFFER, texData, GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        int vboColorHandle = glGenBuffers();
-        chunk.setVboColorHandle(vboColorHandle);
-
-        glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
-        glBufferData(GL_ARRAY_BUFFER, colorData, GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    }
-
-    public int calculateGroundVertices(Chunk chunk, float x, float y, float z, float xOff, float yOff, float zOff, float size) {
-        int zMax = Chunk.CHUNK_WIDTH - 1;
-        int xMax = Chunk.CHUNK_WIDTH - 1;
-        int yMax = Chunk.CHUNK_HEIGHT - 1;
-        int xx = Math.round(x);
-        int yy = Math.round(y);
-        int zz = Math.round(z);
-        boolean render = false;
-        int returnVertices = 0;
-        int difference = 0;
-        int[][] maxHeights = chunk.maxHeights;
-
-        // front face
-        if (z == zMax)
-            render = true;
-        else {
-            difference = maxHeights[xx][zz] - maxHeights[xx][zz + 1];
-        }
-        if (render || chunk.blocks[xx][yy][zz + 1].isType(Block.AIR) || chunk.blocks[xx][yy][zz + 1].isType(Block.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
-            front[xx][yy][zz] = true;
-            returnVertices += 6;
-        }
-        else
-            front[xx][yy][zz] = false;
-
-        // left face
-        render = false;
-        if (x == 0)
-            render = true;
-        else {
-            difference = maxHeights[xx][zz] - maxHeights[xx - 1][zz];
-        }
-        if (render || chunk.blocks[xx - 1][yy][zz].isType(Block.AIR) || chunk.blocks[xx - 1][yy][zz].isType(Block.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
-            left[xx][yy][zz] = true;
-            returnVertices += 6;
-        }
-        else
-            left[xx][yy][zz] = false;
-
-        // back face
-        render = false;
-        if (z == 0)
-            render = true;
-        else {
-            difference = maxHeights[xx][zz] - maxHeights[xx][zz - 1];
-        }
-        if (render || chunk.blocks[xx][yy][zz - 1].isType(Block.AIR) || chunk.blocks[xx][yy][zz - 1].isType(Block.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
-            back[xx][yy][zz] = true;
-            returnVertices += 6;
-        }
-        else
-            back[xx][yy][zz] = false;
-
-        // right face
-        render = false;
-        if (x == xMax)
-            render = true;
-        else {
-            difference = maxHeights[xx][zz] - maxHeights[xx + 1][zz];
-        }
-        if (render || chunk.blocks[xx + 1][yy][zz].isType(Block.AIR) || chunk.blocks[xx + 1][yy][zz].isType(Block.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
-            right[xx][yy][zz] = true;
-            returnVertices += 6;
-        }
-        else
-            right[xx][yy][zz] = false;
-
-        // top face
-        render = false;
-        if (y == yMax)
-            render = true;
-        if (render || chunk.blocks[xx][yy + 1][zz].isType(Block.AIR) || chunk.blocks[xx][yy + 1][zz].isType(Block.WATER) && maxHeights[xx][zz] == yy) {
-            top[xx][yy][zz] = true;
-            returnVertices += 6;
-        }
-        else
-            top[xx][yy][zz] = false;
-
-        // bottom face
-//        render = false;
-//        if (y == 0)
-//            render = true;
-//        if (render || chunk.blocks[xx][yy - 1][zz].isType(Block.AIR) || chunk.blocks[xx][yy - 1][zz].isType(Block.WATER) && maxHeights[xx][zz] + 1 == yy) {
-//            bottom[xx][yy][zz] = true;
-//            returnVertices += 6;
-//        }
-//        else
-        bottom[xx][yy][zz] = false;
-        return returnVertices;
-    }
-
-    public int calculateWaterVertices(Chunk chunk, float x, float y, float z, float xOff, float yOff, float zOff, float size) {
-        int yMax = Chunk.CHUNK_HEIGHT - 1;
-        int xx = Math.round(x);
-        int yy = Math.round(y);
-        int zz = Math.round(z);
-        int returnVertices = 0;
-        boolean render = false;
-
-        // top face
-        if (y == yMax)
-            render = true;
-        if (render || chunk.blocks[xx][yy + 1][zz].isType(Block.AIR) && y == Chunk.WATER_HEIGHT) {
-            top[xx][yy][zz] = true;
-            returnVertices += 6;
-        }
-        else
-            top[xx][yy][zz] = false;
-
-        return returnVertices;
-
-    }
-
-    public void checkChunkUpdates() {
-        if (generate && !mapThread.isAlive()) {
-            boolean newChunk = false;
-            Coordinates coordinates;
-            int currentChunkX = getCurrentChunkX();
-            int currentChunkZ = getCurrentChunkZ();
-            chunkCreator.setCurrentChunkX(currentChunkX);
-            chunkCreator.setCurrentChunkZ(currentChunkZ);
-            while (!newChunk && chunkCreator.notAtMax()) {
-                coordinates = chunkCreator.getNewCoordinates();
-                int x = coordinates.x;
-                int z = coordinates.z;
-
-                final int newChunkX = currentChunkX + coordinates.x;
-                final int newChunkZ = currentChunkZ + coordinates.z;
-
-                if (map.containsKey(new Pair(newChunkX, newChunkZ).hashCode()) == false) {
-                    final Chunk chunk = new Chunk(newChunkX, newChunkZ);
-
-                    drawChunkVBO(chunk, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
-
-                    mapThread = new MapThread(map, chunk, new Pair(newChunkX, newChunkZ).hashCode());
-                    mapThread.setPriority(Thread.MIN_PRIORITY);
-                    mapThread.start();
-                    
-                    //map.put(, chunk);
-                    newChunk = true;
-                    
-                    //System.out.println("Chunk creation took: " + (end - start) / 1000000 + " ms.");
-                }
-            }
-        }
     }
 
     private void initBooleanArrays() {
@@ -1529,44 +1446,36 @@ public class ChunkManager {
         }
     }
 
-    public void stopGeneration() {
-        generate = false;
+    public static int getNormalSize() {
+        return normalSize;
     }
 
-    public void startGeneration() {
-        generate = true;
+    public FloatBuffer getVertexData() {
+        return vertexData;
     }
-    
-    public void createBuffers(Chunk chunk, FloatBuffer vertexData, FloatBuffer normalData, FloatBuffer texData, FloatBuffer colorData){
-        
-        int vboVertexHandle = glGenBuffers();
-        chunk.setVboVertexHandle(vboVertexHandle);
 
-        glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
-        glBufferData(GL_ARRAY_BUFFER, vertexData, GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    public FloatBuffer getNormalData() {
+        return normalData;
+    }
 
-        int vboNormalHandle = glGenBuffers();
-        chunk.setVboNormalHandle(vboNormalHandle);
+    public FloatBuffer getTexData() {
+        return texData;
+    }
 
-        glBindBuffer(GL_ARRAY_BUFFER, vboNormalHandle);
-        glBufferData(GL_ARRAY_BUFFER, normalData, GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    public FloatBuffer getColorData() {
+        return colorData;
+    }
 
-        int vboTexHandle = glGenBuffers();
-        chunk.setVboTexHandle(vboTexHandle);
+    public float[] getVertexArray() {
+        return vertexArray;
+    }
 
-        glBindBuffer(GL_ARRAY_BUFFER, vboTexHandle);
-        glBufferData(GL_ARRAY_BUFFER, texData, GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    public float[] getTexArray() {
+        return texArray;
+    }
 
-        int vboColorHandle = glGenBuffers();
-        chunk.setVboColorHandle(vboColorHandle);
-
-        glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
-        glBufferData(GL_ARRAY_BUFFER, colorData, GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    public float[] getColorArray() {
+        return colorArray;
     }
 
 }
-

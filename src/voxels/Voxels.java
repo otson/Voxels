@@ -24,7 +24,7 @@ import voxels.Noise.FastNoise;
  *
  * @author otso
  */
-public class Voxels {
+public class Voxels{
 
     public static final String TITLE = "Voxels";
     /**

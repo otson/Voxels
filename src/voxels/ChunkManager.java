@@ -1466,24 +1466,22 @@ public class ChunkManager {
             Coordinates coordinates = null;
             boolean running = true;
 
-            while (running) {
-                coordinates = chunkCreator.getNewCoordinates();
-                if (coordinates == null)
-                    return;
-                else if (!map.containsKey(new Pair(coordinates.x + getCurrentChunkX(), coordinates.z + getCurrentChunkZ()).hashCode()))
-                    running = false;
+            coordinates = chunkCreator.getNewCoordinates();
+            
+            if (coordinates != null) {
+
+                System.out.println("x: " + coordinates.x + " z: " + coordinates.z);
+                int x = coordinates.x;
+                int z = coordinates.z;
+
+                int newChunkX = coordinates.x;
+                int newChunkZ = coordinates.z;
+
+                // make a new chunk
+                chunkThread = new ChunkThread(newChunkX, newChunkZ, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
+                chunkThread.setPriority(Thread.MIN_PRIORITY);
+                chunkThread.start();
             }
-            System.out.println("x: " + coordinates.x + " z: " + coordinates.z);
-            int x = coordinates.x;
-            int z = coordinates.z;
-
-            int newChunkX = coordinates.x;
-            int newChunkZ = coordinates.z;
-
-            // make a new chunk
-            chunkThread = new ChunkThread(newChunkX, newChunkZ, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
-            chunkThread.setPriority(Thread.MIN_PRIORITY);
-            chunkThread.start();
 
         }
         else if (chunkThread.isReady() && !chunkThread.isAlive()) // has finished chunk and exited the loop

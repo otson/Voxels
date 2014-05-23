@@ -32,7 +32,6 @@ public class MapThread extends Thread {
     public void run() {
         if (!map.containsKey(new Pair(chunkX, chunkZ).hashCode())) {
             map.put(new Pair(chunkX, chunkZ).hashCode(), chunk);
-            System.out.println("Map size: " + map.size());
             setReady();
         }
         else

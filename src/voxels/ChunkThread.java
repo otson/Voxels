@@ -7,11 +7,6 @@ package voxels;
 
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
-import static org.lwjgl.opengl.GL15.glBindBuffer;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static voxels.Chunk.CHUNK_HEIGHT;
 import static voxels.Chunk.CHUNK_WIDTH;
 import static voxels.Voxels.WaterOffs;
@@ -186,21 +181,16 @@ public class ChunkThread extends Thread {
 
     private void drawChunkVBO(Chunk chunk, int xOff, int zOff) {
         long startTime = System.nanoTime();
-        int drawnBlocks = 0;
         int vertices = 0;
         int size = 1;
-        zOff += getCurrentChunkZ() * chunk.blocks.length;
-        xOff += getCurrentChunkX() * chunk.blocks.length;
         for (int x = 0; x < chunk.blocks.length; x++) {
             for (int z = 0; z < chunk.blocks[x][0].length; z++) {
                 for (int y = 0; y < chunk.blocks[x].length; y++) {
                     if (chunk.blocks[x][y][z].isType(Block.GROUND)) {
                         vertices += calculateGroundVertices(chunk, x, y, z, getCurrentChunkX() * chunk.blocks.length + xOff, 0, getCurrentChunkZ() * chunk.blocks.length + zOff, 1);
-                        drawnBlocks++;
                     }
                     else if (chunk.blocks[x][y][z].isType(Block.WATER)) {
                         vertices += calculateWaterVertices(chunk, x, y, z, getCurrentChunkX() * chunk.blocks.length + xOff, 0, getCurrentChunkZ() * chunk.blocks.length + zOff, 1);
-                        drawnBlocks++;
                     }
                 }
             }

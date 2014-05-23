@@ -33,39 +33,42 @@ public class ChunkCreator {
     }
 
     Coordinates getNewCoordinates() {
-        if (needMiddleChunk) {
-            needMiddleChunk = false;
-            return new Coordinates(0, null, 0);
-        }
 
-        else if (dz != 0) {
-            z += dz;
-            currentLength++;
-            if (currentLength == length) {
-                currentLength = 0;
-                dx = dz;
-                dz = 0;
-                turnCount++;
-                if (turnCount == 2)
-                    length++;
+        while (notAtMax()) {
+            if (needMiddleChunk) {
+                needMiddleChunk = false;
+                return new Coordinates(0, null, 0);
             }
-        }
-        else {
-            x += dx;
-            currentLength++;
-            if (currentLength == length) {
-                currentLength = 0;
-                dz = -dx;
-                dx = 0;
-                turnCount++;
-                if (turnCount == 2) {
-                    length++;
-                    turnCount = 0;
+
+            else if (dz != 0) {
+                z += dz;
+                currentLength++;
+                if (currentLength == length) {
+                    currentLength = 0;
+                    dx = dz;
+                    dz = 0;
+                    turnCount++;
+                    if (turnCount == 2)
+                        length++;
                 }
             }
+            else {
+                x += dx;
+                currentLength++;
+                if (currentLength == length) {
+                    currentLength = 0;
+                    dz = -dx;
+                    dx = 0;
+                    turnCount++;
+                    if (turnCount == 2) {
+                        length++;
+                        turnCount = 0;
+                    }
+                }
+            }
+            if (!map.containsKey(new Pair(x+currentChunkX, z+currentChunkZ).hashCode()))
+                return new Coordinates(x+currentChunkX, null, z+currentChunkZ);
         }
-        if (Math.abs(x) <= maxDistance && Math.abs(z) <= maxDistance)
-            return new Coordinates(x, null, z);
 
         return null;
     }

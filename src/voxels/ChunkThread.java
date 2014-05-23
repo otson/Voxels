@@ -50,8 +50,15 @@ public class ChunkThread extends Thread {
     private float[] normalArray;
     private float[] texArray;
     private float[] colorArray;
+    
+    int xOff;
+    int zOff;
+    
+    private boolean ready = false;
 
-    public ChunkThread(int chunkX, int chunkZ) {
+    public ChunkThread(int chunkX, int chunkZ, int xOff, int zOff) {
+        this.xOff = xOff;
+        this.zOff = zOff;
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
         initBooleanArrays();
@@ -59,7 +66,9 @@ public class ChunkThread extends Thread {
 
     public void run() {
         running = true;
+        ready = false;
         chunk = new Chunk(chunkX, chunkZ);
+        drawChunkVBO(chunk, xOff, zOff);
     }
 
     public int calculateGroundVertices(Chunk chunk, float x, float y, float z, float xOff, float yOff, float zOff, float size) {
@@ -199,20 +208,20 @@ public class ChunkThread extends Thread {
         //System.out.println("");
         chunk.setVertices(vertices);
         //System.out.println("Vertices: " + vertices);
-        float[] vertexArray = new float[vertices * vertexSize];
-        float[] normalArray = new float[vertices * normalSize];
-        float[] texArray = new float[vertices * texSize];
-        float[] colorArray = new float[vertices * colorSize];
+        vertexArray = new float[vertices * vertexSize];
+        normalArray = new float[vertices * normalSize];
+        texArray = new float[vertices * texSize];
+        colorArray = new float[vertices * colorSize];
 
         int vArrayPos = 0;
         int nArrayPos = 0;
         int tArrayPos = 0;
         int cArrayPos = 0;
 
-        FloatBuffer vertexData = BufferUtils.createFloatBuffer(vertices * vertexSize);
-        FloatBuffer normalData = BufferUtils.createFloatBuffer(vertices * vertexSize);
-        FloatBuffer texData = BufferUtils.createFloatBuffer(vertices * texSize);
-        FloatBuffer colorData = BufferUtils.createFloatBuffer(vertices * colorSize);
+        vertexData = BufferUtils.createFloatBuffer(vertices * vertexSize);
+        normalData = BufferUtils.createFloatBuffer(vertices * vertexSize);
+        texData = BufferUtils.createFloatBuffer(vertices * texSize);
+        colorData = BufferUtils.createFloatBuffer(vertices * colorSize);
 
         for (int x = 0; x < chunk.blocks.length; x++) {
             for (int z = 0; z < chunk.blocks[x][0].length; z++) {
@@ -1400,11 +1409,13 @@ public class ChunkThread extends Thread {
 
         colorData.put(colorArray);
         colorData.flip();
-
-        System.out.println("Time taken: " + (System.nanoTime() - startTime) / 1000000 + " ms.");
-
+        
+        setReady();
+    }
+    
+    private void setReady(){
+        ready = true;
         running = false;
-
     }
 
     private void initBooleanArrays() {
@@ -1477,5 +1488,22 @@ public class ChunkThread extends Thread {
     public float[] getColorArray() {
         return colorArray;
     }
+
+    public Chunk getChunk() {
+        return chunk;
+    }
+
+    public boolean isReady() {
+        return ready;
+    }
+
+    public int getChunkX() {
+        return chunkX;
+    }
+
+    public int getChunkZ() {
+        return chunkZ;
+    }
+    
 
 }

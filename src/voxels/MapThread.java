@@ -13,27 +13,37 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MapThread extends Thread {
 
-    private boolean running = false;
+    private boolean ready = false;
 
     ConcurrentHashMap<Integer, Chunk> map;
     Chunk chunk;
-    Integer hash;
+    private int chunkX;
+    private int chunkZ;
 
-    MapThread(ConcurrentHashMap<Integer, Chunk> map, Chunk chunk, Integer hash) {
+    MapThread(ConcurrentHashMap<Integer, Chunk> map, Chunk chunk, int chunkX, int chunkZ) {
         this.map = map;
         this.chunk = chunk;
-        this.hash = hash;
+        this.chunkX = chunkX;
+        this.chunkZ = chunkZ;
 
     }
 
     @Override
     public void run() {
-        running = true;
-        map.put(hash, chunk);
-        running = false;
+        if (!map.containsKey(new Pair(chunkX, chunkZ).hashCode())) {
+            map.put(new Pair(chunkX, chunkZ).hashCode(), chunk);
+            System.out.println("Map size: " + map.size());
+            setReady();
+        }
+        else
+            System.out.println("wrong");
     }
 
-    public boolean isRunning() {
-        return running;
+    private void setReady() {
+        ready = true;
+    }
+
+    public boolean isReady() {
+        return ready;
     }
 }

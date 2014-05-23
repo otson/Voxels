@@ -1,6 +1,8 @@
 package voxels;
 
 import java.util.concurrent.ConcurrentHashMap;
+import static voxels.Voxels.getCurrentChunkX;
+import static voxels.Voxels.getCurrentChunkZ;
 
 /**
  *
@@ -62,11 +64,10 @@ public class ChunkCreator {
                 }
             }
         }
-
         if (Math.abs(x) <= maxDistance && Math.abs(z) <= maxDistance)
             return new Coordinates(x, null, z);
-        else
-            return new Coordinates(0, null, 0);
+
+        return null;
     }
 
     public void setCurrentChunkX(int currentChunkX) {

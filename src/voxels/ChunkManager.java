@@ -42,16 +42,16 @@ public class ChunkManager {
     private boolean ready = true;
     private boolean needBuffers = true;
     private boolean needPut = true;
-    
-    private MapThread mapThread = new MapThread(null, null, null);
-    private ChunkThread chunkThread = new ChunkThread(0,0);
+
+    private ChunkThread chunkThread = new ChunkThread(0, 0, 0, 0);
+    private MapThread mapThread = new MapThread(null, null, 0, 0);
 
     private ConcurrentHashMap<Integer, Chunk> map;
     private ChunkCreator chunkCreator;
 
     public ChunkManager() {
         map = new ConcurrentHashMap<>();
-        chunkCreator = new ChunkCreator();
+        chunkCreator = new ChunkCreator(map);
         initBooleanArrays();
 
     }
@@ -1310,8 +1310,8 @@ public class ChunkManager {
 
         colorData.put(colorArray);
         colorData.flip();
-        
-        System.out.println("Time taken: "+(System.nanoTime()-startTime)/1000000+" ms.");
+
+        System.out.println("Time taken: " + (System.nanoTime() - startTime) / 1000000 + " ms.");
 
         int vboVertexHandle = glGenBuffers();
         chunk.setVboVertexHandle(vboVertexHandle);
@@ -1457,36 +1457,46 @@ public class ChunkManager {
     }
 
     public void checkChunkUpdates() {
-        if (generate && !mapThread.isAlive()) {
-            boolean newChunk = false;
-            Coordinates coordinates;
-            int currentChunkX = getCurrentChunkX();
-            int currentChunkZ = getCurrentChunkZ();
-            chunkCreator.setCurrentChunkX(currentChunkX);
-            chunkCreator.setCurrentChunkZ(currentChunkZ);
-            while (!newChunk && chunkCreator.notAtMax()) {
+        // neither thread is currently running
+        if (generate && !chunkThread.isAlive() && !mapThread.isAlive() && chunkThread.isReady() == false) {
+
+            // request new valid coordinates
+            chunkCreator.setCurrentChunkX(getCurrentChunkX());
+            chunkCreator.setCurrentChunkZ(getCurrentChunkZ());
+            Coordinates coordinates = null;
+            boolean running = true;
+
+            while (running) {
                 coordinates = chunkCreator.getNewCoordinates();
-                int x = coordinates.x;
-                int z = coordinates.z;
-
-                final int newChunkX = currentChunkX + coordinates.x;
-                final int newChunkZ = currentChunkZ + coordinates.z;
-
-                if (map.containsKey(new Pair(newChunkX, newChunkZ).hashCode()) == false) {
-                    final Chunk chunk = new Chunk(newChunkX, newChunkZ);
-
-                    drawChunkVBO(chunk, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
-
-                    mapThread = new MapThread(map, chunk, new Pair(newChunkX, newChunkZ).hashCode());
-                    mapThread.setPriority(Thread.MIN_PRIORITY);
-                    mapThread.start();
-                    
-                    //map.put(, chunk);
-                    newChunk = true;
-                    
-                    //System.out.println("Chunk creation took: " + (end - start) / 1000000 + " ms.");
-                }
+                if (coordinates == null)
+                    return;
+                else if (!map.containsKey(new Pair(coordinates.x + getCurrentChunkX(), coordinates.z + getCurrentChunkZ()).hashCode()))
+                    running = false;
             }
+            System.out.println("x: " + coordinates.x + " z: " + coordinates.z);
+            int x = coordinates.x;
+            int z = coordinates.z;
+
+            int newChunkX = coordinates.x;
+            int newChunkZ = coordinates.z;
+
+            // make a new chunk
+            chunkThread = new ChunkThread(newChunkX, newChunkZ, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
+            chunkThread.setPriority(Thread.MIN_PRIORITY);
+            chunkThread.start();
+
+        }
+        else if (chunkThread.isReady() && !chunkThread.isAlive()) // has finished chunk and exited the loop
+        {
+
+            // Create the buffers in main thread
+            createBuffers(chunkThread.getChunk(), chunkThread.getVertexData(), chunkThread.getNormalData(), chunkThread.getTexData(), chunkThread.getColorData());
+
+            // put the Chunk to HashMap in a new thread
+            mapThread = new MapThread(map, chunkThread.getChunk(), chunkThread.getChunkX(), chunkThread.getChunkZ());
+            mapThread.setPriority(Thread.MIN_PRIORITY);
+            mapThread.start();
+            chunkThread = new ChunkThread(0, 0, 0, 0);
         }
     }
 
@@ -1536,9 +1546,9 @@ public class ChunkManager {
     public void startGeneration() {
         generate = true;
     }
-    
-    public void createBuffers(Chunk chunk, FloatBuffer vertexData, FloatBuffer normalData, FloatBuffer texData, FloatBuffer colorData){
-        
+
+    public void createBuffers(Chunk chunk, FloatBuffer vertexData, FloatBuffer normalData, FloatBuffer texData, FloatBuffer colorData) {
+
         int vboVertexHandle = glGenBuffers();
         chunk.setVboVertexHandle(vboVertexHandle);
 
@@ -1569,4 +1579,3 @@ public class ChunkManager {
     }
 
 }
-

@@ -40,8 +40,8 @@ public class Voxels{
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 3;
-    public static int chunkRenderDistance = 100;
+    public static int chunkCreationDistance = 7;
+    public static int chunkRenderDistance = 7;
     public static Texture atlas;
     public static final float WaterOffs = 0.28f;
 

@@ -135,10 +135,10 @@ public class Voxels{
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             processInput(getDelta());
-            if (fps % 4 == 0)
+            if (fps > 1 && fps % 2 == 0)
                 chunkManager.checkChunkUpdates();
-            UpdateView();
-            Render();
+            updateView();
+            render();
 
             Display.update();
             Display.sync(60);
@@ -148,14 +148,14 @@ public class Voxels{
         System.exit(0);
     }
 
-    private static void UpdateView() {
+    private static void updateView() {
         glLoadIdentity();
         glViewport(0, 0, Display.getWidth(), Display.getHeight());
         camera.applyPerspectiveMatrix();
         camera.applyTranslations();
     }
 
-    private static void Render() {
+    private static void render() {
 
         for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
             for (int z = -chunkRenderDistance; z <= chunkRenderDistance; z++) {

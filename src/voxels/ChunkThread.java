@@ -227,12 +227,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 1;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -254,12 +254,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 1;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -281,12 +281,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 1;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -308,13 +308,13 @@ public class ChunkThread extends Thread {
                             nArrayPos++;
                             normalArray[nArrayPos] = 1;
                             nArrayPos++;
-
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -336,12 +336,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 1;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -363,12 +363,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 1;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -424,12 +424,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -445,12 +445,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -467,12 +467,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -490,12 +490,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -511,12 +511,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -533,12 +533,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -590,12 +590,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -612,12 +612,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -634,12 +634,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -657,12 +657,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -679,12 +679,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -701,12 +701,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -757,12 +757,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -779,12 +779,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -801,12 +801,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -824,12 +824,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -846,12 +846,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -868,12 +868,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -893,12 +893,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -920,12 +920,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -947,12 +947,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -975,12 +975,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -1002,12 +1002,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -1029,12 +1029,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -1089,12 +1089,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -1111,12 +1111,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -1133,12 +1133,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -1156,12 +1156,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -1178,12 +1178,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -1200,12 +1200,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -1227,12 +1227,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -1254,12 +1254,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -1281,12 +1281,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -1309,12 +1309,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -1336,12 +1336,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -1363,12 +1363,12 @@ public class ChunkThread extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -1397,8 +1397,8 @@ public class ChunkThread extends Thread {
         texData.put(texArray);
         texData.flip();
 
-        colorData.put(colorArray);
-        colorData.flip();
+//        colorData.put(colorArray);
+//        colorData.flip();
 
         setReady();
     }

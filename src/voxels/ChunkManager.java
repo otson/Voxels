@@ -9,6 +9,7 @@ import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.Display;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
@@ -45,8 +46,11 @@ public class ChunkManager {
 
     private ConcurrentHashMap<Integer, Chunk> map;
     private ChunkCreator chunkCreator;
-    
+
+    private boolean atMax = false;
+
     private boolean inLoop;
+    private boolean initialLoad = true;
 
     public ChunkManager() {
         map = new ConcurrentHashMap<>();
@@ -137,13 +141,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 1;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -164,13 +167,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 1;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -191,13 +193,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 1;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -219,13 +220,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 1;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -246,13 +246,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 1;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -273,13 +272,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 1;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -334,13 +332,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -355,13 +352,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -377,13 +373,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -400,13 +395,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -421,13 +415,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -443,13 +436,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -500,13 +492,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -522,13 +513,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -544,13 +534,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -567,13 +556,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -589,13 +577,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -611,13 +598,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -667,13 +653,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -689,13 +674,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -711,13 +695,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -734,13 +717,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -756,13 +738,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -778,13 +759,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -803,13 +783,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -830,13 +809,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -857,13 +835,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -885,13 +862,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -912,13 +888,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -939,13 +914,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -999,13 +973,13 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+                            
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -1021,12 +995,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -1043,12 +1017,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -1066,12 +1040,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -1088,12 +1062,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -1110,12 +1084,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -1137,12 +1111,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -1164,12 +1138,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -1191,12 +1165,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -1219,12 +1193,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
@@ -1246,12 +1220,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -1273,12 +1247,12 @@ public class ChunkManager {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
-                            colorArray[cArrayPos] = 1;
-                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
+//                            colorArray[cArrayPos] = 1;
+//                            cArrayPos++;
 
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
@@ -1307,10 +1281,10 @@ public class ChunkManager {
         texData.put(texArray);
         texData.flip();
 
-        colorData.put(colorArray);
-        colorData.flip();
+//        colorData.put(colorArray);
+//        colorData.flip();
 
-        System.out.println("Time taken: " + (System.nanoTime() - startTime) / 1000000 + " ms.");
+       
 
         int vboVertexHandle = glGenBuffers();
         chunk.setVboVertexHandle(vboVertexHandle);
@@ -1333,12 +1307,12 @@ public class ChunkManager {
         glBufferData(GL_ARRAY_BUFFER, texData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        int vboColorHandle = glGenBuffers();
-        chunk.setVboColorHandle(vboColorHandle);
-
-        glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
-        glBufferData(GL_ARRAY_BUFFER, colorData, GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+//        int vboColorHandle = glGenBuffers();
+//        chunk.setVboColorHandle(vboColorHandle);
+//
+//        glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
+//        glBufferData(GL_ARRAY_BUFFER, colorData, GL_STATIC_DRAW);
+//        glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     }
 
@@ -1466,10 +1440,10 @@ public class ChunkManager {
             boolean running = true;
 
             coordinates = chunkCreator.getNewCoordinates();
-            
+
             if (coordinates != null) {
 
-                System.out.println("x: " + coordinates.x + " z: " + coordinates.z);
+                atMax = false;
                 int x = coordinates.x;
                 int z = coordinates.z;
 
@@ -1478,8 +1452,13 @@ public class ChunkManager {
 
                 // make a new chunk
                 chunkThread = new ChunkThread(newChunkX, newChunkZ, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
-                chunkThread.setPriority(Thread.MIN_PRIORITY);
+                chunkThread.setPriority(Thread.MAX_PRIORITY);
                 chunkThread.start();
+            }
+            else {
+                atMax = true;
+                initialLoad = false;
+                System.out.println("Loaded all chunks.");
             }
 
         }
@@ -1487,7 +1466,7 @@ public class ChunkManager {
         {
 
             // Create the buffers in main thread
-            createBuffers(chunkThread.getChunk(), chunkThread.getVertexData(), chunkThread.getNormalData(), chunkThread.getTexData(), chunkThread.getColorData());
+            createBuffers(chunkThread.getChunk(), chunkThread.getVertexData(), chunkThread.getNormalData(), chunkThread.getTexData());
 
             // put the Chunk to HashMap in a new thread
             mapThread = new MapThread(map, chunkThread.getChunk(), chunkThread.getChunkX(), chunkThread.getChunkZ());
@@ -1495,6 +1474,12 @@ public class ChunkManager {
             mapThread.start();
             chunkThread = new ChunkThread(0, 0, 0, 0);
             inLoop = false;
+
+            if (initialLoad) {
+                String string = "Chunks loaded: " + (int) ((float) map.size() / (float) ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1)) * 100) + " % (" + map.size() + "/" + ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1)) + ")";
+                System.out.println(string);
+                Display.setTitle(string);
+            }
         }
     }
 
@@ -1545,7 +1530,7 @@ public class ChunkManager {
         generate = true;
     }
 
-    public void createBuffers(Chunk chunk, FloatBuffer vertexData, FloatBuffer normalData, FloatBuffer texData, FloatBuffer colorData) {
+    public void createBuffers(Chunk chunk, FloatBuffer vertexData, FloatBuffer normalData, FloatBuffer texData) {
 
         int vboVertexHandle = glGenBuffers();
         chunk.setVboVertexHandle(vboVertexHandle);
@@ -1571,9 +1556,13 @@ public class ChunkManager {
         int vboColorHandle = glGenBuffers();
         chunk.setVboColorHandle(vboColorHandle);
 
-        glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
-        glBufferData(GL_ARRAY_BUFFER, colorData, GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+//        glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
+//        glBufferData(GL_ARRAY_BUFFER, colorData, GL_STATIC_DRAW);
+//        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+
+    public boolean isAtMax() {
+        return atMax;
     }
 
 }

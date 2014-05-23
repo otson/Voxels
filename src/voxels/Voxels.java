@@ -24,7 +24,7 @@ import voxels.Noise.FastNoise;
  *
  * @author otso
  */
-public class Voxels{
+public class Voxels {
 
     public static final String TITLE = "Voxels";
     /**
@@ -37,11 +37,19 @@ public class Voxels{
      */
     public static float PLAYER_HEIGHT = 3.7f + 0.5f;
     /**
+     * Set if terrain generation's uses a seed.
+     */
+    public static final boolean USE_SEED = false;
+    /**
+     * Set seed for terrain generation.
+     */
+    public static final int SEED = (int) Math.random() * 1000;
+    /**
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 7;
-    public static int chunkRenderDistance = 7;
+    public static int chunkCreationDistance = 6;
+    public static int chunkRenderDistance = 6;
     public static Texture atlas;
     public static final float WaterOffs = 0.28f;
 
@@ -130,8 +138,15 @@ public class Voxels{
     private static void gameLoop() {
         chunkManager = new ChunkManager();
         camera = InitCamera();
-        chunkManager.generateChunk(0, 0);
 
+        chunkManager.generateChunk(0, 0);
+        chunkManager.startGeneration();
+        long time = System.nanoTime();
+        while (chunkManager.isAtMax() == false) {
+            chunkManager.checkChunkUpdates();
+        }
+        System.out.println("Time taken: " + (System.nanoTime() - time) / 1000000000 + " s.");
+        chunkManager.stopGeneration();
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             processInput(getDelta());
@@ -165,7 +180,7 @@ public class Voxels{
                     int vboVertexHandle = chunk.getVboVertexHandle();
                     int vboNormalHandle = chunk.getVboNormalHandle();
                     int vboTexHandle = chunk.getVboTexHandle();
-                    int vboColorHandle = chunk.getVboColorHandle();
+                    //int vboColorHandle = chunk.getVboColorHandle();
                     int vertices = chunk.getVertices();
 
                     glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
@@ -177,15 +192,15 @@ public class Voxels{
                     glBindBuffer(GL_ARRAY_BUFFER, vboTexHandle);
                     glTexCoordPointer(2, GL_FLOAT, 0, 0L);
 
-                    glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
-                    glColorPointer(3, GL_FLOAT, 0, 0L);
+//                    glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
+//                    glColorPointer(3, GL_FLOAT, 0, 0L);
 
                     glEnableClientState(GL_VERTEX_ARRAY);
                     glEnableClientState(GL_NORMAL_ARRAY);
                     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-                    glEnableClientState(GL_COLOR_ARRAY);
+                    //glEnableClientState(GL_COLOR_ARRAY);
                     glDrawArrays(GL_TRIANGLES, 0, vertices);
-                    glDisableClientState(GL_COLOR_ARRAY);
+                    //glDisableClientState(GL_COLOR_ARRAY);
                     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
                     glDisableClientState(GL_NORMAL_ARRAY);
                     glDisableClientState(GL_VERTEX_ARRAY);
@@ -249,8 +264,12 @@ public class Voxels{
     }
 
     public static int getNoise(float x, float z) {
-        int noise = (int) ((FastNoise.noise(x / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS), z / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS), 5)) * (Chunk.CHUNK_HEIGHT / 256f)) - 1;
-        count++;
+        int noise;
+        if (USE_SEED)
+            noise = (int) ((FastNoise.noise(x  / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS)+SEED, z / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS) + SEED, 5)) * (Chunk.CHUNK_HEIGHT / 256f)) - 1;
+        else
+            noise = (int) ((FastNoise.noise(x / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS), z / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS), 5)) * (Chunk.CHUNK_HEIGHT / 256f)) - 1;
+
         return Math.max(noise, 0);
     }
 

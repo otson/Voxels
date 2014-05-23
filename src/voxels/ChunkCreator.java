@@ -1,5 +1,7 @@
 package voxels;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  *
  * @author otso
@@ -18,9 +20,14 @@ public class ChunkCreator {
     private int count = 0;
     private int turnCount = 0;
     private boolean needMiddleChunk = false;
+    private ConcurrentHashMap<Integer, Chunk> map;
 
     public ChunkCreator() {
 
+    }
+
+    ChunkCreator(ConcurrentHashMap<Integer, Chunk> map) {
+        this.map = map;
     }
 
     Coordinates getNewCoordinates() {
@@ -55,6 +62,7 @@ public class ChunkCreator {
                 }
             }
         }
+
         if (Math.abs(x) <= maxDistance && Math.abs(z) <= maxDistance)
             return new Coordinates(x, null, z);
         else

@@ -1,6 +1,7 @@
 package voxels;
 
 import java.io.Serializable;
+import sun.text.CompactByteArray;
 
 /**
  *
@@ -10,10 +11,10 @@ public class Chunk implements Serializable{
     
     private static final long serialVersionUID = 1L;
     
-    public static final int CHUNK_WIDTH = 16;
+    public static final int CHUNK_WIDTH = 64;
     public static final int CHUNK_HEIGHT = 256;
     public static final int WATER_HEIGHT = 150;
-
+    
     private int vboVertexHandle;
     private int vboNormalHandle;
     private int vboTexHandle;

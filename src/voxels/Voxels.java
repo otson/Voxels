@@ -51,8 +51,8 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 6;
-    public static int chunkRenderDistance = 6;
+    public static int chunkCreationDistance = 1;
+    public static int chunkRenderDistance = 1;
     public static Texture atlas;
     public static final float WaterOffs = 0.28f;
 
@@ -68,7 +68,24 @@ public class Voxels {
     private static long lastFrame = System.nanoTime();
 
     public static void main(String[] args) {
-        
+        Chunk chunk = new Chunk(0, 0);
+        long start = System.nanoTime();
+        try {
+
+            FileOutputStream fos = new FileOutputStream("compressed2.gz");
+            GZIPOutputStream gz = new GZIPOutputStream(fos);
+
+            ObjectOutputStream oos = new ObjectOutputStream(gz);
+
+            oos.writeObject(chunk);
+            oos.close();
+
+            System.out.println("Done");
+            System.out.println("Time taken: " + (System.nanoTime() - start) / 1000000 + " ms.");
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         initDisplay();
         initOpenGL();
         initLighting();

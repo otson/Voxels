@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.FloatBuffer;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.BufferUtils;
@@ -39,8 +40,8 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 7;
-    public static int chunkRenderDistance = 7;
+    public static int chunkCreationDistance = 5;
+    public static int chunkRenderDistance = 5;
     public static Texture atlas;
     public static final float WaterOffs = 0.28f;
 
@@ -134,7 +135,8 @@ public class Voxels {
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             processInput(getDelta());
-            chunkManager.checkChunkUpdates();
+            if (fps % 6 == 0)
+                chunkManager.checkChunkUpdates();
             UpdateView();
             Render();
 
@@ -166,7 +168,6 @@ public class Voxels {
                     int vboColorHandle = chunk.getVboColorHandle();
                     int vertices = chunk.getVertices();
 
-         
                     glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
                     glVertexPointer(3, GL_FLOAT, 0, 0L);
 
@@ -190,8 +191,7 @@ public class Voxels {
                     glDisableClientState(GL_VERTEX_ARRAY);
 
                     glBindBuffer(GL_ARRAY_BUFFER, 0);
-   
-                    
+
                 }
             }
         }

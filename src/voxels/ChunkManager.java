@@ -7,6 +7,7 @@ package voxels;
 
 import java.nio.FloatBuffer;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
@@ -38,12 +39,14 @@ public class ChunkManager {
     private boolean[][][] back = new boolean[Chunk.CHUNK_WIDTH][][];
 
     private boolean generate = false;
+    
+    private HelperThread thread;
 
-    private HashMap<Integer, Chunk> map;
+    private ConcurrentHashMap<Integer, Chunk> map;
     private ChunkCreator chunkCreator;
 
     public ChunkManager() {
-        map = new HashMap<>();
+        map = new ConcurrentHashMap<>();
         chunkCreator = new ChunkCreator();
         initBooleanArrays();
 
@@ -53,7 +56,9 @@ public class ChunkManager {
         if (isChunk(chunkX, chunkZ) == false) {
             Chunk chunk = new Chunk(0, 0);
             drawChunkVBO(chunk, 0, 0);
-            map.put(new Pair(0, 0).hashCode(), chunk);
+            thread = new HelperThread(map, chunk, new Pair(0, 0).hashCode());
+            thread.start();
+            //map.put(new Pair(0, 0).hashCode(), chunk);
         }
         else {
             System.out.println("Chunk already exists!");
@@ -1449,9 +1454,8 @@ public class ChunkManager {
     }
 
     public void checkChunkUpdates() {
-        if (generate) {
+        if (generate && !thread.isAlive()) {
             boolean newChunk = false;
-            Chunk chunk;
             Coordinates coordinates;
             int currentChunkX = getCurrentChunkX();
             int currentChunkZ = getCurrentChunkZ();
@@ -1462,15 +1466,18 @@ public class ChunkManager {
                 int x = coordinates.x;
                 int z = coordinates.z;
 
-                int newChunkX = currentChunkX + coordinates.x;
-                int newChunkZ = currentChunkZ + coordinates.z;
+                final int newChunkX = currentChunkX + coordinates.x;
+                final int newChunkZ = currentChunkZ + coordinates.z;
 
                 if (map.containsKey(new Pair(newChunkX, newChunkZ).hashCode()) == false) {
-                    chunk = new Chunk(newChunkX, newChunkZ);
+                    final Chunk chunk = new Chunk(newChunkX, newChunkZ);
                     long start = System.nanoTime();
                     drawChunkVBO(chunk, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
-
-                    map.put(new Pair(newChunkX, newChunkZ).hashCode(), chunk);
+                    thread = new HelperThread(map, chunk, new Pair(newChunkX, newChunkZ).hashCode());
+                    thread.setPriority(Thread.MIN_PRIORITY);
+                    thread.start();
+                    
+                    //map.put(, chunk);
                     newChunk = true;
                     long end = System.nanoTime();
                     System.out.println("Chunk creation took: " + (end - start) / 1000000 + " ms.");
@@ -1527,3 +1534,4 @@ public class ChunkManager {
     }
 
 }
+

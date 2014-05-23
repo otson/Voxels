@@ -848,14 +848,6 @@ public class EulerCamera implements Camera {
         }
     }
 
-    public void setFlying(boolean flying) {
-        this.flying = flying;
-        if (flying) {
-            falling = false;
-            currentFallingSpeed = 0;
-        }
-    }
-
     public boolean inWater() {
         return this.y - 0.5f + Voxels.WaterOffs < Chunk.WATER_HEIGHT;
     }
@@ -870,6 +862,10 @@ public class EulerCamera implements Camera {
     
     public void toggleFlight(){
         flying = !flying;
+        if (flying) {
+            falling = false;
+            currentFallingSpeed = 0;
+        }
     }
     
 }

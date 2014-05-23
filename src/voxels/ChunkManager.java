@@ -979,7 +979,6 @@ public class ChunkManager {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-                            
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -1001,7 +1000,6 @@ public class ChunkManager {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -1023,7 +1021,6 @@ public class ChunkManager {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -1046,7 +1043,6 @@ public class ChunkManager {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -1068,7 +1064,6 @@ public class ChunkManager {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -1090,7 +1085,6 @@ public class ChunkManager {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -1117,7 +1111,6 @@ public class ChunkManager {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y - WaterOffs;
@@ -1144,7 +1137,6 @@ public class ChunkManager {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y - WaterOffs;
@@ -1171,7 +1163,6 @@ public class ChunkManager {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y - WaterOffs;
@@ -1199,7 +1190,6 @@ public class ChunkManager {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y - WaterOffs;
@@ -1226,7 +1216,6 @@ public class ChunkManager {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y - WaterOffs;
@@ -1253,7 +1242,6 @@ public class ChunkManager {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y - WaterOffs;
@@ -1283,9 +1271,6 @@ public class ChunkManager {
 
 //        colorData.put(colorArray);
 //        colorData.flip();
-
-       
-
         int vboVertexHandle = glGenBuffers();
         chunk.setVboVertexHandle(vboVertexHandle);
 
@@ -1313,7 +1298,6 @@ public class ChunkManager {
 //        glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
 //        glBufferData(GL_ARRAY_BUFFER, colorData, GL_STATIC_DRAW);
 //        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
     }
 
     public int calculateGroundVertices(Chunk chunk, float x, float y, float z, float xOff, float yOff, float zOff, float size) {
@@ -1457,8 +1441,11 @@ public class ChunkManager {
             }
             else {
                 atMax = true;
+                if (initialLoad && Voxels.USE_SEED)
+                    System.out.println("Loaded all chunks. Seed: " + Voxels.SEED);
+                else
+                    System.out.println("Loaded all chunks");
                 initialLoad = false;
-                System.out.println("Loaded all chunks.");
             }
 
         }
@@ -1479,6 +1466,7 @@ public class ChunkManager {
                 String string = "Chunks loaded: " + (int) ((float) map.size() / (float) ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1)) * 100) + " % (" + map.size() + "/" + ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1)) + ")";
                 System.out.println(string);
                 Display.setTitle(string);
+
             }
         }
     }

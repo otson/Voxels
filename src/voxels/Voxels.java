@@ -39,11 +39,11 @@ public class Voxels {
     /**
      * Set if terrain generation's uses a seed.
      */
-    public static final boolean USE_SEED = false;
+    public static final boolean USE_SEED = true;
     /**
      * Set seed for terrain generation.
      */
-    public static final int SEED = (int) Math.random() * 1000;
+    public static final int SEED = (int)(Math.random()*100000);
     /**
      * Set player's Field of View.
      */
@@ -70,6 +70,7 @@ public class Voxels {
         initLighting();
         initTextures();
         gameLoop();
+
     }
 
     private static void initDisplay() {
@@ -109,8 +110,7 @@ public class Voxels {
         glEnable(GL_LIGHT1);
 
         glEnable(GL_COLOR_MATERIAL);
-        glColorMaterial(GL_FRONT, GL_DIFFUSE);
-        glColor3f(0.4f, 0.27f, 0.17f);
+        glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 
         float lightAmbient[] = {0.05f, 0.05f, 0.05f, 1.0f};
         float lightDiffuse[] = {0.0f, 0.0f, 0.0f, 1.0f};
@@ -146,6 +146,7 @@ public class Voxels {
             chunkManager.checkChunkUpdates();
         }
         System.out.println("Time taken: " + (System.nanoTime() - time) / 1000000000 + " s.");
+
         chunkManager.stopGeneration();
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -194,7 +195,6 @@ public class Voxels {
 
 //                    glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
 //                    glColorPointer(3, GL_FLOAT, 0, 0L);
-
                     glEnableClientState(GL_VERTEX_ARRAY);
                     glEnableClientState(GL_NORMAL_ARRAY);
                     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -266,7 +266,7 @@ public class Voxels {
     public static int getNoise(float x, float z) {
         int noise;
         if (USE_SEED)
-            noise = (int) ((FastNoise.noise(x  / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS)+SEED, z / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS) + SEED, 5)) * (Chunk.CHUNK_HEIGHT / 256f)) - 1;
+            noise = (int) ((FastNoise.noise(x / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS)+SEED, z / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS)+SEED, 5)) * (Chunk.CHUNK_HEIGHT / 256f)) - 1;
         else
             noise = (int) ((FastNoise.noise(x / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS), z / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS), 5)) * (Chunk.CHUNK_HEIGHT / 256f)) - 1;
 

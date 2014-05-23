@@ -46,7 +46,7 @@ public class Voxels {
     /**
      * Set seed for terrain generation.
      */
-    public static final int SEED = (int)(Math.random()*20000)-10000;
+    public static final int SEED = (int) (Math.random() * 20000) - 10000;
     /**
      * Set player's Field of View.
      */
@@ -68,24 +68,6 @@ public class Voxels {
     private static long lastFrame = System.nanoTime();
 
     public static void main(String[] args) {
-        Chunk chunk = new Chunk(0,0);
-        long start = System.nanoTime();
-        try{
- 
-		   FileOutputStream fos = new FileOutputStream("chunk2.gz");
-		   //GZIPOutputStream gz = new GZIPOutputStream(fos);
- 
-		   ObjectOutputStream oos = new ObjectOutputStream(fos);
- 
-		   oos.writeObject(chunk);
-		   oos.close();
- 
-		   System.out.println("Done");
-                   System.out.println("Time taken: "+(System.nanoTime()-start)/1000000+" ms.");
-                   System.exit(0);
-	   }catch(Exception ex){
-		   ex.printStackTrace();
-	   }
         
         initDisplay();
         initOpenGL();
@@ -288,7 +270,7 @@ public class Voxels {
     public static int getNoise(float x, float z) {
         int noise;
         if (USE_SEED)
-            noise = (int) ((FastNoise.noise(x / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS)+SEED, z / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS)+SEED, 5)) * (Chunk.CHUNK_HEIGHT / 256f)) - 1;
+            noise = (int) ((FastNoise.noise(x / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS) + SEED, z / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS) + SEED, 5)) * (Chunk.CHUNK_HEIGHT / 256f)) - 1;
         else
             noise = (int) ((FastNoise.noise(x / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS), z / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS), 5)) * (Chunk.CHUNK_HEIGHT / 256f)) - 1;
 
@@ -297,7 +279,7 @@ public class Voxels {
 
     public static Texture loadTexture(String key) {
         try {
-            return TextureLoader.getTexture("png", new FileInputStream(new File("C:\\Users\\otso\\Documents\\NetBeansProjects\\Voxels\\res\\" + key + ".png")));
+            return TextureLoader.getTexture("png", new FileInputStream(new File("res\\" + key + ".png")));
 
         } catch (IOException ex) {
             Logger.getLogger(Voxels.class

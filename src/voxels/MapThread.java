@@ -5,7 +5,13 @@
  */
 package voxels;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.zip.GZIPOutputStream;
 
 /**
  *
@@ -15,12 +21,16 @@ public class MapThread extends Thread {
 
     private boolean ready = false;
 
-    ConcurrentHashMap<Integer, Chunk> map;
+    ConcurrentHashMap<Integer, byte[]> map;
     Chunk chunk;
     private int chunkX;
     private int chunkZ;
 
-    MapThread(ConcurrentHashMap<Integer, Chunk> map, Chunk chunk, int chunkX, int chunkZ) {
+    private static ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    private static GZIPOutputStream gzipOut;
+    private static ObjectOutputStream objectOut;
+
+    MapThread(ConcurrentHashMap<Integer, byte[]> map, Chunk chunk, int chunkX, int chunkZ) {
         this.map = map;
         this.chunk = chunk;
         this.chunkX = chunkX;
@@ -31,7 +41,7 @@ public class MapThread extends Thread {
     @Override
     public void run() {
         if (!map.containsKey(new Pair(chunkX, chunkZ).hashCode())) {
-            map.put(new Pair(chunkX, chunkZ).hashCode(), chunk);
+            map.put(new Pair(chunkX, chunkZ).hashCode(), toByte(chunk));
             setReady();
         }
         else
@@ -44,5 +54,18 @@ public class MapThread extends Thread {
 
     public boolean isReady() {
         return ready;
+    }
+
+    public byte[] toByte(Object object) {
+        try {
+            gzipOut = new GZIPOutputStream(baos);
+            objectOut = new ObjectOutputStream(gzipOut);
+            objectOut.writeObject(object);
+            objectOut.close();
+        } catch (IOException ex) {
+            Logger.getLogger(ChunkManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        byte[] bytes = baos.toByteArray();
+        return bytes;
     }
 }

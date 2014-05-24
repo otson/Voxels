@@ -5,9 +5,18 @@
  */
 package voxels;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.Display;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
@@ -40,12 +49,19 @@ public class ChunkManager {
     private boolean[][][] back = new boolean[Chunk.CHUNK_WIDTH][][];
 
     private boolean generate = false;
-    
+
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    GZIPOutputStream gzipOut;
+    ObjectOutputStream objectOut;
+
+    ByteArrayInputStream bais;
+    GZIPInputStream gzipIn;
+    ObjectInputStream objectIn;
 
     private ChunkThread chunkThread = new ChunkThread(0, 0, 0, 0);
     private MapThread mapThread = new MapThread(null, null, 0, 0);
 
-    private ConcurrentHashMap<Integer, Chunk> map;
+    private ConcurrentHashMap<Integer, byte[]> map;
     private ChunkCreator chunkCreator;
 
     private boolean atMax = false;
@@ -64,7 +80,8 @@ public class ChunkManager {
         if (isChunk(chunkX, chunkZ) == false) {
             Chunk chunk = new Chunk(0, 0);
             drawChunkVBO(chunk, 0, 0);
-            map.put(new Pair(0, 0).hashCode(), chunk);
+
+            map.put(new Pair(0, 0).hashCode(), toByte(chunk));
         }
         else {
             System.out.println("Chunk already exists!");
@@ -78,7 +95,7 @@ public class ChunkManager {
 
     public Chunk getChunk(int chunkX, int chunkZ) {
         if (map.containsKey(new Pair(chunkX, chunkZ).hashCode())) {
-            return map.get(new Pair(chunkX, chunkZ).hashCode());
+            return toChunk(map.get(new Pair(chunkX, chunkZ).hashCode()));
         }
         else {
             return null;
@@ -99,11 +116,11 @@ public class ChunkManager {
         for (int x = 0; x < chunk.blocks.length; x++) {
             for (int z = 0; z < chunk.blocks[x][0].length; z++) {
                 for (int y = 0; y < chunk.blocks[x].length; y++) {
-                    if (chunk.blocks[x][y][z].isType(Block.GROUND)) {
+                    if (chunk.blocks[x][y][z].type == Type.DIRT) {
                         vertices += calculateGroundVertices(chunk, x, y, z, getCurrentChunkX() * chunk.blocks.length + xOff, 0, getCurrentChunkZ() * chunk.blocks.length + zOff, 1);
                         drawnBlocks++;
                     }
-                    else if (chunk.blocks[x][y][z].isType(Block.WATER)) {
+                    else if (chunk.blocks[x][y][z].type == Type.WATER) {
                         vertices += calculateWaterVertices(chunk, x, y, z, getCurrentChunkX() * chunk.blocks.length + xOff, 0, getCurrentChunkZ() * chunk.blocks.length + zOff, 1);
                         drawnBlocks++;
                     }
@@ -131,7 +148,7 @@ public class ChunkManager {
         for (int x = 0; x < chunk.blocks.length; x++) {
             for (int z = 0; z < chunk.blocks[x][0].length; z++) {
                 for (int y = 0; y < chunk.blocks[x].length; y++) {
-                    if (chunk.blocks[x][y][z].isType(Block.GROUND)) {
+                    if (chunk.blocks[x][y][z].type == Type.DIRT) {
                         if (front[x][y][z]) {
                             // 1st
                             // upper left - +
@@ -1095,7 +1112,7 @@ public class ChunkManager {
 
                         }
                     }
-                    if (chunk.blocks[x][y][z].isType(Block.WATER)) {
+                    if (chunk.blocks[x][y][z].type == Type.WATER) {
                         if (top[x][y][z]) {
 
                             // upper left
@@ -1319,7 +1336,7 @@ public class ChunkManager {
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx][zz + 1];
         }
-        if (render || chunk.blocks[xx][yy][zz + 1].isType(Block.AIR) || chunk.blocks[xx][yy][zz + 1].isType(Block.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+        if (render || chunk.blocks[xx][yy][zz + 1].type == Type.AIR || chunk.blocks[xx][yy][zz + 1].type == Type.WATER && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             front[xx][yy][zz] = true;
             returnVertices += 6;
         }
@@ -1333,7 +1350,7 @@ public class ChunkManager {
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx - 1][zz];
         }
-        if (render || chunk.blocks[xx - 1][yy][zz].isType(Block.AIR) || chunk.blocks[xx - 1][yy][zz].isType(Block.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+        if (render || chunk.blocks[xx - 1][yy][zz].type == Type.AIR || chunk.blocks[xx - 1][yy][zz].type == Type.WATER && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             left[xx][yy][zz] = true;
             returnVertices += 6;
         }
@@ -1347,7 +1364,7 @@ public class ChunkManager {
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx][zz - 1];
         }
-        if (render || chunk.blocks[xx][yy][zz - 1].isType(Block.AIR) || chunk.blocks[xx][yy][zz - 1].isType(Block.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+        if (render || chunk.blocks[xx][yy][zz - 1].type == Type.AIR || chunk.blocks[xx][yy][zz - 1].type == Type.WATER && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             back[xx][yy][zz] = true;
             returnVertices += 6;
         }
@@ -1361,7 +1378,7 @@ public class ChunkManager {
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx + 1][zz];
         }
-        if (render || chunk.blocks[xx + 1][yy][zz].isType(Block.AIR) || chunk.blocks[xx + 1][yy][zz].isType(Block.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+        if (render || chunk.blocks[xx + 1][yy][zz].type == Type.AIR || chunk.blocks[xx + 1][yy][zz].type == Type.WATER && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             right[xx][yy][zz] = true;
             returnVertices += 6;
         }
@@ -1372,7 +1389,7 @@ public class ChunkManager {
         render = false;
         if (y == yMax)
             render = true;
-        if (render || chunk.blocks[xx][yy + 1][zz].isType(Block.AIR) || chunk.blocks[xx][yy + 1][zz].isType(Block.WATER) && maxHeights[xx][zz] == yy) {
+        if (render || chunk.blocks[xx][yy + 1][zz].type == Type.AIR || chunk.blocks[xx][yy + 1][zz].type == Type.WATER && maxHeights[xx][zz] == yy) {
             top[xx][yy][zz] = true;
             returnVertices += 6;
         }
@@ -1403,7 +1420,7 @@ public class ChunkManager {
         // top face
         if (y == yMax)
             render = true;
-        if (render || chunk.blocks[xx][yy + 1][zz].isType(Block.AIR) && y == Chunk.WATER_HEIGHT) {
+        if (render || chunk.blocks[xx][yy + 1][zz].type == Type.AIR && y == Chunk.WATER_HEIGHT) {
             top[xx][yy][zz] = true;
             returnVertices += 6;
         }
@@ -1554,4 +1571,30 @@ public class ChunkManager {
         return atMax;
     }
 
+    public byte[] toByte(Object object) {
+        try {
+            gzipOut = new GZIPOutputStream(baos);
+            objectOut = new ObjectOutputStream(gzipOut);
+            objectOut.writeObject(object);
+            objectOut.close();
+        } catch (IOException ex) {
+            Logger.getLogger(ChunkManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        byte[] bytes = baos.toByteArray();
+        return bytes;
+    }
+
+    public Chunk toChunk(byte[] bytes) {
+        bais = new ByteArrayInputStream(bytes);
+        try {
+            gzipIn = new GZIPInputStream(bais);
+            objectIn = new ObjectInputStream(gzipIn);
+            Chunk chunk = (Chunk) objectIn.readObject();
+            objectIn.close();
+            return chunk;
+        } catch (IOException | ClassNotFoundException ex) {
+            Logger.getLogger(ChunkManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
 }

@@ -46,13 +46,13 @@ public class Voxels {
     /**
      * Set seed for terrain generation.
      */
-    public static final int SEED = (int) (Math.random() * 20000) - 10000;
+    public static final int SEED = 0;//(int) (Math.random() * 20000) - 10000;
     /**
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 1;
-    public static int chunkRenderDistance = 1;
+    public static int chunkCreationDistance = 0;
+    public static int chunkRenderDistance = 0;
     public static Texture atlas;
     public static final float WaterOffs = 0.28f;
 

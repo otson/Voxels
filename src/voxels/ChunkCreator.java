@@ -1,6 +1,9 @@
 package voxels;
 
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.zip.GZIPOutputStream;
 
 /**
  *
@@ -20,13 +23,15 @@ public class ChunkCreator {
     private int count = 0;
     private int turnCount = 0;
     private boolean needMiddleChunk = false;
-    private ConcurrentHashMap<Integer, Chunk> map;
+    private ConcurrentHashMap<Integer, byte[]> map;
+    
+    
 
     public ChunkCreator() {
 
     }
 
-    ChunkCreator(ConcurrentHashMap<Integer, Chunk> map) {
+    ChunkCreator(ConcurrentHashMap<Integer, byte[]> map) {
         this.map = map;
     }
 

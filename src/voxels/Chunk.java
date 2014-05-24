@@ -11,7 +11,7 @@ public class Chunk implements Serializable{
     
     private static final long serialVersionUID = 1L;
     
-    public static final int CHUNK_WIDTH = 64;
+    public static final int CHUNK_WIDTH = 16;
     public static final int CHUNK_HEIGHT = 256;
     public static final int WATER_HEIGHT = 150;
     
@@ -57,10 +57,10 @@ public class Chunk implements Serializable{
                 blocks[x][y] = new Block[CHUNK_WIDTH];
                 for (int z = 0; z < blocks[x][y].length; z++) {
                     if (y > maxHeights[x][z] && y <= Chunk.WATER_HEIGHT) {
-                        blocks[x][y][z] = new Block(Block.WATER);
+                        blocks[x][y][z] = new Block(Type.WATER);
                     }
                     else
-                        blocks[x][y][z] = new Block(Block.AIR);
+                        blocks[x][y][z] = new Block(Type.AIR);
                 }
             }
         }
@@ -78,10 +78,10 @@ public class Chunk implements Serializable{
                 for (int y = 0; y < blocks[x].length; y++) {
 
                     if (y == maxHeights[x][z]) {
-                        blocks[x][y][z].setType(Block.GROUND);
+                        blocks[x][y][z].type = Type.DIRT;
                     }
                     else if ((x == 0 || x == blocks.length - 1 || z == 0 || z == blocks[x][y].length - 1) && y < maxHeights[x][z] && y > difference) {
-                        blocks[x][y][z].setType(Block.GROUND);
+                        blocks[x][y][z].type = Type.DIRT;
                     }
                 }
             }
@@ -93,7 +93,7 @@ public class Chunk implements Serializable{
                 heightDifference = maxHeights[x][z] - Math.min(Math.min(maxHeights[x + 1][z], maxHeights[x - 1][z]), Math.min(maxHeights[x][z + 1], maxHeights[x][z - 1]));
                 if (heightDifference > 1)
                     for (int y = maxHeights[x][z] - heightDifference; y < maxHeights[x][z]; y++) {
-                        blocks[x][y][z].setType(Block.GROUND);
+                        blocks[x][y][z].type = Type.DIRT;
                     }
             }
         }

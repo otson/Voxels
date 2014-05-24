@@ -33,16 +33,13 @@ public class MapThread extends Thread {
     private int chunkX;
     private int chunkZ;
 
-    private ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    private GZIPOutputStream gzipOut;
-    private ObjectOutputStream objectOut;
-
     MapThread(ConcurrentHashMap<Integer, byte[]> map, ConcurrentHashMap<Integer, Handle> handles, Chunk chunk, int chunkX, int chunkZ) {
         this.map = map;
         this.handles = handles;
         this.chunk = chunk;
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
+        
     }
 
     @Override

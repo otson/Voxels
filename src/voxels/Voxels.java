@@ -38,15 +38,15 @@ public class Voxels {
     /**
      * Set player's height. One block's height is 1.
      */
-    public static float PLAYER_HEIGHT = 3.7f + 0.5f;
+    public static float PLAYER_HEIGHT = 2.7f + 0.5f;
     /**
      * Set if terrain generation's uses a seed.
      */
-    public static final boolean USE_SEED = true;
+    public static final boolean USE_SEED = false;
     /**
      * Set seed for terrain generation.
      */
-    public static final int SEED = 0;//(int) (Math.random() * 20000) - 10000;
+    public static final int SEED = (int) (Math.random() * 20000) - 10000;
     /**
      * Set player's Field of View.
      */
@@ -78,7 +78,7 @@ public class Voxels {
 
     private static void initDisplay() {
         try {
-            Display.setDisplayMode(new DisplayMode(800, 480));
+            Display.setDisplayMode(new DisplayMode(1650, 1050));
             Display.setVSyncEnabled(true);
             Display.setTitle("Voxels");
             Display.create();

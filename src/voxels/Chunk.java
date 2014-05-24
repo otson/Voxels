@@ -13,7 +13,7 @@ public class Chunk implements Serializable{
     
     public static final int CHUNK_WIDTH = 16;
     public static final int CHUNK_HEIGHT = 256;
-    public static final int WATER_HEIGHT = 150;
+    public static final int WATER_HEIGHT = 128;
     
     private int vboVertexHandle;
     private int vboNormalHandle;

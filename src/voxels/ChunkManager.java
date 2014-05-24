@@ -40,6 +40,7 @@ public class ChunkManager {
     private boolean[][][] back = new boolean[Chunk.CHUNK_WIDTH][][];
 
     private boolean generate = false;
+    
 
     private ChunkThread chunkThread = new ChunkThread(0, 0, 0, 0);
     private MapThread mapThread = new MapThread(null, null, 0, 0);

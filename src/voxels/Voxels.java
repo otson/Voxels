@@ -171,7 +171,6 @@ public class Voxels {
 
             Display.update();
             Display.sync(60);
-            System.out.println(timePassed());
         }
         Display.destroy();
         System.exit(0);

@@ -111,6 +111,8 @@ public class Voxels {
         atlas = loadTexture(ATLAS);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP); // [x,y,z,w] -> [s,t,r,q]
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
         atlas.bind();
     }
 
@@ -149,22 +151,23 @@ public class Voxels {
     private static void gameLoop() {
         chunkManager = new ChunkManager();
         camera = InitCamera();
-
         chunkManager.generateChunk(0, 0);
         chunkManager.startGeneration();
         long time = System.nanoTime();
+
         while (chunkManager.isAtMax() == false) {
             chunkManager.checkChunkUpdates();
             if (chunkManager.chunkAmount() % 20 == 0)
                 Display.update();
         }
         System.out.println("Time taken: " + (System.nanoTime() - time) / 1000000000 + " s.");
-
-        chunkManager.stopGeneration();
+        
+        chunkManager.getChunkLoader().loadChunks();
+        chunkManager.getChunkLoader().start();
+        
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             processInput(getDelta());
-            //if (fps > 1 && fps % 2 == 0)
             chunkManager.checkChunkUpdates();
             updateView();
             render();

@@ -53,18 +53,13 @@ public class ChunkManager {
 
     private boolean generate = false;
 
-    
-
- 
-
-   
-
     private ChunkThread chunkThread = new ChunkThread(0, 0, 0, 0);
     private MapThread mapThread = new MapThread(null, null, null, 0, 0);
 
     private ConcurrentHashMap<Integer, byte[]> map;
     private ConcurrentHashMap<Integer, Handle> handles;
     private ChunkCreator chunkCreator;
+    private ChunkLoader chunkLoader;
 
     private boolean atMax = false;
 
@@ -75,6 +70,8 @@ public class ChunkManager {
         map = new ConcurrentHashMap<>();
         handles = new ConcurrentHashMap<>();
         chunkCreator = new ChunkCreator(map);
+        chunkLoader = new ChunkLoader(this);
+        chunkLoader.setPriority(Thread.MIN_PRIORITY);
         initBooleanArrays();
 
     }
@@ -1471,8 +1468,8 @@ public class ChunkManager {
                 atMax = true;
                 if (initialLoad && Voxels.USE_SEED)
                     System.out.println("Loaded all chunks. Seed: " + Voxels.SEED);
-                else
-                    System.out.println("Loaded all chunks");
+//                else
+//                    System.out.println("Loaded all chunks");
                 initialLoad = false;
             }
 
@@ -1587,13 +1584,13 @@ public class ChunkManager {
 
     public Chunk toChunk(byte[] bytes) {
         try {
-            return (Chunk)deserialize(LZFDecoder.decode(bytes));
+            return (Chunk) deserialize(LZFDecoder.decode(bytes));
         } catch (LZFException ex) {
             Logger.getLogger(ChunkManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
-    
+
     public static byte[] serialize(Object obj) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream os;
@@ -1614,8 +1611,49 @@ public class ChunkManager {
         }
         return null;
     }
-    
-    public int chunkAmount(){
+
+    public int chunkAmount() {
         return map.size();
     }
+
+    public ChunkLoader getChunkLoader() {
+        return chunkLoader;
+    }
+
+    public Chunk getTopLeft() {
+        return chunkLoader.getTopLeft();
+    }
+
+    public Chunk getTopMiddle() {
+        return chunkLoader.getTopMiddle();
+    }
+
+    public Chunk getTopRight() {
+        return chunkLoader.getTopRight();
+    }
+
+    public Chunk getMidLeft() {
+        return chunkLoader.getMidLeft();
+    }
+
+    public Chunk getMiddle() {
+        return chunkLoader.getMiddle();
+    }
+
+    public Chunk getMidRight() {
+        return chunkLoader.getMidRight();
+    }
+
+    public Chunk getLowLeft() {
+        return chunkLoader.getLowLeft();
+    }
+
+    public Chunk getLowRight() {
+        return chunkLoader.getLowRight();
+    }
+
+    public Chunk getLowMiddle() {
+        return chunkLoader.getLowMiddle();
+    }
+
 }

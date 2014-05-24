@@ -68,12 +68,7 @@ public class EulerCamera implements Camera {
 
     private boolean flying = false;
     private boolean falling = false;
-
-    private Chunk currentChunk = null;
-
-    private int currentChunkX = 0;
-    private int currentChunkZ = 0;
-
+    
     private ChunkManager chunkManager;
 
     private EulerCamera(Builder builder) {
@@ -357,14 +352,6 @@ public class EulerCamera implements Camera {
         boolean moveFaster = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
         boolean moveSlower = Keyboard.isKeyDown(Keyboard.KEY_C);
 
-        if (currentChunk == null || currentChunkX != Voxels.getCurrentChunkX() || currentChunkZ != Voxels.getCurrentChunkZ()) {
-            if (chunkManager.isChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ())) {
-                currentChunk = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ());
-            }
-            currentChunkX = Voxels.getCurrentChunkX();
-            currentChunkZ = Voxels.getCurrentChunkZ();
-            
-        }
         if (moveFaster)
             speed *= 3;
         if(moveSlower)
@@ -396,8 +383,8 @@ public class EulerCamera implements Camera {
 
         }
         if (flying == false) {
-            if (currentChunk != null) {
-                int[][] temp = currentChunk.getMaxHeights();
+            if (chunkManager.getMiddle() != null) {
+                int[][] temp = chunkManager.getMiddle().getMaxHeights();
                 float blockHeight = temp[(int) (x() - Voxels.getCurrentChunkX() * Chunk.CHUNK_WIDTH)][(int) (z() - Voxels.getCurrentChunkZ() * Chunk.CHUNK_WIDTH)];
                 if (y() > blockHeight + PLAYER_HEIGHT) {
                     fall(blockHeight + PLAYER_HEIGHT);

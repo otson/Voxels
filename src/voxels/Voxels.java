@@ -51,8 +51,8 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 0;
-    public static int chunkRenderDistance = 0;
+    public static int chunkCreationDistance = 7;
+    public static int chunkRenderDistance = 7;
     public static Texture atlas;
     public static final float WaterOffs = 0.28f;
 
@@ -68,24 +68,6 @@ public class Voxels {
     private static long lastFrame = System.nanoTime();
 
     public static void main(String[] args) {
-        Chunk chunk = new Chunk(0, 0);
-        long start = System.nanoTime();
-        try {
-
-            FileOutputStream fos = new FileOutputStream("compressed2.gz");
-            GZIPOutputStream gz = new GZIPOutputStream(fos);
-
-            ObjectOutputStream oos = new ObjectOutputStream(gz);
-
-            oos.writeObject(chunk);
-            oos.close();
-
-            System.out.println("Done");
-            System.out.println("Time taken: " + (System.nanoTime() - start) / 1000000 + " ms.");
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
         initDisplay();
         initOpenGL();
         initLighting();
@@ -196,14 +178,15 @@ public class Voxels {
 
         for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
             for (int z = -chunkRenderDistance; z <= chunkRenderDistance; z++) {
-                Chunk chunk = chunkManager.getChunk(getCurrentChunkX() + x, getCurrentChunkZ() + z);
-                if (chunk != null) {
+                //Chunk chunk = chunkManager.getChunk(getCurrentChunkX() + x, getCurrentChunkZ() + z);
+                Handle handles = chunkManager.getHandle(getCurrentChunkX() + x, getCurrentChunkZ() + z);
+                if (handles != null) {
 
-                    int vboVertexHandle = chunk.getVboVertexHandle();
-                    int vboNormalHandle = chunk.getVboNormalHandle();
-                    int vboTexHandle = chunk.getVboTexHandle();
+                    int vboVertexHandle = handles.vertexHandle;
+                    int vboNormalHandle = handles.normalHandle;
+                    int vboTexHandle = handles.texHandle;
                     //int vboColorHandle = chunk.getVboColorHandle();
-                    int vertices = chunk.getVertices();
+                    int vertices = handles.vertices;
 
                     glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
                     glVertexPointer(3, GL_FLOAT, 0, 0L);

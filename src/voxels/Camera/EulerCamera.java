@@ -66,7 +66,12 @@ public class EulerCamera implements Camera {
 
     private boolean flying = false;
     private boolean falling = false;
-    
+
+    private Chunk currentChunk = null;
+
+    private int currentChunkX = 0;
+    private int currentChunkZ = 0;
+
     private ChunkManager chunkManager;
 
     private EulerCamera(Builder builder) {
@@ -347,10 +352,19 @@ public class EulerCamera implements Camera {
         boolean flyUp = Keyboard.isKeyDown(Keyboard.KEY_SPACE);
         boolean flyDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
         boolean moveFaster = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
-        
-        if(moveFaster)
-            speed*=3;
-        
+
+        if (currentChunk == null || currentChunkX != Voxels.getCurrentChunkX() || currentChunkZ != Voxels.getCurrentChunkZ()) {
+            if (chunkManager.isChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ())) {
+                currentChunk = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ());
+                
+            }
+            currentChunkX = Voxels.getCurrentChunkX();
+            currentChunkZ = Voxels.getCurrentChunkZ();
+            
+        }
+        if (moveFaster)
+            speed *= 3;
+
         if (inWater()) {
             speed /= 3;
 
@@ -377,8 +391,8 @@ public class EulerCamera implements Camera {
 
         }
         if (flying == false) {
-            if (chunkManager.isChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ())) {
-                int[][] temp = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ()).getMaxHeights();
+            if (currentChunk != null) {
+                int[][] temp = currentChunk.getMaxHeights();
                 float blockHeight = temp[(int) (x() - Voxels.getCurrentChunkX() * Chunk.CHUNK_WIDTH)][(int) (z() - Voxels.getCurrentChunkZ() * Chunk.CHUNK_WIDTH)];
                 if (y() > blockHeight + PLAYER_HEIGHT) {
                     fall(blockHeight + PLAYER_HEIGHT);
@@ -503,7 +517,6 @@ public class EulerCamera implements Camera {
      */
     public void moveFromLook(float dx, float dy, float dz) {
 
-        
         this.x -= dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw));
         this.y += dy * (float) sin(toRadians(pitch - 90)) + dz * sin(toRadians(pitch));
         this.z += dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw));
@@ -859,13 +872,13 @@ public class EulerCamera implements Camera {
     public void setChunkManager(ChunkManager chunkManager) {
         this.chunkManager = chunkManager;
     }
-    
-    public void toggleFlight(){
+
+    public void toggleFlight() {
         flying = !flying;
         if (flying) {
             falling = false;
             currentFallingSpeed = 0;
         }
     }
-    
+
 }

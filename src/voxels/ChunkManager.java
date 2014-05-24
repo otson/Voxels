@@ -59,9 +59,10 @@ public class ChunkManager {
     ObjectInputStream objectIn;
 
     private ChunkThread chunkThread = new ChunkThread(0, 0, 0, 0);
-    private MapThread mapThread = new MapThread(null, null, 0, 0);
+    private MapThread mapThread = new MapThread(null, null, null, 0, 0);
 
     private ConcurrentHashMap<Integer, byte[]> map;
+    private ConcurrentHashMap<Integer, Handle> handles;
     private ChunkCreator chunkCreator;
 
     private boolean atMax = false;
@@ -71,6 +72,7 @@ public class ChunkManager {
 
     public ChunkManager() {
         map = new ConcurrentHashMap<>();
+        handles = new ConcurrentHashMap<>();
         chunkCreator = new ChunkCreator(map);
         initBooleanArrays();
 
@@ -80,7 +82,7 @@ public class ChunkManager {
         if (isChunk(chunkX, chunkZ) == false) {
             Chunk chunk = new Chunk(0, 0);
             drawChunkVBO(chunk, 0, 0);
-
+            handles.put(new Pair(0, 0).hashCode(), new Handle(chunk.getVboVertexHandle(), chunk.getVboNormalHandle(), chunk.getVboTexHandle(), chunk.getVertices()));
             map.put(new Pair(0, 0).hashCode(), toByte(chunk));
         }
         else {
@@ -100,6 +102,13 @@ public class ChunkManager {
         else {
             return null;
         }
+    }
+
+    public Handle getHandle(int x, int z) {
+        if (handles.containsKey(new Pair(x, z).hashCode()))
+            return handles.get(new Pair(x, z).hashCode());
+        else
+            return null;
     }
 
     public boolean isChunk(int chunkX, int chunkZ) {
@@ -1474,7 +1483,7 @@ public class ChunkManager {
             createBuffers(chunkThread.getChunk(), chunkThread.getVertexData(), chunkThread.getNormalData(), chunkThread.getTexData());
 
             // put the Chunk to HashMap in a new thread
-            mapThread = new MapThread(map, chunkThread.getChunk(), chunkThread.getChunkX(), chunkThread.getChunkZ());
+            mapThread = new MapThread(map, handles, chunkThread.getChunk(), chunkThread.getChunkX(), chunkThread.getChunkZ());
             mapThread.setPriority(Thread.MIN_PRIORITY);
             mapThread.start();
             chunkThread = new ChunkThread(0, 0, 0, 0);

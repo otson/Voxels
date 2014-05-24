@@ -21,8 +21,9 @@ public class MapThread extends Thread {
 
     private boolean ready = false;
 
-    ConcurrentHashMap<Integer, byte[]> map;
-    Chunk chunk;
+    private ConcurrentHashMap<Integer, byte[]> map;
+    private ConcurrentHashMap<Integer, Handle> handles;
+    private Chunk chunk;
     private int chunkX;
     private int chunkZ;
 
@@ -30,8 +31,9 @@ public class MapThread extends Thread {
     private static GZIPOutputStream gzipOut;
     private static ObjectOutputStream objectOut;
 
-    MapThread(ConcurrentHashMap<Integer, byte[]> map, Chunk chunk, int chunkX, int chunkZ) {
+    MapThread(ConcurrentHashMap<Integer, byte[]> map, ConcurrentHashMap<Integer, Handle> handles, Chunk chunk, int chunkX, int chunkZ) {
         this.map = map;
+        this.handles = handles;
         this.chunk = chunk;
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
@@ -41,6 +43,7 @@ public class MapThread extends Thread {
     @Override
     public void run() {
         if (!map.containsKey(new Pair(chunkX, chunkZ).hashCode())) {
+            handles.put(new Pair(chunkX, chunkZ).hashCode(), new Handle(chunk.getVboVertexHandle(),chunk.getVboNormalHandle(),chunk.getVboTexHandle(), chunk.getVertices()));
             map.put(new Pair(chunkX, chunkZ).hashCode(), toByte(chunk));
             setReady();
         }

@@ -61,7 +61,7 @@ public class EulerCamera implements Camera {
     private float aspectRatio = 1;
     private final float zNear;
     private final float zFar;
-    private float fallSpeedIncrease = 0.01f;
+    private float fallSpeedIncrease = 0.013f;
     private float maxWaterFallSpeed = 0.12f;
     private float maxAirFallSpeed = 1.4f;
     private float currentFallingSpeed = 0;
@@ -355,6 +355,7 @@ public class EulerCamera implements Camera {
         boolean flyUp = Keyboard.isKeyDown(Keyboard.KEY_SPACE);
         boolean flyDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
         boolean moveFaster = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
+        boolean moveSlower = Keyboard.isKeyDown(Keyboard.KEY_C);
 
         if (currentChunk == null || currentChunkX != Voxels.getCurrentChunkX() || currentChunkZ != Voxels.getCurrentChunkZ()) {
             if (chunkManager.isChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ())) {
@@ -366,6 +367,8 @@ public class EulerCamera implements Camera {
         }
         if (moveFaster)
             speed *= 3;
+        if(moveSlower)
+            speed /=3;
 
         if (inWater()) {
             speed /= 3;

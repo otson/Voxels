@@ -28,6 +28,8 @@
  */
 package voxels.Camera;
 
+import com.ning.compress.lzf.LZFInputStream;
+import java.io.FileInputStream;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GLContext;
@@ -260,6 +262,7 @@ public class EulerCamera implements Camera {
      * down
      */
     public void processMouse(float mouseSpeed, float maxLookUp, float maxLookDown) {
+        
         float mouseDX = Mouse.getDX() * mouseSpeed * 0.16f;
         float mouseDY = Mouse.getDY() * mouseSpeed * 0.16f;
         if (yaw + mouseDX >= 360) {
@@ -356,9 +359,6 @@ public class EulerCamera implements Camera {
         if (currentChunk == null || currentChunkX != Voxels.getCurrentChunkX() || currentChunkZ != Voxels.getCurrentChunkZ()) {
             if (chunkManager.isChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ())) {
                 currentChunk = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ());
-                System.out.println("");
-                System.out.println("At x: "+Voxels.getCurrentChunkX()+" z: "+Voxels.getCurrentChunkZ());
-                System.out.println("At new chunk: x: "+currentChunk.xId+" z: "+currentChunk.zId);
             }
             currentChunkX = Voxels.getCurrentChunkX();
             currentChunkZ = Voxels.getCurrentChunkZ();

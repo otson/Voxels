@@ -1,9 +1,10 @@
-package voxels;
+package voxels.ChunkManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.GZIPOutputStream;
+import voxels.Voxels;
 
 /**
  *

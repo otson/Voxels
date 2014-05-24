@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package voxels;
+package voxels.ChunkManager;
 
 import com.ning.compress.lzf.LZFDecoder;
 import com.ning.compress.lzf.LZFEncoder;
@@ -30,13 +30,14 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.Display;
+import voxels.Voxels;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static voxels.Chunk.CHUNK_HEIGHT;
-import static voxels.Chunk.CHUNK_WIDTH;
+import static voxels.ChunkManager.Chunk.CHUNK_HEIGHT;
+import static voxels.ChunkManager.Chunk.CHUNK_WIDTH;
 import static voxels.Voxels.WaterOffs;
 import static voxels.Voxels.getCurrentChunkX;
 import static voxels.Voxels.getCurrentChunkZ;

@@ -1,7 +1,8 @@
-package voxels;
+package voxels.ChunkManager;
 
 import java.io.Serializable;
 import sun.text.CompactByteArray;
+import voxels.Voxels;
 
 /**
  *

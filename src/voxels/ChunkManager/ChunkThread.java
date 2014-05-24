@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package voxels;
+package voxels.ChunkManager;
 
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
-import static voxels.Chunk.CHUNK_HEIGHT;
-import static voxels.Chunk.CHUNK_WIDTH;
+import static voxels.ChunkManager.Chunk.CHUNK_HEIGHT;
+import static voxels.ChunkManager.Chunk.CHUNK_WIDTH;
 import static voxels.Voxels.WaterOffs;
 import static voxels.Voxels.getCurrentChunkX;
 import static voxels.Voxels.getCurrentChunkZ;

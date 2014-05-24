@@ -1,15 +1,14 @@
 package voxels;
 
+import voxels.ChunkManager.Chunk;
+import voxels.ChunkManager.ChunkManager;
+import voxels.ChunkManager.Handle;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.nio.FloatBuffer;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.GZIPOutputStream;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -29,7 +28,14 @@ import voxels.Noise.FastNoise;
  */
 public class Voxels {
 
+    /**
+     * Title.
+     */
     public static final String TITLE = "Voxels";
+    /**
+     * Resource atlas file name.
+     */
+    public static final String ATLAS = "atlas";
     /**
      * Set terrain smoothness. Value of one gives mountains withs a width of one
      * block, 30 gives enormous flat areas. Default value is 15.
@@ -101,7 +107,7 @@ public class Voxels {
 
     private static void initTextures() {
         glEnable(GL_TEXTURE_2D);
-        atlas = loadTexture("atlas");
+        atlas = loadTexture(ATLAS);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         atlas.bind();
@@ -147,7 +153,7 @@ public class Voxels {
         long time = System.nanoTime();
         while (chunkManager.isAtMax() == false) {
             chunkManager.checkChunkUpdates();
-            if(chunkManager.chunkAmount() %20 == 0)
+            if (chunkManager.chunkAmount() % 20 == 0)
                 Display.update();
         }
         System.out.println("Time taken: " + (System.nanoTime() - time) / 1000000000 + " s.");

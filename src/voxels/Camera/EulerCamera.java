@@ -38,8 +38,8 @@ import org.lwjgl.util.glu.GLU;
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.ARBDepthClamp.GL_DEPTH_CLAMP;
 import static org.lwjgl.opengl.GL11.*;
-import voxels.Chunk;
-import voxels.ChunkManager;
+import voxels.ChunkManager.Chunk;
+import voxels.ChunkManager.ChunkManager;
 import voxels.Voxels;
 import static voxels.Voxels.PLAYER_HEIGHT;
 

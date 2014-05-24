@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package voxels;
+package voxels.ChunkManager;
 
 import com.ning.compress.lzf.LZFEncoder;
 import java.io.ByteArrayInputStream;
@@ -17,7 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPOutputStream;
-import static voxels.ChunkManager.serialize;
+import static voxels.ChunkManager.ChunkManager.serialize;
 
 /**
  *

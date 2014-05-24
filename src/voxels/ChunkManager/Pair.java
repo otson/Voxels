@@ -1,4 +1,4 @@
-package voxels;
+package voxels.ChunkManager;
 
 /**
  *

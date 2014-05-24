@@ -135,7 +135,7 @@ public class Voxels {
 
         // Set background to sky blue
         glClearColor(0f / 255f, 0f / 255f, 190f / 255f, 1.0f);
-        START_TIME = (System.nanoTime()/1000000);
+        START_TIME = (System.nanoTime() / 1000000);
     }
 
     private static EulerCamera InitCamera() {
@@ -161,10 +161,10 @@ public class Voxels {
                 Display.update();
         }
         System.out.println("Time taken: " + (System.nanoTime() - time) / 1000000000 + " s.");
-        
+
         chunkManager.getChunkLoader().loadChunks();
         chunkManager.getChunkLoader().start();
-        
+
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             processInput(getDelta());
@@ -208,7 +208,7 @@ public class Voxels {
 
                     glBindBuffer(GL_ARRAY_BUFFER, vboTexHandle);
                     glTexCoordPointer(2, GL_FLOAT, 0, 0L);
-                    
+
                     glEnableClientState(GL_VERTEX_ARRAY);
                     glEnableClientState(GL_NORMAL_ARRAY);
                     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -249,8 +249,9 @@ public class Voxels {
         if (Mouse.isGrabbed()) {
             camera.processMouse();
             camera.processKeyboard(delta, 3);
-            glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(new float[]{2500+camera.x(), (float)(10000*Math.sin(timePassed()/20000)),(float)(10000*Math.cos(timePassed()/20000)), 1f}));
-            //glLight(GL_LIGHT1, GL_POSITION, asFloatBuffer(light1Position));
+            glClearColor(0f, (float) Math.max(0, (255 * Math.sin(timePassed() / 20000)) - 155) / 255f, (float) Math.max(25, (255 * Math.sin(timePassed() / 20000)) + 25) / 255f, 1.0f);
+            glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(new float[]{2500 + camera.x(), (float) (10000 * Math.sin(timePassed() / 20000)), (float) (10000 * Math.cos(timePassed() / 20000)), 1f}));
+
         }
     }
 
@@ -307,8 +308,9 @@ public class Voxels {
     public static long getTime() {
         return System.nanoTime() / 1000000;
     }
+
     public static float timePassed() {
-        return (System.nanoTime() / 1000000)-START_TIME;
+        return (System.nanoTime() / 1000000) - START_TIME;
     }
 
     public static void updateFPS() {

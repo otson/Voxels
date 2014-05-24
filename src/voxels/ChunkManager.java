@@ -1484,7 +1484,7 @@ public class ChunkManager {
 
             // put the Chunk to HashMap in a new thread
             mapThread = new MapThread(map, handles, chunkThread.getChunk(), chunkThread.getChunkX(), chunkThread.getChunkZ());
-            mapThread.setPriority(Thread.MIN_PRIORITY);
+            mapThread.setPriority(Thread.NORM_PRIORITY);
             mapThread.start();
             chunkThread = new ChunkThread(0, 0, 0, 0);
             inLoop = false;

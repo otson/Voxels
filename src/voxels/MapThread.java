@@ -5,15 +5,19 @@
  */
 package voxels;
 
+import com.ning.compress.lzf.LZFEncoder;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.Deflater;
 import java.util.zip.GZIPOutputStream;
+import static voxels.ChunkManager.serialize;
 
 /**
  *
@@ -31,7 +35,7 @@ public class MapThread extends Thread {
 
     private ByteArrayOutputStream baos = new ByteArrayOutputStream();
     private GZIPOutputStream gzipOut;
-    private  ObjectOutputStream objectOut;
+    private ObjectOutputStream objectOut;
 
     MapThread(ConcurrentHashMap<Integer, byte[]> map, ConcurrentHashMap<Integer, Handle> handles, Chunk chunk, int chunkX, int chunkZ) {
         this.map = map;
@@ -39,13 +43,12 @@ public class MapThread extends Thread {
         this.chunk = chunk;
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
-
     }
 
     @Override
     public void run() {
         if (!map.containsKey(new Pair(chunkX, chunkZ).hashCode())) {
-            handles.put(new Pair(chunkX, chunkZ).hashCode(), new Handle(chunk.getVboVertexHandle(),chunk.getVboNormalHandle(),chunk.getVboTexHandle(), chunk.getVertices()));
+            handles.put(new Pair(chunkX, chunkZ).hashCode(), new Handle(chunk.getVboVertexHandle(), chunk.getVboNormalHandle(), chunk.getVboTexHandle(), chunk.getVertices()));
             map.put(new Pair(chunkX, chunkZ).hashCode(), toByte(chunk));
             setReady();
         }
@@ -61,16 +64,30 @@ public class MapThread extends Thread {
         return ready;
     }
 
-    public byte[] toByte(Object object) {
+    public byte[] toByte(Chunk chunk) {
+        return LZFEncoder.encode(serialize(chunk));
+    }
+
+    public static byte[] serialize(Object obj) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ObjectOutputStream os;
         try {
-            gzipOut = new GZIPOutputStream(baos);
-            objectOut = new ObjectOutputStream(gzipOut);
-            objectOut.writeObject(object);
-            objectOut.close();
+            os = new ObjectOutputStream(out);
+            os.writeObject(obj);
         } catch (IOException ex) {
-            Logger.getLogger(ChunkManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MapThread.class.getName()).log(Level.SEVERE, null, ex);
         }
-        byte[] bytes = baos.toByteArray();
-        return bytes;
+        return out.toByteArray();
+    }
+
+    public static Object deserialize(byte[] data) {
+        ByteArrayInputStream in = new ByteArrayInputStream(data);
+        ObjectInputStream is;
+        try {
+            return new ObjectInputStream(in).readObject();
+        } catch (IOException | ClassNotFoundException ex) {
+            Logger.getLogger(MapThread.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 }

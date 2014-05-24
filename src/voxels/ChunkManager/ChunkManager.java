@@ -8,24 +8,15 @@ package voxels.ChunkManager;
 import com.ning.compress.lzf.LZFDecoder;
 import com.ning.compress.lzf.LZFEncoder;
 import com.ning.compress.lzf.LZFException;
-import com.ning.compress.lzf.LZFInputStream;
-import com.ning.compress.lzf.LZFOutputStream;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.nio.FloatBuffer;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import org.lwjgl.BufferUtils;
@@ -62,13 +53,11 @@ public class ChunkManager {
 
     private boolean generate = false;
 
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    GZIPOutputStream gzipOut;
-    ObjectOutputStream objectOut;
+    
 
-    ByteArrayInputStream bais;
-    GZIPInputStream gzipIn;
-    ObjectInputStream objectIn;
+ 
+
+   
 
     private ChunkThread chunkThread = new ChunkThread(0, 0, 0, 0);
     private MapThread mapThread = new MapThread(null, null, null, 0, 0);
@@ -1475,7 +1464,7 @@ public class ChunkManager {
 
                 // make a new chunk
                 chunkThread = new ChunkThread(newChunkX, newChunkZ, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
-                chunkThread.setPriority(Thread.MAX_PRIORITY);
+                chunkThread.setPriority(Thread.MIN_PRIORITY);
                 chunkThread.start();
             }
             else {
@@ -1496,7 +1485,7 @@ public class ChunkManager {
 
             // put the Chunk to HashMap in a new thread
             mapThread = new MapThread(map, handles, chunkThread.getChunk(), chunkThread.getChunkX(), chunkThread.getChunkZ());
-            mapThread.setPriority(Thread.MAX_PRIORITY);
+            mapThread.setPriority(Thread.MIN_PRIORITY);
             mapThread.start();
             chunkThread = new ChunkThread(0, 0, 0, 0);
             inLoop = false;
@@ -1618,10 +1607,8 @@ public class ChunkManager {
     }
 
     public static Object deserialize(byte[] data) {
-        ByteArrayInputStream in = new ByteArrayInputStream(data);
-        ObjectInputStream is;
         try {
-            return new ObjectInputStream(in).readObject();
+            return new ObjectInputStream(new ByteArrayInputStream(data)).readObject();
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(MapThread.class.getName()).log(Level.SEVERE, null, ex);
         }

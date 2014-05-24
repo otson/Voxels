@@ -57,10 +57,11 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 7;
+    public static int chunkCreationDistance = 4;
     public static int chunkRenderDistance = 12;
     public static Texture atlas;
     public static final float WaterOffs = 0.28f;
+    public static float START_TIME;
 
     private static ChunkManager chunkManager;
 
@@ -116,22 +117,23 @@ public class Voxels {
     private static void initLighting() {
         glEnable(GL_LIGHTING);
         glEnable(GL_LIGHT0);
-        glEnable(GL_LIGHT1);
+        //glEnable(GL_LIGHT1);
 
         glEnable(GL_COLOR_MATERIAL);
         glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 
-        float lightAmbient[] = {0.05f, 0.05f, 0.05f, 1.0f};
+        float lightAmbient[] = {0.15f, 0.15f, 0.15f, 1.0f};
         float lightDiffuse[] = {0.0f, 0.0f, 0.0f, 1.0f};
 
         glLightModel(GL_LIGHT_MODEL_AMBIENT, asFloatBuffer(lightAmbient));
         glLight(GL_LIGHT0, GL_DIFFUSE, asFloatBuffer(lightDiffuse));
-        glLight(GL_LIGHT1, GL_DIFFUSE, asFloatBuffer(lightDiffuse));
+        //glLight(GL_LIGHT1, GL_DIFFUSE, asFloatBuffer(lightDiffuse));
         glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
-        glLight(GL_LIGHT1, GL_POSITION, asFloatBuffer(light1Position));
+        //glLight(GL_LIGHT1, GL_POSITION, asFloatBuffer(light1Position));
 
         // Set background to sky blue
         glClearColor(0f / 255f, 0f / 255f, 190f / 255f, 1.0f);
+        START_TIME = (System.nanoTime()/1000000);
     }
 
     private static EulerCamera InitCamera() {
@@ -169,7 +171,7 @@ public class Voxels {
 
             Display.update();
             Display.sync(60);
-
+            System.out.println(timePassed());
         }
         Display.destroy();
         System.exit(0);
@@ -204,15 +206,11 @@ public class Voxels {
 
                     glBindBuffer(GL_ARRAY_BUFFER, vboTexHandle);
                     glTexCoordPointer(2, GL_FLOAT, 0, 0L);
-
-//                    glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
-//                    glColorPointer(3, GL_FLOAT, 0, 0L);
+                    
                     glEnableClientState(GL_VERTEX_ARRAY);
                     glEnableClientState(GL_NORMAL_ARRAY);
                     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-                    //glEnableClientState(GL_COLOR_ARRAY);
                     glDrawArrays(GL_TRIANGLES, 0, vertices);
-                    //glDisableClientState(GL_COLOR_ARRAY);
                     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
                     glDisableClientState(GL_NORMAL_ARRAY);
                     glDisableClientState(GL_VERTEX_ARRAY);
@@ -249,8 +247,8 @@ public class Voxels {
         if (Mouse.isGrabbed()) {
             camera.processMouse();
             camera.processKeyboard(delta, 3);
-            glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
-            glLight(GL_LIGHT1, GL_POSITION, asFloatBuffer(light1Position));
+            glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(new float[]{2500+camera.x(), (float)(10000*Math.sin(timePassed()/20000)),(float)(10000*Math.cos(timePassed()/20000)), 1f}));
+            //glLight(GL_LIGHT1, GL_POSITION, asFloatBuffer(light1Position));
         }
     }
 
@@ -306,6 +304,9 @@ public class Voxels {
 
     public static long getTime() {
         return System.nanoTime() / 1000000;
+    }
+    public static float timePassed() {
+        return (System.nanoTime() / 1000000)-START_TIME;
     }
 
     public static void updateFPS() {

@@ -78,10 +78,8 @@ public class MapThread extends Thread {
     }
 
     public static Object deserialize(byte[] data) {
-        ByteArrayInputStream in = new ByteArrayInputStream(data);
-        ObjectInputStream is;
         try {
-            return new ObjectInputStream(in).readObject();
+            return new ObjectInputStream(new ByteArrayInputStream(data)).readObject();
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(MapThread.class.getName()).log(Level.SEVERE, null, ex);
         }

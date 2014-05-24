@@ -5,16 +5,27 @@
  */
 package voxels;
 
+import com.ning.compress.lzf.LZFDecoder;
+import com.ning.compress.lzf.LZFEncoder;
+import com.ning.compress.lzf.LZFException;
+import com.ning.compress.lzf.LZFInputStream;
+import com.ning.compress.lzf.LZFOutputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import org.lwjgl.BufferUtils;
@@ -1580,29 +1591,38 @@ public class ChunkManager {
         return atMax;
     }
 
-    public byte[] toByte(Object object) {
-        try {
-            gzipOut = new GZIPOutputStream(baos);
-            objectOut = new ObjectOutputStream(gzipOut);
-            objectOut.writeObject(object);
-            objectOut.close();
-        } catch (IOException ex) {
-            Logger.getLogger(ChunkManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        byte[] bytes = baos.toByteArray();
-        return bytes;
+    public byte[] toByte(Chunk chunk) {
+        return LZFEncoder.encode(serialize(chunk));
     }
 
     public Chunk toChunk(byte[] bytes) {
-        bais = new ByteArrayInputStream(bytes);
         try {
-            gzipIn = new GZIPInputStream(bais);
-            objectIn = new ObjectInputStream(gzipIn);
-            Chunk chunk = (Chunk) objectIn.readObject();
-            objectIn.close();
-            return chunk;
-        } catch (IOException | ClassNotFoundException ex) {
+            return (Chunk)deserialize(LZFDecoder.decode(bytes));
+        } catch (LZFException ex) {
             Logger.getLogger(ChunkManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
+    public static byte[] serialize(Object obj) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ObjectOutputStream os;
+        try {
+            os = new ObjectOutputStream(out);
+            os.writeObject(obj);
+        } catch (IOException ex) {
+            Logger.getLogger(MapThread.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return out.toByteArray();
+    }
+
+    public static Object deserialize(byte[] data) {
+        ByteArrayInputStream in = new ByteArrayInputStream(data);
+        ObjectInputStream is;
+        try {
+            return new ObjectInputStream(in).readObject();
+        } catch (IOException | ClassNotFoundException ex) {
+            Logger.getLogger(MapThread.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }

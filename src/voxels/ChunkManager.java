@@ -1495,7 +1495,7 @@ public class ChunkManager {
 
             // put the Chunk to HashMap in a new thread
             mapThread = new MapThread(map, handles, chunkThread.getChunk(), chunkThread.getChunkX(), chunkThread.getChunkZ());
-            mapThread.setPriority(Thread.MIN_PRIORITY);
+            mapThread.setPriority(Thread.MAX_PRIORITY);
             mapThread.start();
             chunkThread = new ChunkThread(0, 0, 0, 0);
             inLoop = false;
@@ -1625,5 +1625,9 @@ public class ChunkManager {
             Logger.getLogger(MapThread.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
+    }
+    
+    public int chunkAmount(){
+        return map.size();
     }
 }

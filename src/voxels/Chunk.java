@@ -34,7 +34,8 @@ public class Chunk implements Serializable{
         this.zId = zId;
         xCoordinate = xId * CHUNK_WIDTH;
         zCoordinate = zId * CHUNK_WIDTH;
-        
+        System.out.println("xId: "+this.xId);
+        System.out.println("zId: "+this.zId);
         initMaxHeights();
         setAirBlocks();
         setGroundBlocks();

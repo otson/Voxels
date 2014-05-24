@@ -56,6 +56,7 @@ public class ChunkThread extends Thread {
         this.zOff = zOff;
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
+        
         //initBooleanArrays();
     }
 

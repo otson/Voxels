@@ -355,15 +355,15 @@ public class EulerCamera implements Camera {
 
         if (currentChunk == null || currentChunkX != Voxels.getCurrentChunkX() || currentChunkZ != Voxels.getCurrentChunkZ()) {
             if (chunkManager.isChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ())) {
-                
-                System.out.println("Entered a new chunk: x: "+Voxels.getCurrentChunkX()+" z: "+Voxels.getCurrentChunkZ());
-                
+                currentChunk = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ());
+                System.out.println("");
+                System.out.println("At x: "+Voxels.getCurrentChunkX()+" z: "+Voxels.getCurrentChunkZ());
+                System.out.println("At new chunk: x: "+currentChunk.xId+" z: "+currentChunk.zId);
             }
             currentChunkX = Voxels.getCurrentChunkX();
             currentChunkZ = Voxels.getCurrentChunkZ();
             
         }
-        
         if (moveFaster)
             speed *= 3;
 

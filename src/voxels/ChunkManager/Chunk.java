@@ -44,7 +44,9 @@ public class Chunk implements Serializable {
         initMaxHeights();
         setBlocks();
         setActiveBlocks();
+        long start = System.nanoTime();
         setActiveBorderBlocks();
+        System.out.println("Border time: " + (System.nanoTime() - start) / 1000000 + " ms.");
         calculateVertexCount();
 //        int totalActive = 0;
 //        for (int x = 0; x < blocks.length; x++)
@@ -176,10 +178,15 @@ public class Chunk implements Serializable {
     }
 
     private void updateChunks() {
-        rightChunk = Voxels.chunkManager.getChunk(xId + 1, zId);
-        leftChunk = Voxels.chunkManager.getChunk(xId - 1, zId);
-        backChunk = Voxels.chunkManager.getChunk(xId, zId - 1);
-        frontChunk = Voxels.chunkManager.getChunk(xId + 1, xId + 1);
+        new Thread(new Runnable() {
+            public void run() {
+                rightChunk = Voxels.chunkManager.getChunk(xId + 1, zId);
+                leftChunk = Voxels.chunkManager.getChunk(xId - 1, zId);
+                backChunk = Voxels.chunkManager.getChunk(xId, zId - 1);
+                frontChunk = Voxels.chunkManager.getChunk(xId + 1, xId + 1);
+            }
+        }).start();
+
     }
 
     public int[][] getMaxHeights() {

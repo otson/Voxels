@@ -77,7 +77,7 @@ public class Chunk implements Serializable {
                         blocks[x][y][z].setActive(false);
                     // if dirt, if it surrounded by 6 dirt blocks, make it inactive
                     else if (blocks[x][y][z].is(Type.DIRT))
-                        System.out.println("");
+                        ;//System.out.println("");
                     else if (blocks[x][y][z].is(Type.WATER))
                         // if water, if the block above it is not water, make it active
                         if (blocks[x][y + 1][z].is(Type.WATER) == false)

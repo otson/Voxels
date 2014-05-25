@@ -97,23 +97,23 @@ public class Chunk implements Serializable {
                             }
                             if (blocks[x - 1][y][z].isOpaque()) {
                                 blocks[x][y][z].setLeft(true);
-              
+
                             }
                             if (blocks[x][y + 1][z].isOpaque()) {
                                 blocks[x][y][z].setTop(true);
-               
+
                             }
                             if (blocks[x][y - 1][z].isOpaque()) {
                                 blocks[x][y][z].setBottom(true);
-             
+
                             }
                             if (blocks[x][y][z + 1].isOpaque()) {
                                 blocks[x][y][z].setFront(true);
-               
+
                             }
                             if (blocks[x][y][z - 1].isOpaque()) {
                                 blocks[x][y][z].setBack(true);
-             
+
                             }
                         }
                     }
@@ -122,7 +122,7 @@ public class Chunk implements Serializable {
                         if (blocks[x][y + 1][z].is(Type.WATER) == false) {
                             blocks[x][y][z].setActive(true);
                             blocks[x][y][z].setTop(true);
-         
+
                         }
                 }
             }
@@ -717,21 +717,21 @@ public class Chunk implements Serializable {
 
     private void calculateVertexCount() {
         vertexCount = 0;
-        for(int x = 0; x<Chunk.CHUNK_WIDTH; x++)
-            for(int z = 0; z<Chunk.CHUNK_WIDTH; z++)
-                for(int y = 0; x<Chunk.CHUNK_HEIGHT; y++){
-                    if(blocks[x][y][z].isBack())
-                        vertexCount+=6;
-                    if(blocks[x][y][z].isBottom())
-                        vertexCount+=6;
-                    if(blocks[x][y][z].isFront())
-                        vertexCount+=6;
-                    if(blocks[x][y][z].isLeft())
-                        vertexCount+=6;
-                    if(blocks[x][y][z].isRight())
-                        vertexCount+=6;
-                    if(blocks[x][y][z].isTop())
-                        vertexCount+=6;
+        for (int x = 0; x < Chunk.CHUNK_WIDTH; x++)
+            for (int z = 0; z < Chunk.CHUNK_WIDTH; z++)
+                for (int y = 0; x < Chunk.CHUNK_HEIGHT; y++) {
+                    if (blocks[x][y][z].isBack())
+                        vertexCount += 6;
+                    if (blocks[x][y][z].isBottom())
+                        vertexCount += 6;
+                    if (blocks[x][y][z].isFront())
+                        vertexCount += 6;
+                    if (blocks[x][y][z].isLeft())
+                        vertexCount += 6;
+                    if (blocks[x][y][z].isRight())
+                        vertexCount += 6;
+                    if (blocks[x][y][z].isTop())
+                        vertexCount += 6;
                 }
     }
 }

@@ -245,14 +245,14 @@ public class Chunk implements Serializable {
         }
 
         // add code for top chunk check when chunks are made smaller
-        if (blocks[0][Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 2].isOpaque())
-            blocks[0][Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1].setBack(true);
+        if (blocks[0][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 2].isOpaque())
+            blocks[0][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setBack(true);
 
-        if (blocks[0][Chunk.CHUNK_WIDTH - 2][Chunk.CHUNK_HEIGHT - 1].isOpaque())
-            blocks[0][Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1].setBottom(true);
+        if (blocks[0][Chunk.CHUNK_HEIGHT - 2][Chunk.CHUNK_WIDTH - 1].isOpaque())
+            blocks[0][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setBottom(true);
 
-        if (blocks[1][Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1].isOpaque())
-            blocks[0][Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1].setRight(true);
+        if (blocks[1][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
+            blocks[0][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setRight(true);
     }
 
     private void updateTopRightBack() {
@@ -386,7 +386,7 @@ public class Chunk implements Serializable {
 
     private void updateTopSide() {
         for (int x = 1; x < Chunk.CHUNK_WIDTH - 1; x++) {
-            for (int z = 1; x < Chunk.CHUNK_WIDTH - 1; z++) {
+            for (int z = 1; z < Chunk.CHUNK_WIDTH - 1; z++) {
 
                 if (blocks[x + 1][Chunk.CHUNK_WIDTH - 1][z].isOpaque())
                     blocks[x][Chunk.CHUNK_WIDTH - 1][z].setRight(true);
@@ -665,7 +665,7 @@ public class Chunk implements Serializable {
         boolean isValid = frontChunk != null;
 
         for (int x = 1; x < Chunk.CHUNK_WIDTH - 1; x++) {
-            for (int y = 1; x < Chunk.CHUNK_HEIGHT - 1; y++) {
+            for (int y = 1; y < Chunk.CHUNK_HEIGHT - 1; y++) {
                 if (isValid)
                     if (frontChunk.blocks[x][y][0].isOpaque())
                         blocks[x][y][Chunk.CHUNK_WIDTH - 1].setFront(true);
@@ -692,7 +692,7 @@ public class Chunk implements Serializable {
         boolean isValid = backChunk != null;
 
         for (int x = 1; x < Chunk.CHUNK_WIDTH - 1; x++) {
-            for (int y = 1; x < Chunk.CHUNK_HEIGHT - 1; y++) {
+            for (int y = 1; y < Chunk.CHUNK_HEIGHT - 1; y++) {
                 if (isValid)
                     if (backChunk.blocks[x][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
                         blocks[x][y][0].setBack(true);
@@ -719,7 +719,7 @@ public class Chunk implements Serializable {
         vertexCount = 0;
         for (int x = 0; x < Chunk.CHUNK_WIDTH; x++)
             for (int z = 0; z < Chunk.CHUNK_WIDTH; z++)
-                for (int y = 0; x < Chunk.CHUNK_HEIGHT; y++) {
+                for (int y = 0; y < Chunk.CHUNK_HEIGHT; y++) {
                     if (blocks[x][y][z].isBack())
                         vertexCount += 6;
                     if (blocks[x][y][z].isBottom())
@@ -734,4 +734,10 @@ public class Chunk implements Serializable {
                         vertexCount += 6;
                 }
     }
+
+    public int getVertexCount() {
+        return vertexCount;
+    }
+    
+    
 }

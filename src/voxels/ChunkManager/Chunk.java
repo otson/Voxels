@@ -8,14 +8,14 @@ import voxels.Voxels;
  *
  * @author otso
  */
-public class Chunk implements Serializable{
-    
+public class Chunk implements Serializable {
+
     private static final long serialVersionUID = 1L;
-    
+
     public static final int CHUNK_WIDTH = 16;
     public static final int CHUNK_HEIGHT = 256;
     public static final int WATER_HEIGHT = 128;
-    
+
     private int vboVertexHandle;
     private int vboNormalHandle;
     private int vboTexHandle;
@@ -59,6 +59,8 @@ public class Chunk implements Serializable{
                     if (y > maxHeights[x][z] && y <= Chunk.WATER_HEIGHT) {
                         blocks[x][y][z] = new Block(Type.WATER);
                     }
+//                    else if (y <= maxHeights[x][z])
+//                        blocks[x][y][z] = new Block(Type.DIRT);
                     else
                         blocks[x][y][z] = new Block(Type.AIR);
                 }

@@ -44,7 +44,7 @@ public class Chunk implements Serializable {
         initMaxHeights();
         setBlocks();
         setActiveBlocks();
-        setActiveBorderBlocks();
+        //setActiveBorderBlocks();
         calculateVertexCount();
     }
 
@@ -77,7 +77,8 @@ public class Chunk implements Serializable {
     }
 
     private void setActiveBlocks() {
-
+        
+        int activeBlocks = 0;
         // set blocks that are inside the chunk
         for (int x = 1; x < blocks.length - 1; x++) {
             for (int y = 1; y < blocks[x].length - 1; y++) {
@@ -124,9 +125,14 @@ public class Chunk implements Serializable {
                             blocks[x][y][z].setTop(true);
 
                         }
+                    
+                    if(blocks[x][y][z].isActive())
+                        activeBlocks++;
                 }
             }
         }
+        
+        System.out.println("Activated blocks: "+activeBlocks);
     }
 
     private void setActiveBorderBlocks() {
@@ -733,6 +739,8 @@ public class Chunk implements Serializable {
                     if (blocks[x][y][z].isTop())
                         vertexCount += 6;
                 }
+        
+        System.out.println("vertexCount: "+vertexCount);
     }
 
     public int getVertexCount() {

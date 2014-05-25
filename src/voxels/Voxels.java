@@ -87,7 +87,7 @@ public class Voxels {
 
     private static void initDisplay() {
         try {
-            Display.setDisplayMode(new DisplayMode(1650, 1050));
+            Display.setDisplayMode(new DisplayMode(800, 480));
             Display.setVSyncEnabled(true);
             Display.setTitle("Voxels");
             Display.create();

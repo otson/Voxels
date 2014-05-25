@@ -33,7 +33,7 @@ public class Voxels {
      */
     public static final String TITLE = "Voxels";
     /**
-     * Resource atlas file name.
+     * Texture file names
      */
     public static final String ATLAS = "atlas";
     /**
@@ -59,7 +59,7 @@ public class Voxels {
     public static final int FIELD_OF_VIEW = 90;
     public static int chunkCreationDistance = 4;
     public static int chunkRenderDistance = 12;
-    public static Texture atlas;
+    private static Texture atlas;
     public static final float WaterOffs = 0.28f;
     public static float START_TIME;
 
@@ -67,12 +67,14 @@ public class Voxels {
 
     private static EulerCamera camera;
     private static float light0Position[] = {-2000.0f, 50000.0f, 8000.0f, 1.0f};
-    private static float light1Position[] = {2000.0f, 50000.0f, -16000.0f, 1.0f};
 
     private static int fps = 0;
     private static long lastFPS = getTime();
     public static int count = 0;
     private static long lastFrame = System.nanoTime();
+
+    static int skyDomeVertexHandle;
+    static int skyDomeTexHandle;
 
     public static void main(String[] args) {
         initDisplay();
@@ -111,7 +113,7 @@ public class Voxels {
         atlas = loadTexture(ATLAS);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP); // [x,y,z,w] -> [s,t,r,q]
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
         atlas.bind();
     }
@@ -125,7 +127,7 @@ public class Voxels {
         glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 
         float lightAmbient[] = {0.15f, 0.15f, 0.15f, 1.0f};
-        float lightDiffuse[] = {0.0f, 0.0f, 0.0f, 1.0f};
+        float lightDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
 
         glLightModel(GL_LIGHT_MODEL_AMBIENT, asFloatBuffer(lightAmbient));
         glLight(GL_LIGHT0, GL_DIFFUSE, asFloatBuffer(lightDiffuse));
@@ -169,6 +171,7 @@ public class Voxels {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             processInput(getDelta());
             chunkManager.checkChunkUpdates();
+          
             updateView();
             render();
 
@@ -221,7 +224,9 @@ public class Voxels {
 
                 }
             }
+
         }
+
         updateFPS();
     }
 

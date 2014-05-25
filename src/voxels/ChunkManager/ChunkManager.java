@@ -70,7 +70,7 @@ public class ChunkManager {
         if (isChunk(chunkX, chunkZ) == false) {
             Chunk chunk = new Chunk(0, 0);
             drawChunkVBO(chunk, 0, 0);
-            handles.put(new Pair(0, 0).hashCode(), new Handle(chunk.getVboVertexHandle(), chunk.getVboNormalHandle(), chunk.getVboTexHandle(), chunk.getVertices()));
+            handles.put(new Pair(0, 0).hashCode(), new Handle(chunk.getVboVertexHandle(), chunk.getVboNormalHandle(), chunk.getVboTexHandle(), chunk.getVertexCount()));
             map.put(new Pair(0, 0).hashCode(), toByte(chunk));
         }
         else {

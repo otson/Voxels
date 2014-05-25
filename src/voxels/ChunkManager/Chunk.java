@@ -44,7 +44,7 @@ public class Chunk implements Serializable {
         initMaxHeights();
         setBlocks();
         setActiveBlocks();
-        //setActiveBorderBlocks();
+        setActiveBorderBlocks();
         calculateVertexCount();
     }
 

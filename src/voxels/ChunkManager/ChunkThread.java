@@ -68,6 +68,7 @@ public class ChunkThread extends Thread {
         int nArrayPos = 0;
         int tArrayPos = 0;
 
+
         vertexData = BufferUtils.createFloatBuffer(chunk.getVertexCount() * vertexSize);
         normalData = BufferUtils.createFloatBuffer(chunk.getVertexCount() * vertexSize);
         texData = BufferUtils.createFloatBuffer(chunk.getVertexCount() * texSize);

@@ -75,7 +75,7 @@ public class ChunkThread extends Thread {
         for (int x = 0; x < chunk.blocks.length; x++) {
             for (int z = 0; z < chunk.blocks[x][0].length; z++) {
                 for (int y = 0; y < chunk.blocks[x].length; y++) {
-                    if (chunk.blocks[x][y][z].is(Type.DIRT)) {
+                    if (chunk.blocks[x][y][z].is(Type.DIRT) && chunk.blocks[x][y][z].isActive()) {
                         if (chunk.blocks[x][y][z].isFront()) {
                             // 1st
                             // upper left - +
@@ -1040,7 +1040,7 @@ public class ChunkThread extends Thread {
 
                         }
                     }
-                    if (chunk.blocks[x][y][z].is(Type.WATER)) {
+                    if (chunk.blocks[x][y][z].is(Type.WATER) && chunk.blocks[x][y][z].isActive()) {
                         if (chunk.blocks[x][y][z].isTop()) {
 
                             // upper left

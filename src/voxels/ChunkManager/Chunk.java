@@ -36,8 +36,8 @@ public class Chunk implements Serializable {
         xCoordinate = xId * CHUNK_WIDTH;
         zCoordinate = zId * CHUNK_WIDTH;
         initMaxHeights();
-        setAirBlocks();
-        setGroundBlocks();
+        setBlocks();
+        setActiveBlocks();
     }
 
     private void initMaxHeights() {
@@ -49,7 +49,7 @@ public class Chunk implements Serializable {
         }
     }
 
-    private void setAirBlocks() {
+    private void setBlocks() {
         blocks = new Block[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_WIDTH];
         for (int x = 0; x < blocks.length; x++) {
             blocks[x] = new Block[CHUNK_HEIGHT][CHUNK_WIDTH];
@@ -59,10 +59,29 @@ public class Chunk implements Serializable {
                     if (y > maxHeights[x][z] && y <= Chunk.WATER_HEIGHT) {
                         blocks[x][y][z] = new Block(Type.WATER);
                     }
-//                    else if (y <= maxHeights[x][z])
-//                        blocks[x][y][z] = new Block(Type.DIRT);
+                    else if (y <= maxHeights[x][z])
+                        blocks[x][y][z] = new Block(Type.DIRT);
                     else
                         blocks[x][y][z] = new Block(Type.AIR);
+                }
+            }
+        }
+    }
+
+    private void setActiveBlocks() {
+        for (int x = 0; x < blocks.length; x++) {
+            for (int y = 0; y < blocks[x].length; y++) {
+                for (int z = 0; z < blocks[x][y].length; z++) {
+                    // if air, it is inactive
+                    if (blocks[x][y][z].is(Type.AIR))
+                        blocks[x][y][z].setActive(false);
+                    // if dirt, if it surrounded by 6 dirt blocks, make it inactive
+                    else if (blocks[x][y][z].is(Type.DIRT))
+                        System.out.println("");
+                    else if (blocks[x][y][z].is(Type.WATER))
+                        // if water, if the block above it is not water, make it active
+                        if (blocks[x][y + 1][z].is(Type.WATER) == false)
+                            blocks[x][y][z].setActive(true);
                 }
             }
         }

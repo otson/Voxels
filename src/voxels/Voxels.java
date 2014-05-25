@@ -63,7 +63,7 @@ public class Voxels {
     public static final float WaterOffs = 0.28f;
     public static float START_TIME;
 
-    private static ChunkManager chunkManager;
+    public static ChunkManager chunkManager;
 
     private static EulerCamera camera;
     private static float light0Position[] = {-2000.0f, 50000.0f, 8000.0f, 1.0f};

@@ -123,11 +123,11 @@ public class ChunkManager {
         for (int x = 0; x < chunk.blocks.length; x++) {
             for (int z = 0; z < chunk.blocks[x][0].length; z++) {
                 for (int y = 0; y < chunk.blocks[x].length; y++) {
-                    if (chunk.blocks[x][y][z].type == Type.DIRT) {
+                    if (chunk.blocks[x][y][z].is(Type.DIRT)) {
                         vertices += calculateGroundVertices(chunk, x, y, z, getCurrentChunkX() * chunk.blocks.length + xOff, 0, getCurrentChunkZ() * chunk.blocks.length + zOff, 1);
                         drawnBlocks++;
                     }
-                    else if (chunk.blocks[x][y][z].type == Type.WATER) {
+                    else if (chunk.blocks[x][y][z].is(Type.WATER)) {
                         vertices += calculateWaterVertices(chunk, x, y, z, getCurrentChunkX() * chunk.blocks.length + xOff, 0, getCurrentChunkZ() * chunk.blocks.length + zOff, 1);
                         drawnBlocks++;
                     }
@@ -155,7 +155,7 @@ public class ChunkManager {
         for (int x = 0; x < chunk.blocks.length; x++) {
             for (int z = 0; z < chunk.blocks[x][0].length; z++) {
                 for (int y = 0; y < chunk.blocks[x].length; y++) {
-                    if (chunk.blocks[x][y][z].type == Type.DIRT) {
+                    if (chunk.blocks[x][y][z].is(Type.DIRT)) {
                         if (front[x][y][z]) {
                             // 1st
                             // upper left - +
@@ -1119,7 +1119,7 @@ public class ChunkManager {
 
                         }
                     }
-                    if (chunk.blocks[x][y][z].type == Type.WATER) {
+                    if (chunk.blocks[x][y][z].is(Type.WATER)) {
                         if (top[x][y][z]) {
 
                             // upper left
@@ -1343,7 +1343,7 @@ public class ChunkManager {
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx][zz + 1];
         }
-        if (render || chunk.blocks[xx][yy][zz + 1].type == Type.AIR || chunk.blocks[xx][yy][zz + 1].type == Type.WATER && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+        if (render || chunk.blocks[xx][yy][zz + 1].is(Type.AIR) || chunk.blocks[xx][yy][zz + 1].is(Type.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             front[xx][yy][zz] = true;
             returnVertices += 6;
         }
@@ -1357,7 +1357,7 @@ public class ChunkManager {
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx - 1][zz];
         }
-        if (render || chunk.blocks[xx - 1][yy][zz].type == Type.AIR || chunk.blocks[xx - 1][yy][zz].type == Type.WATER && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+        if (render || chunk.blocks[xx - 1][yy][zz].is(Type.AIR) || chunk.blocks[xx - 1][yy][zz].is(Type.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             left[xx][yy][zz] = true;
             returnVertices += 6;
         }
@@ -1371,7 +1371,7 @@ public class ChunkManager {
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx][zz - 1];
         }
-        if (render || chunk.blocks[xx][yy][zz - 1].type == Type.AIR || chunk.blocks[xx][yy][zz - 1].type == Type.WATER && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+        if (render || chunk.blocks[xx][yy][zz - 1].is(Type.AIR) || chunk.blocks[xx][yy][zz - 1].is(Type.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             back[xx][yy][zz] = true;
             returnVertices += 6;
         }
@@ -1385,7 +1385,7 @@ public class ChunkManager {
         else {
             difference = maxHeights[xx][zz] - maxHeights[xx + 1][zz];
         }
-        if (render || chunk.blocks[xx + 1][yy][zz].type == Type.AIR || chunk.blocks[xx + 1][yy][zz].type == Type.WATER && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
+        if (render || chunk.blocks[xx + 1][yy][zz].is(Type.AIR) || chunk.blocks[xx + 1][yy][zz].is(Type.WATER) && (maxHeights[xx][zz] - difference < y && y <= maxHeights[xx][zz])) {
             right[xx][yy][zz] = true;
             returnVertices += 6;
         }
@@ -1396,7 +1396,7 @@ public class ChunkManager {
         render = false;
         if (y == yMax)
             render = true;
-        if (render || chunk.blocks[xx][yy + 1][zz].type == Type.AIR || chunk.blocks[xx][yy + 1][zz].type == Type.WATER && maxHeights[xx][zz] == yy) {
+        if (render || chunk.blocks[xx][yy + 1][zz].is(Type.AIR) || chunk.blocks[xx][yy + 1][zz].is(Type.WATER) && maxHeights[xx][zz] == yy) {
             top[xx][yy][zz] = true;
             returnVertices += 6;
         }
@@ -1427,7 +1427,7 @@ public class ChunkManager {
         // top face
         if (y == yMax)
             render = true;
-        if (render || chunk.blocks[xx][yy + 1][zz].type == Type.AIR && y == Chunk.WATER_HEIGHT) {
+        if (render || chunk.blocks[xx][yy + 1][zz].is(Type.AIR) && y == Chunk.WATER_HEIGHT) {
             top[xx][yy][zz] = true;
             returnVertices += 6;
         }

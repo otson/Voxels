@@ -178,14 +178,16 @@ public class Chunk implements Serializable {
     }
 
     private void updateChunks() {
-        new Thread(new Runnable() {
+        Thread thread = new Thread(new Runnable() {
             public void run() {
                 rightChunk = Voxels.chunkManager.getChunk(xId + 1, zId);
                 leftChunk = Voxels.chunkManager.getChunk(xId - 1, zId);
                 backChunk = Voxels.chunkManager.getChunk(xId, zId - 1);
                 frontChunk = Voxels.chunkManager.getChunk(xId + 1, xId + 1);
             }
-        }).start();
+        });
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.start();
 
     }
 

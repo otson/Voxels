@@ -46,6 +46,14 @@ public class Chunk implements Serializable {
         setActiveBlocks();
         setActiveBorderBlocks();
         calculateVertexCount();
+//        int totalActive = 0;
+//        for (int x = 0; x < blocks.length; x++)
+//            for (int y = 0; y < blocks[x].length; y++)
+//                for (int z = 0; z < blocks[x][y].length; z++) {
+//                    if (blocks[x][y][z].isActive())
+//                        totalActive++;
+//                }
+//        System.out.println("Total active: " + totalActive);
     }
 
     private void initMaxHeights() {
@@ -77,7 +85,7 @@ public class Chunk implements Serializable {
     }
 
     private void setActiveBlocks() {
-        
+
         int activeBlocks = 0;
         // set blocks that are inside the chunk
         for (int x = 1; x < blocks.length - 1; x++) {
@@ -125,14 +133,14 @@ public class Chunk implements Serializable {
                             blocks[x][y][z].setTop(true);
 
                         }
-                    
-                    if(blocks[x][y][z].isActive())
+
+                    if (blocks[x][y][z].isActive())
                         activeBlocks++;
                 }
             }
         }
-        
-        System.out.println("Activated blocks: "+activeBlocks);
+
+        System.out.println("Activated blocks: " + activeBlocks);
     }
 
     private void setActiveBorderBlocks() {
@@ -393,21 +401,22 @@ public class Chunk implements Serializable {
     private void updateTopSide() {
         for (int x = 1; x < Chunk.CHUNK_WIDTH - 1; x++) {
             for (int z = 1; z < Chunk.CHUNK_WIDTH - 1; z++) {
+                if (blocks[x][Chunk.CHUNK_WIDTH - 1][z].is(Type.AIR) == false) {
+                    if (blocks[x + 1][Chunk.CHUNK_WIDTH - 1][z].isOpaque())
+                        blocks[x][Chunk.CHUNK_WIDTH - 1][z].setRight(true);
 
-                if (blocks[x + 1][Chunk.CHUNK_WIDTH - 1][z].isOpaque())
-                    blocks[x][Chunk.CHUNK_WIDTH - 1][z].setRight(true);
+                    if (blocks[x - 1][Chunk.CHUNK_WIDTH - 1][z].isOpaque())
+                        blocks[x][Chunk.CHUNK_WIDTH - 1][z].setLeft(true);
 
-                if (blocks[x - 1][Chunk.CHUNK_WIDTH - 1][z].isOpaque())
-                    blocks[x][Chunk.CHUNK_WIDTH - 1][z].setLeft(true);
+                    if (blocks[x][Chunk.CHUNK_WIDTH - 2][z].isOpaque())
+                        blocks[x][Chunk.CHUNK_WIDTH - 1][z].setBottom(true);
 
-                if (blocks[x][Chunk.CHUNK_WIDTH - 2][z].isOpaque())
-                    blocks[x][Chunk.CHUNK_WIDTH - 1][z].setBottom(true);
+                    if (blocks[x][Chunk.CHUNK_WIDTH - 1][z + 1].isOpaque())
+                        blocks[x][Chunk.CHUNK_WIDTH - 1][z].setFront(true);
 
-                if (blocks[x][Chunk.CHUNK_WIDTH - 1][z + 1].isOpaque())
-                    blocks[x][Chunk.CHUNK_WIDTH - 1][z].setFront(true);
-
-                if (blocks[x][Chunk.CHUNK_WIDTH - 1][z - 1].isOpaque())
-                    blocks[x][Chunk.CHUNK_WIDTH - 1][z].setBack(true);
+                    if (blocks[x][Chunk.CHUNK_WIDTH - 1][z - 1].isOpaque())
+                        blocks[x][Chunk.CHUNK_WIDTH - 1][z].setBack(true);
+                }
             }
 
         }
@@ -594,21 +603,22 @@ public class Chunk implements Serializable {
     private void updateBottomSide() {
         for (int x = 1; x < Chunk.CHUNK_WIDTH - 1; x++) {
             for (int z = 1; z < Chunk.CHUNK_WIDTH - 1; z++) {
+                if (blocks[x][0][z].is(Type.AIR) == false) {
+                    if (blocks[x + 1][0][z].isOpaque())
+                        blocks[x][0][z].setRight(true);
 
-                if (blocks[x + 1][0][z].isOpaque())
-                    blocks[x][0][z].setRight(true);
+                    if (blocks[x - 1][0][z].isOpaque())
+                        blocks[x][0][z].setLeft(true);
 
-                if (blocks[x - 1][0][z].isOpaque())
-                    blocks[x][0][z].setLeft(true);
+                    if (blocks[x][1][z].isOpaque())
+                        blocks[x][0][z].setTop(true);
 
-                if (blocks[x][1][z].isOpaque())
-                    blocks[x][0][z].setTop(true);
+                    if (blocks[x][0][z + 1].isOpaque())
+                        blocks[x][0][z].setFront(true);
 
-                if (blocks[x][0][z + 1].isOpaque())
-                    blocks[x][0][z].setFront(true);
-
-                if (blocks[x + 1][0][z - 1].isOpaque())
-                    blocks[x][0][z].setBack(true);
+                    if (blocks[x + 1][0][z - 1].isOpaque())
+                        blocks[x][0][z].setBack(true);
+                }
             }
         }
     }
@@ -618,24 +628,26 @@ public class Chunk implements Serializable {
 
         for (int z = 1; z < Chunk.CHUNK_WIDTH - 1; z++) {
             for (int y = 1; y < Chunk.CHUNK_HEIGHT - 1; y++) {
-                if (isValid)
-                    if (leftChunk.blocks[Chunk.CHUNK_WIDTH - 1][y][z].isOpaque())
-                        blocks[0][y][z].setLeft(true);
+                if (blocks[0][y][z].is(Type.AIR) == false) {
+                    if (isValid)
+                        if (leftChunk.blocks[Chunk.CHUNK_WIDTH - 1][y][z].isOpaque())
+                            blocks[0][y][z].setLeft(true);
 
-                if (blocks[0][y + 1][z].isOpaque())
-                    blocks[0][y][z].setTop(true);
+                    if (blocks[0][y + 1][z].isOpaque())
+                        blocks[0][y][z].setTop(true);
 
-                if (blocks[0][y - 1][z].isOpaque())
-                    blocks[0][y][z].setBottom(true);
+                    if (blocks[0][y - 1][z].isOpaque())
+                        blocks[0][y][z].setBottom(true);
 
-                if (blocks[0][y][z + 1].isOpaque())
-                    blocks[0][y][z].setFront(true);
+                    if (blocks[0][y][z + 1].isOpaque())
+                        blocks[0][y][z].setFront(true);
 
-                if (blocks[0][y][z - 1].isOpaque())
-                    blocks[0][y][z].setBack(true);
+                    if (blocks[0][y][z - 1].isOpaque())
+                        blocks[0][y][z].setBack(true);
 
-                if (blocks[1][y][z - 1].isOpaque())
-                    blocks[0][y][z].setRight(true);
+                    if (blocks[1][y][z - 1].isOpaque())
+                        blocks[0][y][z].setRight(true);
+                }
             }
         }
     }
@@ -645,24 +657,26 @@ public class Chunk implements Serializable {
 
         for (int z = 1; z < Chunk.CHUNK_WIDTH - 1; z++) {
             for (int y = 1; y < Chunk.CHUNK_HEIGHT - 1; y++) {
-                if (isValid)
-                    if (rightChunk.blocks[0][y][z].isOpaque())
-                        blocks[Chunk.CHUNK_WIDTH - 1][y][z].setRight(true);
+                if (blocks[Chunk.CHUNK_WIDTH - 1][y][z].is(Type.AIR) == false) {
+                    if (isValid)
+                        if (rightChunk.blocks[0][y][z].isOpaque())
+                            blocks[Chunk.CHUNK_WIDTH - 1][y][z].setRight(true);
 
-                if (blocks[Chunk.CHUNK_WIDTH - 1][y + 1][z].isOpaque())
-                    blocks[Chunk.CHUNK_WIDTH - 1][y][z].setTop(true);
+                    if (blocks[Chunk.CHUNK_WIDTH - 1][y + 1][z].isOpaque())
+                        blocks[Chunk.CHUNK_WIDTH - 1][y][z].setTop(true);
 
-                if (blocks[Chunk.CHUNK_WIDTH - 1][y - 1][z].isOpaque())
-                    blocks[Chunk.CHUNK_WIDTH - 1][y][z].setBottom(true);
+                    if (blocks[Chunk.CHUNK_WIDTH - 1][y - 1][z].isOpaque())
+                        blocks[Chunk.CHUNK_WIDTH - 1][y][z].setBottom(true);
 
-                if (blocks[Chunk.CHUNK_WIDTH - 1][y][z + 1].isOpaque())
-                    blocks[Chunk.CHUNK_WIDTH - 1][y][z].setFront(true);
+                    if (blocks[Chunk.CHUNK_WIDTH - 1][y][z + 1].isOpaque())
+                        blocks[Chunk.CHUNK_WIDTH - 1][y][z].setFront(true);
 
-                if (blocks[Chunk.CHUNK_WIDTH - 1][y][z - 1].isOpaque())
-                    blocks[Chunk.CHUNK_WIDTH - 1][y][z].setBack(true);
+                    if (blocks[Chunk.CHUNK_WIDTH - 1][y][z - 1].isOpaque())
+                        blocks[Chunk.CHUNK_WIDTH - 1][y][z].setBack(true);
 
-                if (blocks[Chunk.CHUNK_WIDTH - 2][y][z - 1].isOpaque())
-                    blocks[Chunk.CHUNK_WIDTH - 1][y][z].setLeft(true);
+                    if (blocks[Chunk.CHUNK_WIDTH - 2][y][z - 1].isOpaque())
+                        blocks[Chunk.CHUNK_WIDTH - 1][y][z].setLeft(true);
+                }
             }
         }
     }
@@ -672,24 +686,26 @@ public class Chunk implements Serializable {
 
         for (int x = 1; x < Chunk.CHUNK_WIDTH - 1; x++) {
             for (int y = 1; y < Chunk.CHUNK_HEIGHT - 1; y++) {
-                if (isValid)
-                    if (frontChunk.blocks[x][y][0].isOpaque())
-                        blocks[x][y][Chunk.CHUNK_WIDTH - 1].setFront(true);
+                if (blocks[x][y][Chunk.CHUNK_WIDTH - 1].is(Type.AIR) == false) {
+                    if (isValid)
+                        if (frontChunk.blocks[x][y][0].isOpaque())
+                            blocks[x][y][Chunk.CHUNK_WIDTH - 1].setFront(true);
 
-                if (blocks[x + 1][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                    blocks[x][y][Chunk.CHUNK_WIDTH - 1].setRight(true);
+                    if (blocks[x + 1][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
+                        blocks[x][y][Chunk.CHUNK_WIDTH - 1].setRight(true);
 
-                if (blocks[x - 1][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                    blocks[x][y][Chunk.CHUNK_WIDTH - 1].setLeft(true);
+                    if (blocks[x - 1][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
+                        blocks[x][y][Chunk.CHUNK_WIDTH - 1].setLeft(true);
 
-                if (blocks[x][y + 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                    blocks[x][y][Chunk.CHUNK_WIDTH - 1].setTop(true);
+                    if (blocks[x][y + 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
+                        blocks[x][y][Chunk.CHUNK_WIDTH - 1].setTop(true);
 
-                if (blocks[x][y - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                    blocks[x][y][Chunk.CHUNK_WIDTH - 1].setBottom(true);
+                    if (blocks[x][y - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
+                        blocks[x][y][Chunk.CHUNK_WIDTH - 1].setBottom(true);
 
-                if (blocks[x][y][Chunk.CHUNK_WIDTH - 2].isOpaque())
-                    blocks[x][y][Chunk.CHUNK_WIDTH - 1].setBack(true);
+                    if (blocks[x][y][Chunk.CHUNK_WIDTH - 2].isOpaque())
+                        blocks[x][y][Chunk.CHUNK_WIDTH - 1].setBack(true);
+                }
             }
         }
     }
@@ -699,24 +715,26 @@ public class Chunk implements Serializable {
 
         for (int x = 1; x < Chunk.CHUNK_WIDTH - 1; x++) {
             for (int y = 1; y < Chunk.CHUNK_HEIGHT - 1; y++) {
-                if (isValid)
-                    if (backChunk.blocks[x][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                        blocks[x][y][0].setBack(true);
+                if (blocks[x][y][0].is(Type.AIR) == false) {
+                    if (isValid)
+                        if (backChunk.blocks[x][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
+                            blocks[x][y][0].setBack(true);
 
-                if (blocks[x + 1][y][0].isOpaque())
-                    blocks[x][y][0].setRight(true);
+                    if (blocks[x + 1][y][0].isOpaque())
+                        blocks[x][y][0].setRight(true);
 
-                if (blocks[x - 1][y][0].isOpaque())
-                    blocks[x][y][0].setLeft(true);
+                    if (blocks[x - 1][y][0].isOpaque())
+                        blocks[x][y][0].setLeft(true);
 
-                if (blocks[x][y + 1][0].isOpaque())
-                    blocks[x][y][0].setTop(true);
+                    if (blocks[x][y + 1][0].isOpaque())
+                        blocks[x][y][0].setTop(true);
 
-                if (blocks[x][y - 1][0].isOpaque())
-                    blocks[x][y][0].setBottom(true);
+                    if (blocks[x][y - 1][0].isOpaque())
+                        blocks[x][y][0].setBottom(true);
 
-                if (blocks[x][y][1].isOpaque())
-                    blocks[x][y][0].setFront(true);
+                    if (blocks[x][y][1].isOpaque())
+                        blocks[x][y][0].setFront(true);
+                }
             }
         }
     }
@@ -739,13 +757,12 @@ public class Chunk implements Serializable {
                     if (blocks[x][y][z].isTop())
                         vertexCount += 6;
                 }
-        
-        System.out.println("vertexCount: "+vertexCount);
+
+        System.out.println("vertexCount: " + vertexCount);
     }
 
     public int getVertexCount() {
         return vertexCount;
     }
-    
-    
+
 }

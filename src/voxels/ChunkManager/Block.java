@@ -6,13 +6,13 @@ import java.io.Serializable;
  *
  * @author otso
  */
-public class Block implements Serializable{
-    
+public class Block implements Serializable {
+
     private static final long serialVersionUID = 1L;
-    
+
     private short type;
     private boolean active;
-    
+
     private boolean left;
     private boolean right;
     private boolean top;
@@ -28,14 +28,14 @@ public class Block implements Serializable{
         this.type = type;
         active = false;
     }
-    public boolean is(short type){
+
+    public boolean is(short type) {
         return this.type == type;
     }
 
     public boolean isActive() {
-        
-        return (front || back || left || right || top || bottom);
-        //return active;
+        return front || back || left || right || top || bottom;
+
     }
 
     public void setActive(boolean active) {
@@ -89,7 +89,8 @@ public class Block implements Serializable{
     public void setBack(boolean back) {
         this.back = back;
     }
-    public boolean isOpaque(){
+
+    public boolean isOpaque() {
         return this.type == Type.AIR || this.type == Type.WATER;
     }
 }

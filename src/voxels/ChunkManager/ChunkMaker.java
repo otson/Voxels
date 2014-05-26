@@ -6,6 +6,7 @@
 package voxels.ChunkManager;
 
 import com.ning.compress.lzf.LZFEncoder;
+import de.ruedigermoeller.serialization.FSTObjectOutput;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -25,8 +26,6 @@ import static voxels.Voxels.getCurrentChunkZ;
  * @author otso
  */
 public class ChunkMaker extends Thread {
-
-    
 
     private static int vertexSize = 3;
     private static int normalSize = 3;
@@ -1118,9 +1117,6 @@ public class ChunkMaker extends Thread {
 
         texData.put(texArray);
         texData.flip();
-
-//        colorData.put(colorArray);
-//        colorData.flip();
     }
 
     public byte[] toByte(Chunk chunk) {
@@ -1129,9 +1125,9 @@ public class ChunkMaker extends Thread {
 
     public static byte[] serialize(Object obj) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream os;
+        FSTObjectOutput os;
         try {
-            os = new ObjectOutputStream(out);
+            os = new FSTObjectOutput(out);
             os.writeObject(obj);
         } catch (IOException ex) {
             Logger.getLogger(ChunkMaker.class.getName()).log(Level.SEVERE, null, ex);

@@ -7,6 +7,7 @@ package voxels.ChunkManager;
 
 import com.ning.compress.lzf.LZFDecoder;
 import com.ning.compress.lzf.LZFException;
+import de.ruedigermoeller.serialization.FSTObjectInput;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -187,7 +188,7 @@ public class ChunkManager {
 
     public static Object deserialize(byte[] data) {
         try {
-            return new ObjectInputStream(new ByteArrayInputStream(data)).readObject();
+            return new FSTObjectInput(new ByteArrayInputStream(data)).readObject();
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(ChunkManager.class.getName()).log(Level.SEVERE, null, ex);
         }

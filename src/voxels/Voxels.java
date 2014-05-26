@@ -46,6 +46,10 @@ public class Voxels {
      */
     public static float PLAYER_HEIGHT = 2.7f + 0.5f;
     /**
+     * Set if night cycle is in use.
+     */
+    public static boolean NIGHT_CYCLE = false;
+    /**
      * Set if terrain generation's uses a seed.
      */
     public static final boolean USE_SEED = false;
@@ -57,7 +61,7 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 7;
+    public static int chunkCreationDistance = 4;
     public static int chunkRenderDistance = 12;
     private static Texture atlas;
     public static final float WaterOffs = 0.28f;
@@ -121,7 +125,7 @@ public class Voxels {
     private static void initLighting() {
         float lightAmbient[] = {0.15f, 0.15f, 0.15f, 1.0f};
         float lightDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
-        
+
         glEnable(GL_LIGHTING);
         glEnable(GL_LIGHT0);
         glEnable(GL_COLOR_MATERIAL);
@@ -151,7 +155,6 @@ public class Voxels {
         chunkManager.generateChunk(0, 0);
         chunkManager.startGeneration();
         long time = System.nanoTime();
-        
 
         while (chunkManager.isAtMax() == false) {
             chunkManager.checkChunkUpdates();
@@ -167,7 +170,7 @@ public class Voxels {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             processInput(getDelta());
             chunkManager.checkChunkUpdates();
-          
+
             updateView();
             render();
 
@@ -248,9 +251,12 @@ public class Voxels {
         if (Mouse.isGrabbed()) {
             camera.processMouse();
             camera.processKeyboard(delta, 3);
-            glClearColor(0f, (float) Math.max(0, (255 * Math.sin(timePassed() / 20000)) - 155) / 255f, (float) Math.max(25, (255 * Math.sin(timePassed() / 20000)) + 25) / 255f, 1.0f);
-            glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(new float[]{2500 + camera.x(), (float) (10000 * Math.sin(timePassed() / 20000)), (float) (10000 * Math.cos(timePassed() / 20000)), 1f}));
-
+            if (NIGHT_CYCLE) {
+                glClearColor(0f, (float) Math.max(0, (255 * Math.sin(timePassed() / 20000)) - 155) / 255f, (float) Math.max(25, (255 * Math.sin(timePassed() / 20000)) + 25) / 255f, 1.0f);
+                glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(new float[]{2500 + camera.x(), (float) (10000 * Math.sin(timePassed() / 20000)), (float) (10000 * Math.cos(timePassed() / 20000)), 1f}));
+            }
+            else
+                glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
         }
     }
 
@@ -273,6 +279,9 @@ public class Voxels {
         if (z < 0)
             z -= Chunk.CHUNK_WIDTH;
         return z / Chunk.CHUNK_WIDTH;
+    }
+    public final static int getCurrentChunkY() {
+        return  ((int)camera.y() / Chunk.CHUNK_HEIGHT);
     }
 
     public static int getNoise(float x, float z) {

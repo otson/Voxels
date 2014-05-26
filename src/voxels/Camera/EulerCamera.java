@@ -65,6 +65,7 @@ public class EulerCamera implements Camera {
     private float maxWaterFallSpeed = 0.12f;
     private float maxAirFallSpeed = 1.4f;
     private float currentFallingSpeed = 0;
+    
 
     private boolean flying = false;
     private boolean falling = false;

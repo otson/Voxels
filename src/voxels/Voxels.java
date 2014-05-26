@@ -33,7 +33,7 @@ public class Voxels {
      */
     public static final String TITLE = "Voxels";
     /**
-     * Texture file names
+     * Texture file names.
      */
     public static final String ATLAS = "atlas";
     /**
@@ -44,11 +44,11 @@ public class Voxels {
     /**
      * Set player's height. One block's height is 1.
      */
-    public static float PLAYER_HEIGHT = 2.7f + 0.5f;
+    public static float PLAYER_HEIGHT = 2.7f+0.5f;
     /**
      * Set if night cycle is in use.
      */
-    public static final boolean NIGHT_CYCLE = false;
+    public static final boolean NIGHT_CYCLE = true;
     /**
      * Set if terrain generation's uses a seed.
      */
@@ -157,7 +157,6 @@ public class Voxels {
     private static void gameLoop() {
         chunkManager = new ChunkManager();
         camera = InitCamera();
-        //chunkManager.generateChunk(0, 0);
         chunkManager.startGeneration();
         long time = System.nanoTime();
 
@@ -178,7 +177,8 @@ public class Voxels {
 
             updateView();
             render();
-
+            
+            updateFPS();
             Display.update();
             Display.sync(60);
         }
@@ -228,10 +228,8 @@ public class Voxels {
 
                 }
             }
-
         }
-
-        updateFPS();
+    
     }
 
     private static void processInput(float delta) {

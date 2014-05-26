@@ -5,7 +5,6 @@
  */
 package voxels.ChunkManager;
 
-
 import com.ning.compress.lzf.LZFEncoder;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -26,7 +25,7 @@ import static voxels.Voxels.getCurrentChunkZ;
  * @author otso
  */
 public class ChunkMaker extends Thread {
-    
+
     Chunk chunk;
     private int chunkX;
     private int chunkZ;
@@ -37,11 +36,11 @@ public class ChunkMaker extends Thread {
     private static int colorSize = 3;
 
     private boolean[][][] top = initTopArray();
-    private  boolean[][][] bottom = initBottomArray();
-    private  boolean[][][] left = initLeftArray();
-    private  boolean[][][] right = initRightArray();
+    private boolean[][][] bottom = initBottomArray();
+    private boolean[][][] left = initLeftArray();
+    private boolean[][][] right = initRightArray();
     private boolean[][][] front = initFrontArray();
-    private  boolean[][][] back = initBackArray();
+    private boolean[][][] back = initBackArray();
 
     private FloatBuffer vertexData;
     private FloatBuffer normalData;
@@ -57,7 +56,7 @@ public class ChunkMaker extends Thread {
     int zOff;
     private ConcurrentHashMap<Integer, byte[]> map;
     private boolean ready = false;
-    
+
     private int threadId;
     private Data[] data;
 
@@ -69,20 +68,21 @@ public class ChunkMaker extends Thread {
         this.chunkZ = chunkZ;
         this.map = map;
         this.data = data;
-        
+
         //initBooleanArrays();
     }
 
     public void run() {
-        chunk = new Chunk(chunkX, chunkZ);
-        drawChunkVBO(chunk, xOff, zOff);
         if (!map.containsKey(new Pair(chunkX, chunkZ).hashCode())) {
+            chunk = new Chunk(chunkX, chunkZ);
+            drawChunkVBO(chunk, xOff, zOff);
+
             //handles.put(new Pair(chunkX, chunkZ).hashCode(), new Handle(chunk.getVboVertexHandle(), chunk.getVboNormalHandle(), chunk.getVboTexHandle(), chunk.getVertices()));
             map.put(new Pair(chunkX, chunkZ).hashCode(), toByte(chunk));
             data[threadId] = new Data(chunkX, chunkZ, chunk.getVertices(), vertexData, normalData, texData);
         }
         else
-            System.out.println("wrong");
+            System.out.println("Already contains");
     }
 
     public int calculateGroundVertices(Chunk chunk, float x, float y, float z, float xOff, float yOff, float zOff, float size) {
@@ -252,7 +252,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -279,7 +278,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -306,7 +304,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -361,7 +358,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -388,7 +384,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -449,7 +444,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -470,7 +464,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -492,7 +485,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -515,7 +507,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -536,7 +527,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -558,7 +548,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -615,7 +604,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -637,7 +625,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -659,7 +646,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -682,7 +668,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -704,7 +689,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -726,7 +710,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -782,7 +765,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -804,7 +786,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -826,7 +807,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -849,7 +829,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -871,7 +850,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -893,7 +871,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -918,7 +895,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -945,7 +921,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -972,7 +947,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -1000,7 +974,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -1027,7 +1000,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -1054,7 +1026,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -1114,7 +1085,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -1136,7 +1106,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -1158,7 +1127,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -1181,7 +1149,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -1203,7 +1170,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -1225,7 +1191,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = -size / 2f + y;
@@ -1252,7 +1217,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y - WaterOffs;
@@ -1279,7 +1243,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y - WaterOffs;
@@ -1306,7 +1269,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y - WaterOffs;
@@ -1334,7 +1296,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y - WaterOffs;
@@ -1361,7 +1322,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y - WaterOffs;
@@ -1388,7 +1348,6 @@ public class ChunkMaker extends Thread {
 //                            cArrayPos++;
 //                            colorArray[cArrayPos] = 1;
 //                            cArrayPos++;
-
                             vertexArray[vArrayPos] = size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y - WaterOffs;
@@ -1419,7 +1378,7 @@ public class ChunkMaker extends Thread {
 //        colorData.put(colorArray);
 //        colorData.flip();
     }
-    
+
     public byte[] toByte(Chunk chunk) {
         return LZFEncoder.encode(serialize(chunk));
     }
@@ -1435,8 +1394,8 @@ public class ChunkMaker extends Thread {
         }
         return out.toByteArray();
     }
-    
-    private  boolean[][][] initTopArray() {
+
+    private boolean[][][] initTopArray() {
         top = new boolean[Chunk.CHUNK_WIDTH][][];
         for (int x = 0; x < top.length; x++) {
             top[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
@@ -1469,7 +1428,7 @@ public class ChunkMaker extends Thread {
         return left;
     }
 
-    private  boolean[][][] initRightArray() {
+    private boolean[][][] initRightArray() {
         right = new boolean[Chunk.CHUNK_WIDTH][][];
         for (int x = 0; x < right.length; x++) {
             right[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
@@ -1491,7 +1450,7 @@ public class ChunkMaker extends Thread {
         return front;
     }
 
-    private  boolean[][][] initBackArray() {
+    private boolean[][][] initBackArray() {
         back = new boolean[Chunk.CHUNK_WIDTH][][];
         for (int x = 0; x < back.length; x++) {
             back[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];

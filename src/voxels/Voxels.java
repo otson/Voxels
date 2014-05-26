@@ -157,7 +157,7 @@ public class Voxels {
     private static void gameLoop() {
         chunkManager = new ChunkManager();
         camera = InitCamera();
-        chunkManager.generateChunk(0, 0);
+        //chunkManager.generateChunk(0, 0);
         chunkManager.startGeneration();
         long time = System.nanoTime();
 

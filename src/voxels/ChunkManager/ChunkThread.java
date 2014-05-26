@@ -18,6 +18,8 @@ import static voxels.Voxels.getCurrentChunkZ;
  * @author otso
  */
 public class ChunkThread extends Thread {
+    
+    private static int ThreadCount = 0;
 
     Chunk chunk;
     private int chunkX;
@@ -29,12 +31,12 @@ public class ChunkThread extends Thread {
     private static int texSize = 2;
     private static int colorSize = 3;
 
-    private static boolean[][][] top = initTopArray();
-    private static boolean[][][] bottom = initBottomArray();
-    private static boolean[][][] left = initLeftArray();
-    private static boolean[][][] right = initRightArray();
-    private static boolean[][][] front = initFrontArray();
-    private static boolean[][][] back = initBackArray();
+    private boolean[][][] top = initTopArray();
+    private  boolean[][][] bottom = initBottomArray();
+    private  boolean[][][] left = initLeftArray();
+    private  boolean[][][] right = initRightArray();
+    private boolean[][][] front = initFrontArray();
+    private  boolean[][][] back = initBackArray();
 
     private FloatBuffer vertexData;
     private FloatBuffer normalData;
@@ -1409,7 +1411,7 @@ public class ChunkThread extends Thread {
         running = false;
     }
 
-    private static boolean[][][] initTopArray() {
+    private  boolean[][][] initTopArray() {
         top = new boolean[Chunk.CHUNK_WIDTH][][];
         for (int x = 0; x < top.length; x++) {
             top[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
@@ -1420,7 +1422,7 @@ public class ChunkThread extends Thread {
         return top;
     }
 
-    private static boolean[][][] initBottomArray() {
+    private boolean[][][] initBottomArray() {
         bottom = new boolean[Chunk.CHUNK_WIDTH][][];
         for (int x = 0; x < bottom.length; x++) {
             bottom[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
@@ -1431,7 +1433,7 @@ public class ChunkThread extends Thread {
         return bottom;
     }
 
-    private static boolean[][][] initLeftArray() {
+    private boolean[][][] initLeftArray() {
         left = new boolean[Chunk.CHUNK_WIDTH][][];
         for (int x = 0; x < left.length; x++) {
             left[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
@@ -1442,7 +1444,7 @@ public class ChunkThread extends Thread {
         return left;
     }
 
-    private static boolean[][][] initRightArray() {
+    private  boolean[][][] initRightArray() {
         right = new boolean[Chunk.CHUNK_WIDTH][][];
         for (int x = 0; x < right.length; x++) {
             right[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
@@ -1453,7 +1455,7 @@ public class ChunkThread extends Thread {
         return right;
     }
 
-    private static boolean[][][] initFrontArray() {
+    private boolean[][][] initFrontArray() {
         front = new boolean[Chunk.CHUNK_WIDTH][][];
         for (int x = 0; x < front.length; x++) {
             front[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
@@ -1464,7 +1466,7 @@ public class ChunkThread extends Thread {
         return front;
     }
 
-    private static boolean[][][] initBackArray() {
+    private  boolean[][][] initBackArray() {
         back = new boolean[Chunk.CHUNK_WIDTH][][];
         for (int x = 0; x < back.length; x++) {
             back[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];

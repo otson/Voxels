@@ -23,7 +23,7 @@ public class ChunkCreator {
     private int length = 1;
     private int count = 0;
     private int turnCount = 0;
-    private boolean needMiddleChunk = false;
+    private boolean needMiddleChunk = true;
     private ConcurrentHashMap<Integer, byte[]> map;
     
     

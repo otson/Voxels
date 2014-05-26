@@ -59,6 +59,10 @@ public class ChunkMaker extends Thread {
 
     private int threadId;
     private Data[] data;
+   
+    private Data updateData;
+    
+    boolean update;
 
     public ChunkMaker(int threadId, Data[] data, int chunkX, int chunkZ, int xOff, int zOff, ConcurrentHashMap<Integer, byte[]> map) {
         this.threadId = threadId;
@@ -68,12 +72,25 @@ public class ChunkMaker extends Thread {
         this.chunkZ = chunkZ;
         this.map = map;
         this.data = data;
+        
+        update = false;
 
+    }
+    
+    public ChunkMaker(ConcurrentHashMap<Integer, byte[]> map, Chunk chunk){
+        this.chunk = chunk;
+        this.map = map;
+        update = true;
     }
 
     @Override
     public void run() {
-        if (!map.containsKey(new Pair(chunkX, chunkZ).hashCode())) {
+        if(update){
+            drawChunkVBO(chunk, chunk.xCoordinate, chunk.zCoordinate);
+            map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
+            updateData = new Data(chunk.xId, chunk.zId, chunk.getVertices(), vertexData, normalData, texData);
+        }
+        else if (!map.containsKey(new Pair(chunkX, chunkZ).hashCode())) {
             chunk = new Chunk(chunkX, chunkZ);
             drawChunkVBO(chunk, xOff, zOff);
 
@@ -1288,4 +1305,14 @@ public class ChunkMaker extends Thread {
         return chunkZ;
     }
 
+    public boolean isUpdate() {
+        return update;
+    }
+
+    public Data getUpdateData() {
+        return updateData;
+    }
+    
+    
+    
 }

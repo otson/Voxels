@@ -44,7 +44,7 @@ public class Voxels {
     /**
      * Set player's height. One block's height is 1.
      */
-    public static float PLAYER_HEIGHT = 2.7f+0.5f;
+    public static float PLAYER_HEIGHT = 2.7f + 0.5f;
     /**
      * Set if night cycle is in use.
      */
@@ -61,8 +61,8 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 7;
-    public static int chunkRenderDistance = 12;
+    public static int chunkCreationDistance = 0;
+    public static int chunkRenderDistance = 5;
     private static Texture atlas;
     public static final float WaterOffs = 0.28f;
     public static float START_TIME;
@@ -174,7 +174,7 @@ public class Voxels {
 
             updateView();
             render();
-            
+
             updateFPS();
             Display.update();
             Display.sync(60);
@@ -226,7 +226,7 @@ public class Voxels {
                 }
             }
         }
-    
+
     }
 
     private static void processInput(float delta) {
@@ -247,6 +247,9 @@ public class Voxels {
 
             if (Keyboard.isKeyDown(Keyboard.KEY_F)) {
                 camera.toggleFlight();
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_Z)) {
+                chunkManager.deleteBlock((int) camera.x(), (int) camera.y(), (int) camera.z());
             }
 
         }

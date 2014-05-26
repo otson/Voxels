@@ -41,7 +41,12 @@ public class ChunkManager {
     private ChunkCoordinateCreator chunkCreator;
     private ActiveChunkLoader chunkLoader;
     private Data[] data = new Data[maxThreads];
-    private Thread[] threads = new Thread[maxThreads];
+    private ChunkMaker[] threads = new ChunkMaker[maxThreads];
+    private ChunkMaker updateThread;
+
+    private Chunk[] updateChunks = new Chunk[1];
+
+    private boolean update = false;
 
     private boolean atMax = false;
     private boolean inLoop;
@@ -71,6 +76,33 @@ public class ChunkManager {
         }
     }
 
+    public void deleteBlock(int x, int y, int z) {
+
+        int chunkX = x / 16;
+        int chunkZ = z / 16;
+
+        Chunk chunk = getChunk(chunkX, chunkZ);
+        if(chunk == null)
+            System.exit(1);
+       
+        x %= 16;
+        z %= 16;
+        z = Math.abs(z);
+        x = Math.abs(x);
+        System.out.println("x: " + x + " y: " + y + " z: " + z);
+
+        chunk.blocks[x][y][z].type = Type.AIR;
+        chunk.blocks[x+1][y][z].type = Type.AIR;
+        chunk.blocks[x-1][y][z].type = Type.AIR;
+        chunk.blocks[x][y+1][z].type = Type.AIR;
+        chunk.blocks[x][y-1][z+1].type = Type.AIR;
+        chunk.blocks[x][y][z-1].type = Type.AIR;
+
+        updateChunks[0] = chunk;
+        update = true;
+
+    }
+
     public Handle getHandle(int x, int z) {
         if (handles.containsKey(new Pair(x, z).hashCode()))
             return handles.get(new Pair(x, z).hashCode());
@@ -83,8 +115,16 @@ public class ChunkManager {
     }
 
     public void checkChunkUpdates() {
+
+        if (update) {
+            inLoop = true;
+            updateThread = new ChunkMaker(map, updateChunks[0]);
+            updateThread.setPriority(Thread.MAX_PRIORITY);
+            updateThread.start();
+        }
+
         // if generating and there are free threads to use
-        if (generate && hasFreeThreads()) {
+        else if (generate && hasFreeThreads()) {
             inLoop = true;
 
             // request new valid coordinates
@@ -118,12 +158,20 @@ public class ChunkManager {
 
         }
         // Check if there are threads that are completed
-        else if (inLoop)
-        {
+        if (inLoop) {
+            if (update)
+                if (updateThread != null)
+                    if (!updateThread.isAlive()) {
+                        createBuffers(updateThread.getUpdateData(), true);
+                        update = false;
+                        updateThread = null;
+                    }
+
+            
             for (int i = 0; i < threads.length; i++) {
                 if (threads[i] != null)
                     if (!threads[i].isAlive()) {
-                        createBuffers(data[i]);
+                        createBuffers(data[i], threads[i].isUpdate());
                         threads[i] = null;
                     }
             }
@@ -153,7 +201,7 @@ public class ChunkManager {
         generate = true;
     }
 
-    public void createBuffers(Data data) {
+    public void createBuffers(Data data, boolean update) {
 
         int vboVertexHandle = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
@@ -170,7 +218,8 @@ public class ChunkManager {
         glBufferData(GL_ARRAY_BUFFER, data.texData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        handles.put(new Pair(data.chunkX, data.chunkZ).hashCode(), new Handle(vboVertexHandle, vboNormalHandle, vboTexHandle, data.vertices));
+        if (!update)
+            handles.put(new Pair(data.chunkX, data.chunkZ).hashCode(), new Handle(vboVertexHandle, vboNormalHandle, vboTexHandle, data.vertices));
     }
 
     public boolean isAtMax() {
@@ -179,18 +228,22 @@ public class ChunkManager {
 
     public Chunk toChunk(byte[] bytes) {
         try {
-            return (Chunk) deserialize(LZFDecoder.decode(bytes));
+            return deserialize(LZFDecoder.decode(bytes));
+
         } catch (LZFException ex) {
-            Logger.getLogger(ChunkManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ChunkManager.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
 
-    public static Object deserialize(byte[] data) {
+    public static Chunk deserialize(byte[] data) {
         try {
-            return new FSTObjectInput(new ByteArrayInputStream(data)).readObject();
+            return (Chunk) new FSTObjectInput(new ByteArrayInputStream(data)).readObject();
+
         } catch (IOException | ClassNotFoundException ex) {
-            Logger.getLogger(ChunkManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ChunkManager.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
@@ -259,13 +312,17 @@ public class ChunkManager {
     }
 
     private boolean allThreadsFinished() {
-        for (int i = 0; i < threads.length; i++) {
+
+        for (int i = 0; i < threads.length; i++)
             if (threads[i] != null)
                 return false;
-        }
-        System.out.println("All threads finished.");
+
         return true;
 
+    }
+
+    private void updateChunk(int chunkX, int chunkZ) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

@@ -64,14 +64,14 @@ public class ActiveChunkLoader extends Thread {
     public void loadChunks() {
 
         middle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ());
-        topMiddle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ() - 1);
-        lowMiddle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ() + 1);
-        midLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ());
-        midRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ());
-        topLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ() - 1);
-        topRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ() - 1);
-        lowLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ() + 1);
-        lowRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ() + 1);
+//        topMiddle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ() - 1);
+//        lowMiddle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ() + 1);
+//        midLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ());
+//        midRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ());
+//        topLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ() - 1);
+//        topRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ() - 1);
+//        lowLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ() + 1);
+//        lowRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ() + 1);
     }
 
     public Chunk getTopLeft() {

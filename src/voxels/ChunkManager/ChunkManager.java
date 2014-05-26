@@ -39,18 +39,6 @@ import static voxels.Voxels.getCurrentChunkZ;
  */
 public class ChunkManager {
 
-    private static int vertexSize = 3;
-    private static int normalSize = 3;
-    private static int texSize = 2;
-    private static int colorSize = 3;
-
-    private boolean[][][] top = new boolean[Chunk.CHUNK_WIDTH][][];
-    private boolean[][][] bottom = new boolean[Chunk.CHUNK_WIDTH][][];
-    private boolean[][][] left = new boolean[Chunk.CHUNK_WIDTH][][];
-    private boolean[][][] right = new boolean[Chunk.CHUNK_WIDTH][][];
-    private boolean[][][] front = new boolean[Chunk.CHUNK_WIDTH][][];
-    private boolean[][][] back = new boolean[Chunk.CHUNK_WIDTH][][];
-
     private boolean generate = false;
 
     private ChunkThread chunkThread = new ChunkThread(0, 0, 0, 0);
@@ -72,8 +60,6 @@ public class ChunkManager {
         chunkCreator = new ChunkCreator(map);
         chunkLoader = new ChunkLoader(this);
         chunkLoader.setPriority(Thread.MIN_PRIORITY);
-        initBooleanArrays();
-
     }
 
     public Block getBlock(int x, int y, int z) {
@@ -156,45 +142,6 @@ public class ChunkManager {
                 System.out.println(string);
                 Display.setTitle(string);
 
-            }
-        }
-    }
-
-    private void initBooleanArrays() {
-        for (int x = 0; x < top.length; x++) {
-            top[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
-            for (int y = 0; y < top[x].length; y++) {
-                top[x][y] = new boolean[CHUNK_WIDTH];
-            }
-        }
-        for (int x = 0; x < bottom.length; x++) {
-            bottom[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
-            for (int y = 0; y < bottom[x].length; y++) {
-                bottom[x][y] = new boolean[CHUNK_WIDTH];
-            }
-        }
-        for (int x = 0; x < right.length; x++) {
-            right[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
-            for (int y = 0; y < right[x].length; y++) {
-                right[x][y] = new boolean[CHUNK_WIDTH];
-            }
-        }
-        for (int x = 0; x < left.length; x++) {
-            left[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
-            for (int y = 0; y < left[x].length; y++) {
-                left[x][y] = new boolean[CHUNK_WIDTH];
-            }
-        }
-        for (int x = 0; x < front.length; x++) {
-            front[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
-            for (int y = 0; y < front[x].length; y++) {
-                front[x][y] = new boolean[CHUNK_WIDTH];
-            }
-        }
-        for (int x = 0; x < back.length; x++) {
-            back[x] = new boolean[CHUNK_HEIGHT][CHUNK_WIDTH];
-            for (int y = 0; y < back[x].length; y++) {
-                back[x][y] = new boolean[CHUNK_WIDTH];
             }
         }
     }

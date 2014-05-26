@@ -5,6 +5,7 @@
  */
 package voxels.ChunkManager;
 
+
 import com.ning.compress.lzf.LZFEncoder;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -24,7 +25,7 @@ import static voxels.Voxels.getCurrentChunkZ;
  *
  * @author otso
  */
-public class ChunkThread extends Thread {
+public class ChunkMaker extends Thread {
     
     Chunk chunk;
     private int chunkX;
@@ -60,7 +61,7 @@ public class ChunkThread extends Thread {
     private int threadId;
     private Data[] data;
 
-    public ChunkThread(int threadId, Data[] data, int chunkX, int chunkZ, int xOff, int zOff, ConcurrentHashMap<Integer, byte[]> map) {
+    public ChunkMaker(int threadId, Data[] data, int chunkX, int chunkZ, int xOff, int zOff, ConcurrentHashMap<Integer, byte[]> map) {
         this.threadId = threadId;
         this.xOff = xOff;
         this.zOff = zOff;
@@ -1430,7 +1431,7 @@ public class ChunkThread extends Thread {
             os = new ObjectOutputStream(out);
             os.writeObject(obj);
         } catch (IOException ex) {
-            Logger.getLogger(MapThread.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ChunkMaker.class.getName()).log(Level.SEVERE, null, ex);
         }
         return out.toByteArray();
     }

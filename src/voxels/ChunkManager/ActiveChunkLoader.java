@@ -13,7 +13,7 @@ import voxels.Voxels;
  *
  * @author otso
  */
-public class ChunkLoader extends Thread {
+public class ActiveChunkLoader extends Thread {
 
     private Chunk topLeft;
     private Chunk topMiddle;
@@ -31,7 +31,7 @@ public class ChunkLoader extends Thread {
     int currentChunkX;
     int currentChunkZ;
 
-    public ChunkLoader(ChunkManager chunkManager) {
+    public ActiveChunkLoader(ChunkManager chunkManager) {
         this.chunkManager = chunkManager;
     }
 
@@ -44,7 +44,7 @@ public class ChunkLoader extends Thread {
                 try {
                     sleep(5);
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(ChunkLoader.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ActiveChunkLoader.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }

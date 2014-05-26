@@ -1,16 +1,15 @@
 package voxels.ChunkManager;
 
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
+
+
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.zip.GZIPOutputStream;
 import voxels.Voxels;
 
 /**
  *
  * @author otso
  */
-public class ChunkCreator {
+public class ChunkCoordinateCreator {
 
     private int currentChunkX;
     private int currentChunkZ;
@@ -28,11 +27,11 @@ public class ChunkCreator {
     
     
 
-    public ChunkCreator() {
+    public ChunkCoordinateCreator() {
 
     }
 
-    ChunkCreator(ConcurrentHashMap<Integer, byte[]> map) {
+    ChunkCoordinateCreator(ConcurrentHashMap<Integer, byte[]> map) {
         this.map = map;
     }
 

@@ -13,12 +13,12 @@ import java.nio.FloatBuffer;
  */
 public class Data {
 
-    FloatBuffer vertexData;
-    FloatBuffer normalData;
-    FloatBuffer texData;
-    int vertices;
-    int chunkX;
-    int chunkZ;
+    public final FloatBuffer vertexData;
+    public final FloatBuffer normalData;
+    public final FloatBuffer texData;
+    public final int vertices;
+    public final int chunkX;
+    public final int chunkZ;
     
 
     public Data(int chunkX, int chunkZ, int vertices, FloatBuffer vertexData, FloatBuffer normalData, FloatBuffer texData) {

@@ -6,21 +6,13 @@
 package voxels.ChunkManager;
 
 import com.ning.compress.lzf.LZFDecoder;
-import com.ning.compress.lzf.LZFEncoder;
 import com.ning.compress.lzf.LZFException;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.nio.FloatBuffer;
-import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.Display;
 import voxels.Voxels;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
@@ -28,9 +20,6 @@ import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static voxels.ChunkManager.Chunk.CHUNK_HEIGHT;
-import static voxels.ChunkManager.Chunk.CHUNK_WIDTH;
-import static voxels.Voxels.WaterOffs;
 import static voxels.Voxels.getCurrentChunkX;
 import static voxels.Voxels.getCurrentChunkZ;
 
@@ -40,27 +29,30 @@ import static voxels.Voxels.getCurrentChunkZ;
  */
 public class ChunkManager {
 
-    private boolean generate = false;
+    /**
+     * Set the maximum amount of threads use to create chunks. Default number is
+     * equal to the number of cores in the system CPU.
+     */
+    public static final int maxThreads = Runtime.getRuntime().availableProcessors();
 
     private ConcurrentHashMap<Integer, byte[]> map;
     private ConcurrentHashMap<Integer, Handle> handles;
-    private ChunkCreator chunkCreator;
-    private ChunkLoader chunkLoader;
-    private int maxThreads = 5;
-    private boolean[] runningThreads = new boolean[maxThreads];
+    private ChunkCoordinateCreator chunkCreator;
+    private ActiveChunkLoader chunkLoader;
     private Data[] data = new Data[maxThreads];
     private Thread[] threads = new Thread[maxThreads];
 
     private boolean atMax = false;
-
     private boolean inLoop;
     private boolean initialLoad = true;
+    private boolean generate = false;
+    private int lastMessage = -1;
 
     public ChunkManager() {
         map = new ConcurrentHashMap<>();
         handles = new ConcurrentHashMap<>();
-        chunkCreator = new ChunkCreator(map);
-        chunkLoader = new ChunkLoader(this);
+        chunkCreator = new ChunkCoordinateCreator(map);
+        chunkLoader = new ActiveChunkLoader(this);
         chunkLoader.setPriority(Thread.MIN_PRIORITY);
     }
 
@@ -91,19 +83,18 @@ public class ChunkManager {
 
     public void checkChunkUpdates() {
         // neither thread is currently running
-        if (generate && threads[0] == null) {
+        if (generate && hasFreeThreads()) {
             inLoop = true;
-            System.out.println("here");
+
             // request new valid coordinates
             chunkCreator.setCurrentChunkX(getCurrentChunkX());
             chunkCreator.setCurrentChunkZ(getCurrentChunkZ());
             Coordinates coordinates;
-            boolean running = true;
 
             coordinates = chunkCreator.getNewCoordinates();
 
             if (coordinates != null) {
-                
+
                 atMax = false;
                 int x = coordinates.x;
                 int z = coordinates.z;
@@ -112,13 +103,11 @@ public class ChunkManager {
                 int newChunkZ = coordinates.z;
 
                 // make a new chunk
-                int threadId = 0;
-                if (threads[0] == null) {
-                    
-                    threads[0] = new ChunkThread(threadId, data, newChunkX, newChunkZ, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH, map);
-                    threads[0].setPriority(Thread.MIN_PRIORITY);
-                    threads[0].start();
-                }
+                int threadId = getFreeThread();
+
+                threads[threadId] = new ChunkMaker(threadId, data, newChunkX, newChunkZ, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH, map);
+                threads[threadId].setPriority(Thread.MIN_PRIORITY);
+                threads[threadId].start();
 
             }
             else {
@@ -133,17 +122,27 @@ public class ChunkManager {
         }
         else if (inLoop) // has finished chunk and exited the loop
         {
-            
-            if(!threads[0].isAlive()){
-                createBuffers(data[0]);
-                threads[0] = null;
-                inLoop = false;
+
+            for (int i = 0; i < threads.length; i++) {
+                if (threads[i] != null)
+                    if (!threads[i].isAlive()) {
+                        createBuffers(data[i]);
+                        threads[i] = null;
+                    }
             }
 
+            if (atMax)
+                if (allThreadsFinished())
+                    inLoop = false;
+
             if (initialLoad) {
-                String string = "Chunks loaded: " + (int) ((float) map.size() / (float) ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1)) * 100) + " % (" + map.size() + "/" + ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1)) + ")";
-                System.out.println(string);
-                Display.setTitle(string);
+                if (map.size() > lastMessage) {
+
+                    lastMessage = map.size();
+                    String string = "Chunks loaded: " + (int) ((float) map.size() / (float) ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1)) * 100) + " % (" + map.size() + "/" + ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1)) + ")";
+                    System.out.println(string);
+                    Display.setTitle(string);
+                }
 
             }
         }
@@ -160,7 +159,6 @@ public class ChunkManager {
     public void createBuffers(Data data) {
 
         int vboVertexHandle = glGenBuffers();
-        
 
         glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
         glBufferData(GL_ARRAY_BUFFER, data.vertexData, GL_STATIC_DRAW);
@@ -198,7 +196,7 @@ public class ChunkManager {
         try {
             return new ObjectInputStream(new ByteArrayInputStream(data)).readObject();
         } catch (IOException | ClassNotFoundException ex) {
-            Logger.getLogger(MapThread.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ChunkManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
@@ -207,7 +205,7 @@ public class ChunkManager {
         return map.size();
     }
 
-    public ChunkLoader getChunkLoader() {
+    public ActiveChunkLoader getChunkLoader() {
         return chunkLoader;
     }
 
@@ -245,6 +243,35 @@ public class ChunkManager {
 
     public Chunk getLowMiddle() {
         return chunkLoader.getLowMiddle();
+    }
+
+    private boolean hasFreeThreads() {
+        for (int i = 0; i < threads.length; i++) {
+            if (threads[i] == null)
+                return true;
+        }
+
+        return false;
+    }
+
+    private int getFreeThread() {
+        for (int i = 0; i < threads.length; i++) {
+            if (threads[i] == null)
+                return i;
+        }
+        // all threads in use
+        System.out.println("Wrong");
+        return -1;
+    }
+
+    private boolean allThreadsFinished() {
+        for (int i = 0; i < threads.length; i++) {
+            if (threads[i] != null)
+                return false;
+        }
+        System.out.println("All threads finished.");
+        return true;
+
     }
 
 }

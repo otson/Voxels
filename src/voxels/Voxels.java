@@ -2,7 +2,6 @@ package voxels;
 
 import voxels.ChunkManager.Chunk;
 import voxels.ChunkManager.ChunkManager;
-import voxels.ChunkManager.Handle;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,6 +19,7 @@ import static org.lwjgl.opengl.GL15.*;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import voxels.Camera.EulerCamera;
+import voxels.ChunkManager.Handle;
 import voxels.Noise.FastNoise;
 
 /**
@@ -61,7 +61,7 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 4;
+    public static int chunkCreationDistance = 7;
     public static int chunkRenderDistance = 12;
     private static Texture atlas;
     public static final float WaterOffs = 0.28f;

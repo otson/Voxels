@@ -48,7 +48,7 @@ public class Voxels {
     /**
      * Set if night cycle is in use.
      */
-    public static boolean NIGHT_CYCLE = false;
+    public static final boolean NIGHT_CYCLE = false;
     /**
      * Set if terrain generation's uses a seed.
      */
@@ -61,13 +61,13 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 1;
+    public static int chunkCreationDistance = 4;
     public static int chunkRenderDistance = 12;
     private static Texture atlas;
     public static final float WaterOffs = 0.28f;
     public static float START_TIME;
 
-    public static ChunkManager chunkManager;
+    private static ChunkManager chunkManager;
 
     private static EulerCamera camera;
     private static float light0Position[] = {-2000.0f, 50000.0f, 8000.0f, 1.0f};
@@ -91,7 +91,7 @@ public class Voxels {
 
     private static void initDisplay() {
         try {
-            Display.setDisplayMode(new DisplayMode(800, 480));
+            Display.setDisplayMode(new DisplayMode(1650, 1050));
             Display.setVSyncEnabled(true);
             Display.setTitle("Voxels");
             Display.create();
@@ -123,16 +123,21 @@ public class Voxels {
     }
 
     private static void initLighting() {
+        glEnable(GL_LIGHTING);
+        glEnable(GL_LIGHT0);
+        //glEnable(GL_LIGHT1);
+
+        glEnable(GL_COLOR_MATERIAL);
+        glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+
         float lightAmbient[] = {0.15f, 0.15f, 0.15f, 1.0f};
         float lightDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
 
-        glEnable(GL_LIGHTING);
-        glEnable(GL_LIGHT0);
-        glEnable(GL_COLOR_MATERIAL);
-        glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
         glLightModel(GL_LIGHT_MODEL_AMBIENT, asFloatBuffer(lightAmbient));
         glLight(GL_LIGHT0, GL_DIFFUSE, asFloatBuffer(lightDiffuse));
+        //glLight(GL_LIGHT1, GL_DIFFUSE, asFloatBuffer(lightDiffuse));
         glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
+        //glLight(GL_LIGHT1, GL_POSITION, asFloatBuffer(light1Position));
 
         // Set background to sky blue
         glClearColor(0f / 255f, 0f / 255f, 190f / 255f, 1.0f);
@@ -192,12 +197,14 @@ public class Voxels {
 
         for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
             for (int z = -chunkRenderDistance; z <= chunkRenderDistance; z++) {
+                //Chunk chunk = chunkManager.getChunk(getCurrentChunkX() + x, getCurrentChunkZ() + z);
                 Handle handles = chunkManager.getHandle(getCurrentChunkX() + x, getCurrentChunkZ() + z);
                 if (handles != null) {
 
                     int vboVertexHandle = handles.vertexHandle;
                     int vboNormalHandle = handles.normalHandle;
                     int vboTexHandle = handles.texHandle;
+                    //int vboColorHandle = chunk.getVboColorHandle();
                     int vertices = handles.vertices;
 
                     glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
@@ -279,9 +286,6 @@ public class Voxels {
         if (z < 0)
             z -= Chunk.CHUNK_WIDTH;
         return z / Chunk.CHUNK_WIDTH;
-    }
-    public final static int getCurrentChunkY() {
-        return  ((int)camera.y() / Chunk.CHUNK_HEIGHT);
     }
 
     public static int getNoise(float x, float z) {

@@ -27,12 +27,6 @@ public class ChunkLoader extends Thread {
 
     boolean running;
 
-    boolean movedLeft;
-    boolean movedRight;
-    boolean movedBack;
-    boolean movedFront;
-    boolean moreThanOne = true;
-
     ChunkManager chunkManager;
     int currentChunkX;
     int currentChunkZ;
@@ -46,7 +40,6 @@ public class ChunkLoader extends Thread {
         running = true;
         while (running) {
             if (hasMoved()) {
-                System.out.println("here");
                 loadChunks();
                 try {
                     sleep(5);
@@ -58,146 +51,27 @@ public class ChunkLoader extends Thread {
     }
 
     private boolean hasMoved() {
-        if (currentChunkX - 1 > Voxels.getCurrentChunkX() || currentChunkX + 1 < Voxels.getCurrentChunkX() || currentChunkZ - 1 > Voxels.getCurrentChunkZ() || currentChunkZ + 1 < Voxels.getCurrentChunkZ())
-            moreThanOne = true;
-        else {
-            if (currentChunkX - 1 == Voxels.getCurrentChunkX())
-                movedRight = true;
-
-            if (currentChunkX + 1 == Voxels.getCurrentChunkX())
-                movedLeft = true;
-
-            if (currentChunkZ - 1 == Voxels.getCurrentChunkZ())
-                movedFront = true;
-
-            if (currentChunkZ + 1 == Voxels.getCurrentChunkZ())
-                movedBack = true;
+        if (currentChunkX != Voxels.getCurrentChunkX() || currentChunkZ != Voxels.getCurrentChunkZ()) {
+            currentChunkX = Voxels.getCurrentChunkX();
+            currentChunkZ = Voxels.getCurrentChunkZ();
+            return true;
         }
-
-        currentChunkX = Voxels.getCurrentChunkX();
-        currentChunkZ = Voxels.getCurrentChunkZ();
-
-        return moreThanOne || movedRight || movedLeft || movedFront || movedBack;
+        else
+            return false;
 
     }
 
     public void loadChunks() {
-        if (movedLeft && movedBack) {
-            middle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ());
-            topMiddle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ() - 1);
-            lowMiddle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ() + 1);
-            midLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ());
-            midRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ());
-            topLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ() - 1);
-            topRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ() - 1);
-            lowLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ() + 1);
-            lowRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ() + 1);
-        }
-        else if (movedLeft && movedFront) {
-            middle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ());
-            topMiddle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ() - 1);
-            lowMiddle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ() + 1);
-            midLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ());
-            midRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ());
-            topLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ() - 1);
-            topRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ() - 1);
-            lowLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ() + 1);
-            lowRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ() + 1);
-        }
-        else if (movedRight && movedBack) {
-            middle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ());
-            topMiddle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ() - 1);
-            lowMiddle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ() + 1);
-            midLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ());
-            midRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ());
-            topLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ() - 1);
-            topRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ() - 1);
-            lowLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ() + 1);
-            lowRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ() + 1);
-        }
-        else if (movedRight && movedFront) {
-            middle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ());
-            topMiddle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ() - 1);
-            lowMiddle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ() + 1);
-            midLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ());
-            midRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ());
-            topLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ() - 1);
-            topRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ() - 1);
-            lowLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ() + 1);
-            lowRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ() + 1);
-        }
-        else if (movedLeft) {
-            topLeft = topMiddle;
-            midLeft = middle;
-            lowLeft = lowMiddle;
 
-            topMiddle = topRight;
-            middle = midRight;
-            lowMiddle = lowRight;
-
-            topRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ() - 1);
-            midRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ());
-            lowRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ() + 1);
-            
-
-        }
-        else if (movedRight) {
-            topRight = topMiddle;
-            midRight = middle;
-            lowRight = lowMiddle;
-            topMiddle = topLeft;
-            middle = midLeft;
-            lowMiddle = lowLeft;
-            
-            topLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ() - 1);
-            midLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ());
-            lowLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ() + 1);
-            
-            
-        }
-        else if (movedFront) {
-            lowLeft = midLeft;
-            lowMiddle = middle;
-            lowRight = midRight;
-            midLeft = topLeft;
-            middle = topMiddle;
-            midRight = topRight;
-            
-            topLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ() - 1);
-            topMiddle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ() - 1);
-            topRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ() - 1);
-            
-        }
-        else if (movedBack) {
-            topLeft = midLeft;
-            topMiddle = middle;
-            topRight = midRight;
-            midLeft = lowLeft;
-            middle = lowMiddle;
-            midRight = lowRight;
-            
-            lowLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ() + 1);
-            lowMiddle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ() + 1);
-            lowRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ() + 1);
-            
-        }
-        else if (moreThanOne) {
-            middle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ());
-            topMiddle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ() - 1);
-            lowMiddle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ() + 1);
-            midLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ());
-            midRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ());
-            topLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ() - 1);
-            topRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ() - 1);
-            lowLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ() + 1);
-            lowRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ() + 1);
-        }
-
-        movedBack = false;
-        movedFront = false;
-        movedRight = false;
-        movedLeft = false;
-        moreThanOne = false;
+        middle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ());
+        topMiddle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ() - 1);
+        lowMiddle = chunkManager.getChunk(Voxels.getCurrentChunkX(), Voxels.getCurrentChunkZ() + 1);
+        midLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ());
+        midRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ());
+        topLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ() - 1);
+        topRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ() - 1);
+        lowLeft = chunkManager.getChunk(Voxels.getCurrentChunkX() - 1, Voxels.getCurrentChunkZ() + 1);
+        lowRight = chunkManager.getChunk(Voxels.getCurrentChunkX() + 1, Voxels.getCurrentChunkZ() + 1);
     }
 
     public Chunk getTopLeft() {

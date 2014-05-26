@@ -45,7 +45,7 @@ public class MapThread extends Thread {
     @Override
     public void run() {
         if (!map.containsKey(new Pair(chunkX, chunkZ).hashCode())) {
-            handles.put(new Pair(chunkX, chunkZ).hashCode(), new Handle(chunk.getVboVertexHandle(), chunk.getVboNormalHandle(), chunk.getVboTexHandle(), chunk.getVertexCount()));
+            handles.put(new Pair(chunkX, chunkZ).hashCode(), new Handle(chunk.getVboVertexHandle(), chunk.getVboNormalHandle(), chunk.getVboTexHandle(), chunk.getVertices()));
             map.put(new Pair(chunkX, chunkZ).hashCode(), toByte(chunk));
             setReady();
         }

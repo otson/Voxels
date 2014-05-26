@@ -45,7 +45,7 @@ public class Chunk implements Serializable {
         setBlocks();
         setActiveBlocks();
         long start = System.nanoTime();
-        setActiveBorderBlocks();
+        updateSides();
         System.out.println("Border time: " + (System.nanoTime() - start) / 1000000 + " ms.");
         calculateVertexCount();
 //        int totalActive = 0;
@@ -145,6 +145,40 @@ public class Chunk implements Serializable {
         System.out.println("Activated blocks: " + activeBlocks);
     }
 
+    private void updateAllSides() {
+        updateTopLeftBack();
+        updateTopLeftFront();
+        updateTopRightBack();
+        updateTopRightFront();
+
+        updateBottomLeftBack();
+        updateBottomLeftFront();
+        updateBottomRightBack();
+        updateBottomRightFront();
+
+        updateTopLeft();
+        updateTopRight();
+        updateTopFront();
+        updateTopBack();
+
+        updateBottomLeft();
+        updateBottomRight();
+        updateBottomFront();
+        updateBottomBack();
+
+        updateLeftBack();
+        updateLeftFront();
+        updateRightBack();
+        updateRightFront();
+
+        updateLeftSide();
+        updateRightSide();
+        updateTopSide();
+        updateBottomSide();
+        updateFrontSide();
+        updateBackSide();
+    }
+
     private void setActiveBorderBlocks() {
         updateChunks();
 
@@ -180,6 +214,51 @@ public class Chunk implements Serializable {
         updateFrontSide();
         updateBackSide();
 
+    }
+
+    public final void updateSides() {
+        Thread thread = new Thread(new Runnable() {
+            public void run() {
+                rightChunk = Voxels.chunkManager.getChunk(xId + 1, zId);
+                leftChunk = Voxels.chunkManager.getChunk(xId - 1, zId);
+                backChunk = Voxels.chunkManager.getChunk(xId, zId - 1);
+                frontChunk = Voxels.chunkManager.getChunk(xId + 1, xId + 1);
+
+                updateTopLeftBack();
+                updateTopLeftFront();
+                updateTopRightBack();
+                updateTopRightFront();
+
+                updateBottomLeftBack();
+                updateBottomLeftFront();
+                updateBottomRightBack();
+                updateBottomRightFront();
+
+                updateTopLeft();
+                updateTopRight();
+                updateTopFront();
+                updateTopBack();
+
+                updateBottomLeft();
+                updateBottomRight();
+                updateBottomFront();
+                updateBottomBack();
+
+                updateLeftBack();
+                updateLeftFront();
+                updateRightBack();
+                updateRightFront();
+
+                updateLeftSide();
+                updateRightSide();
+                updateTopSide();
+                updateBottomSide();
+                updateFrontSide();
+                updateBackSide();
+            }
+        });
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.start();
     }
 
     private void updateChunks() {
@@ -909,4 +988,29 @@ public class Chunk implements Serializable {
         }
     }
 
+    public void updateFromRight() {
+
+        updateTopRightBack();
+        updateTopRightFront();
+        updateBottomRightBack();
+        updateBottomRightFront();
+        updateTopRight();
+        updateBottomRight();
+        updateRightBack();
+        updateRightFront();
+        updateRightSide();
+
+    }
+
+    public void updateFromLeft() {
+
+    }
+
+    public void updateFromFront() {
+
+    }
+
+    public void updateFromBack() {
+
+    }
 }

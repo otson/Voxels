@@ -35,12 +35,12 @@ public class ChunkMaker extends Thread {
     private static int texSize = 2;
     private static int colorSize = 3;
 
-    private boolean[][][] top = initTopArray();
-    private boolean[][][] bottom = initBottomArray();
-    private boolean[][][] left = initLeftArray();
-    private boolean[][][] right = initRightArray();
-    private boolean[][][] front = initFrontArray();
-    private boolean[][][] back = initBackArray();
+    private boolean[][][] top = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_HEIGHT][Chunk.CHUNK_WIDTH];
+    private boolean[][][] bottom = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_HEIGHT][Chunk.CHUNK_WIDTH];
+    private boolean[][][] left = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_HEIGHT][Chunk.CHUNK_WIDTH];
+    private boolean[][][] right = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_HEIGHT][Chunk.CHUNK_WIDTH];
+    private boolean[][][] front = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_HEIGHT][Chunk.CHUNK_WIDTH];
+    private boolean[][][] back = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_HEIGHT][Chunk.CHUNK_WIDTH];
 
     private FloatBuffer vertexData;
     private FloatBuffer normalData;
@@ -69,7 +69,6 @@ public class ChunkMaker extends Thread {
         this.map = map;
         this.data = data;
 
-        //initBooleanArrays();
     }
 
     public void run() {

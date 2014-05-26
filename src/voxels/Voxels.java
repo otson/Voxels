@@ -61,7 +61,7 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 12;
+    public static int chunkCreationDistance = 7;
     public static int chunkRenderDistance = 12;
     private static Texture atlas;
     public static final float WaterOffs = 0.28f;
@@ -76,9 +76,6 @@ public class Voxels {
     private static long lastFPS = getTime();
     public static int count = 0;
     private static long lastFrame = System.nanoTime();
-
-    static int skyDomeVertexHandle;
-    static int skyDomeTexHandle;
 
     public static void main(String[] args) {
         initDisplay();

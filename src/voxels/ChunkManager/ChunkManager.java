@@ -82,21 +82,17 @@ public class ChunkManager {
         int chunkZ = z / 16;
 
         Chunk chunk = getChunk(chunkX, chunkZ);
-        if(chunk == null)
+        if (chunk == null)
             System.exit(1);
-       
+
         x %= 16;
         z %= 16;
         z = Math.abs(z);
         x = Math.abs(x);
         System.out.println("x: " + x + " y: " + y + " z: " + z);
 
-        chunk.blocks[x][y][z].type = Type.AIR;
-        chunk.blocks[x+1][y][z].type = Type.AIR;
-        chunk.blocks[x-1][y][z].type = Type.AIR;
-        chunk.blocks[x][y+1][z].type = Type.AIR;
-        chunk.blocks[x][y-1][z+1].type = Type.AIR;
-        chunk.blocks[x][y][z-1].type = Type.AIR;
+        chunk.blocks[x][chunk.maxHeights[x][z]][z].type = Type.AIR;
+        chunk.maxHeights[x][z]--;
 
         updateChunks[0] = chunk;
         update = true;
@@ -162,16 +158,15 @@ public class ChunkManager {
             if (update)
                 if (updateThread != null)
                     if (!updateThread.isAlive()) {
-                        createBuffers(updateThread.getUpdateData(), true);
+                        updateBuffers(updateThread.getUpdateData(), updateThread.getChunk());
                         update = false;
                         updateThread = null;
                     }
 
-            
             for (int i = 0; i < threads.length; i++) {
                 if (threads[i] != null)
                     if (!threads[i].isAlive()) {
-                        createBuffers(data[i], threads[i].isUpdate());
+                        createBuffers(data[i]);
                         threads[i] = null;
                     }
             }
@@ -200,8 +195,28 @@ public class ChunkManager {
     public void startGeneration() {
         generate = true;
     }
+    
+    public void updateBuffers(Data data, Chunk chunk) {
+        
+        Handle updateHandles = getHandle(chunk.xId, chunk.zId);
 
-    public void createBuffers(Data data, boolean update) {
+
+        glBindBuffer(GL_ARRAY_BUFFER, updateHandles.vertexHandle);
+        glBufferData(GL_ARRAY_BUFFER, data.vertexData, GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+        glBindBuffer(GL_ARRAY_BUFFER, updateHandles.normalHandle);
+        glBufferData(GL_ARRAY_BUFFER, data.normalData, GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+        glBindBuffer(GL_ARRAY_BUFFER, updateHandles.texHandle);
+        glBufferData(GL_ARRAY_BUFFER, data.texData, GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+
+    public void createBuffers(Data data) {
 
         int vboVertexHandle = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
@@ -218,8 +233,7 @@ public class ChunkManager {
         glBufferData(GL_ARRAY_BUFFER, data.texData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        if (!update)
-            handles.put(new Pair(data.chunkX, data.chunkZ).hashCode(), new Handle(vboVertexHandle, vboNormalHandle, vboTexHandle, data.vertices));
+        handles.put(new Pair(data.chunkX, data.chunkZ).hashCode(), new Handle(vboVertexHandle, vboNormalHandle, vboTexHandle, data.vertices));
     }
 
     public boolean isAtMax() {

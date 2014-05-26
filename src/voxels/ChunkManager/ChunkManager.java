@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.FloatBuffer;
+import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,13 +42,14 @@ public class ChunkManager {
 
     private boolean generate = false;
 
-    private ChunkThread chunkThread = new ChunkThread(0, 0, 0, 0);
-    private MapThread mapThread = new MapThread(null, null, null, 0, 0);
-
     private ConcurrentHashMap<Integer, byte[]> map;
     private ConcurrentHashMap<Integer, Handle> handles;
     private ChunkCreator chunkCreator;
     private ChunkLoader chunkLoader;
+    private int maxThreads = 5;
+    private boolean[] runningThreads = new boolean[maxThreads];
+    private Data[] data = new Data[maxThreads];
+    private Thread[] threads = new Thread[maxThreads];
 
     private boolean atMax = false;
 
@@ -87,21 +89,21 @@ public class ChunkManager {
         return map.containsKey(new Pair(chunkX, chunkZ).hashCode());
     }
 
-
     public void checkChunkUpdates() {
         // neither thread is currently running
-        if (generate && !chunkThread.isAlive() && !mapThread.isAlive() && chunkThread.isReady() == false) {
+        if (generate && threads[0] == null) {
             inLoop = true;
+            System.out.println("here");
             // request new valid coordinates
             chunkCreator.setCurrentChunkX(getCurrentChunkX());
             chunkCreator.setCurrentChunkZ(getCurrentChunkZ());
-            Coordinates coordinates = null;
+            Coordinates coordinates;
             boolean running = true;
 
             coordinates = chunkCreator.getNewCoordinates();
 
             if (coordinates != null) {
-
+                
                 atMax = false;
                 int x = coordinates.x;
                 int z = coordinates.z;
@@ -110,9 +112,14 @@ public class ChunkManager {
                 int newChunkZ = coordinates.z;
 
                 // make a new chunk
-                chunkThread = new ChunkThread(newChunkX, newChunkZ, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH);
-                chunkThread.setPriority(Thread.MIN_PRIORITY);
-                chunkThread.start();
+                int threadId = 0;
+                if (threads[0] == null) {
+                    
+                    threads[0] = new ChunkThread(threadId, data, newChunkX, newChunkZ, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH, map);
+                    threads[0].setPriority(Thread.MIN_PRIORITY);
+                    threads[0].start();
+                }
+
             }
             else {
                 atMax = true;
@@ -124,18 +131,14 @@ public class ChunkManager {
             }
 
         }
-        else if (inLoop && chunkThread.isReady() && !chunkThread.isAlive()) // has finished chunk and exited the loop
+        else if (inLoop) // has finished chunk and exited the loop
         {
-
-            // Create the buffers in main thread
-            createBuffers(chunkThread.getChunk(), chunkThread.getVertexData(), chunkThread.getNormalData(), chunkThread.getTexData());
-
-            // put the Chunk to HashMap in a new thread
-            mapThread = new MapThread(map, handles, chunkThread.getChunk(), chunkThread.getChunkX(), chunkThread.getChunkZ());
-            mapThread.setPriority(Thread.MIN_PRIORITY);
-            mapThread.start();
-            chunkThread = new ChunkThread(0, 0, 0, 0);
-            inLoop = false;
+            
+            if(!threads[0].isAlive()){
+                createBuffers(data[0]);
+                threads[0] = null;
+                inLoop = false;
+            }
 
             if (initialLoad) {
                 String string = "Chunks loaded: " + (int) ((float) map.size() / (float) ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1)) * 100) + " % (" + map.size() + "/" + ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1)) + ")";
@@ -154,43 +157,32 @@ public class ChunkManager {
         generate = true;
     }
 
-    public void createBuffers(Chunk chunk, FloatBuffer vertexData, FloatBuffer normalData, FloatBuffer texData) {
+    public void createBuffers(Data data) {
 
         int vboVertexHandle = glGenBuffers();
-        chunk.setVboVertexHandle(vboVertexHandle);
+        
 
         glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
-        glBufferData(GL_ARRAY_BUFFER, vertexData, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, data.vertexData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         int vboNormalHandle = glGenBuffers();
-        chunk.setVboNormalHandle(vboNormalHandle);
 
         glBindBuffer(GL_ARRAY_BUFFER, vboNormalHandle);
-        glBufferData(GL_ARRAY_BUFFER, normalData, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, data.normalData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         int vboTexHandle = glGenBuffers();
-        chunk.setVboTexHandle(vboTexHandle);
 
         glBindBuffer(GL_ARRAY_BUFFER, vboTexHandle);
-        glBufferData(GL_ARRAY_BUFFER, texData, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, data.texData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        int vboColorHandle = glGenBuffers();
-        chunk.setVboColorHandle(vboColorHandle);
-
-//        glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
-//        glBufferData(GL_ARRAY_BUFFER, colorData, GL_STATIC_DRAW);
-//        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        handles.put(new Pair(data.chunkX, data.chunkZ).hashCode(), new Handle(vboVertexHandle, vboNormalHandle, vboTexHandle, data.vertices));
     }
 
     public boolean isAtMax() {
         return atMax;
-    }
-
-    public byte[] toByte(Chunk chunk) {
-        return LZFEncoder.encode(serialize(chunk));
     }
 
     public Chunk toChunk(byte[] bytes) {
@@ -200,18 +192,6 @@ public class ChunkManager {
             Logger.getLogger(ChunkManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
-    }
-
-    public static byte[] serialize(Object obj) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream os;
-        try {
-            os = new ObjectOutputStream(out);
-            os.writeObject(obj);
-        } catch (IOException ex) {
-            Logger.getLogger(MapThread.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return out.toByteArray();
     }
 
     public static Object deserialize(byte[] data) {

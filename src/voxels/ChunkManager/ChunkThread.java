@@ -5,7 +5,14 @@
  */
 package voxels.ChunkManager;
 
+import com.ning.compress.lzf.LZFEncoder;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.nio.FloatBuffer;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.lwjgl.BufferUtils;
 import static voxels.ChunkManager.Chunk.CHUNK_HEIGHT;
 import static voxels.ChunkManager.Chunk.CHUNK_WIDTH;
@@ -19,12 +26,9 @@ import static voxels.Voxels.getCurrentChunkZ;
  */
 public class ChunkThread extends Thread {
     
-    private static int ThreadCount = 0;
-
     Chunk chunk;
     private int chunkX;
     private int chunkZ;
-    boolean running = false;
 
     private static int vertexSize = 3;
     private static int normalSize = 3;
@@ -50,23 +54,34 @@ public class ChunkThread extends Thread {
 
     int xOff;
     int zOff;
-
+    private ConcurrentHashMap<Integer, byte[]> map;
     private boolean ready = false;
+    
+    private int threadId;
+    private Data[] data;
 
-    public ChunkThread(int chunkX, int chunkZ, int xOff, int zOff) {
+    public ChunkThread(int threadId, Data[] data, int chunkX, int chunkZ, int xOff, int zOff, ConcurrentHashMap<Integer, byte[]> map) {
+        this.threadId = threadId;
         this.xOff = xOff;
         this.zOff = zOff;
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
+        this.map = map;
+        this.data = data;
         
         //initBooleanArrays();
     }
 
     public void run() {
-        running = true;
-        ready = false;
         chunk = new Chunk(chunkX, chunkZ);
         drawChunkVBO(chunk, xOff, zOff);
+        if (!map.containsKey(new Pair(chunkX, chunkZ).hashCode())) {
+            //handles.put(new Pair(chunkX, chunkZ).hashCode(), new Handle(chunk.getVboVertexHandle(), chunk.getVboNormalHandle(), chunk.getVboTexHandle(), chunk.getVertices()));
+            map.put(new Pair(chunkX, chunkZ).hashCode(), toByte(chunk));
+            data[threadId] = new Data(chunkX, chunkZ, chunk.getVertices(), vertexData, normalData, texData);
+        }
+        else
+            System.out.println("wrong");
     }
 
     public int calculateGroundVertices(Chunk chunk, float x, float y, float z, float xOff, float yOff, float zOff, float size) {
@@ -1402,15 +1417,24 @@ public class ChunkThread extends Thread {
 
 //        colorData.put(colorArray);
 //        colorData.flip();
-
-        setReady();
+    }
+    
+    public byte[] toByte(Chunk chunk) {
+        return LZFEncoder.encode(serialize(chunk));
     }
 
-    private void setReady() {
-        ready = true;
-        running = false;
+    public static byte[] serialize(Object obj) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ObjectOutputStream os;
+        try {
+            os = new ObjectOutputStream(out);
+            os.writeObject(obj);
+        } catch (IOException ex) {
+            Logger.getLogger(MapThread.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return out.toByteArray();
     }
-
+    
     private  boolean[][][] initTopArray() {
         top = new boolean[Chunk.CHUNK_WIDTH][][];
         for (int x = 0; x < top.length; x++) {

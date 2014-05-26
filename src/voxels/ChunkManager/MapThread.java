@@ -17,7 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPOutputStream;
-import static voxels.ChunkManager.ChunkManager.serialize;
 
 /**
  *
@@ -85,4 +84,5 @@ public class MapThread extends Thread {
         }
         return null;
     }
+
 }

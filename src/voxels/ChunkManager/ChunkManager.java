@@ -82,16 +82,14 @@ public class ChunkManager {
     }
 
     public void checkChunkUpdates() {
-        // neither thread is currently running
+        // if generating and there are free threads to use
         if (generate && hasFreeThreads()) {
             inLoop = true;
 
             // request new valid coordinates
             chunkCreator.setCurrentChunkX(getCurrentChunkX());
             chunkCreator.setCurrentChunkZ(getCurrentChunkZ());
-            Coordinates coordinates;
-
-            coordinates = chunkCreator.getNewCoordinates();
+            Coordinates coordinates = chunkCreator.getNewCoordinates();
 
             if (coordinates != null) {
 
@@ -102,27 +100,25 @@ public class ChunkManager {
                 int newChunkX = coordinates.x;
                 int newChunkZ = coordinates.z;
 
-                // make a new chunk
+                // Start a new thread, make a new chunk
                 int threadId = getFreeThread();
-
                 threads[threadId] = new ChunkMaker(threadId, data, newChunkX, newChunkZ, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH, map);
                 threads[threadId].setPriority(Thread.MIN_PRIORITY);
                 threads[threadId].start();
 
             }
             else {
+                // Reached chunk creation distance.
                 atMax = true;
                 if (initialLoad && Voxels.USE_SEED)
                     System.out.println("Loaded all chunks. Seed: " + Voxels.SEED);
-//                else
-//                    System.out.println("Loaded all chunks");
                 initialLoad = false;
             }
 
         }
-        else if (inLoop) // has finished chunk and exited the loop
+        // Check if there are threads that are completed
+        else if (inLoop)
         {
-
             for (int i = 0; i < threads.length; i++) {
                 if (threads[i] != null)
                     if (!threads[i].isAlive()) {
@@ -130,7 +126,7 @@ public class ChunkManager {
                         threads[i] = null;
                     }
             }
-
+            // If maximum creation distance is reached, check if all threads are complete.
             if (atMax)
                 if (allThreadsFinished())
                     inLoop = false;
@@ -159,19 +155,16 @@ public class ChunkManager {
     public void createBuffers(Data data) {
 
         int vboVertexHandle = glGenBuffers();
-
         glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
         glBufferData(GL_ARRAY_BUFFER, data.vertexData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         int vboNormalHandle = glGenBuffers();
-
         glBindBuffer(GL_ARRAY_BUFFER, vboNormalHandle);
         glBufferData(GL_ARRAY_BUFFER, data.normalData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         int vboTexHandle = glGenBuffers();
-
         glBindBuffer(GL_ARRAY_BUFFER, vboTexHandle);
         glBufferData(GL_ARRAY_BUFFER, data.texData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);

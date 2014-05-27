@@ -59,9 +59,9 @@ public class ChunkMaker extends Thread {
 
     private int threadId;
     private Data[] data;
-   
+
     private Data updateData;
-    
+
     boolean update;
 
     public ChunkMaker(int threadId, Data[] data, int chunkX, int chunkZ, int xOff, int zOff, ConcurrentHashMap<Integer, byte[]> map) {
@@ -72,12 +72,12 @@ public class ChunkMaker extends Thread {
         this.chunkZ = chunkZ;
         this.map = map;
         this.data = data;
-        
+
         update = false;
 
     }
-    
-    public ChunkMaker(ConcurrentHashMap<Integer, byte[]> map, Chunk chunk){
+
+    public ChunkMaker(ConcurrentHashMap<Integer, byte[]> map, Chunk chunk) {
         this.chunk = chunk;
         this.map = map;
         update = true;
@@ -85,7 +85,7 @@ public class ChunkMaker extends Thread {
 
     @Override
     public void run() {
-        if(update){
+        if (update) {
             drawChunkVBO(chunk, chunk.xCoordinate, chunk.zCoordinate);
             map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
             updateData = new Data(chunk.xId, chunk.zId, chunk.getVertices(), vertexData, normalData, texData);
@@ -100,6 +100,12 @@ public class ChunkMaker extends Thread {
         }
         else
             System.out.println("Already contains");
+    }
+
+    public void update() {
+        drawChunkVBO(chunk, chunk.xCoordinate, chunk.zCoordinate);
+        map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
+        updateData = new Data(chunk.xId, chunk.zId, chunk.getVertices(), vertexData, normalData, texData);
     }
 
     public int calculateGroundVertices(Chunk chunk, float x, float y, float z, float xOff, float yOff, float zOff, float size) {
@@ -215,7 +221,7 @@ public class ChunkMaker extends Thread {
 
     }
 
-    private void drawChunkVBO(Chunk chunk, int xOff, int zOff) {
+    public void drawChunkVBO(Chunk chunk, int xOff, int zOff) {
         int vertices = 0;
         int size = 1;
         for (int x = 0; x < chunk.blocks.length; x++) {
@@ -258,7 +264,7 @@ public class ChunkMaker extends Thread {
                             nArrayPos++;
                             normalArray[nArrayPos] = 1;
                             nArrayPos++;
-                            
+
                             vertexArray[vArrayPos] = -size / 2f + x + xOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = size / 2f + y;
@@ -1312,8 +1318,5 @@ public class ChunkMaker extends Thread {
     public Data getUpdateData() {
         return updateData;
     }
-    
-    
-    
-    
+
 }

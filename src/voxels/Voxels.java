@@ -61,7 +61,7 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 0;
+    public static int chunkCreationDistance = 1;
     public static int chunkRenderDistance = 5;
     private static Texture atlas;
     public static final float WaterOffs = 0.28f;
@@ -88,7 +88,7 @@ public class Voxels {
 
     private static void initDisplay() {
         try {
-            Display.setDisplayMode(new DisplayMode(1650, 1050));
+            Display.setDisplayMode(new DisplayMode(1024, 768));
             Display.setVSyncEnabled(true);
             Display.setTitle("Voxels");
             Display.create();

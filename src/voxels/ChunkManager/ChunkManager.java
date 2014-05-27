@@ -11,16 +11,23 @@ import de.ruedigermoeller.serialization.FSTObjectInput;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.MappedByteBuffer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL15;
 import voxels.Voxels;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
+import static org.lwjgl.opengl.GL15.GL_WRITE_ONLY;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glMapBuffer;
 import static voxels.Voxels.getCurrentChunkX;
 import static voxels.Voxels.getCurrentChunkZ;
 
@@ -91,11 +98,13 @@ public class ChunkManager {
         x = Math.abs(x);
         System.out.println("x: " + x + " y: " + y + " z: " + z);
 
-        chunk.blocks[x][chunk.maxHeights[x][z]][z].type = Type.AIR;
-        chunk.maxHeights[x][z]--;
-
-        updateChunks[0] = chunk;
-        update = true;
+        chunk.blocks[x][y][z].type = Type.DIRT;
+        
+        updateThread = new ChunkMaker(map, chunk);
+        updateThread.update();
+        createBuffers(updateThread.getUpdateData());
+        
+        System.out.println("Update finished.");
 
     }
 
@@ -158,7 +167,7 @@ public class ChunkManager {
             if (update)
                 if (updateThread != null)
                     if (!updateThread.isAlive()) {
-                        updateBuffers(updateThread.getUpdateData(), updateThread.getChunk());
+                        createBuffers(updateThread.getUpdateData());
                         update = false;
                         updateThread = null;
                     }
@@ -194,26 +203,6 @@ public class ChunkManager {
 
     public void startGeneration() {
         generate = true;
-    }
-    
-    public void updateBuffers(Data data, Chunk chunk) {
-        
-        Handle updateHandles = getHandle(chunk.xId, chunk.zId);
-
-
-        glBindBuffer(GL_ARRAY_BUFFER, updateHandles.vertexHandle);
-        glBufferData(GL_ARRAY_BUFFER, data.vertexData, GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-
-        glBindBuffer(GL_ARRAY_BUFFER, updateHandles.normalHandle);
-        glBufferData(GL_ARRAY_BUFFER, data.normalData, GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-
-        glBindBuffer(GL_ARRAY_BUFFER, updateHandles.texHandle);
-        glBufferData(GL_ARRAY_BUFFER, data.texData, GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
     public void createBuffers(Data data) {

@@ -84,7 +84,7 @@ public class ChunkManager {
     }
 
     public void deleteBlock(int x, int y, int z) {
-
+        long start = System.nanoTime();
         int chunkX = x / 16;
         int chunkZ = z / 16;
 
@@ -103,7 +103,7 @@ public class ChunkManager {
         updateThread.update();
         createBuffers(updateThread.getUpdateData());
         
-        System.out.println("Update finished.");
+        System.out.println("Update finished: "+(System.nanoTime()-start)/1000000+" ms.");
 
     }
 

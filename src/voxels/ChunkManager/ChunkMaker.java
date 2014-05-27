@@ -882,32 +882,36 @@ public class ChunkMaker extends Thread {
                             tArrayPos++;
                             texArray[tArrayPos] = 0 + 0.5f;
                             tArrayPos++;
+                            
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
 
                             texArray[tArrayPos] = 0 + 0.5f;
                             tArrayPos++;
                             texArray[tArrayPos] = 1 / 2f + 0.5f;
                             tArrayPos++;
 
-                            texArray[tArrayPos] = 1 / 2f + 0.5f;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 1 / 2f + 0.5f;
-                            tArrayPos++;
+                            
 
                             // 2nd
                             texArray[tArrayPos] = 0 + 0.5f;
                             tArrayPos++;
                             texArray[tArrayPos] = 0 + 0.5f;
                             tArrayPos++;
-
-                            texArray[tArrayPos] = 1 / 2f + 0.5f;
-                            tArrayPos++;
-                            texArray[tArrayPos] = 1 / 2f + 0.5f;
-                            tArrayPos++;
-
+                            
                             texArray[tArrayPos] = 1 / 2f + 0.5f;
                             tArrayPos++;
                             texArray[tArrayPos] = 0 + 0.5f;
                             tArrayPos++;
+
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+                            texArray[tArrayPos] = 1 / 2f + 0.5f;
+                            tArrayPos++;
+
+                            
 
                             // 1st
                             // upper left + -

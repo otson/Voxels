@@ -44,7 +44,7 @@ public class Voxels {
     /**
      * Set player's height. One block's height is 1.
      */
-    public static float PLAYER_HEIGHT = 2.7f + 0.5f;
+    public static float PLAYER_HEIGHT = 2.2f;
     /**
      * Set if night cycle is in use.
      */
@@ -146,7 +146,7 @@ public class Voxels {
         camera.setChunkManager(chunkManager);
         camera.applyPerspectiveMatrix();
         camera.applyOptimalStates();
-        camera.setPosition(camera.x(), 256f, camera.z());
+        camera.setPosition(camera.x(), 255, camera.z());
         Mouse.setGrabbed(true);
         return camera;
     }
@@ -194,8 +194,8 @@ public class Voxels {
 
         for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
             for (int z = -chunkRenderDistance; z <= chunkRenderDistance; z++) {
-                //Chunk chunk = chunkManager.getChunk(getCurrentChunkX() + x, getCurrentChunkZ() + z);
-                Handle handles = chunkManager.getHandle(getCurrentChunkX() + x, getCurrentChunkZ() + z);
+                //Chunk chunk = chunkManager.getChunk(getCurrentChunkX() + x, getCurrentChunkZId() + z);
+                Handle handles = chunkManager.getHandle(getCurrentChunkXId() + x, getCurrentChunkZId() + z);
                 if (handles != null) {
 
                     int vboVertexHandle = handles.vertexHandle;
@@ -249,13 +249,13 @@ public class Voxels {
                 camera.toggleFlight();
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_Z)) {
-                chunkManager.deleteBlock((int) camera.x(), (int) camera.y(), (int) camera.z());
+                chunkManager.deleteBlock(xInChunk(), Math.min((int) camera.y(), 255), zInChunk(), getCurrentChunkXId(), getCurrentChunkZId());
             }
 
         }
         if (Mouse.isGrabbed()) {
             camera.processMouse();
-            camera.processKeyboard(delta, 3);
+            camera.processKeyboard(delta, 2);
             if (NIGHT_CYCLE) {
                 glClearColor(0f, (float) Math.max(0, (255 * Math.sin(timePassed() / 20000)) - 155) / 255f, (float) Math.max(25, (255 * Math.sin(timePassed() / 20000)) + 25) / 255f, 1.0f);
                 glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(new float[]{2500 + camera.x(), (float) (10000 * Math.sin(timePassed() / 20000)), (float) (10000 * Math.cos(timePassed() / 20000)), 1f}));
@@ -272,18 +272,34 @@ public class Voxels {
         return buffer;
     }
 
-    public final static int getCurrentChunkX() {
+    public final static int getCurrentChunkXId() {
         int x = (int) (camera.x());
         if (x < 0)
             x -= Chunk.CHUNK_WIDTH;
         return x / Chunk.CHUNK_WIDTH;
     }
 
-    public final static int getCurrentChunkZ() {
+    public final static int getCurrentChunkZId() {
         int z = (int) (camera.z());
         if (z < 0)
             z -= Chunk.CHUNK_WIDTH;
         return z / Chunk.CHUNK_WIDTH;
+    }
+
+    public final static int xInChunk() {
+        int x = (int) (camera.x());
+        if (x < 0)
+            x = Chunk.CHUNK_WIDTH + x % 16;
+
+        return x % Chunk.CHUNK_WIDTH;
+    }
+
+    public final static int zInChunk() {
+        int z = (int) (camera.z());
+        if (z < 0)
+            z = Chunk.CHUNK_WIDTH + z % 16;
+
+        return z % Chunk.CHUNK_WIDTH;
     }
 
     public static int getNoise(float x, float z) {

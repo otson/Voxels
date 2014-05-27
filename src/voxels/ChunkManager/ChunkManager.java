@@ -28,8 +28,8 @@ import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glMapBuffer;
-import static voxels.Voxels.getCurrentChunkX;
-import static voxels.Voxels.getCurrentChunkZ;
+import static voxels.Voxels.getCurrentChunkXId;
+import static voxels.Voxels.getCurrentChunkZId;
 
 /**
  *
@@ -83,27 +83,22 @@ public class ChunkManager {
         }
     }
 
-    public void deleteBlock(int x, int y, int z) {
+    public void deleteBlock(int x, int y, int z, int chunkX, int chunkZ) {
         long start = System.nanoTime();
-        int chunkX = x / 16;
-        int chunkZ = z / 16;
 
         Chunk chunk = getChunk(chunkX, chunkZ);
-        if (chunk == null)
-            System.exit(1);
-
-        x %= 16;
-        z %= 16;
-        z = Math.abs(z);
-        x = Math.abs(x);
+        if (chunk == null){
+            System.out.println("Tried to modify a null chunk.");
+            return;
+        }
 
         chunk.blocks[x][y][z].type = Type.DIRT;
-        
+
         updateThread = new ChunkMaker(map, chunk);
         updateThread.update();
         createBuffers(updateThread.getUpdateData());
-        
-        System.out.println("Update finished: "+(System.nanoTime()-start)/1000000+" ms.");
+
+        System.out.println("Update finished: " + (System.nanoTime() - start) / 1000000 + " ms.");
 
     }
 
@@ -132,8 +127,8 @@ public class ChunkManager {
             inLoop = true;
 
             // request new valid coordinates
-            chunkCreator.setCurrentChunkX(getCurrentChunkX());
-            chunkCreator.setCurrentChunkZ(getCurrentChunkZ());
+            chunkCreator.setCurrentChunkX(getCurrentChunkXId());
+            chunkCreator.setCurrentChunkZ(getCurrentChunkZId());
             Coordinates coordinates = chunkCreator.getNewCoordinates();
 
             if (coordinates != null) {

@@ -58,8 +58,8 @@ public class Chunk implements Serializable {
                     if (y > maxHeights[x][z] && y <= Chunk.WATER_HEIGHT) {
                         blocks[x][y][z] = new Block(Type.WATER);
                     }
-                    else if (y <= maxHeights[x][z])
-                       blocks[x][y][z] = new Block(Type.DIRT);
+//                    else if (y <= maxHeights[x][z])
+//                       blocks[x][y][z] = new Block(Type.DIRT);
                     else
                         blocks[x][y][z] = new Block(Type.AIR);
                 }

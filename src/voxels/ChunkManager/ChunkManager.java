@@ -96,7 +96,6 @@ public class ChunkManager {
         z %= 16;
         z = Math.abs(z);
         x = Math.abs(x);
-        System.out.println("x: " + x + " y: " + y + " z: " + z);
 
         chunk.blocks[x][y][z].type = Type.DIRT;
         

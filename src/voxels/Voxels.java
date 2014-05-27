@@ -20,6 +20,7 @@ import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import voxels.Camera.EulerCamera;
 import voxels.ChunkManager.Handle;
+import voxels.ChunkManager.Type;
 import voxels.Noise.FastNoise;
 
 /**
@@ -249,7 +250,7 @@ public class Voxels {
                 camera.toggleFlight();
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_Z)) {
-                chunkManager.deleteBlock(xInChunk(), Math.min((int) camera.y(), 255), zInChunk(), getCurrentChunkXId(), getCurrentChunkZId());
+                chunkManager.editBlock(Type.AIR, xInChunk(), Math.min((int) camera.y(), 255), zInChunk(), getCurrentChunkXId(), getCurrentChunkZId());
             }
 
         }

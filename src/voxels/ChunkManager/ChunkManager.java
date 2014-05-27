@@ -83,7 +83,7 @@ public class ChunkManager {
         }
     }
 
-    public void deleteBlock(int x, int y, int z, int chunkX, int chunkZ) {
+    public void editBlock(short type, int x, int y, int z, int chunkX, int chunkZ) {
         long start = System.nanoTime();
 
         Chunk chunk = getChunk(chunkX, chunkZ);
@@ -92,7 +92,7 @@ public class ChunkManager {
             return;
         }
 
-        chunk.blocks[x][y][z].type = Type.DIRT;
+        chunk.blocks[x][y][z].type = type;
 
         updateThread = new ChunkMaker(map, chunk);
         updateThread.update();

@@ -11,7 +11,6 @@ public class Block implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private short type;
-    private boolean active;
     
     private boolean left;
     private boolean right;
@@ -33,17 +32,13 @@ public class Block implements Serializable {
     }
     
     public final boolean isOpaque(){
-        return type == Type.WATER || type == Type.AIR;
+        if (type == Type.WATER)
+            return true;
+        else if(type == Type.AIR)
+            return true;
+        return false;
     }
-
-    public final void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public final boolean isActive() {
-        return active;
-    }
-
+    
     public boolean isLeft() {
         return left;
     }

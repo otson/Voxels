@@ -9,7 +9,6 @@ import com.ning.compress.lzf.LZFEncoder;
 import de.ruedigermoeller.serialization.FSTObjectOutput;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,7 +27,7 @@ public class ChunkMaker extends Thread {
     private static int normalSize = 3;
     private static int texSize = 2;
     private static int colorSize = 3;
-    
+
     private FloatBuffer vertexData;
     private FloatBuffer normalData;
     private FloatBuffer texData;
@@ -53,17 +52,13 @@ public class ChunkMaker extends Thread {
     private Chunk backChunk;
 
     private ChunkManager chunkManager;
-
-    private int threadId;
-    private Data[] data;
     private ArrayList<Data> dataToProcess;
 
     private Data updateData;
 
     boolean update;
 
-    public ChunkMaker(int threadId, ArrayList<Data> dataToProcess, int chunkX, int chunkZ, int xOff, int zOff, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager) {
-        this.threadId = threadId;
+    public ChunkMaker(ArrayList<Data> dataToProcess, int chunkX, int chunkZ, int xOff, int zOff, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager) {
         this.xOff = xOff;
         this.zOff = zOff;
         this.chunkX = chunkX;
@@ -101,14 +96,14 @@ public class ChunkMaker extends Thread {
     }
 
     public void update() {
-        
+
         updateAllBlocks();
         drawChunkVBO();
         new Thread(new Runnable() {
-                public void run() {
-                    map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
-                }
-            }).start();
+            public void run() {
+                map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
+            }
+        }).start();
         updateData = new Data(chunk.xId, chunk.zId, chunk.getVertices(), vertexData, normalData, texData, true);
     }
 
@@ -1094,65 +1089,6 @@ public class ChunkMaker extends Thread {
         return updateData;
     }
 
-    private void setActiveBlocks() {
-
-        int activeBlocks = 0;
-        // set blocks that are inside the chunk
-        for (int x = 1; x < chunk.blocks.length - 1; x++) {
-            for (int y = 1; y < chunk.blocks[x].length - 1; y++) {
-                for (int z = 1; z < chunk.blocks[x][y].length - 1; z++) {
-                    // if air, it is inactive
-                    if (chunk.blocks[x][y][z].is(Type.AIR))
-                        chunk.blocks[x][y][z].setActive(false);
-                    // if dirt, if it surrounded by 6 dirt blocks, make it inactive
-                    else if (chunk.blocks[x][y][z].is(Type.DIRT)) {
-                        if (chunk.blocks[x + 1][y][z].is(Type.DIRT) && chunk.blocks[x - 1][y][z].is(Type.DIRT) && chunk.blocks[x][y + 1][z].is(Type.DIRT) && chunk.blocks[x][y - 1][z].is(Type.DIRT) && chunk.blocks[x][y][z + 1].is(Type.DIRT) && chunk.blocks[x][y][z - 1].is(Type.DIRT))
-                            chunk.blocks[x][y][z].setActive(false);
-                        else {
-                            // set active sides to be rendered, rendered if the side is not touching dirt
-                            chunk.blocks[x][y][z].setActive(true);
-                            if (chunk.blocks[x + 1][y][z].isOpaque()) {
-                                chunk.blocks[x][y][z].setRight(true);
-                            }
-                            if (chunk.blocks[x - 1][y][z].isOpaque()) {
-                                chunk.blocks[x][y][z].setLeft(true);
-
-                            }
-                            if (chunk.blocks[x][y + 1][z].isOpaque()) {
-                                chunk.blocks[x][y][z].setTop(true);
-
-                            }
-                            if (chunk.blocks[x][y - 1][z].isOpaque()) {
-                                chunk.blocks[x][y][z].setBottom(true);
-
-                            }
-                            if (chunk.blocks[x][y][z + 1].isOpaque()) {
-                                chunk.blocks[x][y][z].setFront(true);
-
-                            }
-                            if (chunk.blocks[x][y][z - 1].isOpaque()) {
-                                chunk.blocks[x][y][z].setBack(true);
-
-                            }
-                        }
-                    }
-                    else if (chunk.blocks[x][y][z].is(Type.WATER))
-                        // if water, if the block above it is not water, make it active
-                        if (chunk.blocks[x][y + 1][z].is(Type.WATER) == false) {
-                            chunk.blocks[x][y][z].setActive(true);
-                            chunk.blocks[x][y][z].setTop(true);
-
-                        }
-
-                    if (chunk.blocks[x][y][z].isActive())
-                        activeBlocks++;
-                }
-            }
-        }
-
-        System.out.println("Activated blocks: " + activeBlocks);
-    }
-
     private void updateAllBlocks() {
 
         rightChunk = chunkManager.getChunk(chunk.xId + 1, chunk.zId);
@@ -1199,51 +1135,39 @@ public class ChunkMaker extends Thread {
         for (int x = 1; x < chunk.blocks.length - 1; x++) {
             for (int y = 1; y < chunk.blocks[x].length - 1; y++) {
                 for (int z = 1; z < chunk.blocks[x][y].length - 1; z++) {
-                    // if air, it is inactive
-                    if (chunk.blocks[x][y][z].is(Type.AIR))
-                        chunk.blocks[x][y][z].setActive(false);
-                    // if dirt, if it surrounded by 6 dirt blocks, make it inactive
-                    else if (chunk.blocks[x][y][z].is(Type.DIRT)) {
-                        if (chunk.blocks[x + 1][y][z].is(Type.DIRT) && chunk.blocks[x - 1][y][z].is(Type.DIRT) && chunk.blocks[x][y + 1][z].is(Type.DIRT) && chunk.blocks[x][y - 1][z].is(Type.DIRT) && chunk.blocks[x][y][z + 1].is(Type.DIRT) && chunk.blocks[x][y][z - 1].is(Type.DIRT))
-                            chunk.blocks[x][y][z].setActive(false);
-                        else {
-                            // set active sides to be rendered, rendered if the side is not touching dirt
-                            chunk.blocks[x][y][z].setActive(true);
-                            if (chunk.blocks[x + 1][y][z].isOpaque()) {
-                                chunk.blocks[x][y][z].setRight(true);
-                            }
-                            if (chunk.blocks[x - 1][y][z].isOpaque()) {
-                                chunk.blocks[x][y][z].setLeft(true);
 
-                            }
-                            if (chunk.blocks[x][y + 1][z].isOpaque()) {
-                                chunk.blocks[x][y][z].setTop(true);
+                    if (chunk.blocks[x][y][z].is(Type.DIRT)) {
 
-                            }
-                            if (chunk.blocks[x][y - 1][z].isOpaque()) {
-                                chunk.blocks[x][y][z].setBottom(true);
+                        // set active sides to be rendered, rendered if the side is not touching dirt
+                        if (chunk.blocks[x + 1][y][z].isOpaque()) {
+                            chunk.blocks[x][y][z].setRight(true);
+                        }
+                        if (chunk.blocks[x - 1][y][z].isOpaque()) {
+                            chunk.blocks[x][y][z].setLeft(true);
 
-                            }
-                            if (chunk.blocks[x][y][z + 1].isOpaque()) {
-                                chunk.blocks[x][y][z].setFront(true);
+                        }
+                        if (chunk.blocks[x][y + 1][z].isOpaque()) {
+                            chunk.blocks[x][y][z].setTop(true);
 
-                            }
-                            if (chunk.blocks[x][y][z - 1].isOpaque()) {
-                                chunk.blocks[x][y][z].setBack(true);
+                        }
+                        if (chunk.blocks[x][y - 1][z].isOpaque()) {
+                            chunk.blocks[x][y][z].setBottom(true);
 
-                            }
+                        }
+                        if (chunk.blocks[x][y][z + 1].isOpaque()) {
+                            chunk.blocks[x][y][z].setFront(true);
+
+                        }
+                        if (chunk.blocks[x][y][z - 1].isOpaque()) {
+                            chunk.blocks[x][y][z].setBack(true);
+
                         }
                     }
                     else if (chunk.blocks[x][y][z].is(Type.WATER))
                         // if water, if the block above it is not water, make it active
                         if (chunk.blocks[x][y + 1][z].is(Type.WATER) == false) {
-                            chunk.blocks[x][y][z].setActive(true);
                             chunk.blocks[x][y][z].setTop(true);
-
                         }
-//
-//                    if (chunk.blocks[x][y][z].isActive())
-//                        activeBlocks++;
                 }
             }
         }

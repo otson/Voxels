@@ -125,7 +125,7 @@ public class ChunkManager {
 
                 // Start a new thread, make a new chunk
                 int threadId = getFreeThread();
-                threads[threadId] = new ChunkMaker(threadId, dataToProcess, newChunkX, newChunkZ, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH, map, this);
+                threads[threadId] = new ChunkMaker(dataToProcess, newChunkX, newChunkZ, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH, map, this);
                 threads[threadId].setPriority(Thread.MIN_PRIORITY);
                 threads[threadId].start();
 

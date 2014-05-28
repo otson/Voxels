@@ -35,8 +35,7 @@ public class Chunk implements Serializable {
         xCoordinate = xId * CHUNK_WIDTH;
         zCoordinate = zId * CHUNK_WIDTH;
         initMaxHeights();
-        setAirBlocks();
-        //setGroundBlocks();
+        setBlocks();
     }
 
     private void initMaxHeights() {
@@ -48,7 +47,7 @@ public class Chunk implements Serializable {
         }
     }
 
-    private void setAirBlocks() {
+    private void setBlocks() {
         blocks = new Block[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_WIDTH];
         for (int x = 0; x < blocks.length; x++) {
             blocks[x] = new Block[CHUNK_HEIGHT][CHUNK_WIDTH];
@@ -65,43 +64,6 @@ public class Chunk implements Serializable {
                 }
             }
         }
-    }
-
-    private void setGroundBlocks() {
-
-        int difference = 0;
-        for (int x = 0; x < blocks.length; x++) {
-            for (int z = 0; z < blocks[x][0].length; z++) {
-                if (x == 0 || z == 0 || x == blocks.length - 1 || z == blocks[x][0].length - 1)
-                    // This shouldn't be min value of all 4 bordering block heights, since it can activate unnecessary blocks. Works for now.
-                    difference = Math.min(Math.min(Voxels.getNoise(x + xCoordinate - 1, z + zCoordinate), Voxels.getNoise(x + xCoordinate + 1, z + zCoordinate)), Math.min(Voxels.getNoise(x + xCoordinate, z + zCoordinate + 1), Voxels.getNoise(x + xCoordinate, z + zCoordinate - 1)));
-
-                for (int y = 0; y < blocks[x].length; y++) {
-
-                    if (y == maxHeights[x][z]) {
-                        blocks[x][y][z].setType(Type.DIRT);
-                    }
-                    else if ((x == 0 || x == blocks.length - 1 || z == 0 || z == blocks[x][y].length - 1) && y < maxHeights[x][z] && y > difference) {
-                        blocks[x][y][z].setType(Type.DIRT);
-                    }
-                }
-            }
-        }
-        // second loop, activate blocks in steps that are higher than one block
-        int heightDifference;
-        for (int x = 1; x < blocks.length - 1; x++) {
-            for (int z = 1; z < blocks[x][0].length - 1; z++) {
-                heightDifference = maxHeights[x][z] - Math.min(Math.min(maxHeights[x + 1][z], maxHeights[x - 1][z]), Math.min(maxHeights[x][z + 1], maxHeights[x][z - 1]));
-                if (heightDifference > 1)
-                    for (int y = maxHeights[x][z] - heightDifference; y < maxHeights[x][z]; y++) {
-                        blocks[x][y][z].setType(Type.DIRT);
-                    }
-            }
-        }
-    }
-
-    public int[][] getMaxHeights() {
-        return maxHeights;
     }
 
     public int getVboVertexHandle() {

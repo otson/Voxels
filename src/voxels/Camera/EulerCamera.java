@@ -294,7 +294,7 @@ public class EulerCamera implements Camera {
         boolean keyRight = Keyboard.isKeyDown(Keyboard.KEY_RIGHT) || Keyboard.isKeyDown(Keyboard.KEY_D);
         boolean flyUp = Keyboard.isKeyDown(Keyboard.KEY_SPACE);
         boolean flyDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
-
+        
         if (keyUp && keyRight && !keyLeft && !keyDown) {
             moveFromLook(delta * 0.003f, 0, -delta * 0.003f);
         }
@@ -415,12 +415,13 @@ public class EulerCamera implements Camera {
                 y -= speed * delta * 0.003f;
 
         if (flying == false) {
-            if (chunkManager.getMiddle() != null) {
-                if (y >= Chunk.CHUNK_HEIGHT || y < 0 || chunkManager.getMiddle().blocks[xInChunk()][(int) y][zInChunk()].type == Type.AIR) {
+            Chunk temp = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkZId());
+            if (temp != null) {
+                if (y >= Chunk.CHUNK_HEIGHT || y < 0 || temp.blocks[xInChunk()][(int) y][zInChunk()].is(Type.AIR)) {
                     y -= fallingSpeed;
                     fallingSpeed += fallingSpeedIncrease;
                 }
-                if (y < Chunk.CHUNK_HEIGHT && y >= 0 && chunkManager.getMiddle().blocks[xInChunk()][(int) y][zInChunk()].type != Type.AIR && chunkManager.getMiddle().blocks[xInChunk()][(int) y][zInChunk()].type == Type.DIRT) {
+                if (y < Chunk.CHUNK_HEIGHT && y >= 0 && temp.blocks[xInChunk()][(int) y][zInChunk()].is(Type.DIRT)) {
                     y = (int) y + 1;
                     fallingSpeed = 0;
                 }

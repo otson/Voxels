@@ -1165,7 +1165,7 @@ public class ChunkMaker extends Thread {
         rightChunk = chunkManager.getChunk(chunk.xId + 1, chunk.zId);
         leftChunk = chunkManager.getChunk(chunk.xId - 1, chunk.zId);
         backChunk = chunkManager.getChunk(chunk.xId, chunk.zId - 1);
-        frontChunk = chunkManager.getChunk(chunk.xId + 1, chunk.xId + 1);
+        frontChunk = chunkManager.getChunk(chunk.xId, chunk.zId + 1);
 
         updateMiddle();
 

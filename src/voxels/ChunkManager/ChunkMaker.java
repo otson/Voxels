@@ -71,12 +71,10 @@ public class ChunkMaker extends Thread {
 
     }
 
-    public ChunkMaker(ConcurrentHashMap<Integer, byte[]> map, Chunk chunk, ChunkManager chunkManager) {
-        this.chunk = chunk;
+    public ChunkMaker(ArrayList<Data> dataToProcess,ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager) {
         this.map = map;
-        this.xOff = chunk.xCoordinate;
-        this.zOff = chunk.zCoordinate;
         this.chunkManager = chunkManager;
+        this.dataToProcess = dataToProcess;
     }
 
     @Override
@@ -93,8 +91,8 @@ public class ChunkMaker extends Thread {
             System.out.println("Already contains");
     }
 
-    public void update() {
-
+    public void update(final Chunk chunk) {
+        this.chunk = chunk;
         updateAllBlocks();
         drawChunkVBO();
         new Thread(new Runnable() {
@@ -102,7 +100,7 @@ public class ChunkMaker extends Thread {
                 map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
             }
         }).start();
-        updateData = new Data(chunk.xId, chunk.zId, chunk.getVertices(), vertexData, normalData, texData, true);
+        dataToProcess.add(new Data(chunk.xId, chunk.zId, chunk.getVertices(), vertexData, normalData, texData, true));
     }
 
     public void drawChunkVBO() {

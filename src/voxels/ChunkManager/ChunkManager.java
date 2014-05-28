@@ -44,7 +44,7 @@ public class ChunkManager {
     private ChunkCoordinateCreator chunkCreator;
     private ActiveChunkLoader chunkLoader;
     private ChunkMaker[] threads = new ChunkMaker[maxThreads];
-    private ChunkMaker updateThread;
+    private ChunkMaker updater;
 
     private boolean atMax = false;
     private boolean inLoop;
@@ -59,6 +59,7 @@ public class ChunkManager {
         chunkCreator = new ChunkCoordinateCreator(map);
         chunkLoader = new ActiveChunkLoader(this);
         chunkLoader.setPriority(Thread.MIN_PRIORITY);
+        updater = new ChunkMaker(dataToProcess, map, this);
     }
 
     public Block getBlock(int x, int y, int z) {
@@ -84,9 +85,7 @@ public class ChunkManager {
             return;
         }
         chunk.blocks[x][y][z].setType(type);
-        updateThread = new ChunkMaker(map, chunk, this);
-        updateThread.update();
-        updateBuffers(updateThread.getUpdateData());
+        updater.update(chunk);
 
         System.out.println("Update finished: " + (System.nanoTime() - start) / 1000000 + " ms.");
 

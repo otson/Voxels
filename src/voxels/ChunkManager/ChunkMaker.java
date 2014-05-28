@@ -86,9 +86,7 @@ public class ChunkMaker extends Thread {
             updateAllBlocks();
             drawChunkVBO();
 
-            //handles.put(new Pair(chunkX, chunkZ).hashCode(), new Handle(chunk.getVboVertexHandle(), chunk.getVboNormalHandle(), chunk.getVboTexHandle(), chunk.getVertices()));
             map.put(new Pair(chunkX, chunkZ).hashCode(), toByte(chunk));
-            //data[threadId] = new Data(chunkX, chunkZ, chunk.getVertices(), vertexData, normalData, texData);
             dataToProcess.add(new Data(chunkX, chunkZ, chunk.getVertices(), vertexData, normalData, texData, false));
         }
         else
@@ -1178,6 +1176,7 @@ public class ChunkMaker extends Thread {
             if (leftChunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][0].isOpaque())
                 chunk.blocks[0][Chunk.CHUNK_WIDTH - 1][0].setLeft(true);
         }
+        
         if (backChunk != null) {
             if (backChunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
                 chunk.blocks[0][Chunk.CHUNK_WIDTH - 1][0].setBack(true);
@@ -1788,6 +1787,7 @@ public class ChunkMaker extends Thread {
                 if (rightIsValid)
                     if (rightChunk.blocks[0][y][0].isOpaque())
                         chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][0].setRight(true);
+                
 
                 if (backIsValid)
                     if (backChunk.blocks[Chunk.CHUNK_WIDTH - 1][y][Chunk.CHUNK_WIDTH - 1].isOpaque())

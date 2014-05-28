@@ -108,10 +108,14 @@ public class ChunkMaker extends Thread {
     }
 
     public void update() {
+        
         updateAllBlocks();
         drawChunkVBO();
-        // replace old chunk in the hashmap
-        map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
+        new Thread(new Runnable() {
+                public void run() {
+                    map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
+                }
+            }).start();
         updateData = new Data(chunk.xId, chunk.zId, chunk.getVertices(), vertexData, normalData, texData);
     }
 

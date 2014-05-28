@@ -103,4 +103,14 @@ public class ChunkCoordinateCreator {
     public boolean notAtMax() {
         return Math.abs(x) <= maxDistance && Math.abs(z) <= maxDistance;
     }
+
+    public int getMaxDistance() {
+        return maxDistance;
+    }
+
+    public void setMaxDistance(int maxDistance) {
+        this.maxDistance = maxDistance;
+    }
+    
+    
 }

@@ -11,15 +11,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.BufferUtils;
-import static voxels.ChunkManager.Chunk.CHUNK_HEIGHT;
-import static voxels.ChunkManager.Chunk.CHUNK_WIDTH;
 import static voxels.Voxels.WaterOffs;
-import static voxels.Voxels.getCurrentChunkXId;
-import static voxels.Voxels.getCurrentChunkZId;
 
 /**
  *
@@ -31,13 +28,7 @@ public class ChunkMaker extends Thread {
     private static int normalSize = 3;
     private static int texSize = 2;
     private static int colorSize = 3;
-
-//    private boolean[][][] top = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_HEIGHT][Chunk.CHUNK_WIDTH];
-//    private boolean[][][] bottom = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_HEIGHT][Chunk.CHUNK_WIDTH];
-//    private boolean[][][] left = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_HEIGHT][Chunk.CHUNK_WIDTH];
-//    private boolean[][][] right = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_HEIGHT][Chunk.CHUNK_WIDTH];
-//    private boolean[][][] front = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_HEIGHT][Chunk.CHUNK_WIDTH];
-//    private boolean[][][] back = new boolean[Chunk.CHUNK_WIDTH][Chunk.CHUNK_HEIGHT][Chunk.CHUNK_WIDTH];
+    
     private FloatBuffer vertexData;
     private FloatBuffer normalData;
     private FloatBuffer texData;
@@ -65,19 +56,20 @@ public class ChunkMaker extends Thread {
 
     private int threadId;
     private Data[] data;
+    private ArrayList<Data> dataToProcess;
 
     private Data updateData;
 
     boolean update;
 
-    public ChunkMaker(int threadId, Data[] data, int chunkX, int chunkZ, int xOff, int zOff, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager) {
+    public ChunkMaker(int threadId, ArrayList<Data> dataToProcess, int chunkX, int chunkZ, int xOff, int zOff, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager) {
         this.threadId = threadId;
         this.xOff = xOff;
         this.zOff = zOff;
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
         this.map = map;
-        this.data = data;
+        this.dataToProcess = dataToProcess;
         this.chunkManager = chunkManager;
 
         update = false;
@@ -101,7 +93,8 @@ public class ChunkMaker extends Thread {
 
             //handles.put(new Pair(chunkX, chunkZ).hashCode(), new Handle(chunk.getVboVertexHandle(), chunk.getVboNormalHandle(), chunk.getVboTexHandle(), chunk.getVertices()));
             map.put(new Pair(chunkX, chunkZ).hashCode(), toByte(chunk));
-            data[threadId] = new Data(chunkX, chunkZ, chunk.getVertices(), vertexData, normalData, texData);
+            //data[threadId] = new Data(chunkX, chunkZ, chunk.getVertices(), vertexData, normalData, texData);
+            dataToProcess.add(new Data(chunkX, chunkZ, chunk.getVertices(), vertexData, normalData, texData, false));
         }
         else
             System.out.println("Already contains");
@@ -116,7 +109,7 @@ public class ChunkMaker extends Thread {
                     map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
                 }
             }).start();
-        updateData = new Data(chunk.xId, chunk.zId, chunk.getVertices(), vertexData, normalData, texData);
+        updateData = new Data(chunk.xId, chunk.zId, chunk.getVertices(), vertexData, normalData, texData, true);
     }
 
     public void drawChunkVBO() {

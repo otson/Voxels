@@ -20,13 +20,16 @@ public class Data {
     public final int chunkX;
     public final int chunkZ;
     
+    public final boolean UPDATE;
+    
 
-    public Data(int chunkX, int chunkZ, int vertices, FloatBuffer vertexData, FloatBuffer normalData, FloatBuffer texData) {
+    public Data(int chunkX, int chunkZ, int vertices, FloatBuffer vertexData, FloatBuffer normalData, FloatBuffer texData, boolean update) {
         this.vertexData = vertexData;
         this.normalData = normalData;
         this.texData = texData;
         this.vertices = vertices;
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
+        this.UPDATE = update;
     }
 }

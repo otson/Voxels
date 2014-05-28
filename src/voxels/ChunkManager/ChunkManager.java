@@ -10,14 +10,17 @@ import com.ning.compress.lzf.LZFException;
 import de.ruedigermoeller.serialization.FSTObjectInput;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL15;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import voxels.Voxels;
 import static voxels.Voxels.getCurrentChunkXId;
@@ -37,13 +40,11 @@ public class ChunkManager {
 
     private ConcurrentHashMap<Integer, byte[]> map;
     private ConcurrentHashMap<Integer, Handle> handles;
+    private ArrayList<Data> dataToProcess;
     private ChunkCoordinateCreator chunkCreator;
     private ActiveChunkLoader chunkLoader;
-    private Data[] data = new Data[maxThreads];
     private ChunkMaker[] threads = new ChunkMaker[maxThreads];
     private ChunkMaker updateThread;
-
-    private boolean update = false;
 
     private boolean atMax = false;
     private boolean inLoop;
@@ -54,6 +55,7 @@ public class ChunkManager {
     public ChunkManager() {
         map = new ConcurrentHashMap<>();
         handles = new ConcurrentHashMap<>();
+        dataToProcess = new ArrayList<>();
         chunkCreator = new ChunkCoordinateCreator(map);
         chunkLoader = new ActiveChunkLoader(this);
         chunkLoader.setPriority(Thread.MIN_PRIORITY);
@@ -84,7 +86,7 @@ public class ChunkManager {
         chunk.blocks[x][y][z].setType(type);
         updateThread = new ChunkMaker(map, chunk, this);
         updateThread.update();
-        createBuffers(updateThread.getUpdateData());
+        updateBuffers(updateThread.getUpdateData());
 
         System.out.println("Update finished: " + (System.nanoTime() - start) / 1000000 + " ms.");
 
@@ -123,7 +125,7 @@ public class ChunkManager {
 
                 // Start a new thread, make a new chunk
                 int threadId = getFreeThread();
-                threads[threadId] = new ChunkMaker(threadId, data, newChunkX, newChunkZ, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH, map, this);
+                threads[threadId] = new ChunkMaker(threadId, dataToProcess, newChunkX, newChunkZ, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH, map, this);
                 threads[threadId].setPriority(Thread.MIN_PRIORITY);
                 threads[threadId].start();
 
@@ -139,18 +141,9 @@ public class ChunkManager {
         }
         // Check if there are threads that are completed
         if (inLoop) {
-            if (update)
-                if (updateThread != null)
-                    if (!updateThread.isAlive()) {
-                        createBuffers(updateThread.getUpdateData());
-                        update = false;
-                        updateThread = null;
-                    }
-
             for (int i = 0; i < threads.length; i++) {
                 if (threads[i] != null)
                     if (!threads[i].isAlive()) {
-                        createBuffers(data[i]);
                         threads[i] = null;
                     }
             }
@@ -170,6 +163,16 @@ public class ChunkManager {
 
             }
         }
+
+        // Create buffers from all the data in the arrayList
+        while (dataToProcess.iterator().hasNext()) {
+            Data data = dataToProcess.iterator().next();
+            if (data.UPDATE)
+                updateBuffers(data);
+            else
+                createBuffers(data);
+            dataToProcess.remove(data);
+        }
     }
 
     public void stopGeneration() {
@@ -178,6 +181,31 @@ public class ChunkManager {
 
     public void startGeneration() {
         generate = true;
+    }
+
+    public void updateBuffers(Data data) {
+        Handle temp = handles.get(new Pair(data.chunkX, data.chunkZ).hashCode());
+
+        int vboVertexHandle = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
+        glBufferData(GL_ARRAY_BUFFER, data.vertexData, GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        int vboNormalHandle = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, vboNormalHandle);
+        glBufferData(GL_ARRAY_BUFFER, data.normalData, GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        int vboTexHandle = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, vboTexHandle);
+        glBufferData(GL_ARRAY_BUFFER, data.texData, GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        handles.put(new Pair(data.chunkX, data.chunkZ).hashCode(), new Handle(vboVertexHandle, vboNormalHandle, vboTexHandle, data.vertices));
+
+        glDeleteBuffers(temp.vertexHandle);
+        glDeleteBuffers(temp.normalHandle);
+        glDeleteBuffers(temp.texHandle);
     }
 
     public void createBuffers(Data data) {
@@ -298,9 +326,4 @@ public class ChunkManager {
         return true;
 
     }
-
-    private void updateChunk(int chunkX, int chunkZ) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
 }

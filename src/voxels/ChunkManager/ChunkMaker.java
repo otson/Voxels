@@ -96,6 +96,7 @@ public class ChunkMaker extends Thread {
     public void run() {
         if (!map.containsKey(new Pair(chunkX, chunkZ).hashCode())) {
             chunk = new Chunk(chunkX, chunkZ);
+            updateAllBlocks();
             drawChunkVBO();
 
             //handles.put(new Pair(chunkX, chunkZ).hashCode(), new Handle(chunk.getVboVertexHandle(), chunk.getVboNormalHandle(), chunk.getVboTexHandle(), chunk.getVertices()));
@@ -107,6 +108,7 @@ public class ChunkMaker extends Thread {
     }
 
     public void update() {
+        updateAllBlocks();
         drawChunkVBO();
         // replace old chunk in the hashmap
         map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
@@ -115,7 +117,6 @@ public class ChunkMaker extends Thread {
 
     public void drawChunkVBO() {
 
-        updateAllBlocks();
         int vertices = calculateVertexCount();
         chunk.setVertices(vertices);
 

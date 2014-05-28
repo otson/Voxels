@@ -51,8 +51,6 @@ public class ChunkManager {
     private ChunkMaker[] threads = new ChunkMaker[maxThreads];
     private ChunkMaker updateThread;
 
-    private Chunk[] updateChunks = new Chunk[1];
-
     private boolean update = false;
 
     private boolean atMax = false;
@@ -113,15 +111,8 @@ public class ChunkManager {
 
     public void checkChunkUpdates() {
 
-        if (update) {
-            inLoop = true;
-            updateThread = new ChunkMaker(map, updateChunks[0], this);
-            updateThread.setPriority(Thread.MAX_PRIORITY);
-            updateThread.start();
-        }
-
         // if generating and there are free threads to use
-        else if (generate && hasFreeThreads()) {
+        if (generate && hasFreeThreads()) {
             inLoop = true;
 
             // request new valid coordinates

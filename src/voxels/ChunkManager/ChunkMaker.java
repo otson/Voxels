@@ -87,20 +87,16 @@ public class ChunkMaker extends Thread {
     public ChunkMaker(ConcurrentHashMap<Integer, byte[]> map, Chunk chunk, ChunkManager chunkManager) {
         this.chunk = chunk;
         this.map = map;
+        this.xOff = chunk.xCoordinate;
+        this.zOff = chunk.zCoordinate;
         this.chunkManager = chunkManager;
-        update = true;
     }
 
     @Override
     public void run() {
-        if (update) {
-            drawChunkVBO(chunk, chunk.xCoordinate, chunk.zCoordinate);
-            map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
-            updateData = new Data(chunk.xId, chunk.zId, chunk.getVertices(), vertexData, normalData, texData);
-        }
-        else if (!map.containsKey(new Pair(chunkX, chunkZ).hashCode())) {
+        if (!map.containsKey(new Pair(chunkX, chunkZ).hashCode())) {
             chunk = new Chunk(chunkX, chunkZ);
-            drawChunkVBO(chunk, xOff, zOff);
+            drawChunkVBO();
 
             //handles.put(new Pair(chunkX, chunkZ).hashCode(), new Handle(chunk.getVboVertexHandle(), chunk.getVboNormalHandle(), chunk.getVboTexHandle(), chunk.getVertices()));
             map.put(new Pair(chunkX, chunkZ).hashCode(), toByte(chunk));
@@ -111,14 +107,15 @@ public class ChunkMaker extends Thread {
     }
 
     public void update() {
-        drawChunkVBO(chunk, chunk.xCoordinate, chunk.zCoordinate);
+        drawChunkVBO();
+        // replace old chunk in the hashmap
         map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
         updateData = new Data(chunk.xId, chunk.zId, chunk.getVertices(), vertexData, normalData, texData);
     }
 
-    public void drawChunkVBO(Chunk chunk, int xOff, int zOff) {
+    public void drawChunkVBO() {
 
-        updateAllSides();
+        updateAllBlocks();
         int vertices = calculateVertexCount();
         chunk.setVertices(vertices);
 
@@ -1158,13 +1155,13 @@ public class ChunkMaker extends Thread {
         System.out.println("Activated blocks: " + activeBlocks);
     }
 
-    private void updateAllSides() {
+    private void updateAllBlocks() {
 
         rightChunk = chunkManager.getChunk(chunk.xId + 1, chunk.zId);
         leftChunk = chunkManager.getChunk(chunk.xId - 1, chunk.zId);
         backChunk = chunkManager.getChunk(chunk.xId, chunk.zId - 1);
         frontChunk = chunkManager.getChunk(chunk.xId + 1, chunk.xId + 1);
-        
+
         updateMiddle();
 
         updateTopLeftBack();

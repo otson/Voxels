@@ -92,7 +92,7 @@ public class ChunkManager {
             return;
         }
         chunk.blocks[x][y][z].setType(type);
-        updateThread = new ChunkMaker(map, chunk);
+        updateThread = new ChunkMaker(map, chunk, this);
         updateThread.update();
         createBuffers(updateThread.getUpdateData());
 
@@ -115,7 +115,7 @@ public class ChunkManager {
 
         if (update) {
             inLoop = true;
-            updateThread = new ChunkMaker(map, updateChunks[0]);
+            updateThread = new ChunkMaker(map, updateChunks[0], this);
             updateThread.setPriority(Thread.MAX_PRIORITY);
             updateThread.start();
         }
@@ -140,7 +140,7 @@ public class ChunkManager {
 
                 // Start a new thread, make a new chunk
                 int threadId = getFreeThread();
-                threads[threadId] = new ChunkMaker(threadId, data, newChunkX, newChunkZ, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH, map);
+                threads[threadId] = new ChunkMaker(threadId, data, newChunkX, newChunkZ, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH, map, this);
                 threads[threadId].setPriority(Thread.MIN_PRIORITY);
                 threads[threadId].start();
 

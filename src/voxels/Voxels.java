@@ -252,6 +252,9 @@ public class Voxels {
             if (Keyboard.isKeyDown(Keyboard.KEY_Z)) {
                 chunkManager.editBlock(Type.DIRT, xInChunk(), Math.min((int) camera.y(), 255), zInChunk(), getCurrentChunkXId(), getCurrentChunkZId());
             }
+            if (Keyboard.isKeyDown(Keyboard.KEY_Q)) {
+                chunkManager.editBlock(Type.AIR, xInChunk(), Math.min((int) camera.y()-1, 255), zInChunk(), getCurrentChunkXId(), getCurrentChunkZId());
+            }
 
         }
         if (Mouse.isGrabbed()) {

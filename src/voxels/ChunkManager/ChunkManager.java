@@ -83,17 +83,15 @@ public class ChunkManager {
         }
     }
 
-    public void editBlock(short type, int x, int y, int z, int chunkX, int chunkZ) {
+    public void editBlock(final short type, final int x, final int y, final int z, final int chunkX, final int chunkZ) {
         long start = System.nanoTime();
 
         Chunk chunk = getChunk(chunkX, chunkZ);
-        if (chunk == null){
+        if (chunk == null) {
             System.out.println("Tried to modify a null chunk.");
             return;
         }
-
-        chunk.blocks[x][y][z].type = type;
-
+        chunk.blocks[x][y][z].setType(type);
         updateThread = new ChunkMaker(map, chunk);
         updateThread.update();
         createBuffers(updateThread.getUpdateData());

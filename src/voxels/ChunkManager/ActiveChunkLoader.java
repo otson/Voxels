@@ -42,7 +42,7 @@ public class ActiveChunkLoader extends Thread {
             if (hasMoved()) {
                 loadChunks();
                 try {
-                    sleep(5);
+                    sleep(1);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(ActiveChunkLoader.class.getName()).log(Level.SEVERE, null, ex);
                 }

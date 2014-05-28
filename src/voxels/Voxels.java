@@ -62,8 +62,8 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 1;
-    public static int chunkRenderDistance = 5;
+    public static int chunkCreationDistance = 3;
+    public static int chunkRenderDistance = 12;
     private static Texture atlas;
     public static final float WaterOffs = 0.28f;
     public static float START_TIME;
@@ -250,7 +250,7 @@ public class Voxels {
                 camera.toggleFlight();
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_Z)) {
-                chunkManager.editBlock(Type.AIR, xInChunk(), Math.min((int) camera.y(), 255), zInChunk(), getCurrentChunkXId(), getCurrentChunkZId());
+                chunkManager.editBlock(Type.DIRT, xInChunk(), Math.min((int) camera.y(), 255), zInChunk(), getCurrentChunkXId(), getCurrentChunkZId());
             }
 
         }

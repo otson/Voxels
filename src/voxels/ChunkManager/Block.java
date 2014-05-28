@@ -6,13 +6,22 @@ import java.io.Serializable;
  *
  * @author otso
  */
-public class Block implements Serializable{
-    
+public class Block implements Serializable {
+
     private static final long serialVersionUID = 1L;
-    
-    public short type;
+
+    private short type;
 
     public Block(short type) {
         this.type = type;
     }
+
+    public boolean is(short type) {
+        return this.type == type;
+    }
+
+    public void setType(short type) {
+        this.type = type;
+    }
+
 }

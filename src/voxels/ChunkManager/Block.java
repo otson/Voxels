@@ -31,7 +31,7 @@ public class Block implements Serializable {
         this.type = type;
     }
     
-    public final boolean isOpaque(){
+    public boolean isOpaque(){
         if (type == Type.WATER)
             return true;
         else if(type == Type.AIR)

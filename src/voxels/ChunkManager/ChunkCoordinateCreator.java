@@ -28,6 +28,7 @@ public class ChunkCoordinateCreator {
     }
 
     Coordinates getNewCoordinates() {
+        
         if (needMiddleChunk) {
             needMiddleChunk = false;
             if (!map.containsKey(new Pair(currentChunkX, currentChunkZ).hashCode()))
@@ -92,6 +93,7 @@ public class ChunkCoordinateCreator {
     }
 
     public boolean notAtMax() {
+        maxDistance = Voxels.chunkCreationDistance;
         return Math.abs(x) <= maxDistance && Math.abs(z) <= maxDistance;
     }
 

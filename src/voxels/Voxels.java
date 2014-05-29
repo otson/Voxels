@@ -62,7 +62,7 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 3;
+    public static int chunkCreationDistance = 2;
     public static int chunkRenderDistance = 12;
     private static Texture atlas;
     public static final float WaterOffs = 0.28f;
@@ -159,6 +159,7 @@ public class Voxels {
             if (chunkManager.chunkAmount() % 20 == 0)
                 Display.update();
         }
+        chunkCreationDistance = 9;
         System.out.println("Time taken: " + (System.nanoTime() - time) / 1000000000 + " s.");
 
         chunkManager.getChunkLoader().loadChunks();

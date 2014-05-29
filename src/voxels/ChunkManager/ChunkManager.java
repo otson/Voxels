@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL15;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
@@ -92,6 +93,8 @@ public class ChunkManager {
             updateThread.updateBack(getChunk(chunkX, chunkZ + 1));
         if (z == 0)
             updateThread.updateFront(getChunk(chunkX, chunkZ - 1));
+        
+        chunkLoader.refresh();
 
     }
 
@@ -231,6 +234,7 @@ public class ChunkManager {
         glBindBuffer(GL_ARRAY_BUFFER, vboNormalHandle);
         glBufferData(GL_ARRAY_BUFFER, data.normalData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
 
         int vboTexHandle = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboTexHandle);

@@ -26,6 +26,7 @@ public class ActiveChunkLoader extends Thread {
     private Chunk lowMiddle;
 
     boolean running;
+    boolean refresh;
 
     ChunkManager chunkManager;
     int currentChunkX;
@@ -39,10 +40,12 @@ public class ActiveChunkLoader extends Thread {
     public void run() {
         running = true;
         while (running) {
-            if (hasMoved()) {
-                //loadChunks();
+            if (refresh || hasMoved()) {
+                refresh = false;
+                loadChunks();
+                System.out.println("here");
                 try {
-                    sleep(500);
+                    sleep(3);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(ActiveChunkLoader.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -62,16 +65,7 @@ public class ActiveChunkLoader extends Thread {
     }
 
     public void loadChunks() {
-
         middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkZId());
-        topMiddle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkZId() - 1);
-        lowMiddle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkZId()+1);
-        midLeft = chunkManager.getChunk(Voxels.getCurrentChunkXId()-1, Voxels.getCurrentChunkZId());
-        midRight = chunkManager.getChunk(Voxels.getCurrentChunkXId()+1, Voxels.getCurrentChunkZId());
-        topLeft = chunkManager.getChunk(Voxels.getCurrentChunkXId()-1, Voxels.getCurrentChunkZId()-1);
-        topRight = chunkManager.getChunk(Voxels.getCurrentChunkXId()+1, Voxels.getCurrentChunkZId()-1);
-        lowLeft = chunkManager.getChunk(Voxels.getCurrentChunkXId()-1, Voxels.getCurrentChunkZId()+1);
-        lowRight = chunkManager.getChunk(Voxels.getCurrentChunkXId()+1, Voxels.getCurrentChunkZId()+1);
     }
 
     public Chunk getTopLeft() {
@@ -112,6 +106,10 @@ public class ActiveChunkLoader extends Thread {
 
     public boolean isRunning() {
         return running;
+    }
+
+    void refresh() {
+        refresh = true;
     }
 
 }

@@ -364,13 +364,13 @@ public class EulerCamera implements Camera {
                 y -= speed * delta * 0.003f;
 
         if (flying == false) {
-            Chunk temp = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkZId());
-            if (temp != null) {
-                if (y >= Chunk.CHUNK_HEIGHT || y < 0 || temp.blocks[xInChunk()][(int) y][zInChunk()].is(Type.AIR)) {
+            //Chunk temp = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkZId());
+            if (chunkManager.getMiddle() != null) {
+                if (y >= Chunk.CHUNK_HEIGHT || y < 0 || chunkManager.getMiddle().blocks[xInChunk()][(int) y][zInChunk()].is(Type.AIR)) {
                     y -= fallingSpeed;
                     fallingSpeed += fallingSpeedIncrease;
                 }
-                if (y < Chunk.CHUNK_HEIGHT && y >= 0 && temp.blocks[xInChunk()][(int) y][zInChunk()].is(Type.DIRT)) {
+                if (y < Chunk.CHUNK_HEIGHT && y >= 0 && chunkManager.getMiddle().blocks[xInChunk()][(int) y][zInChunk()].is(Type.DIRT)) {
                     y = (int) y + 1;
                     fallingSpeed = 0;
                 }

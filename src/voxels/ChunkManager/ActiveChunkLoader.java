@@ -43,7 +43,6 @@ public class ActiveChunkLoader extends Thread {
             if (refresh || hasMoved()) {
                 refresh = false;
                 loadChunks();
-                System.out.println("here");
                 try {
                     sleep(3);
                 } catch (InterruptedException ex) {

@@ -22,6 +22,7 @@ import voxels.Camera.EulerCamera;
 import voxels.ChunkManager.Handle;
 import voxels.ChunkManager.Type;
 import voxels.Noise.FastNoise;
+import voxels.Noise.SimplexNoise;
 
 /**
  *
@@ -41,7 +42,7 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains withs a width of one
      * block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 15;
+    public static final int TERRAIN_SMOOTHNESS = 30;
     /**
      * Set player's height. One block's height is 1.
      */
@@ -53,7 +54,16 @@ public class Voxels {
     /**
      * Set if terrain generation's uses a seed.
      */
-    public static final boolean USE_SEED = false;
+    public static final boolean USE_SEED = false; 
+    /**
+     * Set if 3D simplex noise is used to generate terrain.
+     */
+    public static final boolean USE_3D_NOISE = true;
+    
+    /**
+     * Set air block percentage if 3D noise is in use.
+     */
+    public final static int AIR_PERCENTAGE = 30;
     /**
      * Set seed for terrain generation.
      */
@@ -171,7 +181,6 @@ public class Voxels {
             processInput(getDelta());
             chunkManager.checkChunkUpdates();
 
-            
             render();
 
             updateFPS();
@@ -251,10 +260,10 @@ public class Voxels {
             }
 
         }
-         if (Keyboard.isKeyDown(Keyboard.KEY_U)) {
-                glTranslatef(0, -200, 0);
-            }
-         
+        if (Keyboard.isKeyDown(Keyboard.KEY_U)) {
+            glTranslatef(0, -200, 0);
+        }
+
         if (Mouse.isGrabbed()) {
             camera.processMouse();
             camera.processKeyboard(delta, 1.4f);
@@ -310,6 +319,10 @@ public class Voxels {
             noise = (int) ((FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), 5)) * (Chunk.CHUNK_HEIGHT / 256f)) - 1;
 
         return Math.max(noise, 0);
+    }
+
+    public static int get3DNoise(float x, float y, float z) {
+        return (int) ((SimplexNoise.noise(x / (1f * TERRAIN_SMOOTHNESS*2), y / (1f * TERRAIN_SMOOTHNESS*2), z / (1f * TERRAIN_SMOOTHNESS*2))+1)*128);
     }
 
     public static Texture loadTexture(String key) {

@@ -36,6 +36,7 @@ public class Chunk implements Serializable {
         zCoordinate = zId * CHUNK_WIDTH;
         initMaxHeights();
         setBlocks();
+        System.out.println((2.55f*Voxels.AIR_PERCENTAGE));
     }
 
     private void initMaxHeights() {
@@ -54,13 +55,21 @@ public class Chunk implements Serializable {
             for (int y = 0; y < blocks[x].length; y++) {
                 blocks[x][y] = new Block[CHUNK_WIDTH];
                 for (int z = 0; z < blocks[x][y].length; z++) {
-                    if (y > maxHeights[x][z] && y <= Chunk.WATER_HEIGHT) {
-                        blocks[x][y][z] = new Block(Type.WATER);
+                    if (Voxels.USE_3D_NOISE) {
+                        if (Voxels.get3DNoise(x + xCoordinate, y, z + zCoordinate) > (2.55f*Voxels.AIR_PERCENTAGE))
+                            blocks[x][y][z] = new Block(Type.DIRT);
+                        else
+                            blocks[x][y][z] = new Block(Type.AIR);
                     }
-                    else if (y <= maxHeights[x][z])
-                       blocks[x][y][z] = new Block(Type.DIRT);
-                    else
-                        blocks[x][y][z] = new Block(Type.AIR);
+                    else {
+                        if (y > maxHeights[x][z] && y <= Chunk.WATER_HEIGHT) {
+                            blocks[x][y][z] = new Block(Type.WATER);
+                        }
+                        else if (y <= maxHeights[x][z])
+                            blocks[x][y][z] = new Block(Type.DIRT);
+                        else
+                            blocks[x][y][z] = new Block(Type.AIR);
+                    }
                 }
             }
         }

@@ -1249,7 +1249,6 @@ public class ChunkMaker extends Thread {
         }
 
         //chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setTop(true);
-
         if (chunk.blocks[Chunk.CHUNK_WIDTH - 2][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
             chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setLeft(true);
 
@@ -1269,7 +1268,6 @@ public class ChunkMaker extends Thread {
                     chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][z].setLeft(true);
 
             //chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][z].setTop(true);
-
             if (chunk.blocks[1][Chunk.CHUNK_HEIGHT - 1][z].isOpaque())
                 chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][z].setRight(true);
 
@@ -1293,7 +1291,6 @@ public class ChunkMaker extends Thread {
                     chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][z].setRight(true);
 
             //chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][z].setTop(true);
-
             if (chunk.blocks[Chunk.CHUNK_WIDTH - 2][Chunk.CHUNK_HEIGHT - 1][z].isOpaque())
                 chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][z].setLeft(true);
 
@@ -1317,7 +1314,6 @@ public class ChunkMaker extends Thread {
                     chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setFront(true);
 
             //chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setTop(true);
-
             if (chunk.blocks[x + 1][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
                 chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setRight(true);
 
@@ -1341,7 +1337,6 @@ public class ChunkMaker extends Thread {
                     chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][0].setBack(true);
 
             //chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setTop(true);
-
             if (chunk.blocks[x + 1][Chunk.CHUNK_HEIGHT - 1][0].isOpaque())
                 chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][0].setRight(true);
 
@@ -1363,7 +1358,6 @@ public class ChunkMaker extends Thread {
                 if (chunk.blocks[x][Chunk.CHUNK_WIDTH - 1][z].is(Type.AIR) == false) {
 
                     //chunk.blocks[x][Chunk.CHUNK_WIDTH - 1][z].setTop(true);
-
                     if (chunk.blocks[x + 1][Chunk.CHUNK_WIDTH - 1][z].isOpaque())
                         chunk.blocks[x][Chunk.CHUNK_WIDTH - 1][z].setRight(true);
 

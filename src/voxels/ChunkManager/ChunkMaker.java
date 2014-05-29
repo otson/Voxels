@@ -103,50 +103,69 @@ public class ChunkMaker extends Thread {
         }
     }
 
-    public void updateLeft(Chunk chunk) {
+    public void updateLeft(final Chunk chunk) {
         if (chunk != null) {
             this.chunk = chunk;
             this.xOff = chunk.xCoordinate;
             this.zOff = chunk.zCoordinate;
             updateLeft();
             drawChunkVBO();
-            map.put(new Pair(this.chunk.xId, this.chunk.zId).hashCode(), toByte(this.chunk));
+            new Thread(new Runnable() {
+                public void run() {
+                    map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
+                }
+            }).start();
+
             dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, true));
         }
     }
 
-    public void updateRight(Chunk chunk) {
+    public void updateRight(final Chunk chunk) {
         if (chunk != null) {
             this.chunk = chunk;
             this.xOff = chunk.xCoordinate;
             this.zOff = chunk.zCoordinate;
             updateRight();
             drawChunkVBO();
-            map.put(new Pair(this.chunk.xId, this.chunk.zId).hashCode(), toByte(this.chunk));
+            
+            new Thread(new Runnable() {
+                public void run() {
+                    map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
+                }
+            }).start();
             dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, true));
         }
     }
 
-    public void updateBack(Chunk chunk) {
+    public void updateBack(final Chunk chunk) {
         if (chunk != null) {
             this.chunk = chunk;
             this.xOff = chunk.xCoordinate;
             this.zOff = chunk.zCoordinate;
             updateBack();
             drawChunkVBO();
-            map.put(new Pair(this.chunk.xId, this.chunk.zId).hashCode(), toByte(this.chunk));
+            new Thread(new Runnable() {
+                public void run() {
+                    map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
+                }
+            }).start();
+            
             dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, true));
         }
     }
 
-    public void updateFront(Chunk chunk) {
+    public void updateFront(final Chunk chunk) {
         if (chunk != null) {
             this.chunk = chunk;
             this.xOff = chunk.xCoordinate;
             this.zOff = chunk.zCoordinate;
             updateFront();
             drawChunkVBO();
-            map.put(new Pair(this.chunk.xId, this.chunk.zId).hashCode(), toByte(this.chunk));
+            new Thread(new Runnable() {
+                public void run() {
+                    map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
+                }
+            }).start();
             dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, true));
         }
     }
@@ -1169,8 +1188,8 @@ public class ChunkMaker extends Thread {
         updateBottomSide();
         updateFrontSide();
         updateBackSide();
-        
-        rightChunk  = null;
+
+        rightChunk = null;
         leftChunk = null;
         backChunk = null;
         frontChunk = null;

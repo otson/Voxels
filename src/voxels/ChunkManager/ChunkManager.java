@@ -172,13 +172,12 @@ public class ChunkManager {
 
     private void processBufferData() {
         int count = 0;
-        while (dataToProcess.isEmpty() == false && count < 10) {
+        while (dataToProcess.isEmpty() == false && count < 100) {
             count++;
             Data data = dataToProcess.get(0);
             if (data != null) {
                 if (data.UPDATE) {
                     updateBuffers(data);
-                    System.out.println("Updating");
                 }
                 else {
                     createBuffers(data);

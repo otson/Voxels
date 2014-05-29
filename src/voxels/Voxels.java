@@ -167,10 +167,11 @@ public class Voxels {
 
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            updateView();
             processInput(getDelta());
             chunkManager.checkChunkUpdates();
 
-            updateView();
+            
             render();
 
             updateFPS();
@@ -250,6 +251,10 @@ public class Voxels {
             }
 
         }
+         if (Keyboard.isKeyDown(Keyboard.KEY_U)) {
+                glTranslatef(0, -200, 0);
+            }
+         
         if (Mouse.isGrabbed()) {
             camera.processMouse();
             camera.processKeyboard(delta, 1.4f);

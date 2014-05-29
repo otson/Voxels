@@ -408,7 +408,7 @@ public class EulerCamera implements Camera {
             if (flying)
                 y += speed * delta * 0.003f;
             else if (fallingSpeed == 0)
-                fallingSpeed = -delta * 0.012f;
+                fallingSpeed = -delta * 0.0125f;
 
         if (flyDown && !flyUp)
             if (flying)

@@ -36,7 +36,7 @@ public class ChunkManager {
      * Set the maximum amount of threads use to create chunks. Default number is
      * equal to the number of cores in the system CPU.
      */
-    public static final int maxThreads = Runtime.getRuntime().availableProcessors();
+    public static final int maxThreads = Runtime.getRuntime().availableProcessors()-1;
 
     private ConcurrentHashMap<Integer, byte[]> map;
     private ConcurrentHashMap<Integer, Handle> handles;
@@ -51,6 +51,8 @@ public class ChunkManager {
     private boolean initialLoad = true;
     private boolean generate = false;
     private int lastMessage = -1;
+    
+    private boolean wait = false;
 
     public ChunkManager() {
         map = new ConcurrentHashMap<>();
@@ -76,7 +78,7 @@ public class ChunkManager {
         }
     }
 
-    public void editBlock(final short type, final int x, final int y, final int z, int chunkX, int chunkZ) {
+    public void editBlock(final short type, final int x, final int y, final int z, final int chunkX, final int chunkZ) {
         //long start = System.nanoTime();
 
         final Chunk chunk = getChunk(chunkX, chunkZ);
@@ -86,9 +88,19 @@ public class ChunkManager {
         }
         new Thread(new Runnable() {
             public void run() {
+                wait = true;
                 chunk.blocks[x][y][z].setType(type);
                 updateThread.update(chunk);
-
+                
+                if (x == Chunk.CHUNK_WIDTH - 1)
+                    updateThread.update(getChunk(chunkX + 1, chunkZ));
+                if (x == 0)
+                    updateThread.update(getChunk(chunkX - 1, chunkZ));
+                if (z == Chunk.CHUNK_WIDTH - 1)
+                    updateThread.update(getChunk(chunkX, chunkZ + 1));
+                if (z == 0)
+                    updateThread.update(getChunk(chunkX, chunkZ - 1));
+                wait = false;
             }
         }).start();
 
@@ -165,8 +177,8 @@ public class ChunkManager {
 
             }
         }
-
-        processBufferData();
+        if(wait == false)
+            processBufferData();
     }
 
     private void processBufferData() {
@@ -346,4 +358,10 @@ public class ChunkManager {
         return true;
 
     }
+
+    public void setWait(boolean wait) {
+        this.wait = wait;
+    }
+    
+    
 }

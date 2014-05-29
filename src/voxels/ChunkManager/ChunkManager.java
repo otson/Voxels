@@ -30,7 +30,7 @@ public class ChunkManager {
      * Set the maximum amount of threads use to create chunks. Default number is
      * equal to the number of cores in the system CPU.
      */
-    public static final int maxThreads = Runtime.getRuntime().availableProcessors() - 1;
+    public static final int maxThreads = 1;//Runtime.getRuntime().availableProcessors() - 1;
 
     private ConcurrentHashMap<Integer, byte[]> map;
     private ConcurrentHashMap<Integer, Handle> handles;

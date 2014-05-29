@@ -132,7 +132,7 @@ public class Voxels {
         glLightModel(GL_LIGHT_MODEL_AMBIENT, asFloatBuffer(lightAmbient));
         glLight(GL_LIGHT0, GL_DIFFUSE, asFloatBuffer(lightDiffuse));
         glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
-        
+
         // Set background to sky blue
         glClearColor(0f / 255f, 0f / 255f, 190f / 255f, 1.0f);
         START_TIME = (System.nanoTime() / 1000000);
@@ -245,13 +245,13 @@ public class Voxels {
                 chunkManager.editBlock(Type.DIRT, xInChunk(), Math.min((int) camera.y(), 255), zInChunk(), getCurrentChunkXId(), getCurrentChunkZId());
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_Q)) {
-                chunkManager.editBlock(Type.AIR, xInChunk(), Math.min((int) camera.y()-1, 255), zInChunk(), getCurrentChunkXId(), getCurrentChunkZId());
+                chunkManager.editBlock(Type.AIR, xInChunk(), Math.min((int) camera.y() - 1, 255), zInChunk(), getCurrentChunkXId(), getCurrentChunkZId());
             }
-            
+
         }
         if (Mouse.isGrabbed()) {
             camera.processMouse();
-            camera.processKeyboard(delta, 2);
+            camera.processKeyboard(delta, 1.4f);
             if (NIGHT_CYCLE) {
                 glClearColor(0f, (float) Math.max(0, (255 * Math.sin(timePassed() / 20000)) - 155) / 255f, (float) Math.max(25, (255 * Math.sin(timePassed() / 20000)) + 25) / 255f, 1.0f);
                 glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(new float[]{2500 + camera.x(), (float) (10000 * Math.sin(timePassed() / 20000)), (float) (10000 * Math.cos(timePassed() / 20000)), 1f}));
@@ -285,14 +285,14 @@ public class Voxels {
     public final static int xInChunk() {
         int x = (int) (camera.x());
         if (x < 0)
-            x = Chunk.CHUNK_WIDTH + x % 16;
+            x = Chunk.CHUNK_WIDTH + x % 16 - 1;
         return x % Chunk.CHUNK_WIDTH;
     }
 
     public final static int zInChunk() {
         int z = (int) (camera.z());
         if (z < 0)
-            z = Chunk.CHUNK_WIDTH + z % 16;
+            z = Chunk.CHUNK_WIDTH + z % 16 - 1;
         return z % Chunk.CHUNK_WIDTH;
     }
 

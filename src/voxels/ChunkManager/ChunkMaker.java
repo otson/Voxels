@@ -71,7 +71,7 @@ public class ChunkMaker extends Thread {
 
     }
 
-    public ChunkMaker(ArrayList<Data> dataToProcess,ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager) {
+    public ChunkMaker(ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager, ArrayList<Data> dataToProcess) {
         this.map = map;
         this.chunkManager = chunkManager;
         this.dataToProcess = dataToProcess;
@@ -86,21 +86,26 @@ public class ChunkMaker extends Thread {
 
             map.put(new Pair(chunkX, chunkZ).hashCode(), toByte(chunk));
             dataToProcess.add(new Data(chunkX, chunkZ, chunk.getVertices(), vertexData, normalData, texData, false));
+            update(chunkManager.getChunk(chunkX + 1, chunkZ));
+            update(chunkManager.getChunk(chunkX - 1, chunkZ));
+            update(chunkManager.getChunk(chunkX, chunkZ + 1));
+            update(chunkManager.getChunk(chunkX, chunkZ - 1));
+
         }
         else
             System.out.println("Already contains");
     }
 
-    public void update(final Chunk chunk) {
-        this.chunk = chunk;
-        updateAllBlocks();
-        drawChunkVBO();
-        new Thread(new Runnable() {
-            public void run() {
-                map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
-            }
-        }).start();
-        dataToProcess.add(new Data(chunk.xId, chunk.zId, chunk.getVertices(), vertexData, normalData, texData, true));
+    public void update(Chunk chunk) {
+        if (chunk != null) {
+            this.chunk = chunk;
+            this.xOff = chunk.xCoordinate;
+            this.zOff = chunk.zCoordinate;
+            updateAllBlocks();
+            drawChunkVBO();
+            map.put(new Pair(this.chunk.xId, this.chunk.zId).hashCode(), toByte(this.chunk));
+            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, true));
+        }
     }
 
     public void drawChunkVBO() {
@@ -1174,14 +1179,11 @@ public class ChunkMaker extends Thread {
             if (leftChunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][0].isOpaque())
                 chunk.blocks[0][Chunk.CHUNK_WIDTH - 1][0].setLeft(true);
         }
-        else
-            chunk.blocks[0][Chunk.CHUNK_WIDTH - 1][0].setLeft(true);
+
         if (backChunk != null) {
             if (backChunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
                 chunk.blocks[0][Chunk.CHUNK_WIDTH - 1][0].setBack(true);
         }
-        else
-            chunk.blocks[0][Chunk.CHUNK_WIDTH - 1][0].setBack(true);
 
         // add code for top chunk check when chunks are made smaller
         if (chunk.blocks[1][Chunk.CHUNK_WIDTH - 1][0].isOpaque())
@@ -1200,14 +1202,10 @@ public class ChunkMaker extends Thread {
             if (leftChunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
                 chunk.blocks[0][Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_WIDTH - 1].setLeft(true);
         }
-        else
-            chunk.blocks[0][Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_WIDTH - 1].setLeft(true);
         if (frontChunk != null) {
             if (frontChunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][0].isOpaque())
                 chunk.blocks[0][Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_WIDTH - 1].setFront(true);
         }
-        else
-            chunk.blocks[0][Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_WIDTH - 1].setFront(true);
 
         // add code for top chunk check when chunks are made smaller
         if (chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 2].isOpaque())
@@ -1225,14 +1223,10 @@ public class ChunkMaker extends Thread {
             if (backChunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
                 chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][0].setBack(true);
         }
-        else
-            chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][0].setBack(true);
         if (rightChunk != null) {
             if (rightChunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][0].isOpaque())
                 chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][0].setRight(true);
         }
-        else
-            chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][0].setRight(true);
 
         if (chunk.blocks[Chunk.CHUNK_WIDTH - 2][Chunk.CHUNK_HEIGHT - 1][0].isOpaque())
             chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][0].setLeft(true);
@@ -1249,14 +1243,10 @@ public class ChunkMaker extends Thread {
             if (rightChunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
                 chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setRight(true);
         }
-        else
-            chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setRight(true);
         if (frontChunk != null) {
             if (frontChunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][0].isOpaque())
                 chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setFront(true);
         }
-        else
-            chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setFront(true);
 
         chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setTop(true);
 
@@ -1274,12 +1264,9 @@ public class ChunkMaker extends Thread {
         boolean isValid = leftChunk != null;
 
         for (int z = 1; z < Chunk.CHUNK_WIDTH - 1; z++) {
-            if (isValid) {
+            if (isValid)
                 if (leftChunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][z].isOpaque())
                     chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][z].setLeft(true);
-            }
-            else
-                chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][z].setLeft(true);
 
             chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][z].setTop(true);
 
@@ -1301,12 +1288,9 @@ public class ChunkMaker extends Thread {
         boolean isValid = rightChunk != null;
 
         for (int z = 1; z < Chunk.CHUNK_WIDTH - 1; z++) {
-            if (isValid) {
+            if (isValid)
                 if (rightChunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][z].isOpaque())
                     chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][z].setRight(true);
-            }
-            else
-                chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][z].setRight(true);
 
             chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][z].setTop(true);
 
@@ -1328,12 +1312,9 @@ public class ChunkMaker extends Thread {
         boolean isValid = frontChunk != null;
 
         for (int x = 1; x < Chunk.CHUNK_WIDTH - 1; x++) {
-            if (isValid) {
+            if (isValid)
                 if (frontChunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][0].isOpaque())
                     chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setFront(true);
-            }
-            else
-                chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setFront(true);
 
             chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setTop(true);
 
@@ -1355,13 +1336,9 @@ public class ChunkMaker extends Thread {
         boolean isValid = backChunk != null;
 
         for (int x = 1; x < Chunk.CHUNK_WIDTH - 1; x++) {
-            if (isValid) {
+            if (isValid)
                 if (backChunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
                     chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][0].setBack(true);
-            }
-
-            else
-                chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][0].setBack(true);
 
             chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setTop(true);
 
@@ -1408,19 +1385,13 @@ public class ChunkMaker extends Thread {
     }
 
     private void updateBottomLeftBack() {
-        if (leftChunk != null) {
+        if (leftChunk != null)
             if (leftChunk.blocks[Chunk.CHUNK_WIDTH - 1][0][0].isOpaque())
                 chunk.blocks[0][0][0].setLeft(true);
-        }
-        else
-            chunk.blocks[0][0][0].setLeft(true);
 
-        if (backChunk != null) {
+        if (backChunk != null)
             if (backChunk.blocks[0][0][Chunk.CHUNK_WIDTH - 1].isOpaque())
                 chunk.blocks[0][0][0].setBack(true);
-        }
-        else
-            chunk.blocks[0][0][0].setBack(true);
 
         if (chunk.blocks[1][0][0].isOpaque())
             chunk.blocks[0][0][0].setRight(true);
@@ -1437,15 +1408,11 @@ public class ChunkMaker extends Thread {
             if (leftChunk.blocks[Chunk.CHUNK_WIDTH - 1][0][Chunk.CHUNK_WIDTH - 1].isOpaque())
                 chunk.blocks[0][0][Chunk.CHUNK_WIDTH - 1].setLeft(true);
         }
-        else
-            chunk.blocks[0][0][Chunk.CHUNK_WIDTH - 1].setLeft(true);
 
         if (frontChunk != null) {
             if (frontChunk.blocks[0][0][0].isOpaque())
                 chunk.blocks[0][0][Chunk.CHUNK_WIDTH - 1].setFront(true);
         }
-        else
-            chunk.blocks[0][0][Chunk.CHUNK_WIDTH - 1].setFront(true);
 
         if (chunk.blocks[1][0][Chunk.CHUNK_WIDTH - 1].isOpaque())
             chunk.blocks[0][0][Chunk.CHUNK_WIDTH - 1].setRight(true);
@@ -1458,18 +1425,14 @@ public class ChunkMaker extends Thread {
     }
 
     private void updateBottomRightBack() {
-        if (rightChunk != null) {
+        if (rightChunk != null)
             if (rightChunk.blocks[0][0][0].isOpaque())
                 chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][0].setRight(true);
-        }
-        else
-            chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][0].setRight(true);
-        if (backChunk != null) {
+
+        if (backChunk != null)
             if (backChunk.blocks[Chunk.CHUNK_WIDTH - 1][0][Chunk.CHUNK_WIDTH - 1].isOpaque())
                 chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][0].setBack(true);
-        }
-        else
-            chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][0].setBack(true);
+
         if (chunk.blocks[Chunk.CHUNK_WIDTH - 2][0][0].isOpaque())
             chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][0].setLeft(true);
 
@@ -1486,15 +1449,11 @@ public class ChunkMaker extends Thread {
             if (rightChunk.blocks[Chunk.CHUNK_WIDTH - 1][0][Chunk.CHUNK_WIDTH - 1].isOpaque())
                 chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][Chunk.CHUNK_WIDTH - 1].setRight(true);
         }
-        else
-            chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][Chunk.CHUNK_WIDTH - 1].setRight(true);
 
         if (frontChunk != null) {
             if (frontChunk.blocks[Chunk.CHUNK_WIDTH - 1][0][0].isOpaque())
                 chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][Chunk.CHUNK_WIDTH - 1].setFront(true);
         }
-        else
-            chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][Chunk.CHUNK_WIDTH - 1].setFront(true);
 
         if (chunk.blocks[Chunk.CHUNK_WIDTH - 2][0][Chunk.CHUNK_WIDTH - 1].isOpaque())
             chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][Chunk.CHUNK_WIDTH - 1].setLeft(true);
@@ -1510,12 +1469,9 @@ public class ChunkMaker extends Thread {
         boolean isValid = leftChunk != null;
 
         for (int z = 1; z < Chunk.CHUNK_WIDTH - 1; z++) {
-            if (isValid) {
+            if (isValid)
                 if (leftChunk.blocks[Chunk.CHUNK_WIDTH - 1][0][z].isOpaque())
                     chunk.blocks[0][0][z].setLeft(true);
-            }
-            else
-                chunk.blocks[0][0][z].setLeft(true);
 
             if (chunk.blocks[1][0][z].isOpaque()) {
                 chunk.blocks[0][0][z].setRight(true);
@@ -1540,12 +1496,9 @@ public class ChunkMaker extends Thread {
         boolean isValid = rightChunk != null;
 
         for (int z = 1; z < Chunk.CHUNK_WIDTH - 1; z++) {
-            if (isValid) {
+            if (isValid)
                 if (rightChunk.blocks[0][0][z].isOpaque())
                     chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][z].setRight(true);
-            }
-            else
-                chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][z].setRight(true);
 
             if (chunk.blocks[Chunk.CHUNK_WIDTH - 2][0][z].isOpaque()) {
                 chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][z].setLeft(true);
@@ -1569,12 +1522,9 @@ public class ChunkMaker extends Thread {
         boolean isValid = frontChunk != null;
 
         for (int x = 1; x < Chunk.CHUNK_WIDTH - 1; x++) {
-            if (isValid) {
+            if (isValid)
                 if (frontChunk.blocks[x][0][0].isOpaque())
                     chunk.blocks[x][0][Chunk.CHUNK_WIDTH - 1].setFront(true);
-            }
-            else
-                chunk.blocks[x][0][Chunk.CHUNK_WIDTH - 1].setFront(true);
 
             if (chunk.blocks[x + 1][0][Chunk.CHUNK_WIDTH - 1].isOpaque())
                 chunk.blocks[x][0][Chunk.CHUNK_WIDTH - 1].setRight(true);
@@ -1594,12 +1544,9 @@ public class ChunkMaker extends Thread {
         boolean isValid = backChunk != null;
 
         for (int x = 1; x < Chunk.CHUNK_WIDTH - 1; x++) {
-            if (isValid) {
+            if (isValid)
                 if (backChunk.blocks[x][0][Chunk.CHUNK_WIDTH - 1].isOpaque())
                     chunk.blocks[x][0][0].setBack(true);
-            }
-            else
-                chunk.blocks[x][0][0].setBack(true);
 
             if (chunk.blocks[x + 1][0][0].isOpaque())
                 chunk.blocks[x][0][0].setRight(true);
@@ -1644,12 +1591,9 @@ public class ChunkMaker extends Thread {
         for (int z = 1; z < Chunk.CHUNK_WIDTH - 1; z++) {
             for (int y = 1; y < Chunk.CHUNK_HEIGHT - 1; y++) {
                 if (chunk.blocks[0][y][z].is(Type.AIR) == false) {
-                    if (isValid) {
+                    if (isValid)
                         if (leftChunk.blocks[Chunk.CHUNK_WIDTH - 1][y][z].isOpaque())
                             chunk.blocks[0][y][z].setLeft(true);
-                    }
-                    else
-                        chunk.blocks[0][y][z].setLeft(true);
 
                     if (chunk.blocks[0][y + 1][z].isOpaque())
                         chunk.blocks[0][y][z].setTop(true);
@@ -1676,12 +1620,9 @@ public class ChunkMaker extends Thread {
         for (int z = 1; z < Chunk.CHUNK_WIDTH - 1; z++) {
             for (int y = 1; y < Chunk.CHUNK_HEIGHT - 1; y++) {
                 if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][z].is(Type.AIR) == false) {
-                    if (isValid) {
+                    if (isValid)
                         if (rightChunk.blocks[0][y][z].isOpaque())
                             chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][z].setRight(true);
-                    }
-                    else
-                        chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][z].setRight(true);
 
                     if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][y + 1][z].isOpaque())
                         chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][z].setTop(true);
@@ -1708,12 +1649,9 @@ public class ChunkMaker extends Thread {
         for (int x = 1; x < Chunk.CHUNK_WIDTH - 1; x++) {
             for (int y = 1; y < Chunk.CHUNK_HEIGHT - 1; y++) {
                 if (chunk.blocks[x][y][Chunk.CHUNK_WIDTH - 1].is(Type.AIR) == false) {
-                    if (isValid) {
+                    if (isValid)
                         if (frontChunk.blocks[x][y][0].isOpaque())
                             chunk.blocks[x][y][Chunk.CHUNK_WIDTH - 1].setFront(true);
-                    }
-                    else
-                        chunk.blocks[x][y][Chunk.CHUNK_WIDTH - 1].setFront(true);
 
                     if (chunk.blocks[x + 1][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
                         chunk.blocks[x][y][Chunk.CHUNK_WIDTH - 1].setRight(true);
@@ -1740,12 +1678,9 @@ public class ChunkMaker extends Thread {
         for (int x = 1; x < Chunk.CHUNK_WIDTH - 1; x++) {
             for (int y = 1; y < Chunk.CHUNK_HEIGHT - 1; y++) {
                 if (chunk.blocks[x][y][0].is(Type.AIR) == false) {
-                    if (isValid) {
+                    if (isValid)
                         if (backChunk.blocks[x][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
                             chunk.blocks[x][y][0].setBack(true);
-                    }
-                    else
-                        chunk.blocks[x][y][0].setBack(true);
 
                     if (chunk.blocks[x + 1][y][0].isOpaque())
                         chunk.blocks[x][y][0].setRight(true);
@@ -1794,19 +1729,13 @@ public class ChunkMaker extends Thread {
 
         for (int y = 1; y < Chunk.CHUNK_HEIGHT - 1; y++) {
             if (chunk.blocks[0][y][0].is(Type.AIR) == false) {
-                if (backIsValid) {
+                if (backIsValid)
                     if (backChunk.blocks[0][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
                         chunk.blocks[0][y][0].setBack(true);
-                }
-                else
-                    chunk.blocks[0][y][0].setBack(true);
 
-                if (leftIsValid) {
+                if (leftIsValid)
                     if (leftChunk.blocks[Chunk.CHUNK_WIDTH - 1][y][0].isOpaque())
                         chunk.blocks[0][y][0].setLeft(true);
-                }
-                else
-                    chunk.blocks[0][y][0].setLeft(true);
 
                 if (chunk.blocks[1][y][0].isOpaque())
                     chunk.blocks[0][y][0].setRight(true);
@@ -1829,19 +1758,13 @@ public class ChunkMaker extends Thread {
 
         for (int y = 1; y < Chunk.CHUNK_HEIGHT - 1; y++) {
             if (chunk.blocks[0][y][Chunk.CHUNK_WIDTH - 1].is(Type.AIR) == false) {
-                if (frontIsValid) {
+                if (frontIsValid)
                     if (frontChunk.blocks[0][y][0].isOpaque())
                         chunk.blocks[0][y][Chunk.CHUNK_WIDTH - 1].setFront(true);
-                }
-                else
-                    chunk.blocks[0][y][Chunk.CHUNK_WIDTH - 1].setFront(true);
 
-                if (leftIsValid) {
+                if (leftIsValid)
                     if (leftChunk.blocks[Chunk.CHUNK_WIDTH - 1][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
                         chunk.blocks[0][y][Chunk.CHUNK_WIDTH - 1].setLeft(true);
-                }
-                else
-                    chunk.blocks[0][y][Chunk.CHUNK_WIDTH - 1].setLeft(true);
 
                 if (chunk.blocks[1][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
                     chunk.blocks[0][y][Chunk.CHUNK_WIDTH - 1].setRight(true);
@@ -1864,19 +1787,13 @@ public class ChunkMaker extends Thread {
 
         for (int y = 1; y < Chunk.CHUNK_HEIGHT - 1; y++) {
             if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][0].is(Type.AIR) == false) {
-                if (rightIsValid) {
+                if (rightIsValid)
                     if (rightChunk.blocks[0][y][0].isOpaque())
                         chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][0].setRight(true);
-                }
-                else
-                    chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][0].setRight(true);
 
-                if (backIsValid) {
+                if (backIsValid)
                     if (backChunk.blocks[Chunk.CHUNK_WIDTH - 1][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
                         chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][0].setBack(true);
-                }
-                else
-                    chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][0].setBack(true);
 
                 if (chunk.blocks[Chunk.CHUNK_WIDTH - 2][y][0].isOpaque())
                     chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][0].setLeft(true);
@@ -1899,19 +1816,13 @@ public class ChunkMaker extends Thread {
 
         for (int y = 1; y < Chunk.CHUNK_HEIGHT - 1; y++) {
             if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][Chunk.CHUNK_WIDTH - 1].is(Type.AIR) == false) {
-                if (rightIsValid){
+                if (rightIsValid)
                     if (rightChunk.blocks[0][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
                         chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][Chunk.CHUNK_WIDTH - 1].setRight(true);
-                }
-                else
-                    chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][Chunk.CHUNK_WIDTH - 1].setRight(true);
 
-                if (frontIsValid){
+                if (frontIsValid)
                     if (frontChunk.blocks[Chunk.CHUNK_WIDTH - 1][y][0].isOpaque())
                         chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][Chunk.CHUNK_WIDTH - 1].setFront(true);
-                }
-                else
-                    chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][Chunk.CHUNK_WIDTH - 1].setFront(true);
 
                 if (chunk.blocks[Chunk.CHUNK_WIDTH - 2][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
                     chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][Chunk.CHUNK_WIDTH - 1].setLeft(true);

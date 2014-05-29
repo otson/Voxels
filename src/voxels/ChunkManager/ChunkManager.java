@@ -36,7 +36,7 @@ public class ChunkManager {
      * Set the maximum amount of threads use to create chunks. Default number is
      * equal to the number of cores in the system CPU.
      */
-    public static final int maxThreads = 1;//Runtime.getRuntime().availableProcessors();
+    public static final int maxThreads = Runtime.getRuntime().availableProcessors();
 
     private ConcurrentHashMap<Integer, byte[]> map;
     private ConcurrentHashMap<Integer, Handle> handles;
@@ -44,7 +44,7 @@ public class ChunkManager {
     private ChunkCoordinateCreator chunkCreator;
     private ActiveChunkLoader chunkLoader;
     private ChunkMaker[] threads = new ChunkMaker[maxThreads];
-    private ChunkMaker updater;
+    private ChunkMaker updateThread;
 
     private boolean atMax = false;
     private boolean inLoop;
@@ -59,7 +59,7 @@ public class ChunkManager {
         chunkCreator = new ChunkCoordinateCreator(map);
         chunkLoader = new ActiveChunkLoader(this);
         chunkLoader.setPriority(Thread.MIN_PRIORITY);
-        updater = new ChunkMaker(dataToProcess, map, this);
+        updateThread = new ChunkMaker(map, this, dataToProcess);
     }
 
     public Block getBlock(int x, int y, int z) {
@@ -76,18 +76,21 @@ public class ChunkManager {
         }
     }
 
-    public void editBlock(final short type, final int x, final int y, final int z, final int chunkX, final int chunkZ) {
-        long start = System.nanoTime();
+    public void editBlock(final short type, final int x, final int y, final int z, int chunkX, int chunkZ) {
+        //long start = System.nanoTime();
 
-        Chunk chunk = getChunk(chunkX, chunkZ);
+        final Chunk chunk = getChunk(chunkX, chunkZ);
         if (chunk == null) {
             System.out.println("Tried to modify a null chunk.");
             return;
         }
-        chunk.blocks[x][y][z].setType(type);
-        updater.update(chunk);
+        new Thread(new Runnable() {
+            public void run() {
+                chunk.blocks[x][y][z].setType(type);
+                updateThread.update(chunk);
 
-        System.out.println("Update finished: " + (System.nanoTime() - start) / 1000000 + " ms.");
+            }
+        }).start();
 
     }
 
@@ -163,15 +166,33 @@ public class ChunkManager {
             }
         }
 
-        // Create buffers from all the data in the arrayList
-        while (dataToProcess.iterator().hasNext()) {
-            Data data = dataToProcess.iterator().next();
-            if (data.UPDATE)
-                updateBuffers(data);
-            else
-                createBuffers(data);
-            dataToProcess.remove(data);
+        processBufferData();
+    }
+
+    private void processBufferData() {
+        while (dataToProcess.isEmpty() == false) {
+            Data data = dataToProcess.get(0);
+            if (data != null) {
+                if (data.UPDATE) {
+                    updateBuffers(data);
+                    System.out.println("Updating");
+                }
+                else {
+                    createBuffers(data);
+                }
+                dataToProcess.remove(0);
+            }
         }
+
+        // Create buffers from all the data in the arrayList
+//        while (dataToProcess.iterator().hasNext()) {
+//            Data data = dataToProcess.iterator().next();
+//            if (data.UPDATE)
+//                updateBuffers(data);
+//            else
+//                createBuffers(data);
+//            dataToProcess.remove(data);
+//        }
     }
 
     public void stopGeneration() {

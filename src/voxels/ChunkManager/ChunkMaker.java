@@ -1649,9 +1649,10 @@ public class ChunkMaker extends Thread {
         for (int x = 1; x < Chunk.CHUNK_WIDTH - 1; x++) {
             for (int y = 1; y < Chunk.CHUNK_HEIGHT - 1; y++) {
                 if (chunk.blocks[x][y][Chunk.CHUNK_WIDTH - 1].is(Type.AIR) == false) {
-                    if (isValid)
+                    if (isValid){
                         if (frontChunk.blocks[x][y][0].isOpaque())
                             chunk.blocks[x][y][Chunk.CHUNK_WIDTH - 1].setFront(true);
+                    }
 
                     if (chunk.blocks[x + 1][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
                         chunk.blocks[x][y][Chunk.CHUNK_WIDTH - 1].setRight(true);

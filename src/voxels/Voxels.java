@@ -42,7 +42,7 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains withs a width of one
      * block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 30;
+    public static final int TERRAIN_SMOOTHNESS = 50;
     /**
      * Set player's height. One block's height is 1.
      */
@@ -63,7 +63,7 @@ public class Voxels {
     /**
      * Set air block percentage if 3D noise is in use.
      */
-    public final static int AIR_PERCENTAGE = 30;
+    public final static int AIR_PERCENTAGE = 60;
     /**
      * Set seed for terrain generation.
      */
@@ -322,7 +322,7 @@ public class Voxels {
     }
 
     public static int get3DNoise(float x, float y, float z) {
-        return (int) ((SimplexNoise.noise(x / (1f * TERRAIN_SMOOTHNESS*2), y / (1f * TERRAIN_SMOOTHNESS*2), z / (1f * TERRAIN_SMOOTHNESS*2))+1)*128);
+        return (int) ((SimplexNoise.noise(x / (1f * TERRAIN_SMOOTHNESS*2f), y / (1f * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS*2f))+1)*128);
     }
 
     public static Texture loadTexture(String key) {

@@ -41,7 +41,7 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains withs a width of one
      * block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAINS_SMOOTHESS = 15;
+    public static final int TERRAIN_SMOOTHNESS = 15;
     /**
      * Set player's height. One block's height is 1.
      */
@@ -84,7 +84,6 @@ public class Voxels {
         initLighting();
         initTextures();
         gameLoop();
-
     }
 
     private static void initDisplay() {
@@ -123,7 +122,6 @@ public class Voxels {
     private static void initLighting() {
         glEnable(GL_LIGHTING);
         glEnable(GL_LIGHT0);
-        //glEnable(GL_LIGHT1);
 
         glEnable(GL_COLOR_MATERIAL);
         glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
@@ -133,10 +131,8 @@ public class Voxels {
 
         glLightModel(GL_LIGHT_MODEL_AMBIENT, asFloatBuffer(lightAmbient));
         glLight(GL_LIGHT0, GL_DIFFUSE, asFloatBuffer(lightDiffuse));
-        //glLight(GL_LIGHT1, GL_DIFFUSE, asFloatBuffer(lightDiffuse));
         glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
-        //glLight(GL_LIGHT1, GL_POSITION, asFloatBuffer(light1Position));
-
+        
         // Set background to sky blue
         glClearColor(0f / 255f, 0f / 255f, 190f / 255f, 1.0f);
         START_TIME = (System.nanoTime() / 1000000);
@@ -195,14 +191,12 @@ public class Voxels {
 
         for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
             for (int z = -chunkRenderDistance; z <= chunkRenderDistance; z++) {
-                //Chunk chunk = chunkManager.getChunk(getCurrentChunkX() + x, getCurrentChunkZId() + z);
                 Handle handles = chunkManager.getHandle(getCurrentChunkXId() + x, getCurrentChunkZId() + z);
                 if (handles != null) {
 
                     int vboVertexHandle = handles.vertexHandle;
                     int vboNormalHandle = handles.normalHandle;
                     int vboTexHandle = handles.texHandle;
-                    //int vboColorHandle = chunk.getVboColorHandle();
                     int vertices = handles.vertices;
 
                     glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
@@ -223,11 +217,9 @@ public class Voxels {
                     glDisableClientState(GL_VERTEX_ARRAY);
 
                     glBindBuffer(GL_ARRAY_BUFFER, 0);
-
                 }
             }
         }
-
     }
 
     private static void processInput(float delta) {
@@ -255,7 +247,7 @@ public class Voxels {
             if (Keyboard.isKeyDown(Keyboard.KEY_Q)) {
                 chunkManager.editBlock(Type.AIR, xInChunk(), Math.min((int) camera.y()-1, 255), zInChunk(), getCurrentChunkXId(), getCurrentChunkZId());
             }
-
+            
         }
         if (Mouse.isGrabbed()) {
             camera.processMouse();
@@ -294,7 +286,6 @@ public class Voxels {
         int x = (int) (camera.x());
         if (x < 0)
             x = Chunk.CHUNK_WIDTH + x % 16;
-
         return x % Chunk.CHUNK_WIDTH;
     }
 
@@ -302,16 +293,15 @@ public class Voxels {
         int z = (int) (camera.z());
         if (z < 0)
             z = Chunk.CHUNK_WIDTH + z % 16;
-
         return z % Chunk.CHUNK_WIDTH;
     }
 
     public static int getNoise(float x, float z) {
         int noise;
         if (USE_SEED)
-            noise = (int) ((FastNoise.noise(x / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS) + SEED, z / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS) + SEED, 5)) * (Chunk.CHUNK_HEIGHT / 256f)) - 1;
+            noise = (int) ((FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS) + SEED, z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS) + SEED, 5)) * (Chunk.CHUNK_HEIGHT / 256f)) - 1;
         else
-            noise = (int) ((FastNoise.noise(x / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS), z / (1f * TERRAINS_SMOOTHESS * TERRAINS_SMOOTHESS), 5)) * (Chunk.CHUNK_HEIGHT / 256f)) - 1;
+            noise = (int) ((FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), 5)) * (Chunk.CHUNK_HEIGHT / 256f)) - 1;
 
         return Math.max(noise, 0);
     }
@@ -332,7 +322,6 @@ public class Voxels {
         int delta = (int) (time - lastFrame);
         lastFrame = time;
         return Math.min(Math.max(delta, 1), 50);
-
     }
 
     public static long getTime() {

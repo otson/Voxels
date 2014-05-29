@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package voxels.ChunkManager;
 
 import com.ning.compress.lzf.LZFDecoder;
@@ -15,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL15;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
@@ -36,7 +30,7 @@ public class ChunkManager {
      * Set the maximum amount of threads use to create chunks. Default number is
      * equal to the number of cores in the system CPU.
      */
-    public static final int maxThreads = Runtime.getRuntime().availableProcessors()-1;
+    public static final int maxThreads = Runtime.getRuntime().availableProcessors() - 1;
 
     private ConcurrentHashMap<Integer, byte[]> map;
     private ConcurrentHashMap<Integer, Handle> handles;
@@ -51,7 +45,7 @@ public class ChunkManager {
     private boolean initialLoad = true;
     private boolean generate = false;
     private int lastMessage = -1;
-    
+
     private boolean wait = false;
 
     public ChunkManager() {
@@ -86,23 +80,18 @@ public class ChunkManager {
             System.out.println("Tried to modify a null chunk.");
             return;
         }
-        new Thread(new Runnable() {
-            public void run() {
-                wait = true;
-                chunk.blocks[x][y][z].setType(type);
-                updateThread.update(chunk);
-                
-                if (x == Chunk.CHUNK_WIDTH - 1)
-                    updateThread.update(getChunk(chunkX + 1, chunkZ));
-                if (x == 0)
-                    updateThread.update(getChunk(chunkX - 1, chunkZ));
-                if (z == Chunk.CHUNK_WIDTH - 1)
-                    updateThread.update(getChunk(chunkX, chunkZ + 1));
-                if (z == 0)
-                    updateThread.update(getChunk(chunkX, chunkZ - 1));
-                wait = false;
-            }
-        }).start();
+
+        chunk.blocks[x][y][z].setType(type);
+        updateThread.update(chunk);
+
+        if (x == Chunk.CHUNK_WIDTH - 1)
+            updateThread.update(getChunk(chunkX + 1, chunkZ));
+        if (x == 0)
+            updateThread.update(getChunk(chunkX - 1, chunkZ));
+        if (z == Chunk.CHUNK_WIDTH - 1)
+            updateThread.update(getChunk(chunkX, chunkZ + 1));
+        if (z == 0)
+            updateThread.update(getChunk(chunkX, chunkZ - 1));
 
     }
 
@@ -177,12 +166,14 @@ public class ChunkManager {
 
             }
         }
-        if(wait == false)
+        if (wait == false)
             processBufferData();
     }
 
     private void processBufferData() {
-        while (dataToProcess.isEmpty() == false) {
+        int count = 0;
+        while (dataToProcess.isEmpty() == false && count < 10) {
+            count++;
             Data data = dataToProcess.get(0);
             if (data != null) {
                 if (data.UPDATE) {
@@ -362,6 +353,5 @@ public class ChunkManager {
     public void setWait(boolean wait) {
         this.wait = wait;
     }
-    
-    
+
 }

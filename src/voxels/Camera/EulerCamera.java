@@ -280,57 +280,6 @@ public class EulerCamera implements Camera {
      * Processes keyboard input and converts into camera movement.
      *
      * @param delta the elapsed time since the last frame update in milliseconds
-     *
-     * @throws IllegalArgumentException if delta is 0 or delta is smaller than 0
-     */
-    public void processKeyboard(float delta) {
-        if (delta <= 0) {
-            throw new IllegalArgumentException("delta " + delta + " is 0 or is smaller than 0");
-        }
-
-        boolean keyUp = Keyboard.isKeyDown(Keyboard.KEY_UP) || Keyboard.isKeyDown(Keyboard.KEY_W);
-        boolean keyDown = Keyboard.isKeyDown(Keyboard.KEY_DOWN) || Keyboard.isKeyDown(Keyboard.KEY_S);
-        boolean keyLeft = Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.KEY_A);
-        boolean keyRight = Keyboard.isKeyDown(Keyboard.KEY_RIGHT) || Keyboard.isKeyDown(Keyboard.KEY_D);
-        boolean flyUp = Keyboard.isKeyDown(Keyboard.KEY_SPACE);
-        boolean flyDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
-        
-        if (keyUp && keyRight && !keyLeft && !keyDown) {
-            moveFromLook(delta * 0.003f, 0, -delta * 0.003f);
-        }
-        if (keyUp && keyLeft && !keyRight && !keyDown) {
-            moveFromLook(-delta * 0.003f, 0, -delta * 0.003f);
-        }
-        if (keyUp && !keyLeft && !keyRight && !keyDown) {
-            moveFromLook(0, 0, -delta * 0.003f);
-        }
-        if (keyDown && keyLeft && !keyRight && !keyUp) {
-            moveFromLook(-delta * 0.003f, 0, delta * 0.003f);
-        }
-        if (keyDown && keyRight && !keyLeft && !keyUp) {
-            moveFromLook(delta * 0.003f, 0, delta * 0.003f);
-        }
-        if (keyDown && !keyUp && !keyLeft && !keyRight) {
-            moveFromLook(0, 0, delta * 0.003f);
-        }
-        if (keyLeft && !keyRight && !keyUp && !keyDown) {
-            moveFromLook(-delta * 0.003f, 0, 0);
-        }
-        if (keyRight && !keyLeft && !keyUp && !keyDown) {
-            moveFromLook(delta * 0.003f, 0, 0);
-        }
-        if (flyUp && !flyDown) {
-            y += delta * 0.003f;
-        }
-        if (flyDown && !flyUp) {
-            y -= delta * 0.003f;
-        }
-    }
-
-    /**
-     * Processes keyboard input and converts into camera movement.
-     *
-     * @param delta the elapsed time since the last frame update in milliseconds
      * @param speed the speed of the movement (normal = 1.0)
      *
      * @throws IllegalArgumentException if delta is 0 or delta is smaller than 0
@@ -431,55 +380,9 @@ public class EulerCamera implements Camera {
                 System.out.println("Player tried to enter a chunk that does not exist. \n Position reset to (0, 255, 0)");
             }
         }
-
     }
 
-    /**
-     * Processes keyboard input and converts into camera movement.
-     *
-     * @param delta the elapsed time since the last frame update in milliseconds
-     * @param speedX the speed of the movement on the x-axis (normal = 1.0)
-     * @param speedY the speed of the movement on the y-axis (normal = 1.0)
-     * @param speedZ the speed of the movement on the z-axis (normal = 1.0)
-     *
-     * @throws IllegalArgumentException if delta is 0 or delta is smaller than 0
-     */
-    public void processKeyboard(float delta, float speedX, float speedY, float speedZ) {
-        if (delta <= 0) {
-            throw new IllegalArgumentException("delta " + delta + " is 0 or is smaller than 0");
-        }
-
-        boolean keyUp = Keyboard.isKeyDown(Keyboard.KEY_UP) || Keyboard.isKeyDown(Keyboard.KEY_W);
-        boolean keyDown = Keyboard.isKeyDown(Keyboard.KEY_DOWN) || Keyboard.isKeyDown(Keyboard.KEY_S);
-        boolean keyLeft = Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.KEY_A);
-        boolean keyRight = Keyboard.isKeyDown(Keyboard.KEY_RIGHT) || Keyboard.isKeyDown(Keyboard.KEY_D);
-
-        if (keyUp && keyRight && !keyLeft && !keyDown) {
-            moveFromLook(speedX * delta * 0.003f, 0, -speedZ * delta * 0.003f);
-        }
-        if (keyUp && keyLeft && !keyRight && !keyDown) {
-            moveFromLook(-speedX * delta * 0.003f, 0, -speedZ * delta * 0.003f);
-        }
-        if (keyUp && !keyLeft && !keyRight && !keyDown) {
-            moveFromLook(0, 0, -speedZ * delta * 0.003f);
-        }
-        if (keyDown && keyLeft && !keyRight && !keyUp) {
-            moveFromLook(-speedX * delta * 0.003f, 0, speedZ * delta * 0.003f);
-        }
-        if (keyDown && keyRight && !keyLeft && !keyUp) {
-            moveFromLook(speedX * delta * 0.003f, 0, speedZ * delta * 0.003f);
-        }
-        if (keyDown && !keyUp && !keyLeft && !keyRight) {
-            moveFromLook(0, 0, speedZ * delta * 0.003f);
-        }
-        if (keyLeft && !keyRight && !keyUp && !keyDown) {
-            moveFromLook(-speedX * delta * 0.003f, 0, 0);
-        }
-        if (keyRight && !keyLeft && !keyUp && !keyDown) {
-            moveFromLook(speedX * delta * 0.003f, 0, 0);
-        }
-
-    }
+    
 
     /**
      * Move in the direction you're looking. That is, this method assumes a new
@@ -665,6 +568,16 @@ public class EulerCamera implements Camera {
         return "EulerCamera [x=" + x + ", y=" + y + ", z=" + z + ", pitch=" + pitch + ", yaw=" + yaw + ", "
                 + "roll=" + roll + ", fov=" + fov + ", aspectRatio=" + aspectRatio + ", zNear=" + zNear + ", "
                 + "zFar=" + zFar + "]";
+    }
+
+    @Override
+    public void processKeyboard(float delta) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void processKeyboard(float delta, float speedX, float speedY, float speedZ) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**

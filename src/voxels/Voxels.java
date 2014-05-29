@@ -49,7 +49,7 @@ public class Voxels {
     /**
      * Set if night cycle is in use.
      */
-    public static final boolean NIGHT_CYCLE = true;
+    public static final boolean NIGHT_CYCLE = false;
     /**
      * Set if terrain generation's uses a seed.
      */

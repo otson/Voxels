@@ -81,10 +81,10 @@ public class ChunkMaker extends Thread {
 
             map.put(new Pair(chunkX, chunkZ).hashCode(), toByte(chunk));
             dataToProcess.add(new Data(chunkX, chunkZ, chunk.getVertices(), vertexData, normalData, texData, false));
-            update(chunkManager.getChunk(chunkX + 1, chunkZ));
-            update(chunkManager.getChunk(chunkX - 1, chunkZ));
-            update(chunkManager.getChunk(chunkX, chunkZ + 1));
-            update(chunkManager.getChunk(chunkX, chunkZ - 1));
+            updateLeft(chunkManager.getChunk(chunkX + 1, chunkZ));
+            updateRight(chunkManager.getChunk(chunkX - 1, chunkZ));
+            updateBack(chunkManager.getChunk(chunkX, chunkZ + 1));
+            updateFront(chunkManager.getChunk(chunkX, chunkZ - 1));
 
         }
         else
@@ -97,6 +97,54 @@ public class ChunkMaker extends Thread {
             this.xOff = chunk.xCoordinate;
             this.zOff = chunk.zCoordinate;
             updateAllBlocks();
+            drawChunkVBO();
+            map.put(new Pair(this.chunk.xId, this.chunk.zId).hashCode(), toByte(this.chunk));
+            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, true));
+        }
+    }
+
+    public void updateLeft(Chunk chunk) {
+        if (chunk != null) {
+            this.chunk = chunk;
+            this.xOff = chunk.xCoordinate;
+            this.zOff = chunk.zCoordinate;
+            updateLeft();
+            drawChunkVBO();
+            map.put(new Pair(this.chunk.xId, this.chunk.zId).hashCode(), toByte(this.chunk));
+            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, true));
+        }
+    }
+
+    public void updateRight(Chunk chunk) {
+        if (chunk != null) {
+            this.chunk = chunk;
+            this.xOff = chunk.xCoordinate;
+            this.zOff = chunk.zCoordinate;
+            updateRight();
+            drawChunkVBO();
+            map.put(new Pair(this.chunk.xId, this.chunk.zId).hashCode(), toByte(this.chunk));
+            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, true));
+        }
+    }
+
+    public void updateBack(Chunk chunk) {
+        if (chunk != null) {
+            this.chunk = chunk;
+            this.xOff = chunk.xCoordinate;
+            this.zOff = chunk.zCoordinate;
+            updateBack();
+            drawChunkVBO();
+            map.put(new Pair(this.chunk.xId, this.chunk.zId).hashCode(), toByte(this.chunk));
+            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, true));
+        }
+    }
+
+    public void updateFront(Chunk chunk) {
+        if (chunk != null) {
+            this.chunk = chunk;
+            this.xOff = chunk.xCoordinate;
+            this.zOff = chunk.zCoordinate;
+            updateFront();
             drawChunkVBO();
             map.put(new Pair(this.chunk.xId, this.chunk.zId).hashCode(), toByte(this.chunk));
             dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, true));
@@ -1086,11 +1134,7 @@ public class ChunkMaker extends Thread {
     }
 
     private void updateAllBlocks() {
-
-        rightChunk = chunkManager.getChunk(chunk.xId + 1, chunk.zId);
-        leftChunk = chunkManager.getChunk(chunk.xId - 1, chunk.zId);
-        backChunk = chunkManager.getChunk(chunk.xId, chunk.zId - 1);
-        frontChunk = chunkManager.getChunk(chunk.xId, chunk.zId + 1);
+        getAdjacentChunks();
 
         updateMiddle();
 
@@ -1125,6 +1169,75 @@ public class ChunkMaker extends Thread {
         updateBottomSide();
         updateFrontSide();
         updateBackSide();
+        
+        rightChunk  = null;
+        leftChunk = null;
+        backChunk = null;
+        frontChunk = null;
+    }
+
+    private void getAdjacentChunks() {
+        rightChunk = chunkManager.getChunk(chunk.xId + 1, chunk.zId);
+        leftChunk = chunkManager.getChunk(chunk.xId - 1, chunk.zId);
+        backChunk = chunkManager.getChunk(chunk.xId, chunk.zId - 1);
+        frontChunk = chunkManager.getChunk(chunk.xId, chunk.zId + 1);
+    }
+
+    private void updateBack() {
+        backChunk = chunkManager.getChunk(chunk.xId, chunk.zId - 1);
+        updateTopLeftBack();
+        updateTopRightBack();
+        updateBottomLeftBack();
+        updateBottomRightBack();
+        updateTopBack();
+        updateBottomBack();
+        updateLeftBack();
+        updateRightBack();
+        updateBackSide();
+        backChunk = null;
+
+    }
+
+    private void updateFront() {
+        frontChunk = chunkManager.getChunk(chunk.xId, chunk.zId + 1);
+        updateTopLeftFront();
+        updateTopRightFront();
+        updateBottomLeftFront();
+        updateBottomRightFront();
+        updateTopFront();
+        updateBottomFront();
+        updateLeftFront();
+        updateRightFront();
+        updateFrontSide();
+        frontChunk = null;
+    }
+
+    private void updateLeft() {
+        leftChunk = chunkManager.getChunk(chunk.xId - 1, chunk.zId);
+        updateTopLeftBack();
+        updateTopLeftFront();
+        updateBottomLeftBack();
+        updateBottomLeftFront();
+        updateTopLeft();
+        updateBottomLeft();
+        updateLeftBack();
+        updateLeftFront();
+        updateLeftSide();
+        leftChunk = null;
+    }
+
+    private void updateRight() {
+        rightChunk = chunkManager.getChunk(chunk.xId + 1, chunk.zId);
+        updateTopRightBack();
+        updateTopRightFront();
+        updateBottomRightBack();
+        updateBottomRightFront();
+        updateTopRight();
+        updateBottomRight();
+        updateRightBack();
+        updateRightFront();
+        updateRightSide();
+        rightChunk = null;
     }
 
     private void updateMiddle() {

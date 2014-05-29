@@ -85,13 +85,13 @@ public class ChunkManager {
         updateThread.update(chunk);
 
         if (x == Chunk.CHUNK_WIDTH - 1)
-            updateThread.update(getChunk(chunkX + 1, chunkZ));
+            updateThread.updateLeft(getChunk(chunkX + 1, chunkZ));
         if (x == 0)
-            updateThread.update(getChunk(chunkX - 1, chunkZ));
+            updateThread.updateRight(getChunk(chunkX - 1, chunkZ));
         if (z == Chunk.CHUNK_WIDTH - 1)
-            updateThread.update(getChunk(chunkX, chunkZ + 1));
+            updateThread.updateBack(getChunk(chunkX, chunkZ + 1));
         if (z == 0)
-            updateThread.update(getChunk(chunkX, chunkZ - 1));
+            updateThread.updateFront(getChunk(chunkX, chunkZ - 1));
 
     }
 
@@ -186,16 +186,6 @@ public class ChunkManager {
                 dataToProcess.remove(0);
             }
         }
-
-        // Create buffers from all the data in the arrayList
-//        while (dataToProcess.iterator().hasNext()) {
-//            Data data = dataToProcess.iterator().next();
-//            if (data.UPDATE)
-//                updateBuffers(data);
-//            else
-//                createBuffers(data);
-//            dataToProcess.remove(data);
-//        }
     }
 
     public void stopGeneration() {

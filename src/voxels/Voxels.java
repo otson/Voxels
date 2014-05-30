@@ -50,9 +50,9 @@ public class Voxels {
     /**
      * Set if night cycle is in use.
      */
-    public static final boolean NIGHT_CYCLE = false;
+    public static final boolean NIGHT_CYCLE = true;
     /**
-     * Set if terrain generation's uses a seed.
+     * Set if terrain generation uses a seed.
      */
     public static final boolean USE_SEED = false; 
     /**
@@ -72,7 +72,7 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 5;
+    public static int chunkCreationDistance = 7;
     public static int chunkRenderDistance = 12;
     private static Texture atlas;
     public static final float WaterOffs = 0.28f;

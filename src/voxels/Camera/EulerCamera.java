@@ -309,7 +309,6 @@ public class EulerCamera implements Camera {
             float lightDiffuse[] = {0.1f, 0.1f, 1f, 1.0f};
 
             glLightModel(GL_LIGHT_MODEL_AMBIENT, Voxels.asFloatBuffer(lightAmbient));
-            glLight(GL_LIGHT0, GL_DIFFUSE, Voxels.asFloatBuffer(lightDiffuse));
             glLight(GL_LIGHT1, GL_DIFFUSE, Voxels.asFloatBuffer(lightDiffuse));
 
             glDisable(GL_CULL_FACE);
@@ -320,7 +319,6 @@ public class EulerCamera implements Camera {
             float lightDiffuse[] = {1f, 1f, 1f, 1.0f};
 
             glLightModel(GL_LIGHT_MODEL_AMBIENT, Voxels.asFloatBuffer(lightAmbient));
-            glLight(GL_LIGHT0, GL_DIFFUSE, Voxels.asFloatBuffer(lightDiffuse));
             glLight(GL_LIGHT1, GL_DIFFUSE, Voxels.asFloatBuffer(lightDiffuse));
 
             glEnable(GL_CULL_FACE);
@@ -357,14 +355,13 @@ public class EulerCamera implements Camera {
             if (flying)
                 y += speed * delta * 0.003f;
             else if (fallingSpeed == 0)
-                fallingSpeed = -delta * 0.0125f;
+                fallingSpeed = -16 * 0.0125f;
 
         if (flyDown && !flyUp)
             if (flying)
                 y -= speed * delta * 0.003f;
 
         if (flying == false) {
-            //Chunk temp = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkZId());
             if (chunkManager.getMiddle() != null) {
                 if (y >= Chunk.CHUNK_HEIGHT || y < 0 || chunkManager.getMiddle().blocks[xInChunk()][(int) y][zInChunk()].is(Type.AIR)) {
                     y -= fallingSpeed;
@@ -707,7 +704,7 @@ public class EulerCamera implements Camera {
     }
 
     public boolean inWater() {
-        return this.y - 0.5f + Voxels.WaterOffs < Chunk.WATER_HEIGHT;
+        return this.y + Voxels.WaterOffs < Chunk.WATER_HEIGHT;
     }
 
     public boolean getFlying() {

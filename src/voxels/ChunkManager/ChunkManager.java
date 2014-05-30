@@ -50,8 +50,8 @@ public class ChunkManager {
     private boolean wait = false;
 
     public ChunkManager() {
-        map = new ConcurrentHashMap<>();
-        handles = new ConcurrentHashMap<>();
+        map = new ConcurrentHashMap<>(16, 0.9f, 1);
+        handles = new ConcurrentHashMap<>(16, 0.9f, 1);
         dataToProcess = new ArrayList<>();
         chunkCreator = new ChunkCoordinateCreator(map);
         chunkLoader = new ActiveChunkLoader(this);

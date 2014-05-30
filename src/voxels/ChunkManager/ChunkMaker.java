@@ -78,31 +78,29 @@ public class ChunkMaker extends Thread {
             chunk = new Chunk(chunkX, chunkZ);
             updateAllBlocks();
             drawChunkVBO();
-
             map.put(new Pair(chunkX, chunkZ).hashCode(), toByte(chunk));
             dataToProcess.add(new Data(chunkX, chunkZ, chunk.getVertices(), vertexData, normalData, texData, false));
-            updateSidesWithCheck(chunkManager.getChunk(chunkX + 1, chunkZ));
-            updateSidesWithCheck(chunkManager.getChunk(chunkX - 1, chunkZ));
-            updateSidesWithCheck(chunkManager.getChunk(chunkX, chunkZ + 1));
-            updateSidesWithCheck(chunkManager.getChunk(chunkX, chunkZ - 1));
-
+            
+            boolean twoLeft = map.containsKey(new Pair(chunkX - 2, chunkZ).hashCode());
+            boolean twoRight = map.containsKey(new Pair(chunkX + 2, chunkZ).hashCode());
+            boolean twoUp = map.containsKey(new Pair(chunkX, chunkZ + 2).hashCode());
+            boolean twoDown = map.containsKey(new Pair(chunkX, chunkZ - 2).hashCode());
+            boolean upLeft = map.containsKey(new Pair(chunkX - 1, chunkZ + 1).hashCode());
+            boolean upRight = map.containsKey(new Pair(chunkX + 1, chunkZ + 1).hashCode());
+            boolean downLeft = map.containsKey(new Pair(chunkX - 1, chunkZ - 1).hashCode());
+            boolean downRight = map.containsKey(new Pair(chunkX + 1, chunkZ - 1).hashCode());
+          
+            if (twoRight && upRight && downRight)
+                updateSides(chunkManager.getChunk(chunkX + 1, chunkZ));
+            if (twoLeft && upLeft && downLeft)
+                updateSides(chunkManager.getChunk(chunkX - 1, chunkZ));
+            if (twoUp && upLeft && upRight)
+                updateSides(chunkManager.getChunk(chunkX, chunkZ + 1));
+            if (twoDown && downLeft && downRight)
+                updateSides(chunkManager.getChunk(chunkX, chunkZ - 1));
         }
         else
             System.out.println("Already contains");
-    }
-
-    public void updateSidesWithCheck(final Chunk chunk) {
-        if (chunk != null) {
-            // if all 4 surrounding chunks exist
-//            new Thread(new Runnable() {
-//                public void run() {
-            if (map.containsKey(new Pair(chunk.xId + 1, chunk.zId).hashCode()) && map.containsKey(new Pair(chunk.xId - 1, chunk.zId).hashCode()) && map.containsKey(new Pair(chunk.xId, chunk.zId + 1).hashCode()) && map.containsKey(new Pair(chunk.xId, chunk.zId - 1).hashCode())) {
-                updateSides(chunk);
-//                    }
-//                }
-//            }).start();
-            }
-        }
     }
 
     public void update(Chunk chunk) {

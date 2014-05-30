@@ -23,11 +23,11 @@ public class ChunkCoordinateCreator {
     private boolean needMiddleChunk = true;
     private ConcurrentHashMap<Integer, byte[]> map;
 
-    ChunkCoordinateCreator(ConcurrentHashMap<Integer, byte[]> map) {
+    public ChunkCoordinateCreator(ConcurrentHashMap<Integer, byte[]> map) {
         this.map = map;
     }
 
-    Coordinates getNewCoordinates() {
+    public Coordinates getNewCoordinates() {
         
         if (needMiddleChunk) {
             needMiddleChunk = false;

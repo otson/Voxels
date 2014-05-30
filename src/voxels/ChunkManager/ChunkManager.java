@@ -31,7 +31,7 @@ public class ChunkManager {
      * Set the maximum amount of threads use to create chunks. Default number is
      * equal to the number of cores in the system CPU.
      */
-    public static final int maxThreads = 1;//Runtime.getRuntime().availableProcessors() - 1;
+    public static int maxThreads = Runtime.getRuntime().availableProcessors();
 
     private ConcurrentHashMap<Integer, byte[]> map;
     private ConcurrentHashMap<Integer, Handle> handles;
@@ -93,7 +93,7 @@ public class ChunkManager {
             updateThread.updateBack(getChunk(chunkX, chunkZ + 1));
         if (z == 0)
             updateThread.updateFront(getChunk(chunkX, chunkZ - 1));
-        
+
         chunkLoader.refresh();
 
     }
@@ -141,6 +141,9 @@ public class ChunkManager {
                 atMax = true;
                 if (initialLoad && Voxels.USE_SEED)
                     System.out.println("Loaded all chunks. Seed: " + Voxels.SEED);
+                if(initialLoad){
+                    threads = new ChunkMaker[2];
+                }
                 initialLoad = false;
             }
 
@@ -234,7 +237,6 @@ public class ChunkManager {
         glBindBuffer(GL_ARRAY_BUFFER, vboNormalHandle);
         glBufferData(GL_ARRAY_BUFFER, data.normalData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-    
 
         int vboTexHandle = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboTexHandle);

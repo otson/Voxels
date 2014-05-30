@@ -81,14 +81,28 @@ public class ChunkMaker extends Thread {
 
             map.put(new Pair(chunkX, chunkZ).hashCode(), toByte(chunk));
             dataToProcess.add(new Data(chunkX, chunkZ, chunk.getVertices(), vertexData, normalData, texData, false));
-            updateLeft(chunkManager.getChunk(chunkX + 1, chunkZ));
-            updateRight(chunkManager.getChunk(chunkX - 1, chunkZ));
-            updateBack(chunkManager.getChunk(chunkX, chunkZ + 1));
-            updateFront(chunkManager.getChunk(chunkX, chunkZ - 1));
+            updateSidesWithCheck(chunkManager.getChunk(chunkX + 1, chunkZ));
+            updateSidesWithCheck(chunkManager.getChunk(chunkX - 1, chunkZ));
+            updateSidesWithCheck(chunkManager.getChunk(chunkX, chunkZ + 1));
+            updateSidesWithCheck(chunkManager.getChunk(chunkX, chunkZ - 1));
 
         }
         else
             System.out.println("Already contains");
+    }
+
+    public void updateSidesWithCheck(final Chunk chunk) {
+        if (chunk != null) {
+            // if all 4 surrounding chunks exist
+//            new Thread(new Runnable() {
+//                public void run() {
+            if (map.containsKey(new Pair(chunk.xId + 1, chunk.zId).hashCode()) && map.containsKey(new Pair(chunk.xId - 1, chunk.zId).hashCode()) && map.containsKey(new Pair(chunk.xId, chunk.zId + 1).hashCode()) && map.containsKey(new Pair(chunk.xId, chunk.zId - 1).hashCode())) {
+                updateSides(chunk);
+//                    }
+//                }
+//            }).start();
+            }
+        }
     }
 
     public void update(Chunk chunk) {
@@ -116,6 +130,21 @@ public class ChunkMaker extends Thread {
                 }
             }).start();
 
+            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, true));
+        }
+    }
+
+    public void updateSides(final Chunk chunk) {
+        if (chunk != null) {
+            this.chunk = chunk;
+            this.xOff = chunk.xCoordinate;
+            this.zOff = chunk.zCoordinate;
+            updateRight();
+            updateLeft();
+            updateBack();
+            updateFront();
+            drawChunkVBO();
+            map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
             dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, true));
         }
     }
@@ -1398,7 +1427,7 @@ public class ChunkMaker extends Thread {
         boolean isValid = leftChunk != null;
 
         for (int z = 1; z < Chunk.CHUNK_WIDTH - 1; z++) {
-            if (isValid){
+            if (isValid) {
                 if (leftChunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][z].isOpaque())
                     chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][z].setLeft(true);
             }

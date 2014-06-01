@@ -7,13 +7,13 @@ import voxels.Voxels;
  *
  * @author otso
  */
-public class Chunk implements Serializable {
+public class Chunk implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
     public static final int CHUNK_WIDTH = 16;
     public static final int CHUNK_HEIGHT = 256;
-    public static final int WATER_HEIGHT = 5;
+    public static final int WATER_HEIGHT = -1;
 
     private int vboVertexHandle;
     private int vboNormalHandle;
@@ -58,7 +58,7 @@ public class Chunk implements Serializable {
                         float noise1 = Voxels.get3DNoise(x + xCoordinate, y, z + zCoordinate) / 255f;
                         float noise2 = Voxels.get3DNoise(x + xCoordinate + 10000, y + 10000, z + zCoordinate + 10000) / 255f;
 
-                        if (noise1 > 0.7f && noise1 < 0.8f && noise2 > 0.45f && noise2 < 0.6f)
+                        if (noise1 > 0.45f && noise1 < 0.55f && noise2 > 0.45f && noise2 < 0.55f)
                             blocks[x][y][z] = new Block(Type.DIRT);
                         else
                             blocks[x][y][z] = new Block(Type.AIR);

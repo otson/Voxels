@@ -169,7 +169,6 @@ public class ChunkManager {
                     System.out.println(string);
                     Display.setTitle(string);
                 }
-
             }
         }
         if (wait == false)
@@ -202,28 +201,17 @@ public class ChunkManager {
     }
 
     public void updateBuffers(Data data) {
-        Handle temp = handles.get(new Pair(data.chunkX, data.chunkZ).hashCode());
-
-        int vboVertexHandle = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
+        glBindBuffer(GL_ARRAY_BUFFER, data.vertexHandle);
         glBufferData(GL_ARRAY_BUFFER, data.vertexData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        int vboNormalHandle = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vboNormalHandle);
+        glBindBuffer(GL_ARRAY_BUFFER, data.normalHandle);
         glBufferData(GL_ARRAY_BUFFER, data.normalData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        int vboTexHandle = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vboTexHandle);
+        glBindBuffer(GL_ARRAY_BUFFER, data.texHandle);
         glBufferData(GL_ARRAY_BUFFER, data.texData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        handles.put(new Pair(data.chunkX, data.chunkZ).hashCode(), new Handle(vboVertexHandle, vboNormalHandle, vboTexHandle, data.vertices));
-
-        glDeleteBuffers(temp.vertexHandle);
-        glDeleteBuffers(temp.normalHandle);
-        glDeleteBuffers(temp.texHandle);
     }
 
     public void createBuffers(Data data) {

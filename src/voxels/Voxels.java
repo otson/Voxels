@@ -42,7 +42,7 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains withs a width of one
      * block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 50;
+    public static final int TERRAIN_SMOOTHNESS = 15;
     /**
      * Set player's height. One block's height is 1.
      */
@@ -58,7 +58,7 @@ public class Voxels {
     /**
      * Set if 3D simplex noise is used to generate terrain.
      */
-    public static final boolean USE_3D_NOISE = true;
+    public static final boolean USE_3D_NOISE = false;
     
     /**
      * Set air block percentage if 3D noise is in use.

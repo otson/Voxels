@@ -111,7 +111,8 @@ public class ChunkMaker extends Thread {
             updateAllBlocks();
             drawChunkVBO();
             map.put(new Pair(this.chunk.xId, this.chunk.zId).hashCode(), toByte(this.chunk));
-            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, true));
+            Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.zId);
+            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData,handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
         }
     }
 

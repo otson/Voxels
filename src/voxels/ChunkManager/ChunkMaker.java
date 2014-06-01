@@ -80,7 +80,7 @@ public class ChunkMaker extends Thread {
             drawChunkVBO();
             map.put(new Pair(chunkX, chunkZ).hashCode(), toByte(chunk));
             dataToProcess.add(new Data(chunkX, chunkZ, chunk.getVertices(), vertexData, normalData, texData, false));
-            
+
             boolean twoLeft = map.containsKey(new Pair(chunkX - 2, chunkZ).hashCode());
             boolean twoRight = map.containsKey(new Pair(chunkX + 2, chunkZ).hashCode());
             boolean twoUp = map.containsKey(new Pair(chunkX, chunkZ + 2).hashCode());
@@ -89,7 +89,7 @@ public class ChunkMaker extends Thread {
             boolean upRight = map.containsKey(new Pair(chunkX + 1, chunkZ + 1).hashCode());
             boolean downLeft = map.containsKey(new Pair(chunkX - 1, chunkZ - 1).hashCode());
             boolean downRight = map.containsKey(new Pair(chunkX + 1, chunkZ - 1).hashCode());
-          
+
             if (twoRight && upRight && downRight)
                 updateSides(chunkManager.getChunk(chunkX + 1, chunkZ));
             if (twoLeft && upLeft && downLeft)
@@ -112,28 +112,25 @@ public class ChunkMaker extends Thread {
             drawChunkVBO();
             map.put(new Pair(this.chunk.xId, this.chunk.zId).hashCode(), toByte(this.chunk));
             Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.zId);
-            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData,handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
+            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
         }
     }
 
-    public void updateLeft(final Chunk chunk) {
+    public void updateLeft(Chunk chunk) {
         if (chunk != null) {
             this.chunk = chunk;
             this.xOff = chunk.xCoordinate;
             this.zOff = chunk.zCoordinate;
             updateLeft();
             drawChunkVBO();
-            new Thread(new Runnable() {
-                public void run() {
-                    map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
-                }
-            }).start();
 
-            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, true));
+            map.put(new Pair(this.chunk.xId, this.chunk.zId).hashCode(), toByte(this.chunk));
+            Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.zId);
+            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
         }
     }
 
-    public void updateSides(final Chunk chunk) {
+    public void updateSides(Chunk chunk) {
         if (chunk != null) {
             this.chunk = chunk;
             this.xOff = chunk.xCoordinate;
@@ -143,58 +140,52 @@ public class ChunkMaker extends Thread {
             updateBack();
             updateFront();
             drawChunkVBO();
+            
+            map.put(new Pair(this.chunk.xId, this.chunk.zId).hashCode(), toByte(this.chunk));
+            Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.zId);
+            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
+        }
+    }
+
+    public void updateRight(Chunk chunk) {
+        if (chunk != null) {
+            this.chunk = chunk;
+            this.xOff = chunk.xCoordinate;
+            this.zOff = chunk.zCoordinate;
+            updateRight();
+            drawChunkVBO();
+
+            map.put(new Pair(this.chunk.xId, this.chunk.zId).hashCode(), toByte(this.chunk));
+            Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.zId);
+            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
+        }
+    }
+
+    public void updateBack(Chunk chunk) {
+        if (chunk != null) {
+            this.chunk = chunk;
+            this.xOff = chunk.xCoordinate;
+            this.zOff = chunk.zCoordinate;
+            updateBack();
+            drawChunkVBO();
+
+            map.put(new Pair(this.chunk.xId, this.chunk.zId).hashCode(), toByte(this.chunk));
+            Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.zId);
+            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
+        }
+    }
+
+    public void updateFront(Chunk chunk) {
+        if (chunk != null) {
+            this.chunk = chunk;
+            this.xOff = chunk.xCoordinate;
+            this.zOff = chunk.zCoordinate;
+            updateFront();
+            drawChunkVBO();
+
             map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
-            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, true));
-        }
-    }
-
-    public void updateRight(final Chunk chunk) {
-        if (chunk != null) {
-            this.chunk = chunk;
-            this.xOff = chunk.xCoordinate;
-            this.zOff = chunk.zCoordinate;
-            updateRight();
-            drawChunkVBO();
-
-            new Thread(new Runnable() {
-                public void run() {
-                    map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
-                }
-            }).start();
-            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, true));
-        }
-    }
-
-    public void updateBack(final Chunk chunk) {
-        if (chunk != null) {
-            this.chunk = chunk;
-            this.xOff = chunk.xCoordinate;
-            this.zOff = chunk.zCoordinate;
-            updateBack();
-            drawChunkVBO();
-            new Thread(new Runnable() {
-                public void run() {
-                    map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
-                }
-            }).start();
-
-            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, true));
-        }
-    }
-
-    public void updateFront(final Chunk chunk) {
-        if (chunk != null) {
-            this.chunk = chunk;
-            this.xOff = chunk.xCoordinate;
-            this.zOff = chunk.zCoordinate;
-            updateFront();
-            drawChunkVBO();
-            new Thread(new Runnable() {
-                public void run() {
-                    map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
-                }
-            }).start();
-            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, true));
+            Handle handle = chunkManager.getHandle(chunk.xId, chunk.zId);
+            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
         }
     }
 
@@ -206,7 +197,6 @@ public class ChunkMaker extends Thread {
         vertexArray = new float[vertices * vertexSize];
         normalArray = new float[vertices * normalSize];
         texArray = new float[vertices * texSize];
-        colorArray = new float[vertices * colorSize];
 
         int vArrayPos = 0;
         int nArrayPos = 0;
@@ -215,7 +205,6 @@ public class ChunkMaker extends Thread {
         vertexData = BufferUtils.createFloatBuffer(vertices * vertexSize);
         normalData = BufferUtils.createFloatBuffer(vertices * vertexSize);
         texData = BufferUtils.createFloatBuffer(vertices * texSize);
-        colorData = BufferUtils.createFloatBuffer(vertices * colorSize);
 
         for (int x = 0; x < chunk.blocks.length; x++) {
             for (int z = 0; z < chunk.blocks[x][0].length; z++) {

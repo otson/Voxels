@@ -85,22 +85,22 @@ public class ChunkManager {
         chunk.blocks[x][y][z].setType(type);
         updateThread.update(chunk);
 
-//        if (x == Chunk.CHUNK_WIDTH - 1)
-//            updateThread.updateLeft(getChunk(chunkX + 1, chunkZ));
-//        if (x == 0)
-//            updateThread.updateRight(getChunk(chunkX - 1, chunkZ));
-//        if (z == Chunk.CHUNK_WIDTH - 1)
-//            updateThread.updateBack(getChunk(chunkX, chunkZ + 1));
-//        if (z == 0)
-//            updateThread.updateFront(getChunk(chunkX, chunkZ - 1));
+        if (x == Chunk.CHUNK_WIDTH - 1)
+            updateThread.updateLeft(getChunk(chunkX + 1, chunkY, chunkZ));
+        if (x == 0)
+            updateThread.updateRight(getChunk(chunkX - 1, chunkY, chunkZ));
+        if (z == Chunk.CHUNK_WIDTH - 1)
+            updateThread.updateBack(getChunk(chunkX, chunkY, chunkZ + 1));
+        if (z == 0)
+            updateThread.updateFront(getChunk(chunkX, chunkY, chunkZ - 1));
 
         chunkLoader.refresh();
 
     }
 
-    public Handle getHandle(int x,int y, int z) {
-        if (handles.containsKey(new Pair(x,y, z).hashCode()))
-            return handles.get(new Pair(x,y, z).hashCode());
+    public Handle getHandle(int x, int y, int z) {
+        if (handles.containsKey(new Pair(x, y, z).hashCode()))
+            return handles.get(new Pair(x, y, z).hashCode());
         else
             return null;
     }
@@ -126,7 +126,6 @@ public class ChunkManager {
                 int x = coordinates.x;
                 int y = coordinates.y;
                 int z = coordinates.z;
-                
 
                 int newChunkX = coordinates.x;
                 int newChunkY = coordinates.y;
@@ -134,7 +133,7 @@ public class ChunkManager {
 
                 // Start a new thread, make a new chunk
                 int threadId = getFreeThread();
-                threads[threadId] = new ChunkMaker(dataToProcess, newChunkX, newChunkY, newChunkZ, x * Chunk.CHUNK_WIDTH, y*Chunk.CHUNK_HEIGHT, z * Chunk.CHUNK_WIDTH, map, this);
+                threads[threadId] = new ChunkMaker(dataToProcess, newChunkX, newChunkY, newChunkZ, x * Chunk.CHUNK_WIDTH, y * Chunk.CHUNK_HEIGHT, z * Chunk.CHUNK_WIDTH, map, this);
                 threads[threadId].setPriority(Thread.MIN_PRIORITY);
                 threads[threadId].start();
 
@@ -144,7 +143,7 @@ public class ChunkManager {
                 atMax = true;
                 if (initialLoad && Voxels.USE_SEED)
                     System.out.println("Loaded all chunks. Seed: " + Voxels.SEED);
-                if(initialLoad){
+                if (initialLoad) {
                     threads = new ChunkMaker[2];
                 }
                 initialLoad = false;
@@ -168,7 +167,7 @@ public class ChunkManager {
                 if (map.size() > lastMessage) {
 
                     lastMessage = map.size();
-                    String string = "Chunks loaded: " + (int) ((float) map.size() / (float) ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1)) * 100) + " % (" + map.size() + "/" + ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1)) + ")";
+                    String string = "Chunks loaded: " + (int) ((float) map.size() / (float) ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1) * 16) * 100) + " % (" + map.size() + "/" + ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1) * 16) + ")";
                     System.out.println(string);
                     Display.setTitle(string);
                 }
@@ -234,7 +233,7 @@ public class ChunkManager {
         glBufferData(GL_ARRAY_BUFFER, data.texData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        handles.put(new Pair(data.chunkX,data.chunkY, data.chunkZ).hashCode(), new Handle(vboVertexHandle, vboNormalHandle, vboTexHandle, data.vertices));
+        handles.put(new Pair(data.chunkX, data.chunkY, data.chunkZ).hashCode(), new Handle(vboVertexHandle, vboNormalHandle, vboTexHandle, data.vertices));
     }
 
     public boolean isAtMax() {

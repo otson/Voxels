@@ -85,23 +85,23 @@ public class ChunkMaker extends Thread {
             map.put(new Pair(chunkX, chunkY, chunkZ).hashCode(), toByte(chunk));
             dataToProcess.add(new Data(chunkX, chunkY, chunkZ, chunk.getVertices(), vertexData, normalData, texData, false));
 
-//            boolean twoLeft = map.containsKey(new Pair(chunkX - 2, chunkZ).hashCode());
-//            boolean twoRight = map.containsKey(new Pair(chunkX + 2, chunkZ).hashCode());
-//            boolean twoUp = map.containsKey(new Pair(chunkX, chunkZ + 2).hashCode());
-//            boolean twoDown = map.containsKey(new Pair(chunkX, chunkZ - 2).hashCode());
-//            boolean upLeft = map.containsKey(new Pair(chunkX - 1, chunkZ + 1).hashCode());
-//            boolean upRight = map.containsKey(new Pair(chunkX + 1, chunkZ + 1).hashCode());
-//            boolean downLeft = map.containsKey(new Pair(chunkX - 1, chunkZ - 1).hashCode());
-//            boolean downRight = map.containsKey(new Pair(chunkX + 1, chunkZ - 1).hashCode());
-//
-//            if (twoRight && upRight && downRight)
-//                updateSides(chunkManager.getChunk(chunkX + 1, chunkZ));
-//            if (twoLeft && upLeft && downLeft)
-//                updateSides(chunkManager.getChunk(chunkX - 1, chunkZ));
-//            if (twoUp && upLeft && upRight)
-//                updateSides(chunkManager.getChunk(chunkX, chunkZ + 1));
-//            if (twoDown && downLeft && downRight)
-//                updateSides(chunkManager.getChunk(chunkX, chunkZ - 1));
+            boolean twoLeft = map.containsKey(new Pair(chunkX - 2, chunkY, chunkZ).hashCode());
+            boolean twoRight = map.containsKey(new Pair(chunkX + 2, chunkY, chunkZ).hashCode());
+            boolean twoUp = map.containsKey(new Pair(chunkX, chunkY, chunkZ + 2).hashCode());
+            boolean twoDown = map.containsKey(new Pair(chunkX, chunkY, chunkZ - 2).hashCode());
+            boolean upLeft = map.containsKey(new Pair(chunkX - 1, chunkY, chunkZ + 1).hashCode());
+            boolean upRight = map.containsKey(new Pair(chunkX + 1, chunkY, chunkZ + 1).hashCode());
+            boolean downLeft = map.containsKey(new Pair(chunkX - 1, chunkY, chunkZ - 1).hashCode());
+            boolean downRight = map.containsKey(new Pair(chunkX + 1, chunkY, chunkZ - 1).hashCode());
+
+            if (twoRight && upRight && downRight)
+                updateSides(chunkManager.getChunk(chunkX + 1, chunkY, chunkZ));
+            if (twoLeft && upLeft && downLeft)
+                updateSides(chunkManager.getChunk(chunkX - 1, chunkY, chunkZ));
+            if (twoUp && upLeft && upRight)
+                updateSides(chunkManager.getChunk(chunkX, chunkY, chunkZ + 1));
+            if (twoDown && downLeft && downRight)
+                updateSides(chunkManager.getChunk(chunkX, chunkY, chunkZ - 1));
         }
         else
             System.out.println("Already contains");

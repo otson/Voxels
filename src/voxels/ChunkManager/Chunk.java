@@ -30,7 +30,7 @@ public class Chunk implements Serializable {
     public Block[][][] blocks;
     public int[][] maxHeights;
 
-    public Chunk(int xId, int zId, int yId) {
+    public Chunk(int xId, int yId, int zId) {
         this.xId = xId;
         this.zId = zId;
         this.yId = yId;
@@ -66,10 +66,10 @@ public class Chunk implements Serializable {
                             blocks[x][y][z] = new Block(Type.AIR);
                     }
                     else {
-                        if (y + Chunk.WATER_HEIGHT * yId > maxHeights[x][z] && y <= Chunk.WATER_HEIGHT) {
+                        if (y + Chunk.CHUNK_HEIGHT * yId > maxHeights[x][z] && y <= Chunk.WATER_HEIGHT) {
                             blocks[x][y][z] = new Block(Type.WATER);
                         }
-                        else if (y + Chunk.WATER_HEIGHT * yId <= maxHeights[x][z])
+                        else if (y + Chunk.CHUNK_HEIGHT * yId <= maxHeights[x][z])
                             blocks[x][y][z] = new Block(Type.DIRT);
                         else
                             blocks[x][y][z] = new Block(Type.AIR);

@@ -217,32 +217,34 @@ public class Voxels {
 
         for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
             for (int z = -chunkRenderDistance; z <= chunkRenderDistance; z++) {
-                Handle handles = chunkManager.getHandle(getCurrentChunkXId() + x, getCurrentChunkZId() + z);
-                if (handles != null) {
+                for (int y = 0; y < 16; y++) {
+                    Handle handles = chunkManager.getHandle(getCurrentChunkXId() + x, getCurrentChunkYId() + y, getCurrentChunkZId() + z);
+                    if (handles != null) {
 
-                    int vboVertexHandle = handles.vertexHandle;
-                    int vboNormalHandle = handles.normalHandle;
-                    int vboTexHandle = handles.texHandle;
-                    int vertices = handles.vertices;
+                        int vboVertexHandle = handles.vertexHandle;
+                        int vboNormalHandle = handles.normalHandle;
+                        int vboTexHandle = handles.texHandle;
+                        int vertices = handles.vertices;
 
-                    glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
-                    glVertexPointer(3, GL_FLOAT, 0, 0L);
+                        glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
+                        glVertexPointer(3, GL_FLOAT, 0, 0L);
 
-                    glBindBuffer(GL_ARRAY_BUFFER, vboNormalHandle);
-                    glNormalPointer(GL_FLOAT, 0, 0L);
+                        glBindBuffer(GL_ARRAY_BUFFER, vboNormalHandle);
+                        glNormalPointer(GL_FLOAT, 0, 0L);
 
-                    glBindBuffer(GL_ARRAY_BUFFER, vboTexHandle);
-                    glTexCoordPointer(2, GL_FLOAT, 0, 0L);
+                        glBindBuffer(GL_ARRAY_BUFFER, vboTexHandle);
+                        glTexCoordPointer(2, GL_FLOAT, 0, 0L);
 
-                    glEnableClientState(GL_VERTEX_ARRAY);
-                    glEnableClientState(GL_NORMAL_ARRAY);
-                    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-                    glDrawArrays(GL_TRIANGLES, 0, vertices);
-                    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-                    glDisableClientState(GL_NORMAL_ARRAY);
-                    glDisableClientState(GL_VERTEX_ARRAY);
+                        glEnableClientState(GL_VERTEX_ARRAY);
+                        glEnableClientState(GL_NORMAL_ARRAY);
+                        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+                        glDrawArrays(GL_TRIANGLES, 0, vertices);
+                        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+                        glDisableClientState(GL_NORMAL_ARRAY);
+                        glDisableClientState(GL_VERTEX_ARRAY);
 
-                    glBindBuffer(GL_ARRAY_BUFFER, 0);
+                        glBindBuffer(GL_ARRAY_BUFFER, 0);
+                    }
                 }
             }
         }
@@ -268,10 +270,10 @@ public class Voxels {
                 camera.toggleFlight();
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_Z)) {
-                chunkManager.editBlock(Type.DIRT, xInChunk(), Math.min((int) camera.y(), 255), zInChunk(), getCurrentChunkXId(), getCurrentChunkZId());
+                chunkManager.editBlock(Type.DIRT, xInChunk(), yInChunk(), zInChunk(), getCurrentChunkXId(),getCurrentChunkYId(), getCurrentChunkZId());
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_Q)) {
-                chunkManager.editBlock(Type.AIR, xInChunk(), Math.min((int) camera.y() - 1, 255), zInChunk(), getCurrentChunkXId(), getCurrentChunkZId());
+                chunkManager.editBlock(Type.AIR, xInChunk(), yInChunk(), zInChunk(), getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
             }
 
         }

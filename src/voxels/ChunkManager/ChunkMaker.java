@@ -35,8 +35,10 @@ public class ChunkMaker extends Thread {
 
     private Chunk chunk;
     private int chunkX;
+    private int chunkY;
     private int chunkZ;
     private int xOff;
+    private int yOff;
     private int zOff;
     private ConcurrentHashMap<Integer, byte[]> map;
     private boolean ready = false;
@@ -53,10 +55,12 @@ public class ChunkMaker extends Thread {
 
     boolean update;
 
-    public ChunkMaker(ArrayList<Data> dataToProcess, int chunkX, int chunkZ, int xOff, int zOff, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager) {
+    public ChunkMaker(ArrayList<Data> dataToProcess, int chunkX, int chunkY, int chunkZ, int xOff, int yOff, int zOff, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager) {
         this.xOff = xOff;
+        this.yOff = yOff;
         this.zOff = zOff;
         this.chunkX = chunkX;
+        this.chunkY = chunkY;
         this.chunkZ = chunkZ;
         this.map = map;
         this.dataToProcess = dataToProcess;
@@ -74,30 +78,30 @@ public class ChunkMaker extends Thread {
 
     @Override
     public void run() {
-        if (!map.containsKey(new Pair(chunkX, chunkZ).hashCode())) {
-            chunk = new Chunk(chunkX, chunkZ);
+        if (!map.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
+            chunk = new Chunk(chunkX, chunkY, chunkZ);
             updateAllBlocks();
             drawChunkVBO();
-            map.put(new Pair(chunkX, chunkZ).hashCode(), toByte(chunk));
-            dataToProcess.add(new Data(chunkX, chunkZ, chunk.getVertices(), vertexData, normalData, texData, false));
+            map.put(new Pair(chunkX, chunkY, chunkZ).hashCode(), toByte(chunk));
+            dataToProcess.add(new Data(chunkX, chunkY, chunkZ, chunk.getVertices(), vertexData, normalData, texData, false));
 
-            boolean twoLeft = map.containsKey(new Pair(chunkX - 2, chunkZ).hashCode());
-            boolean twoRight = map.containsKey(new Pair(chunkX + 2, chunkZ).hashCode());
-            boolean twoUp = map.containsKey(new Pair(chunkX, chunkZ + 2).hashCode());
-            boolean twoDown = map.containsKey(new Pair(chunkX, chunkZ - 2).hashCode());
-            boolean upLeft = map.containsKey(new Pair(chunkX - 1, chunkZ + 1).hashCode());
-            boolean upRight = map.containsKey(new Pair(chunkX + 1, chunkZ + 1).hashCode());
-            boolean downLeft = map.containsKey(new Pair(chunkX - 1, chunkZ - 1).hashCode());
-            boolean downRight = map.containsKey(new Pair(chunkX + 1, chunkZ - 1).hashCode());
-
-            if (twoRight && upRight && downRight)
-                updateSides(chunkManager.getChunk(chunkX + 1, chunkZ));
-            if (twoLeft && upLeft && downLeft)
-                updateSides(chunkManager.getChunk(chunkX - 1, chunkZ));
-            if (twoUp && upLeft && upRight)
-                updateSides(chunkManager.getChunk(chunkX, chunkZ + 1));
-            if (twoDown && downLeft && downRight)
-                updateSides(chunkManager.getChunk(chunkX, chunkZ - 1));
+//            boolean twoLeft = map.containsKey(new Pair(chunkX - 2, chunkZ).hashCode());
+//            boolean twoRight = map.containsKey(new Pair(chunkX + 2, chunkZ).hashCode());
+//            boolean twoUp = map.containsKey(new Pair(chunkX, chunkZ + 2).hashCode());
+//            boolean twoDown = map.containsKey(new Pair(chunkX, chunkZ - 2).hashCode());
+//            boolean upLeft = map.containsKey(new Pair(chunkX - 1, chunkZ + 1).hashCode());
+//            boolean upRight = map.containsKey(new Pair(chunkX + 1, chunkZ + 1).hashCode());
+//            boolean downLeft = map.containsKey(new Pair(chunkX - 1, chunkZ - 1).hashCode());
+//            boolean downRight = map.containsKey(new Pair(chunkX + 1, chunkZ - 1).hashCode());
+//
+//            if (twoRight && upRight && downRight)
+//                updateSides(chunkManager.getChunk(chunkX + 1, chunkZ));
+//            if (twoLeft && upLeft && downLeft)
+//                updateSides(chunkManager.getChunk(chunkX - 1, chunkZ));
+//            if (twoUp && upLeft && upRight)
+//                updateSides(chunkManager.getChunk(chunkX, chunkZ + 1));
+//            if (twoDown && downLeft && downRight)
+//                updateSides(chunkManager.getChunk(chunkX, chunkZ - 1));
         }
         else
             System.out.println("Already contains");
@@ -108,11 +112,12 @@ public class ChunkMaker extends Thread {
             this.chunk = chunk;
             this.xOff = chunk.xCoordinate;
             this.zOff = chunk.zCoordinate;
+            this.yOff = chunk.yId * Chunk.CHUNK_HEIGHT;
             updateAllBlocks();
             drawChunkVBO();
-            map.put(new Pair(this.chunk.xId, this.chunk.zId).hashCode(), toByte(this.chunk));
-            Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.zId);
-            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
+            map.put(new Pair(this.chunk.xId, this.chunk.yId, this.chunk.zId).hashCode(), toByte(this.chunk));
+            Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.yId, this.chunk.zId);
+            dataToProcess.add(new Data(this.chunk.xId, this.chunk.yId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
         }
     }
 
@@ -121,12 +126,13 @@ public class ChunkMaker extends Thread {
             this.chunk = chunk;
             this.xOff = chunk.xCoordinate;
             this.zOff = chunk.zCoordinate;
+            this.yOff = chunk.yId * Chunk.CHUNK_HEIGHT;
             updateLeft();
             drawChunkVBO();
 
-            map.put(new Pair(this.chunk.xId, this.chunk.zId).hashCode(), toByte(this.chunk));
-            Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.zId);
-            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
+            map.put(new Pair(this.chunk.xId, this.chunk.yId, this.chunk.zId).hashCode(), toByte(this.chunk));
+            Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.yId, this.chunk.zId);
+            dataToProcess.add(new Data(this.chunk.xId, this.chunk.yId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
         }
     }
 
@@ -135,15 +141,16 @@ public class ChunkMaker extends Thread {
             this.chunk = chunk;
             this.xOff = chunk.xCoordinate;
             this.zOff = chunk.zCoordinate;
+            this.yOff = chunk.yId * Chunk.CHUNK_HEIGHT;
             updateRight();
             updateLeft();
             updateBack();
             updateFront();
             drawChunkVBO();
-            
-            map.put(new Pair(this.chunk.xId, this.chunk.zId).hashCode(), toByte(this.chunk));
-            Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.zId);
-            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
+
+            map.put(new Pair(this.chunk.xId, this.chunk.yId, this.chunk.zId).hashCode(), toByte(this.chunk));
+            Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.yId, this.chunk.zId);
+            dataToProcess.add(new Data(this.chunk.xId, this.chunk.yId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
         }
     }
 
@@ -152,12 +159,13 @@ public class ChunkMaker extends Thread {
             this.chunk = chunk;
             this.xOff = chunk.xCoordinate;
             this.zOff = chunk.zCoordinate;
+            this.yOff = chunk.yId * Chunk.CHUNK_HEIGHT;
             updateRight();
             drawChunkVBO();
 
-            map.put(new Pair(this.chunk.xId, this.chunk.zId).hashCode(), toByte(this.chunk));
-            Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.zId);
-            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
+            map.put(new Pair(this.chunk.xId, this.chunk.yId, this.chunk.zId).hashCode(), toByte(this.chunk));
+            Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.yId, this.chunk.zId);
+            dataToProcess.add(new Data(this.chunk.xId, this.chunk.yId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
         }
     }
 
@@ -166,12 +174,13 @@ public class ChunkMaker extends Thread {
             this.chunk = chunk;
             this.xOff = chunk.xCoordinate;
             this.zOff = chunk.zCoordinate;
+            this.yOff = chunk.yId * Chunk.CHUNK_HEIGHT;
             updateBack();
             drawChunkVBO();
 
-            map.put(new Pair(this.chunk.xId, this.chunk.zId).hashCode(), toByte(this.chunk));
-            Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.zId);
-            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
+            map.put(new Pair(this.chunk.xId, this.chunk.yId, this.chunk.zId).hashCode(), toByte(this.chunk));
+            Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.yId, this.chunk.zId);
+            dataToProcess.add(new Data(this.chunk.xId, this.chunk.yId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
         }
     }
 
@@ -180,12 +189,13 @@ public class ChunkMaker extends Thread {
             this.chunk = chunk;
             this.xOff = chunk.xCoordinate;
             this.zOff = chunk.zCoordinate;
+            this.yOff = chunk.yId * Chunk.CHUNK_HEIGHT;
             updateFront();
             drawChunkVBO();
 
-            map.put(new Pair(chunk.xId, chunk.zId).hashCode(), toByte(chunk));
-            Handle handle = chunkManager.getHandle(chunk.xId, chunk.zId);
-            dataToProcess.add(new Data(this.chunk.xId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
+            map.put(new Pair(this.chunk.xId, this.chunk.yId, this.chunk.zId).hashCode(), toByte(this.chunk));
+            Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.yId, this.chunk.zId);
+            dataToProcess.add(new Data(this.chunk.xId, this.chunk.yId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
         }
     }
 
@@ -222,7 +232,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 0 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y;
+                            vertexArray[vArrayPos] = 1 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
@@ -242,7 +252,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 0 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y;
+                            vertexArray[vArrayPos] = 0 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
@@ -262,7 +272,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 1 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y;
+                            vertexArray[vArrayPos] = 0 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
@@ -283,7 +293,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 0 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y;
+                            vertexArray[vArrayPos] = 1 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
@@ -303,7 +313,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 1 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y;
+                            vertexArray[vArrayPos] = 0 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
@@ -323,7 +333,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 1 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y;
+                            vertexArray[vArrayPos] = 1 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
@@ -377,7 +387,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 1 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y;
+                            vertexArray[vArrayPos] = 1 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
@@ -391,7 +401,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 1 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y;
+                            vertexArray[vArrayPos] = 0 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
@@ -406,7 +416,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 0 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y;
+                            vertexArray[vArrayPos] = 0 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
@@ -422,7 +432,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 1 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y;
+                            vertexArray[vArrayPos] = 1 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
@@ -436,7 +446,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 0 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y;
+                            vertexArray[vArrayPos] = 0 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
@@ -451,7 +461,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 0 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y;
+                            vertexArray[vArrayPos] = 1 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
@@ -501,7 +511,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 1 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y;
+                            vertexArray[vArrayPos] = 1 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
@@ -516,7 +526,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 1 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y;
+                            vertexArray[vArrayPos] = 0 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
@@ -531,7 +541,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 1 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y;
+                            vertexArray[vArrayPos] = 0 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
@@ -547,7 +557,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 1 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y;
+                            vertexArray[vArrayPos] = 1 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
@@ -562,7 +572,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 1 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y;
+                            vertexArray[vArrayPos] = 0 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
@@ -577,7 +587,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 1 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y;
+                            vertexArray[vArrayPos] = 1 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
@@ -626,7 +636,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 0 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y;
+                            vertexArray[vArrayPos] = 1 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
@@ -641,7 +651,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 0 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y;
+                            vertexArray[vArrayPos] = 0 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
@@ -656,7 +666,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 0 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y;
+                            vertexArray[vArrayPos] = 0 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
@@ -672,7 +682,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 0 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y;
+                            vertexArray[vArrayPos] = 1 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
@@ -687,7 +697,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 0 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y;
+                            vertexArray[vArrayPos] = 0 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
@@ -702,7 +712,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 0 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y;
+                            vertexArray[vArrayPos] = 1 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
@@ -720,7 +730,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 0 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y;
+                            vertexArray[vArrayPos] = 1 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
@@ -740,7 +750,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 0 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y;
+                            vertexArray[vArrayPos] = 1 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
@@ -760,7 +770,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 1 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y;
+                            vertexArray[vArrayPos] = 1 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
@@ -781,7 +791,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 0 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y;
+                            vertexArray[vArrayPos] = 1 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
@@ -801,7 +811,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 1 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y;
+                            vertexArray[vArrayPos] = 1 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
@@ -821,7 +831,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 1 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y;
+                            vertexArray[vArrayPos] = 1 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
@@ -874,7 +884,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 1 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y;
+                            vertexArray[vArrayPos] = 0 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
@@ -889,7 +899,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 0 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y;
+                            vertexArray[vArrayPos] = 0 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
@@ -904,7 +914,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 0 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y;
+                            vertexArray[vArrayPos] = 0 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
@@ -920,7 +930,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 1 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y;
+                            vertexArray[vArrayPos] = 0 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
@@ -935,7 +945,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 1 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y;
+                            vertexArray[vArrayPos] = 0 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
@@ -950,7 +960,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 0 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y;
+                            vertexArray[vArrayPos] = 0 + y + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
@@ -970,7 +980,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 0 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y - WaterOffs;
+                            vertexArray[vArrayPos] = 1 + y - WaterOffs + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
@@ -990,7 +1000,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 0 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y - WaterOffs;
+                            vertexArray[vArrayPos] = 1 + y - WaterOffs + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
@@ -1010,7 +1020,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 1 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y - WaterOffs;
+                            vertexArray[vArrayPos] = 1 + y - WaterOffs + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
@@ -1031,7 +1041,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 0 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y - WaterOffs;
+                            vertexArray[vArrayPos] = 1 + y - WaterOffs + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
@@ -1051,7 +1061,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 1 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y - WaterOffs;
+                            vertexArray[vArrayPos] = 1 + y - WaterOffs + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
@@ -1071,7 +1081,7 @@ public class ChunkMaker extends Thread {
 
                             vertexArray[vArrayPos] = 1 + x + xOff;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y - WaterOffs;
+                            vertexArray[vArrayPos] = 1 + y - WaterOffs + yOff;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
@@ -1213,14 +1223,14 @@ public class ChunkMaker extends Thread {
     }
 
     private void getAdjacentChunks() {
-        rightChunk = chunkManager.getChunk(chunk.xId + 1, chunk.zId);
-        leftChunk = chunkManager.getChunk(chunk.xId - 1, chunk.zId);
-        backChunk = chunkManager.getChunk(chunk.xId, chunk.zId - 1);
-        frontChunk = chunkManager.getChunk(chunk.xId, chunk.zId + 1);
+        rightChunk = chunkManager.getChunk(chunk.xId + 1, chunk.yId, chunk.zId);
+        leftChunk = chunkManager.getChunk(chunk.xId - 1, chunk.yId, chunk.zId);
+        backChunk = chunkManager.getChunk(chunk.xId, chunk.yId, chunk.zId - 1);
+        frontChunk = chunkManager.getChunk(chunk.xId, chunk.yId, chunk.zId + 1);
     }
 
     private void updateBack() {
-        backChunk = chunkManager.getChunk(chunk.xId, chunk.zId - 1);
+        backChunk = chunkManager.getChunk(chunk.xId, chunk.yId, chunk.zId - 1);
         updateTopLeftBack();
         updateTopRightBack();
         updateBottomLeftBack();
@@ -1235,7 +1245,7 @@ public class ChunkMaker extends Thread {
     }
 
     private void updateFront() {
-        frontChunk = chunkManager.getChunk(chunk.xId, chunk.zId + 1);
+        frontChunk = chunkManager.getChunk(chunk.xId, chunk.yId, chunk.zId + 1);
         updateTopLeftFront();
         updateTopRightFront();
         updateBottomLeftFront();
@@ -1249,7 +1259,7 @@ public class ChunkMaker extends Thread {
     }
 
     private void updateLeft() {
-        leftChunk = chunkManager.getChunk(chunk.xId - 1, chunk.zId);
+        leftChunk = chunkManager.getChunk(chunk.xId - 1, chunk.yId, chunk.zId);
         updateTopLeftBack();
         updateTopLeftFront();
         updateBottomLeftBack();
@@ -1263,7 +1273,7 @@ public class ChunkMaker extends Thread {
     }
 
     private void updateRight() {
-        rightChunk = chunkManager.getChunk(chunk.xId + 1, chunk.zId);
+        rightChunk = chunkManager.getChunk(chunk.xId + 1, chunk.yId, chunk.zId);
         updateTopRightBack();
         updateTopRightFront();
         updateBottomRightBack();

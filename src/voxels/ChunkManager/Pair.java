@@ -8,17 +8,20 @@ public class Pair {
 
     public final int x;
     public final int y;
+    public final int z;
 
-    public Pair(int x, int y) {
+    public Pair(int x, int y, int z) {
         this.x = x;
         this.y = y;
+        this.z = z;
     }
 
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 83 * hash + this.x;
-        hash = 83 * hash + this.y;
+        hash = 43 * hash + this.x;
+        hash = 43 * hash + this.y;
+        hash = 43 * hash + this.z;
         return hash;
     }
 
@@ -33,6 +36,10 @@ public class Pair {
             return false;
         if (this.y != other.y)
             return false;
+        if (this.z != other.z)
+            return false;
         return true;
     }
+
+    
 }

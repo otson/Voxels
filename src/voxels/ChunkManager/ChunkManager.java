@@ -64,19 +64,19 @@ public class ChunkManager {
         return null;
     }
 
-    public Chunk getChunk(int chunkX, int chunkZ) {
-        if (map.containsKey(new Pair(chunkX, chunkZ).hashCode())) {
-            return toChunk(map.get(new Pair(chunkX, chunkZ).hashCode()));
+    public Chunk getChunk(int chunkX, int chunkY, int chunkZ) {
+        if (map.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
+            return toChunk(map.get(new Pair(chunkX, chunkY, chunkZ).hashCode()));
         }
         else {
             return null;
         }
     }
 
-    public void editBlock(final short type, final int x, final int y, final int z, final int chunkX, final int chunkZ) {
+    public void editBlock(final short type, final int x, final int y, final int z, final int chunkX, final int chunkY, final int chunkZ) {
         //long start = System.nanoTime();
 
-        final Chunk chunk = getChunk(chunkX, chunkZ);
+        final Chunk chunk = getChunk(chunkX, chunkY, chunkZ);
         if (chunk == null) {
             System.out.println("Tried to modify a null chunk.");
             return;
@@ -85,28 +85,28 @@ public class ChunkManager {
         chunk.blocks[x][y][z].setType(type);
         updateThread.update(chunk);
 
-        if (x == Chunk.CHUNK_WIDTH - 1)
-            updateThread.updateLeft(getChunk(chunkX + 1, chunkZ));
-        if (x == 0)
-            updateThread.updateRight(getChunk(chunkX - 1, chunkZ));
-        if (z == Chunk.CHUNK_WIDTH - 1)
-            updateThread.updateBack(getChunk(chunkX, chunkZ + 1));
-        if (z == 0)
-            updateThread.updateFront(getChunk(chunkX, chunkZ - 1));
+//        if (x == Chunk.CHUNK_WIDTH - 1)
+//            updateThread.updateLeft(getChunk(chunkX + 1, chunkZ));
+//        if (x == 0)
+//            updateThread.updateRight(getChunk(chunkX - 1, chunkZ));
+//        if (z == Chunk.CHUNK_WIDTH - 1)
+//            updateThread.updateBack(getChunk(chunkX, chunkZ + 1));
+//        if (z == 0)
+//            updateThread.updateFront(getChunk(chunkX, chunkZ - 1));
 
         chunkLoader.refresh();
 
     }
 
-    public Handle getHandle(int x, int z) {
-        if (handles.containsKey(new Pair(x, z).hashCode()))
-            return handles.get(new Pair(x, z).hashCode());
+    public Handle getHandle(int x,int y, int z) {
+        if (handles.containsKey(new Pair(x,y, z).hashCode()))
+            return handles.get(new Pair(x,y, z).hashCode());
         else
             return null;
     }
 
-    public boolean isChunk(int chunkX, int chunkZ) {
-        return map.containsKey(new Pair(chunkX, chunkZ).hashCode());
+    public boolean isChunk(int chunkX, int chunkY, int chunkZ) {
+        return map.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode());
     }
 
     public void checkChunkUpdates() {
@@ -118,20 +118,23 @@ public class ChunkManager {
             // request new valid coordinates
             chunkCreator.setCurrentChunkX(getCurrentChunkXId());
             chunkCreator.setCurrentChunkZ(getCurrentChunkZId());
-            Coordinates coordinates = chunkCreator.getNewXZCoordinates();
+            Coordinates coordinates = chunkCreator.getXYZ();
 
             if (coordinates != null) {
 
                 atMax = false;
                 int x = coordinates.x;
+                int y = coordinates.y;
                 int z = coordinates.z;
+                
 
                 int newChunkX = coordinates.x;
+                int newChunkY = coordinates.y;
                 int newChunkZ = coordinates.z;
 
                 // Start a new thread, make a new chunk
                 int threadId = getFreeThread();
-                threads[threadId] = new ChunkMaker(dataToProcess, newChunkX, newChunkZ, x * Chunk.CHUNK_WIDTH, z * Chunk.CHUNK_WIDTH, map, this);
+                threads[threadId] = new ChunkMaker(dataToProcess, newChunkX, newChunkY, newChunkZ, x * Chunk.CHUNK_WIDTH, y*Chunk.CHUNK_HEIGHT, z * Chunk.CHUNK_WIDTH, map, this);
                 threads[threadId].setPriority(Thread.MIN_PRIORITY);
                 threads[threadId].start();
 
@@ -231,7 +234,7 @@ public class ChunkManager {
         glBufferData(GL_ARRAY_BUFFER, data.texData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        handles.put(new Pair(data.chunkX, data.chunkZ).hashCode(), new Handle(vboVertexHandle, vboNormalHandle, vboTexHandle, data.vertices));
+        handles.put(new Pair(data.chunkX,data.chunkY, data.chunkZ).hashCode(), new Handle(vboVertexHandle, vboNormalHandle, vboTexHandle, data.vertices));
     }
 
     public boolean isAtMax() {

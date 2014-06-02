@@ -22,62 +22,66 @@ public class ChunkCoordinateCreator {
     private int turnCount = 0;
     private boolean needMiddleChunk = true;
     private ConcurrentHashMap<Integer, byte[]> map;
-    private int heightCount = 0;
+    private int heightCount = 999;
+    private Coordinates currentXZ;
 
     public ChunkCoordinateCreator(ConcurrentHashMap<Integer, byte[]> map) {
         this.map = map;
+        currentXZ = getNewXZCoordinates();
     }
 
-    public Coordinates getNewXZCoordinates() {
-        
+    private Coordinates getNewXZCoordinates() {
+
         if (needMiddleChunk) {
             needMiddleChunk = false;
-            if (!map.containsKey(new Pair(currentChunkX, currentChunkZ).hashCode()))
-                return new Coordinates(currentChunkX, null, currentChunkZ);
+            return new Coordinates(currentChunkX, null, currentChunkZ);
         }
-
-        while (notAtMax()) {
-            if (dz != 0) {
-                z += dz;
-                currentLength++;
-                if (currentLength == length) {
-                    currentLength = 0;
-                    dx = dz;
-                    dz = 0;
-                    turnCount++;
-                    if (turnCount == 2)
-                        length++;
+        if (dz != 0) {
+            z += dz;
+            currentLength++;
+            if (currentLength == length) {
+                currentLength = 0;
+                dx = dz;
+                dz = 0;
+                turnCount++;
+                if (turnCount == 2)
+                    length++;
+            }
+        }
+        else {
+            x += dx;
+            currentLength++;
+            if (currentLength == length) {
+                currentLength = 0;
+                dz = -dx;
+                dx = 0;
+                turnCount++;
+                if (turnCount == 2) {
+                    length++;
+                    turnCount = 0;
                 }
+            }
+        }
+        return new Coordinates(x + currentChunkX, null, z + currentChunkZ);
+
+    }
+
+    public Coordinates getXYZ() {
+        while (notAtMax()) {
+            if (heightCount < 16) {
+                if (!map.containsKey(new Pair(x + currentChunkX, heightCount, z+currentChunkZ).hashCode())) {
+                    System.out.println("here");
+                    return new Coordinates(x + currentChunkX, heightCount, z + currentChunkZ);
+                }
+                heightCount++;
+                
             }
             else {
-                x += dx;
-                currentLength++;
-                if (currentLength == length) {
-                    currentLength = 0;
-                    dz = -dx;
-                    dx = 0;
-                    turnCount++;
-                    if (turnCount == 2) {
-                        length++;
-                        turnCount = 0;
-                    }
-                }
+                heightCount = 0;
+                currentXZ = getNewXZCoordinates();
             }
-            if (!map.containsKey(new Pair(x + currentChunkX, z + currentChunkZ).hashCode()))
-                return new Coordinates(x + currentChunkX, null, z + currentChunkZ);
         }
         return null;
-    }
-    private Coordinate getHeight(){
-        if(heightCount <16){
-            if (!map.containsKey(new Pair(x + currentChunkX, z + currentChunkZ).hashCode()))
-                return new Coordinates(x + currentChunkX, null, z + currentChunkZ);
-            else
-                heightCount++;
-        }
-    }
-    private Coordinate getXYZ(){
-        
     }
 
     public void setCurrentChunkX(int currentChunkX) {
@@ -85,6 +89,7 @@ public class ChunkCoordinateCreator {
             reset();
         this.currentChunkX = currentChunkX;
     }
+    
 
     public void setCurrentChunkZ(int currentChunkZ) {
         if (currentChunkZ != this.currentChunkZ)

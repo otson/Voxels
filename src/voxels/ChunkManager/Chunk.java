@@ -7,12 +7,12 @@ import voxels.Voxels;
  *
  * @author otso
  */
-public class Chunk implements Serializable{
+public class Chunk implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     public static final int CHUNK_WIDTH = 16;
-    public static final int CHUNK_HEIGHT = 256;
+    public static final int CHUNK_HEIGHT = 16;
     public static final int WATER_HEIGHT = -1;
 
     private int vboVertexHandle;
@@ -25,13 +25,15 @@ public class Chunk implements Serializable{
     public final int zCoordinate;
     public final int xId;
     public final int zId;
+    public final int yId;
 
     public Block[][][] blocks;
     public int[][] maxHeights;
 
-    public Chunk(int xId, int zId) {
+    public Chunk(int xId, int zId, int yId) {
         this.xId = xId;
         this.zId = zId;
+        this.yId = yId;
         xCoordinate = xId * CHUNK_WIDTH;
         zCoordinate = zId * CHUNK_WIDTH;
         initMaxHeights();
@@ -64,10 +66,10 @@ public class Chunk implements Serializable{
                             blocks[x][y][z] = new Block(Type.AIR);
                     }
                     else {
-                        if (y > maxHeights[x][z] && y <= Chunk.WATER_HEIGHT) {
+                        if (y + Chunk.WATER_HEIGHT * yId > maxHeights[x][z] && y <= Chunk.WATER_HEIGHT) {
                             blocks[x][y][z] = new Block(Type.WATER);
                         }
-                        else if (y <= maxHeights[x][z])
+                        else if (y + Chunk.WATER_HEIGHT * yId <= maxHeights[x][z])
                             blocks[x][y][z] = new Block(Type.DIRT);
                         else
                             blocks[x][y][z] = new Block(Type.AIR);

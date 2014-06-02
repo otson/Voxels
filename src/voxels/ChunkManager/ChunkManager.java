@@ -118,7 +118,7 @@ public class ChunkManager {
             // request new valid coordinates
             chunkCreator.setCurrentChunkX(getCurrentChunkXId());
             chunkCreator.setCurrentChunkZ(getCurrentChunkZId());
-            Coordinates coordinates = chunkCreator.getNewCoordinates();
+            Coordinates coordinates = chunkCreator.getNewXZCoordinates();
 
             if (coordinates != null) {
 

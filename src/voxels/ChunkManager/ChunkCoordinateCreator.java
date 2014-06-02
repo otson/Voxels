@@ -22,12 +22,13 @@ public class ChunkCoordinateCreator {
     private int turnCount = 0;
     private boolean needMiddleChunk = true;
     private ConcurrentHashMap<Integer, byte[]> map;
+    private int heightCount = 0;
 
     public ChunkCoordinateCreator(ConcurrentHashMap<Integer, byte[]> map) {
         this.map = map;
     }
 
-    public Coordinates getNewCoordinates() {
+    public Coordinates getNewXZCoordinates() {
         
         if (needMiddleChunk) {
             needMiddleChunk = false;
@@ -66,6 +67,17 @@ public class ChunkCoordinateCreator {
                 return new Coordinates(x + currentChunkX, null, z + currentChunkZ);
         }
         return null;
+    }
+    private Coordinate getHeight(){
+        if(heightCount <16){
+            if (!map.containsKey(new Pair(x + currentChunkX, z + currentChunkZ).hashCode()))
+                return new Coordinates(x + currentChunkX, null, z + currentChunkZ);
+            else
+                heightCount++;
+        }
+    }
+    private Coordinate getXYZ(){
+        
     }
 
     public void setCurrentChunkX(int currentChunkX) {

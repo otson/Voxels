@@ -68,12 +68,12 @@ public class Voxels {
     /**
      * Set if terrain generation uses a seed.
      */
-    public static final boolean USE_SEED = false; 
+    public static final boolean USE_SEED = false;
     /**
      * Set if 3D simplex noise is used to generate terrain.
      */
     public static final boolean USE_3D_NOISE = false;
-    
+
     /**
      * Set air block percentage if 3D noise is in use.
      */
@@ -312,6 +312,16 @@ public class Voxels {
         return z / Chunk.CHUNK_WIDTH;
     }
 
+    public final static int getCurrentChunkYId() {
+        int y = (int) camera.y();
+        return y / Chunk.CHUNK_HEIGHT;
+    }
+
+    public final static int yInChunk() {
+        int y = (int) camera.y();
+        return y % Chunk.CHUNK_HEIGHT;
+    }
+
     public final static int xInChunk() {
         int x = (int) (camera.x());
         if (x < 0)
@@ -337,7 +347,7 @@ public class Voxels {
     }
 
     public static int get3DNoise(float x, float y, float z) {
-        return (int) ((SimplexNoise.noise(x / (1f * TERRAIN_SMOOTHNESS*2f), y / (1f * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS*2f))+1)*128);
+        return (int) ((SimplexNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * 2f), y / (1f * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * 2f)) + 1) * 128);
     }
 
     public static Texture loadTexture(String key) {

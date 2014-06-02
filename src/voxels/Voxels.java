@@ -1,5 +1,6 @@
 package voxels;
 
+import java.awt.Font;
 import voxels.ChunkManager.Chunk;
 import voxels.ChunkManager.ChunkManager;
 import java.io.File;
@@ -30,6 +31,8 @@ import static org.lwjgl.opengl.GL30.glGenFramebuffers;
 import static org.lwjgl.opengl.GL30.glGenRenderbuffers;
 import static org.lwjgl.opengl.GL30.glRenderbufferStorage;
 import static org.lwjgl.util.glu.GLU.gluErrorString;
+import org.newdawn.slick.Color;
+import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import voxels.Camera.EulerCamera;
@@ -56,7 +59,7 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains withs a width of one
      * block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 4;
+    public static final int TERRAIN_SMOOTHNESS = 20;
     /**
      * Set player's height. One block's height is 1.
      */
@@ -86,7 +89,7 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 4;
+    public static int chunkCreationDistance = 2;
     public static int chunkRenderDistance = 12;
     private static Texture atlas;
     public static final float WaterOffs = 0.28f;
@@ -101,7 +104,6 @@ public class Voxels {
     private static long lastFPS = getTime();
     public static int count = 0;
     private static long lastFrame = System.nanoTime();
-
     public static void main(String[] args) {
         initDisplay();
         initOpenGL();
@@ -184,7 +186,7 @@ public class Voxels {
             if (chunkManager.chunkAmount() % 20 == 0)
                 Display.update();
         }
-        chunkCreationDistance = 9;
+        chunkCreationDistance = 2;
         System.out.println("Time taken: " + (System.nanoTime() - time) / 1000000000 + " s.");
 
         chunkManager.getChunkLoader().loadChunks();
@@ -201,6 +203,7 @@ public class Voxels {
             updateFPS();
             Display.update();
             Display.sync(60);
+            System.out.println("yId: " + getCurrentChunkYId());
         }
         Display.destroy();
         System.exit(0);
@@ -218,7 +221,7 @@ public class Voxels {
         for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
             for (int z = -chunkRenderDistance; z <= chunkRenderDistance; z++) {
                 for (int y = 0; y < 16; y++) {
-                    Handle handles = chunkManager.getHandle(getCurrentChunkXId() + x, getCurrentChunkYId() + y, getCurrentChunkZId() + z);
+                    Handle handles = chunkManager.getHandle(getCurrentChunkXId() + x, y, getCurrentChunkZId() + z);
                     if (handles != null) {
 
                         int vboVertexHandle = handles.vertexHandle;
@@ -248,6 +251,7 @@ public class Voxels {
                 }
             }
         }
+     
     }
 
     private static void processInput(float delta) {
@@ -270,7 +274,7 @@ public class Voxels {
                 camera.toggleFlight();
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_Z)) {
-                chunkManager.editBlock(Type.DIRT, xInChunk(), yInChunk(), zInChunk(), getCurrentChunkXId(),getCurrentChunkYId(), getCurrentChunkZId());
+                chunkManager.editBlock(Type.DIRT, xInChunk(), yInChunk(), zInChunk(), getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_Q)) {
                 chunkManager.editBlock(Type.AIR, xInChunk(), yInChunk(), zInChunk(), getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
@@ -343,7 +347,7 @@ public class Voxels {
         if (USE_SEED)
             noise = (int) ((FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS) + SEED, z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS) + SEED, 5)) * (Chunk.CHUNK_HEIGHT / 256f)) - 1;
         else
-            noise = (int) ((FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), 5)) * (Chunk.CHUNK_HEIGHT / 256f)) - 1;
+            noise = FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), 5) - 1;
 
         return Math.max(noise, 0);
     }

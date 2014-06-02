@@ -56,7 +56,7 @@ public class ActiveChunkLoader extends Thread {
     private boolean hasMoved() {
         if (currentChunkX != Voxels.getCurrentChunkXId() || currentChunkY != Voxels.getCurrentChunkYId() || currentChunkZ != Voxels.getCurrentChunkZId()) {
             currentChunkX = Voxels.getCurrentChunkXId();
-            currentChunkY = 
+            currentChunkY = Voxels.getCurrentChunkYId();
             currentChunkZ = Voxels.getCurrentChunkZId();
             return true;
         }

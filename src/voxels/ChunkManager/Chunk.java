@@ -50,6 +50,7 @@ public class Chunk implements Serializable {
     }
 
     private void setBlocks() {
+        int dirtCount = 0;
         blocks = new Block[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_WIDTH];
         for (int x = 0; x < blocks.length; x++) {
             blocks[x] = new Block[CHUNK_HEIGHT][CHUNK_WIDTH];
@@ -66,17 +67,21 @@ public class Chunk implements Serializable {
                             blocks[x][y][z] = new Block(Type.AIR);
                     }
                     else {
-                        if (y + Chunk.CHUNK_HEIGHT * yId > maxHeights[x][z] && y <= Chunk.WATER_HEIGHT) {
-                            blocks[x][y][z] = new Block(Type.WATER);
-                        }
-                        else if (y + Chunk.CHUNK_HEIGHT * yId <= maxHeights[x][z])
+//                        if (y + Chunk.CHUNK_HEIGHT * yId > maxHeights[x][z] && y <= Chunk.WATER_HEIGHT) {
+//                            blocks[x][y][z] = new Block(Type.WATER);
+//                        }
+//                        else 
+                            if (y + Chunk.CHUNK_HEIGHT * yId <= maxHeights[x][z]){
                             blocks[x][y][z] = new Block(Type.DIRT);
+                            dirtCount++;
+                        }
                         else
                             blocks[x][y][z] = new Block(Type.AIR);
                     }
                 }
             }
         }
+        //System.out.println("Dirt blocks in chunk x: "+xId+" y: "+yId+" z: "+zId+": "+dirtCount);
     }
 
     public int getVboVertexHandle() {

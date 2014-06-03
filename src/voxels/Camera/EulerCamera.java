@@ -37,6 +37,7 @@ import voxels.ChunkManager.ChunkManager;
 import voxels.ChunkManager.Type;
 import static voxels.Voxels.xInChunk;
 import static voxels.Voxels.zInChunk;
+import static voxels.Voxels.yInChunk;
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.ARBDepthClamp.GL_DEPTH_CLAMP;
 import static org.lwjgl.opengl.GL11.*;
@@ -363,11 +364,11 @@ public class EulerCamera implements Camera {
 
         if (flying == false) {
             if (chunkManager.getMiddle() != null) {
-                if (y >= Chunk.CHUNK_HEIGHT || y < 0 || chunkManager.getMiddle().blocks[xInChunk()][(int) y][zInChunk()].is(Type.AIR)) {
+                if (yInChunk() >= Chunk.CHUNK_HEIGHT || yInChunk() < 0 || chunkManager.getMiddle().blocks[xInChunk()][yInChunk()][zInChunk()].is(Type.AIR)) {
                     y -= fallingSpeed;
                     fallingSpeed += fallingSpeedIncrease;
                 }
-                if (y < Chunk.CHUNK_HEIGHT && y >= 0 && chunkManager.getMiddle().blocks[xInChunk()][(int) y][zInChunk()].is(Type.DIRT)) {
+                if (yInChunk() < Chunk.CHUNK_HEIGHT && yInChunk() >= 0 && chunkManager.getMiddle().blocks[xInChunk()][yInChunk()][zInChunk()].is(Type.DIRT)) {
                     y = (int) y + 1;
                     fallingSpeed = 0;
                 }

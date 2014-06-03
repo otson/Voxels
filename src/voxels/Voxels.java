@@ -59,7 +59,7 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains withs a width of one
      * block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 20;
+    public static final int TERRAIN_SMOOTHNESS = 40;
     /**
      * Set player's height. One block's height is 1.
      */
@@ -75,7 +75,7 @@ public class Voxels {
     /**
      * Set if 3D simplex noise is used to generate terrain.
      */
-    public static final boolean USE_3D_NOISE = false;
+    public static final boolean USE_3D_NOISE = true;
 
     /**
      * Set air block percentage if 3D noise is in use.
@@ -89,7 +89,7 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 2;
+    public static int chunkCreationDistance = 4;
     public static int chunkRenderDistance = 12;
     private static Texture atlas;
     public static final float WaterOffs = 0.28f;
@@ -186,7 +186,7 @@ public class Voxels {
             if (chunkManager.chunkAmount() % 20 == 0)
                 Display.update();
         }
-        chunkCreationDistance = 2;
+        chunkCreationDistance = 9;
         System.out.println("Time taken: " + (System.nanoTime() - time) / 1000000000 + " s.");
 
         chunkManager.getChunkLoader().loadChunks();
@@ -203,7 +203,6 @@ public class Voxels {
             updateFPS();
             Display.update();
             Display.sync(60);
-            System.out.println("yId: " + getCurrentChunkYId());
         }
         Display.destroy();
         System.exit(0);
@@ -277,7 +276,7 @@ public class Voxels {
                 chunkManager.editBlock(Type.DIRT, xInChunk(), yInChunk(), zInChunk(), getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_Q)) {
-                chunkManager.editBlock(Type.AIR, xInChunk(), yInChunk(), zInChunk(), getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
+                chunkManager.editBlock(Type.AIR, xInChunk(), yInChunk()-1, zInChunk(), getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
             }
 
         }

@@ -23,6 +23,7 @@ public class Chunk implements Serializable {
 
     public final int xCoordinate;
     public final int zCoordinate;
+    public final int yCoordinate;
     public final int xId;
     public final int zId;
     public final int yId;
@@ -36,6 +37,7 @@ public class Chunk implements Serializable {
         this.yId = yId;
         xCoordinate = xId * CHUNK_WIDTH;
         zCoordinate = zId * CHUNK_WIDTH;
+        yCoordinate = yId * CHUNK_HEIGHT;
         initMaxHeights();
         setBlocks();
     }
@@ -58,8 +60,8 @@ public class Chunk implements Serializable {
                 blocks[x][y] = new Block[CHUNK_WIDTH];
                 for (int z = 0; z < blocks[x][y].length; z++) {
                     if (Voxels.USE_3D_NOISE) {
-                        float noise1 = Voxels.get3DNoise(x + xCoordinate, y, z + zCoordinate) / 255f;
-                        float noise2 = Voxels.get3DNoise(x + xCoordinate + 10000, y + 10000, z + zCoordinate + 10000) / 255f;
+                        float noise1 = Voxels.get3DNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate) / 255f;
+                        float noise2 = Voxels.get3DNoise(x + xCoordinate + 10000, y + yCoordinate + 10000, z + zCoordinate + 10000) / 255f;
 
                         if (noise1 > 0.45f && noise1 < 0.55f && noise2 > 0.45f && noise2 < 0.55f)
                             blocks[x][y][z] = new Block(Type.DIRT);
@@ -67,11 +69,7 @@ public class Chunk implements Serializable {
                             blocks[x][y][z] = new Block(Type.AIR);
                     }
                     else {
-//                        if (y + Chunk.CHUNK_HEIGHT * yId > maxHeights[x][z] && y <= Chunk.WATER_HEIGHT) {
-//                            blocks[x][y][z] = new Block(Type.WATER);
-//                        }
-//                        else 
-                            if (y + Chunk.CHUNK_HEIGHT * yId <= maxHeights[x][z]){
+                        if (y + Chunk.CHUNK_HEIGHT * yId <= maxHeights[x][z]) {
                             blocks[x][y][z] = new Block(Type.DIRT);
                             dirtCount++;
                         }

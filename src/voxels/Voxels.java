@@ -59,7 +59,7 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains withs a width of one
      * block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 40;
+    public static final int TERRAIN_SMOOTHNESS = 15;
     /**
      * Set player's height. One block's height is 1.
      */
@@ -75,7 +75,7 @@ public class Voxels {
     /**
      * Set if 3D simplex noise is used to generate terrain.
      */
-    public static final boolean USE_3D_NOISE = true;
+    public static final boolean USE_3D_NOISE = false;
 
     /**
      * Set air block percentage if 3D noise is in use.
@@ -89,7 +89,7 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 4;
+    public static int chunkCreationDistance = 2;
     public static int chunkRenderDistance = 12;
     private static Texture atlas;
     public static final float WaterOffs = 0.28f;
@@ -186,7 +186,7 @@ public class Voxels {
             if (chunkManager.chunkAmount() % 20 == 0)
                 Display.update();
         }
-        chunkCreationDistance = 9;
+        chunkCreationDistance = 2;
         System.out.println("Time taken: " + (System.nanoTime() - time) / 1000000000 + " s.");
 
         chunkManager.getChunkLoader().loadChunks();
@@ -306,53 +306,53 @@ public class Voxels {
     public final static int getCurrentChunkXId() {
         int x = (int) (camera.x());
         if (x < 0)
-            x -= Chunk.CHUNK_WIDTH;
-        return x / Chunk.CHUNK_WIDTH;
+            x -= Chunk.CHUNK_SIZE;
+        return x / Chunk.CHUNK_SIZE;
     }
 
     public final static int getCurrentChunkZId() {
         int z = (int) (camera.z());
         if (z < 0)
-            z -= Chunk.CHUNK_WIDTH;
-        return z / Chunk.CHUNK_WIDTH;
+            z -= Chunk.CHUNK_SIZE;
+        return z / Chunk.CHUNK_SIZE;
     }
 
     public final static int getCurrentChunkYId() {
         int y = (int) camera.y();
-        return y / Chunk.CHUNK_HEIGHT;
+        return y / Chunk.CHUNK_SIZE;
     }
 
     public final static int yInChunk() {
         int y = (int) camera.y();
-        return y % Chunk.CHUNK_HEIGHT;
+        return y % Chunk.CHUNK_SIZE;
     }
 
     public final static int xInChunk() {
         int x = (int) (camera.x());
         if (x < 0)
-            x = Chunk.CHUNK_WIDTH + x % 16 - 1;
-        return x % Chunk.CHUNK_WIDTH;
+            x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE - 1;
+        return x % Chunk.CHUNK_SIZE;
     }
 
     public final static int zInChunk() {
         int z = (int) (camera.z());
         if (z < 0)
-            z = Chunk.CHUNK_WIDTH + z % 16 - 1;
-        return z % Chunk.CHUNK_WIDTH;
+            z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE - 1;
+        return z % Chunk.CHUNK_SIZE;
     }
 
     public static int getNoise(float x, float z) {
         int noise;
         if (USE_SEED)
-            noise = (int) ((FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS) + SEED, z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS) + SEED, 5)) * (Chunk.CHUNK_HEIGHT / 256f)) - 1;
+            noise = (int) ((FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS) + SEED, z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS) + SEED, 5)) * (Chunk.CHUNK_SIZE / 256f)) - 1;
         else
-            noise = FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), 5) - 1;
+            noise = (int) (FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), 5)* (Chunk.WORLD_HEIGHT*Chunk.CHUNK_SIZE / 256f)) - 1;
 
         return Math.max(noise, 0);
     }
 
     public static int get3DNoise(float x, float y, float z) {
-        return (int) ((SimplexNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * 2f), y / (1f * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * 2f)) + 1) * 128);
+        return (int) ((SimplexNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * 2f), y / (1f * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * 2f)) + 1) * 128* (Chunk.CHUNK_SIZE / 256f));
     }
 
     public static Texture loadTexture(String key) {

@@ -89,23 +89,35 @@ public class ChunkMaker extends Thread {
 
             boolean twoLeft = map.containsKey(new Pair(chunkX - 2, chunkY, chunkZ).hashCode());
             boolean twoRight = map.containsKey(new Pair(chunkX + 2, chunkY, chunkZ).hashCode());
-            boolean twoBack = map.containsKey(new Pair(chunkX, chunkY, chunkZ + 2).hashCode());
-            boolean twoFront = map.containsKey(new Pair(chunkX, chunkY, chunkZ - 2).hashCode());
+            boolean twoBack = map.containsKey(new Pair(chunkX, chunkY, chunkZ - 2).hashCode());
+            boolean twoFront = map.containsKey(new Pair(chunkX, chunkY, chunkZ + 2).hashCode());
             boolean twoUp = map.containsKey(new Pair(chunkX, chunkY + 2, chunkZ).hashCode());
             boolean twoDown = map.containsKey(new Pair(chunkX, chunkY - 2, chunkZ).hashCode());
-            boolean upLeft = map.containsKey(new Pair(chunkX - 1, chunkY, chunkZ + 1).hashCode());
-            boolean upRight = map.containsKey(new Pair(chunkX + 1, chunkY, chunkZ + 1).hashCode());
-            boolean downLeft = map.containsKey(new Pair(chunkX - 1, chunkY, chunkZ - 1).hashCode());
-            boolean downRight = map.containsKey(new Pair(chunkX + 1, chunkY, chunkZ - 1).hashCode());
+            boolean upLeft = map.containsKey(new Pair(chunkX - 1, chunkY + 1, chunkZ).hashCode());
+            boolean upRight = map.containsKey(new Pair(chunkX + 1, chunkY + 1, chunkZ).hashCode());
+            boolean upFront = map.containsKey(new Pair(chunkX, chunkY + 1, chunkZ + 1).hashCode());
+            boolean upBack = map.containsKey(new Pair(chunkX, chunkY + 1, chunkZ - 1).hashCode());
+            boolean downLeft = map.containsKey(new Pair(chunkX - 1, chunkY - 1, chunkZ).hashCode());
+            boolean downRight = map.containsKey(new Pair(chunkX + 1, chunkY - 1, chunkZ).hashCode());
+            boolean downFront = map.containsKey(new Pair(chunkX, chunkY - 1, chunkZ + 1).hashCode());
+            boolean downBack = map.containsKey(new Pair(chunkX, chunkY - 1, chunkZ - 1).hashCode());
+            boolean frontLeft = map.containsKey(new Pair(chunkX - 1, chunkY, chunkZ + 1).hashCode());
+            boolean frontRight = map.containsKey(new Pair(chunkX + 1, chunkY, chunkZ + 1).hashCode());
+            boolean backLeft = map.containsKey(new Pair(chunkX - 1, chunkY, chunkZ - 1).hashCode());
+            boolean backRight = map.containsKey(new Pair(chunkX + 1, chunkY, chunkZ - 1).hashCode());
 
-            if (twoRight && upRight && downRight)
+            if (twoRight && frontRight && backRight && upRight && downRight)
                 updateSides(chunkManager.getChunk(chunkX + 1, chunkY, chunkZ));
-            if (twoLeft && upLeft && downLeft)
+            if (twoLeft && frontLeft && backLeft && upLeft && downLeft)
                 updateSides(chunkManager.getChunk(chunkX - 1, chunkY, chunkZ));
-            if (twoBack && upLeft && upRight)
+            if (twoFront && frontLeft && frontRight && upFront && downFront)
                 updateSides(chunkManager.getChunk(chunkX, chunkY, chunkZ + 1));
-            if (twoFront && downLeft && downRight)
+            if (twoBack && backLeft && backRight && upBack && downBack)
                 updateSides(chunkManager.getChunk(chunkX, chunkY, chunkZ - 1));
+            if (twoUp && upFront && upBack && upRight && upLeft)
+                updateSides(chunkManager.getChunk(chunkX, chunkY + 1, chunkZ));
+            if (twoDown && downFront && downFront && downRight && downLeft)
+                updateSides(chunkManager.getChunk(chunkX, chunkY - 1, chunkZ));
         }
         else
             System.out.println("Already contains");
@@ -116,7 +128,7 @@ public class ChunkMaker extends Thread {
             this.chunk = chunk;
             this.xOff = chunk.xCoordinate;
             this.zOff = chunk.zCoordinate;
-            this.yOff = chunk.yId * Chunk.CHUNK_HEIGHT;
+            this.yOff = chunk.yId * Chunk.CHUNK_SIZE;
             updateAllBlocks();
             drawChunkVBO();
             map.put(new Pair(this.chunk.xId, this.chunk.yId, this.chunk.zId).hashCode(), toByte(this.chunk));
@@ -130,7 +142,7 @@ public class ChunkMaker extends Thread {
             this.chunk = chunk;
             this.xOff = chunk.xCoordinate;
             this.zOff = chunk.zCoordinate;
-            this.yOff = chunk.yId * Chunk.CHUNK_HEIGHT;
+            this.yOff = chunk.yId * Chunk.CHUNK_SIZE;
             updateLeft();
             drawChunkVBO();
 
@@ -145,7 +157,7 @@ public class ChunkMaker extends Thread {
             this.chunk = chunk;
             this.xOff = chunk.xCoordinate;
             this.zOff = chunk.zCoordinate;
-            this.yOff = chunk.yId * Chunk.CHUNK_HEIGHT;
+            this.yOff = chunk.yId * Chunk.CHUNK_SIZE;
             updateRight();
             updateLeft();
             updateBack();
@@ -165,7 +177,7 @@ public class ChunkMaker extends Thread {
             this.chunk = chunk;
             this.xOff = chunk.xCoordinate;
             this.zOff = chunk.zCoordinate;
-            this.yOff = chunk.yId * Chunk.CHUNK_HEIGHT;
+            this.yOff = chunk.yId * Chunk.CHUNK_SIZE;
             updateRight();
             drawChunkVBO();
 
@@ -180,7 +192,7 @@ public class ChunkMaker extends Thread {
             this.chunk = chunk;
             this.xOff = chunk.xCoordinate;
             this.zOff = chunk.zCoordinate;
-            this.yOff = chunk.yId * Chunk.CHUNK_HEIGHT;
+            this.yOff = chunk.yId * Chunk.CHUNK_SIZE;
             updateBack();
             drawChunkVBO();
 
@@ -195,7 +207,7 @@ public class ChunkMaker extends Thread {
             this.chunk = chunk;
             this.xOff = chunk.xCoordinate;
             this.zOff = chunk.zCoordinate;
-            this.yOff = chunk.yId * Chunk.CHUNK_HEIGHT;
+            this.yOff = chunk.yId * Chunk.CHUNK_SIZE;
             updateFront();
             drawChunkVBO();
 
@@ -1340,243 +1352,243 @@ public class ChunkMaker extends Thread {
 
     private void updateTopLeftBack() {
         if (leftChunk != null) {
-            if (leftChunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][0].isOpaque())
-                chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][0].setLeft(true);
+            if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].isOpaque())
+                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setLeft(true);
         }
 
         if (backChunk != null) {
-            if (backChunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][0].setBack(true);
+            if (backChunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setBack(true);
         }
 
         if (topChunk != null) {
             if (topChunk.blocks[0][0][0].isOpaque())
-                topChunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][0].setTop(true);
+                topChunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setTop(true);
         }
 
-        if (chunk.blocks[1][Chunk.CHUNK_HEIGHT - 1][0].isOpaque())
-            chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][0].setRight(true);
+        if (chunk.blocks[1][Chunk.CHUNK_SIZE - 1][0].isOpaque())
+            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setRight(true);
 
-        if (chunk.blocks[0][Chunk.CHUNK_HEIGHT - 2][0].isOpaque())
-            chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][0].setBottom(true);
+        if (chunk.blocks[0][Chunk.CHUNK_SIZE - 2][0].isOpaque())
+            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setBottom(true);
 
-        if (chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][1].isOpaque())
-            chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][0].setFront(true);
+        if (chunk.blocks[0][Chunk.CHUNK_SIZE - 1][1].isOpaque())
+            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setFront(true);
 
     }
 
     private void updateTopLeftFront() {
         if (leftChunk != null) {
-            if (leftChunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setLeft(true);
+            if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setLeft(true);
         }
         if (frontChunk != null) {
-            if (frontChunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][0].isOpaque())
-                chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setFront(true);
+            if (frontChunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].isOpaque())
+                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setFront(true);
         }
 
         if (topChunk != null) {
-            if (topChunk.blocks[0][0][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                topChunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setTop(true);
+            if (topChunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+                topChunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setTop(true);
         }
 
-        if (chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 2].isOpaque())
-            chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setBack(true);
+        if (chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2].isOpaque())
+            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBack(true);
 
-        if (chunk.blocks[0][Chunk.CHUNK_HEIGHT - 2][Chunk.CHUNK_WIDTH - 1].isOpaque())
-            chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setBottom(true);
+        if (chunk.blocks[0][Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1].isOpaque())
+            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBottom(true);
 
-        if (chunk.blocks[1][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
-            chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setRight(true);
+        if (chunk.blocks[1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setRight(true);
     }
 
     private void updateTopRightBack() {
         if (backChunk != null) {
-            if (backChunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][0].setBack(true);
+            if (backChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setBack(true);
         }
         if (rightChunk != null) {
-            if (rightChunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][0].isOpaque())
-                chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][0].setRight(true);
+            if (rightChunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].isOpaque())
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setRight(true);
         }
 
         if (topChunk != null) {
-            if (topChunk.blocks[Chunk.CHUNK_WIDTH - 1][0][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][0].setTop(true);
+            if (topChunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setTop(true);
         }
 
-        if (chunk.blocks[Chunk.CHUNK_WIDTH - 2][Chunk.CHUNK_HEIGHT - 1][0].isOpaque())
-            chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][0].setLeft(true);
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1][0].isOpaque())
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setLeft(true);
 
-        if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 2][0].isOpaque())
-            chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][0].setBottom(true);
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2][0].isOpaque())
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setBottom(true);
 
-        if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][1].isOpaque())
-            chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][0].setFront(true);
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][1].isOpaque())
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setFront(true);
     }
 
     private void updateTopRightFront() {
         if (rightChunk != null) {
-            if (rightChunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setRight(true);
+            if (rightChunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setRight(true);
         }
         if (frontChunk != null) {
-            if (frontChunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][0].isOpaque())
-                chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setFront(true);
+            if (frontChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].isOpaque())
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setFront(true);
         }
 
         if (topChunk != null) {
-            if (topChunk.blocks[Chunk.CHUNK_WIDTH - 1][0][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setTop(true);
+            if (topChunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setTop(true);
         }
 
-        if (chunk.blocks[Chunk.CHUNK_WIDTH - 2][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
-            chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setLeft(true);
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setLeft(true);
 
-        if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 2][Chunk.CHUNK_WIDTH - 1].isOpaque())
-            chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setBottom(true);
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1].isOpaque())
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBottom(true);
 
-        if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 2].isOpaque())
-            chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setBack(true);
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2].isOpaque())
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBack(true);
     }
 
     private void updateTopLeft() {
         boolean isValid = leftChunk != null;
 
-        for (int z = 1; z < Chunk.CHUNK_WIDTH - 1; z++) {
+        for (int z = 1; z < Chunk.CHUNK_SIZE - 1; z++) {
             if (isValid) {
-                if (leftChunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][z].isOpaque())
-                    chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][z].setLeft(true);
+                if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].isOpaque())
+                    chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setLeft(true);
             }
 
             if (topChunk != null) {
-                if (topChunk.blocks[Chunk.CHUNK_WIDTH - 1][0][z].isOpaque())
-                    chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][z].setTop(true);
+                if (topChunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].isOpaque())
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setTop(true);
             }
 
-            if (chunk.blocks[1][Chunk.CHUNK_HEIGHT - 1][z].isOpaque())
-                chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][z].setRight(true);
+            if (chunk.blocks[1][Chunk.CHUNK_SIZE - 1][z].isOpaque())
+                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setRight(true);
 
-            if (chunk.blocks[0][Chunk.CHUNK_HEIGHT - 2][z].isOpaque())
-                chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][z].setBottom(true);
+            if (chunk.blocks[0][Chunk.CHUNK_SIZE - 2][z].isOpaque())
+                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setBottom(true);
 
-            if (chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][z + 1].isOpaque())
-                chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][z].setFront(true);
+            if (chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z + 1].isOpaque())
+                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setFront(true);
 
-            if (chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][z - 1].isOpaque())
-                chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][z].setBack(true);
+            if (chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z - 1].isOpaque())
+                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setBack(true);
         }
     }
 
     private void updateTopRight() {
         boolean isValid = rightChunk != null;
 
-        for (int z = 1; z < Chunk.CHUNK_WIDTH - 1; z++) {
+        for (int z = 1; z < Chunk.CHUNK_SIZE - 1; z++) {
             if (isValid) {
-                if (rightChunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][z].isOpaque())
-                    chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][z].setRight(true);
+                if (rightChunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].isOpaque())
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setRight(true);
             }
 
             if (topChunk != null) {
-                if (topChunk.blocks[Chunk.CHUNK_WIDTH - 1][0][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                    chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][z].setTop(true);
+                if (topChunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].isOpaque())
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setTop(true);
             }
 
-            if (chunk.blocks[Chunk.CHUNK_WIDTH - 2][Chunk.CHUNK_HEIGHT - 1][z].isOpaque())
-                chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][z].setLeft(true);
+            if (chunk.blocks[Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1][z].isOpaque())
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setLeft(true);
 
-            if (chunk.blocks[0][Chunk.CHUNK_HEIGHT - 2][z].isOpaque())
-                chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][z].setBottom(true);
+            if (chunk.blocks[0][Chunk.CHUNK_SIZE - 2][z].isOpaque())
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setBottom(true);
 
-            if (chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][z + 1].isOpaque())
-                chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][z].setFront(true);
+            if (chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z + 1].isOpaque())
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setFront(true);
 
-            if (chunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][z - 1].isOpaque())
-                chunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][z].setBack(true);
+            if (chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z - 1].isOpaque())
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setBack(true);
         }
     }
 
     private void updateTopFront() {
         boolean isValid = frontChunk != null;
 
-        for (int x = 1; x < Chunk.CHUNK_WIDTH - 1; x++) {
+        for (int x = 1; x < Chunk.CHUNK_SIZE - 1; x++) {
             if (isValid) {
-                if (frontChunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][0].isOpaque())
-                    chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setFront(true);
+                if (frontChunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].isOpaque())
+                    chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setFront(true);
             }
 
             if (topChunk != null) {
-                if (topChunk.blocks[x][0][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                    chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setTop(true);
+                if (topChunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+                    chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setTop(true);
             }
 
-            if (chunk.blocks[x + 1][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setRight(true);
+            if (chunk.blocks[x + 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setRight(true);
 
-            if (chunk.blocks[x - 1][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setLeft(true);
+            if (chunk.blocks[x - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setLeft(true);
 
-            if (chunk.blocks[x][Chunk.CHUNK_HEIGHT - 2][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setBottom(true);
+            if (chunk.blocks[x][Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1].isOpaque())
+                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBottom(true);
 
-            if (chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 2].isOpaque())
-                chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setBack(true);
+            if (chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2].isOpaque())
+                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBack(true);
         }
     }
 
     private void updateTopBack() {
         boolean isValid = backChunk != null;
 
-        for (int x = 1; x < Chunk.CHUNK_WIDTH - 1; x++) {
+        for (int x = 1; x < Chunk.CHUNK_SIZE - 1; x++) {
             if (isValid) {
-                if (backChunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                    chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][0].setBack(true);
+                if (backChunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                    chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setBack(true);
             }
 
             if (topChunk != null) {
-                if (topChunk.blocks[x][0][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                    chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].setTop(true);
+                if (topChunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+                    chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setTop(true);
             }
 
-            if (chunk.blocks[x + 1][Chunk.CHUNK_HEIGHT - 1][0].isOpaque())
-                chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][0].setRight(true);
+            if (chunk.blocks[x + 1][Chunk.CHUNK_SIZE - 1][0].isOpaque())
+                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setRight(true);
 
-            if (chunk.blocks[x - 1][Chunk.CHUNK_HEIGHT - 1][0].isOpaque())
-                chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][0].setLeft(true);
+            if (chunk.blocks[x - 1][Chunk.CHUNK_SIZE - 1][0].isOpaque())
+                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setLeft(true);
 
-            if (chunk.blocks[x][Chunk.CHUNK_HEIGHT - 2][0].isOpaque())
-                chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][0].setBottom(true);
+            if (chunk.blocks[x][Chunk.CHUNK_SIZE - 2][0].isOpaque())
+                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setBottom(true);
 
-            if (chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][1].isOpaque())
-                chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][0].setFront(true);
+            if (chunk.blocks[x][Chunk.CHUNK_SIZE - 1][1].isOpaque())
+                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setFront(true);
         }
 
     }
 
     private void updateTopSide() {
-        for (int x = 1; x < Chunk.CHUNK_WIDTH - 1; x++) {
-            for (int z = 1; z < Chunk.CHUNK_WIDTH - 1; z++) {
-                if (chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][z].is(Type.AIR) == false) {
+        for (int x = 1; x < Chunk.CHUNK_SIZE - 1; x++) {
+            for (int z = 1; z < Chunk.CHUNK_SIZE - 1; z++) {
+                if (chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].is(Type.AIR) == false) {
 
                     if (topChunk != null) {
                         if (topChunk.blocks[x][0][z].isOpaque())
-                            chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][z].setTop(true);
+                            chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setTop(true);
                     }
 
-                    if (chunk.blocks[x + 1][Chunk.CHUNK_HEIGHT - 1][z].isOpaque())
-                        chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][z].setRight(true);
+                    if (chunk.blocks[x + 1][Chunk.CHUNK_SIZE - 1][z].isOpaque())
+                        chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setRight(true);
 
-                    if (chunk.blocks[x - 1][Chunk.CHUNK_HEIGHT - 1][z].isOpaque())
-                        chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][z].setLeft(true);
+                    if (chunk.blocks[x - 1][Chunk.CHUNK_SIZE - 1][z].isOpaque())
+                        chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setLeft(true);
 
-                    if (chunk.blocks[x][Chunk.CHUNK_HEIGHT - 2][z].isOpaque())
-                        chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][z].setBottom(true);
+                    if (chunk.blocks[x][Chunk.CHUNK_SIZE - 2][z].isOpaque())
+                        chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setBottom(true);
 
-                    if (chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][z + 1].isOpaque())
-                        chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][z].setFront(true);
+                    if (chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z + 1].isOpaque())
+                        chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setFront(true);
 
-                    if (chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][z - 1].isOpaque())
-                        chunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][z].setBack(true);
+                    if (chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z - 1].isOpaque())
+                        chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setBack(true);
                 }
             }
 
@@ -1585,15 +1597,15 @@ public class ChunkMaker extends Thread {
 
     private void updateBottomLeftBack() {
         if (leftChunk != null)
-            if (leftChunk.blocks[Chunk.CHUNK_WIDTH - 1][0][0].isOpaque())
+            if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].isOpaque())
                 chunk.blocks[0][0][0].setLeft(true);
 
         if (backChunk != null)
-            if (backChunk.blocks[0][0][Chunk.CHUNK_WIDTH - 1].isOpaque())
+            if (backChunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].isOpaque())
                 chunk.blocks[0][0][0].setBack(true);
 
         if (bottomChunk != null)
-            if (bottomChunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][0].isOpaque())
+            if (bottomChunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].isOpaque())
                 chunk.blocks[0][0][0].setBottom(true);
 
         if (chunk.blocks[1][0][0].isOpaque())
@@ -1608,88 +1620,88 @@ public class ChunkMaker extends Thread {
 
     private void updateBottomLeftFront() {
         if (leftChunk != null) {
-            if (leftChunk.blocks[Chunk.CHUNK_WIDTH - 1][0][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                chunk.blocks[0][0][Chunk.CHUNK_WIDTH - 1].setLeft(true);
+            if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+                chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setLeft(true);
         }
 
         if (frontChunk != null) {
             if (frontChunk.blocks[0][0][0].isOpaque())
-                chunk.blocks[0][0][Chunk.CHUNK_WIDTH - 1].setFront(true);
+                chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setFront(true);
         }
 
         if (bottomChunk != null)
-            if (bottomChunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                chunk.blocks[0][0][Chunk.CHUNK_WIDTH - 1].setBottom(true);
+            if (bottomChunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setBottom(true);
 
-        if (chunk.blocks[1][0][Chunk.CHUNK_WIDTH - 1].isOpaque())
-            chunk.blocks[0][0][Chunk.CHUNK_WIDTH - 1].setRight(true);
+        if (chunk.blocks[1][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+            chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setRight(true);
 
-        if (chunk.blocks[0][1][Chunk.CHUNK_WIDTH - 1].isOpaque())
-            chunk.blocks[0][0][Chunk.CHUNK_WIDTH - 1].setTop(true);
+        if (chunk.blocks[0][1][Chunk.CHUNK_SIZE - 1].isOpaque())
+            chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setTop(true);
 
-        if (chunk.blocks[0][0][Chunk.CHUNK_WIDTH - 2].isOpaque())
-            chunk.blocks[0][0][Chunk.CHUNK_WIDTH - 1].setBack(true);
+        if (chunk.blocks[0][0][Chunk.CHUNK_SIZE - 2].isOpaque())
+            chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setBack(true);
     }
 
     private void updateBottomRightBack() {
         if (rightChunk != null)
             if (rightChunk.blocks[0][0][0].isOpaque())
-                chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][0].setRight(true);
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setRight(true);
 
         if (backChunk != null)
-            if (backChunk.blocks[Chunk.CHUNK_WIDTH - 1][0][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][0].setBack(true);
+            if (backChunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setBack(true);
 
         if (bottomChunk != null)
-            if (bottomChunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][0].setBottom(true);
+            if (bottomChunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setBottom(true);
 
-        if (chunk.blocks[Chunk.CHUNK_WIDTH - 2][0][0].isOpaque())
-            chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][0].setLeft(true);
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 2][0][0].isOpaque())
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setLeft(true);
 
-        if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][1][0].isOpaque())
-            chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][0].setTop(true);
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][1][0].isOpaque())
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setTop(true);
 
-        if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][1].isOpaque())
-            chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][0].setFront(true);
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][0][1].isOpaque())
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setFront(true);
     }
 
     private void updateBottomRightFront() {
 
         if (rightChunk != null) {
-            if (rightChunk.blocks[Chunk.CHUNK_WIDTH - 1][0][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][Chunk.CHUNK_WIDTH - 1].setRight(true);
+            if (rightChunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setRight(true);
         }
 
         if (frontChunk != null) {
-            if (frontChunk.blocks[Chunk.CHUNK_WIDTH - 1][0][0].isOpaque())
-                chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][Chunk.CHUNK_WIDTH - 1].setFront(true);
+            if (frontChunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].isOpaque())
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setFront(true);
         }
 
         if (bottomChunk != null)
-            if (bottomChunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][0].isOpaque())
-                chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][0].setBottom(true);
+            if (bottomChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].isOpaque())
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setBottom(true);
 
-        if (chunk.blocks[Chunk.CHUNK_WIDTH - 2][0][Chunk.CHUNK_WIDTH - 1].isOpaque())
-            chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][Chunk.CHUNK_WIDTH - 1].setLeft(true);
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 2][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setLeft(true);
 
-        if (chunk.blocks[0][1][Chunk.CHUNK_WIDTH - 1].isOpaque())
-            chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][Chunk.CHUNK_WIDTH - 1].setTop(true);
+        if (chunk.blocks[0][1][Chunk.CHUNK_SIZE - 1].isOpaque())
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setTop(true);
 
-        if (chunk.blocks[0][0][Chunk.CHUNK_WIDTH - 2].isOpaque())
-            chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][Chunk.CHUNK_WIDTH - 1].setBack(true);
+        if (chunk.blocks[0][0][Chunk.CHUNK_SIZE - 2].isOpaque())
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setBack(true);
     }
 
     private void updateBottomLeft() {
         boolean isValid = leftChunk != null;
 
-        for (int z = 1; z < Chunk.CHUNK_WIDTH - 1; z++) {
+        for (int z = 1; z < Chunk.CHUNK_SIZE - 1; z++) {
             if (isValid)
-                if (leftChunk.blocks[Chunk.CHUNK_WIDTH - 1][0][z].isOpaque())
+                if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].isOpaque())
                     chunk.blocks[0][0][z].setLeft(true);
 
             if (bottomChunk != null)
-                if (bottomChunk.blocks[0][Chunk.CHUNK_HEIGHT - 1][z].isOpaque())
+                if (bottomChunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].isOpaque())
                     chunk.blocks[0][0][z].setBottom(true);
 
             if (chunk.blocks[1][0][z].isOpaque()) {
@@ -1714,29 +1726,29 @@ public class ChunkMaker extends Thread {
 
         boolean isValid = rightChunk != null;
 
-        for (int z = 1; z < Chunk.CHUNK_WIDTH - 1; z++) {
+        for (int z = 1; z < Chunk.CHUNK_SIZE - 1; z++) {
             if (isValid)
                 if (rightChunk.blocks[0][0][z].isOpaque())
-                    chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][z].setRight(true);
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setRight(true);
 
             if (bottomChunk != null)
-                if (bottomChunk.blocks[Chunk.CHUNK_WIDTH - 1][Chunk.CHUNK_HEIGHT - 1][z].isOpaque())
-                    chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][z].setBottom(true);
+                if (bottomChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].isOpaque())
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setBottom(true);
 
-            if (chunk.blocks[Chunk.CHUNK_WIDTH - 2][0][z].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][z].setLeft(true);
+            if (chunk.blocks[Chunk.CHUNK_SIZE - 2][0][z].isOpaque()) {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setLeft(true);
             }
 
-            if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][1][z].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][z].setTop(true);
+            if (chunk.blocks[Chunk.CHUNK_SIZE - 1][1][z].isOpaque()) {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setTop(true);
             }
 
-            if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][z + 1].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][z].setFront(true);
+            if (chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z + 1].isOpaque()) {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setFront(true);
             }
 
-            if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][z - 1].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_WIDTH - 1][0][z].setBack(true);
+            if (chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z - 1].isOpaque()) {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setBack(true);
             }
         }
     }
@@ -1744,39 +1756,39 @@ public class ChunkMaker extends Thread {
     private void updateBottomFront() {
         boolean isValid = frontChunk != null;
 
-        for (int x = 1; x < Chunk.CHUNK_WIDTH - 1; x++) {
+        for (int x = 1; x < Chunk.CHUNK_SIZE - 1; x++) {
             if (isValid)
                 if (frontChunk.blocks[x][0][0].isOpaque())
-                    chunk.blocks[x][0][Chunk.CHUNK_WIDTH - 1].setFront(true);
+                    chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setFront(true);
 
             if (bottomChunk != null)
-                if (bottomChunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                    chunk.blocks[x][0][Chunk.CHUNK_WIDTH - 1].setBottom(true);
+                if (bottomChunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                    chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setBottom(true);
 
-            if (chunk.blocks[x + 1][0][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                chunk.blocks[x][0][Chunk.CHUNK_WIDTH - 1].setRight(true);
+            if (chunk.blocks[x + 1][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+                chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setRight(true);
 
-            if (chunk.blocks[x - 1][0][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                chunk.blocks[x][0][Chunk.CHUNK_WIDTH - 1].setLeft(true);
+            if (chunk.blocks[x - 1][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+                chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setLeft(true);
 
-            if (chunk.blocks[x][1][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                chunk.blocks[x][0][Chunk.CHUNK_WIDTH - 1].setTop(true);
+            if (chunk.blocks[x][1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setTop(true);
 
-            if (chunk.blocks[x][0][Chunk.CHUNK_WIDTH - 2].isOpaque())
-                chunk.blocks[x][0][Chunk.CHUNK_WIDTH - 1].setBack(true);
+            if (chunk.blocks[x][0][Chunk.CHUNK_SIZE - 2].isOpaque())
+                chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setBack(true);
         }
     }
 
     private void updateBottomBack() {
         boolean isValid = backChunk != null;
 
-        for (int x = 1; x < Chunk.CHUNK_WIDTH - 1; x++) {
+        for (int x = 1; x < Chunk.CHUNK_SIZE - 1; x++) {
             if (isValid)
-                if (backChunk.blocks[x][0][Chunk.CHUNK_WIDTH - 1].isOpaque())
+                if (backChunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].isOpaque())
                     chunk.blocks[x][0][0].setBack(true);
 
             if (bottomChunk != null)
-                if (bottomChunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][0].isOpaque())
+                if (bottomChunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].isOpaque())
                     chunk.blocks[x][0][0].setBottom(true);
 
             if (chunk.blocks[x + 1][0][0].isOpaque())
@@ -1794,11 +1806,11 @@ public class ChunkMaker extends Thread {
     }
 
     private void updateBottomSide() {
-        for (int x = 1; x < Chunk.CHUNK_WIDTH - 1; x++) {
-            for (int z = 1; z < Chunk.CHUNK_WIDTH - 1; z++) {
+        for (int x = 1; x < Chunk.CHUNK_SIZE - 1; x++) {
+            for (int z = 1; z < Chunk.CHUNK_SIZE - 1; z++) {
                 if (chunk.blocks[x][0][z].is(Type.AIR) == false) {
                     if (bottomChunk != null)
-                        if (bottomChunk.blocks[x][Chunk.CHUNK_HEIGHT - 1][z].isOpaque())
+                        if (bottomChunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].isOpaque())
                             chunk.blocks[x][0][z].setBottom(true);
 
                     if (chunk.blocks[x + 1][0][z].isOpaque())
@@ -1823,11 +1835,11 @@ public class ChunkMaker extends Thread {
     private void updateLeftSide() {
         boolean isValid = leftChunk != null;
 
-        for (int z = 1; z < Chunk.CHUNK_WIDTH - 1; z++) {
-            for (int y = 1; y < Chunk.CHUNK_HEIGHT - 1; y++) {
+        for (int z = 1; z < Chunk.CHUNK_SIZE - 1; z++) {
+            for (int y = 1; y < Chunk.CHUNK_SIZE - 1; y++) {
                 if (chunk.blocks[0][y][z].is(Type.AIR) == false) {
                     if (isValid)
-                        if (leftChunk.blocks[Chunk.CHUNK_WIDTH - 1][y][z].isOpaque())
+                        if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].isOpaque())
                             chunk.blocks[0][y][z].setLeft(true);
 
                     if (chunk.blocks[0][y + 1][z].isOpaque())
@@ -1852,28 +1864,28 @@ public class ChunkMaker extends Thread {
     private void updateRightSide() {
         boolean isValid = rightChunk != null;
 
-        for (int z = 1; z < Chunk.CHUNK_WIDTH - 1; z++) {
-            for (int y = 1; y < Chunk.CHUNK_HEIGHT - 1; y++) {
-                if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][z].is(Type.AIR) == false) {
+        for (int z = 1; z < Chunk.CHUNK_SIZE - 1; z++) {
+            for (int y = 1; y < Chunk.CHUNK_SIZE - 1; y++) {
+                if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].is(Type.AIR) == false) {
                     if (isValid)
                         if (rightChunk.blocks[0][y][z].isOpaque()) {
-                            chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][z].setRight(true);
+                            chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setRight(true);
                         }
 
-                    if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][y + 1][z].isOpaque())
-                        chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][z].setTop(true);
+                    if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y + 1][z].isOpaque())
+                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setTop(true);
 
-                    if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][y - 1][z].isOpaque())
-                        chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][z].setBottom(true);
+                    if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y - 1][z].isOpaque())
+                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setBottom(true);
 
-                    if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][z + 1].isOpaque())
-                        chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][z].setFront(true);
+                    if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z + 1].isOpaque())
+                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setFront(true);
 
-                    if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][z - 1].isOpaque())
-                        chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][z].setBack(true);
+                    if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z - 1].isOpaque())
+                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setBack(true);
 
-                    if (chunk.blocks[Chunk.CHUNK_WIDTH - 2][y][z].isOpaque())
-                        chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][z].setLeft(true);
+                    if (chunk.blocks[Chunk.CHUNK_SIZE - 2][y][z].isOpaque())
+                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setLeft(true);
                 }
             }
         }
@@ -1882,28 +1894,28 @@ public class ChunkMaker extends Thread {
     private void updateFrontSide() {
         boolean isValid = frontChunk != null;
 
-        for (int x = 1; x < Chunk.CHUNK_WIDTH - 1; x++) {
-            for (int y = 1; y < Chunk.CHUNK_HEIGHT - 1; y++) {
-                if (chunk.blocks[x][y][Chunk.CHUNK_WIDTH - 1].is(Type.AIR) == false) {
+        for (int x = 1; x < Chunk.CHUNK_SIZE - 1; x++) {
+            for (int y = 1; y < Chunk.CHUNK_SIZE - 1; y++) {
+                if (chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].is(Type.AIR) == false) {
                     if (isValid) {
                         if (frontChunk.blocks[x][y][0].isOpaque())
-                            chunk.blocks[x][y][Chunk.CHUNK_WIDTH - 1].setFront(true);
+                            chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setFront(true);
                     }
 
-                    if (chunk.blocks[x + 1][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                        chunk.blocks[x][y][Chunk.CHUNK_WIDTH - 1].setRight(true);
+                    if (chunk.blocks[x + 1][y][Chunk.CHUNK_SIZE - 1].isOpaque())
+                        chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setRight(true);
 
-                    if (chunk.blocks[x - 1][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                        chunk.blocks[x][y][Chunk.CHUNK_WIDTH - 1].setLeft(true);
+                    if (chunk.blocks[x - 1][y][Chunk.CHUNK_SIZE - 1].isOpaque())
+                        chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setLeft(true);
 
-                    if (chunk.blocks[x][y + 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                        chunk.blocks[x][y][Chunk.CHUNK_WIDTH - 1].setTop(true);
+                    if (chunk.blocks[x][y + 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                        chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setTop(true);
 
-                    if (chunk.blocks[x][y - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                        chunk.blocks[x][y][Chunk.CHUNK_WIDTH - 1].setBottom(true);
+                    if (chunk.blocks[x][y - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                        chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setBottom(true);
 
-                    if (chunk.blocks[x][y][Chunk.CHUNK_WIDTH - 2].isOpaque())
-                        chunk.blocks[x][y][Chunk.CHUNK_WIDTH - 1].setBack(true);
+                    if (chunk.blocks[x][y][Chunk.CHUNK_SIZE - 2].isOpaque())
+                        chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setBack(true);
                 }
             }
         }
@@ -1912,11 +1924,11 @@ public class ChunkMaker extends Thread {
     private void updateBackSide() {
         boolean isValid = backChunk != null;
 
-        for (int x = 1; x < Chunk.CHUNK_WIDTH - 1; x++) {
-            for (int y = 1; y < Chunk.CHUNK_HEIGHT - 1; y++) {
+        for (int x = 1; x < Chunk.CHUNK_SIZE - 1; x++) {
+            for (int y = 1; y < Chunk.CHUNK_SIZE - 1; y++) {
                 if (chunk.blocks[x][y][0].is(Type.AIR) == false) {
                     if (isValid)
-                        if (backChunk.blocks[x][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
+                        if (backChunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].isOpaque())
                             chunk.blocks[x][y][0].setBack(true);
 
                     if (chunk.blocks[x + 1][y][0].isOpaque())
@@ -1940,9 +1952,9 @@ public class ChunkMaker extends Thread {
 
     private int calculateVertexCount() {
         int vertexCount = 0;
-        for (int x = 0; x < Chunk.CHUNK_WIDTH; x++)
-            for (int z = 0; z < Chunk.CHUNK_WIDTH; z++)
-                for (int y = 0; y < Chunk.CHUNK_HEIGHT; y++) {
+        for (int x = 0; x < Chunk.CHUNK_SIZE; x++)
+            for (int z = 0; z < Chunk.CHUNK_SIZE; z++)
+                for (int y = 0; y < Chunk.CHUNK_SIZE; y++) {
                     if (chunk.blocks[x][y][z].isBack())
                         vertexCount += 6;
                     if (chunk.blocks[x][y][z].isBottom())
@@ -1964,14 +1976,14 @@ public class ChunkMaker extends Thread {
         boolean backIsValid = backChunk != null;
         boolean leftIsValid = leftChunk != null;
 
-        for (int y = 1; y < Chunk.CHUNK_HEIGHT - 1; y++) {
+        for (int y = 1; y < Chunk.CHUNK_SIZE - 1; y++) {
             if (chunk.blocks[0][y][0].is(Type.AIR) == false) {
                 if (backIsValid)
-                    if (backChunk.blocks[0][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
+                    if (backChunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].isOpaque())
                         chunk.blocks[0][y][0].setBack(true);
 
                 if (leftIsValid)
-                    if (leftChunk.blocks[Chunk.CHUNK_WIDTH - 1][y][0].isOpaque())
+                    if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].isOpaque())
                         chunk.blocks[0][y][0].setLeft(true);
 
                 if (chunk.blocks[1][y][0].isOpaque())
@@ -1993,27 +2005,27 @@ public class ChunkMaker extends Thread {
         boolean frontIsValid = frontChunk != null;
         boolean leftIsValid = leftChunk != null;
 
-        for (int y = 1; y < Chunk.CHUNK_HEIGHT - 1; y++) {
-            if (chunk.blocks[0][y][Chunk.CHUNK_WIDTH - 1].is(Type.AIR) == false) {
+        for (int y = 1; y < Chunk.CHUNK_SIZE - 1; y++) {
+            if (chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].is(Type.AIR) == false) {
                 if (frontIsValid)
                     if (frontChunk.blocks[0][y][0].isOpaque())
-                        chunk.blocks[0][y][Chunk.CHUNK_WIDTH - 1].setFront(true);
+                        chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setFront(true);
 
                 if (leftIsValid)
-                    if (leftChunk.blocks[Chunk.CHUNK_WIDTH - 1][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                        chunk.blocks[0][y][Chunk.CHUNK_WIDTH - 1].setLeft(true);
+                    if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].isOpaque())
+                        chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setLeft(true);
 
-                if (chunk.blocks[1][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                    chunk.blocks[0][y][Chunk.CHUNK_WIDTH - 1].setRight(true);
+                if (chunk.blocks[1][y][Chunk.CHUNK_SIZE - 1].isOpaque())
+                    chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setRight(true);
 
-                if (chunk.blocks[0][y + 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                    chunk.blocks[0][y][Chunk.CHUNK_WIDTH - 1].setTop(true);
+                if (chunk.blocks[0][y + 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                    chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setTop(true);
 
-                if (chunk.blocks[0][y - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                    chunk.blocks[0][y][Chunk.CHUNK_WIDTH - 1].setBottom(true);
+                if (chunk.blocks[0][y - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                    chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setBottom(true);
 
-                if (chunk.blocks[0][y][Chunk.CHUNK_WIDTH - 2].isOpaque())
-                    chunk.blocks[0][y][Chunk.CHUNK_WIDTH - 1].setBack(true);
+                if (chunk.blocks[0][y][Chunk.CHUNK_SIZE - 2].isOpaque())
+                    chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setBack(true);
             }
         }
     }
@@ -2022,27 +2034,27 @@ public class ChunkMaker extends Thread {
         boolean rightIsValid = rightChunk != null;
         boolean backIsValid = backChunk != null;
 
-        for (int y = 1; y < Chunk.CHUNK_HEIGHT - 1; y++) {
-            if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][0].is(Type.AIR) == false) {
+        for (int y = 1; y < Chunk.CHUNK_SIZE - 1; y++) {
+            if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].is(Type.AIR) == false) {
                 if (rightIsValid)
                     if (rightChunk.blocks[0][y][0].isOpaque())
-                        chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][0].setRight(true);
+                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setRight(true);
 
                 if (backIsValid)
-                    if (backChunk.blocks[Chunk.CHUNK_WIDTH - 1][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                        chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][0].setBack(true);
+                    if (backChunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].isOpaque())
+                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setBack(true);
 
-                if (chunk.blocks[Chunk.CHUNK_WIDTH - 2][y][0].isOpaque())
-                    chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][0].setLeft(true);
+                if (chunk.blocks[Chunk.CHUNK_SIZE - 2][y][0].isOpaque())
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setLeft(true);
 
-                if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][y + 1][0].isOpaque())
-                    chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][0].setTop(true);
+                if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y + 1][0].isOpaque())
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setTop(true);
 
-                if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][y - 1][0].isOpaque())
-                    chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][0].setBottom(true);
+                if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y - 1][0].isOpaque())
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setBottom(true);
 
-                if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][1].isOpaque())
-                    chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][0].setFront(true);
+                if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][1].isOpaque())
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setFront(true);
             }
         }
     }
@@ -2051,27 +2063,27 @@ public class ChunkMaker extends Thread {
         boolean rightIsValid = rightChunk != null;
         boolean frontIsValid = frontChunk != null;
 
-        for (int y = 1; y < Chunk.CHUNK_HEIGHT - 1; y++) {
-            if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][Chunk.CHUNK_WIDTH - 1].is(Type.AIR) == false) {
+        for (int y = 1; y < Chunk.CHUNK_SIZE - 1; y++) {
+            if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].is(Type.AIR) == false) {
                 if (rightIsValid)
-                    if (rightChunk.blocks[0][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                        chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][Chunk.CHUNK_WIDTH - 1].setRight(true);
+                    if (rightChunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].isOpaque())
+                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setRight(true);
 
                 if (frontIsValid)
-                    if (frontChunk.blocks[Chunk.CHUNK_WIDTH - 1][y][0].isOpaque())
-                        chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][Chunk.CHUNK_WIDTH - 1].setFront(true);
+                    if (frontChunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].isOpaque())
+                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setFront(true);
 
-                if (chunk.blocks[Chunk.CHUNK_WIDTH - 2][y][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                    chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][Chunk.CHUNK_WIDTH - 1].setLeft(true);
+                if (chunk.blocks[Chunk.CHUNK_SIZE - 2][y][Chunk.CHUNK_SIZE - 1].isOpaque())
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setLeft(true);
 
-                if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][y + 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                    chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][Chunk.CHUNK_WIDTH - 1].setTop(true);
+                if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y + 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setTop(true);
 
-                if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][y - 1][Chunk.CHUNK_WIDTH - 1].isOpaque())
-                    chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][Chunk.CHUNK_WIDTH - 1].setBottom(true);
+                if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setBottom(true);
 
-                if (chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][Chunk.CHUNK_WIDTH - 2].isOpaque())
-                    chunk.blocks[Chunk.CHUNK_WIDTH - 1][y][Chunk.CHUNK_WIDTH - 1].setBack(true);
+                if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 2].isOpaque())
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setBack(true);
 
             }
         }

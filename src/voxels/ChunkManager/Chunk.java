@@ -11,9 +11,9 @@ public class Chunk implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static final int CHUNK_WIDTH = 16;
-    public static final int CHUNK_HEIGHT = 16;
+    public static final int CHUNK_SIZE = 16;
     public static final int WATER_HEIGHT = -1;
+    public static final int WORLD_HEIGHT = 16;
 
     private int vboVertexHandle;
     private int vboNormalHandle;
@@ -35,17 +35,17 @@ public class Chunk implements Serializable {
         this.xId = xId;
         this.zId = zId;
         this.yId = yId;
-        xCoordinate = xId * CHUNK_WIDTH;
-        zCoordinate = zId * CHUNK_WIDTH;
-        yCoordinate = yId * CHUNK_HEIGHT;
+        xCoordinate = xId * CHUNK_SIZE;
+        zCoordinate = zId * CHUNK_SIZE;
+        yCoordinate = yId * CHUNK_SIZE;
         initMaxHeights();
         setBlocks();
     }
 
     private void initMaxHeights() {
-        maxHeights = new int[CHUNK_WIDTH][CHUNK_WIDTH];
-        for (int x = 0; x < CHUNK_WIDTH; x++) {
-            for (int z = 0; z < CHUNK_WIDTH; z++) {
+        maxHeights = new int[CHUNK_SIZE][CHUNK_SIZE];
+        for (int x = 0; x < CHUNK_SIZE; x++) {
+            for (int z = 0; z < CHUNK_SIZE; z++) {
                 maxHeights[x][z] = Voxels.getNoise(x + xCoordinate, z + zCoordinate);
             }
         }
@@ -53,11 +53,11 @@ public class Chunk implements Serializable {
 
     private void setBlocks() {
         int dirtCount = 0;
-        blocks = new Block[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_WIDTH];
+        blocks = new Block[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
         for (int x = 0; x < blocks.length; x++) {
-            blocks[x] = new Block[CHUNK_HEIGHT][CHUNK_WIDTH];
+            blocks[x] = new Block[CHUNK_SIZE][CHUNK_SIZE];
             for (int y = 0; y < blocks[x].length; y++) {
-                blocks[x][y] = new Block[CHUNK_WIDTH];
+                blocks[x][y] = new Block[CHUNK_SIZE];
                 for (int z = 0; z < blocks[x][y].length; z++) {
                     if (Voxels.USE_3D_NOISE) {
                         float noise1 = Voxels.get3DNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate) / 255f;
@@ -69,7 +69,7 @@ public class Chunk implements Serializable {
                             blocks[x][y][z] = new Block(Type.AIR);
                     }
                     else {
-                        if (y + Chunk.CHUNK_HEIGHT * yId <= maxHeights[x][z]) {
+                        if (y + Chunk.CHUNK_SIZE * yId <= maxHeights[x][z]) {
                             blocks[x][y][z] = new Block(Type.DIRT);
                             dirtCount++;
                         }

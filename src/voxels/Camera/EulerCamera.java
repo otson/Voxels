@@ -364,11 +364,11 @@ public class EulerCamera implements Camera {
 
         if (flying == false) {
             if (chunkManager.getMiddle() != null) {
-                if (yInChunk() >= Chunk.CHUNK_HEIGHT || yInChunk() < 0 || chunkManager.getMiddle().blocks[xInChunk()][yInChunk()][zInChunk()].is(Type.AIR)) {
+                if (yInChunk() >= Chunk.CHUNK_SIZE || yInChunk() < 0 || chunkManager.getMiddle().blocks[xInChunk()][yInChunk()][zInChunk()].is(Type.AIR)) {
                     y -= fallingSpeed;
                     fallingSpeed += fallingSpeedIncrease;
                 }
-                if (yInChunk() < Chunk.CHUNK_HEIGHT && yInChunk() >= 0 && chunkManager.getMiddle().blocks[xInChunk()][yInChunk()][zInChunk()].is(Type.DIRT)) {
+                if (yInChunk() < Chunk.CHUNK_SIZE && yInChunk() >= 0 && chunkManager.getMiddle().blocks[xInChunk()][yInChunk()][zInChunk()].is(Type.DIRT)) {
                     y = (int) y + 1;
                     fallingSpeed = 0;
                 }

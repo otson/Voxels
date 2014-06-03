@@ -85,11 +85,11 @@ public class ChunkManager {
         chunk.blocks[x][y][z].setType(type);
         updateThread.update(chunk);
 
-        if (x == Chunk.CHUNK_WIDTH - 1)
+        if (x == Chunk.CHUNK_SIZE - 1)
             updateThread.updateLeft(getChunk(chunkX + 1, chunkY, chunkZ));
         if (x == 0)
             updateThread.updateRight(getChunk(chunkX - 1, chunkY, chunkZ));
-        if (z == Chunk.CHUNK_WIDTH - 1)
+        if (z == Chunk.CHUNK_SIZE - 1)
             updateThread.updateBack(getChunk(chunkX, chunkY, chunkZ + 1));
         if (z == 0)
             updateThread.updateFront(getChunk(chunkX, chunkY, chunkZ - 1));
@@ -133,7 +133,7 @@ public class ChunkManager {
 
                 // Start a new thread, make a new chunk
                 int threadId = getFreeThread();
-                threads[threadId] = new ChunkMaker(dataToProcess, newChunkX, newChunkY, newChunkZ, x * Chunk.CHUNK_WIDTH, y * Chunk.CHUNK_HEIGHT, z * Chunk.CHUNK_WIDTH, map, this);
+                threads[threadId] = new ChunkMaker(dataToProcess, newChunkX, newChunkY, newChunkZ, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE, map, this);
                 threads[threadId].setPriority(Thread.MIN_PRIORITY);
                 threads[threadId].start();
 
@@ -167,7 +167,7 @@ public class ChunkManager {
                 if (map.size() > lastMessage) {
 
                     lastMessage = map.size();
-                    String string = "Chunks loaded: " + (int) ((float) map.size() / (float) ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1) * 16) * 100) + " % (" + map.size() + "/" + ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1) * 16) + ")";
+                    String string = "Chunks loaded: " + (int) ((float) map.size() / (float) ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1) * 16) * 100) + " % (" + map.size() + "/" + ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1) * Chunk.WORLD_HEIGHT) + ")";
                     System.out.println(string);
                     Display.setTitle(string);
                 }

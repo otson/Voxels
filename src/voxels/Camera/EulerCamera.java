@@ -38,6 +38,9 @@ import voxels.ChunkManager.Type;
 import static voxels.Voxels.xInChunk;
 import static voxels.Voxels.zInChunk;
 import static voxels.Voxels.yInChunk;
+import static voxels.Voxels.getCurrentChunkXId;
+import static voxels.Voxels.getCurrentChunkYId;
+import static voxels.Voxels.getCurrentChunkZId;
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.ARBDepthClamp.GL_DEPTH_CLAMP;
 import static org.lwjgl.opengl.GL11.*;
@@ -298,6 +301,8 @@ public class EulerCamera implements Camera {
         boolean moveFaster = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
         boolean moveSlower = Keyboard.isKeyDown(Keyboard.KEY_C);
 
+        chunkManager.getChunkLoader().loadChunks();
+
         if (moveFaster)
             speed *= 10;
         if (moveSlower)
@@ -363,24 +368,26 @@ public class EulerCamera implements Camera {
                 y -= speed * delta * 0.003f;
 
         if (flying == false) {
-            if (chunkManager.getMiddle() != null) {
-                if (yInChunk() >= Chunk.CHUNK_SIZE || yInChunk() < 0 || chunkManager.getMiddle().blocks[xInChunk()][yInChunk()][zInChunk()].is(Type.AIR)) {
+
+            Chunk chunkUnderFeet = chunkManager.getChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
+            if (chunkUnderFeet != null) {
+                if (yInChunk() >= Chunk.CHUNK_SIZE || yInChunk() < 0 || chunkUnderFeet.blocks[xInChunk()][yInChunk()][zInChunk()].is(Type.AIR)) {
                     y -= fallingSpeed;
                     fallingSpeed += fallingSpeedIncrease;
                 }
-                if (yInChunk() < Chunk.CHUNK_SIZE && yInChunk() >= 0 && chunkManager.getMiddle().blocks[xInChunk()][yInChunk()][zInChunk()].is(Type.DIRT)) {
+                chunkUnderFeet = chunkManager.getChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
+                if (yInChunk() < Chunk.CHUNK_SIZE && yInChunk() >= 0 && chunkUnderFeet.blocks[xInChunk()][yInChunk()][zInChunk()].is(Type.DIRT)) {
                     y = (int) y + 1;
                     fallingSpeed = 0;
                 }
+
             }
-            else {
+            if (chunkUnderFeet == null) {
                 setPosition(0, 255, 0);
                 System.out.println("Player tried to enter a chunk that does not exist. \n Position reset to (0, 255, 0)");
             }
         }
     }
-
-    
 
     /**
      * Move in the direction you're looking. That is, this method assumes a new

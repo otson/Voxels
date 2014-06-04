@@ -15,15 +15,13 @@ import voxels.Voxels;
  */
 public class ActiveChunkLoader extends Thread {
 
-    private Chunk topLeft;
-    private Chunk topMiddle;
-    private Chunk topRight;
-    private Chunk midLeft;
+
     private Chunk middle;
-    private Chunk midRight;
-    private Chunk lowLeft;
-    private Chunk lowRight;
-    private Chunk lowMiddle;
+    private Chunk right;
+    private Chunk left;
+    private Chunk top;
+    private Chunk bottom;
+   
 
     boolean running;
     boolean refresh;
@@ -43,7 +41,7 @@ public class ActiveChunkLoader extends Thread {
         while (running) {
             if (refresh || hasMoved()) {
                 refresh = false;
-                loadChunks();
+                //loadChunks();
                 try {
                     sleep(3);
                 } catch (InterruptedException ex) {
@@ -67,44 +65,21 @@ public class ActiveChunkLoader extends Thread {
 
     public void loadChunks() {
         middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());
-    }
-
-    public Chunk getTopLeft() {
-        return topLeft;
-    }
-
-    public Chunk getTopMiddle() {
-        return topMiddle;
-    }
-
-    public Chunk getTopRight() {
-        return topRight;
-    }
-
-    public Chunk getMidLeft() {
-        return midLeft;
+        right = chunkManager.getChunk(Voxels.getCurrentChunkXId()+1, Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());
+        left = chunkManager.getChunk(Voxels.getCurrentChunkXId()-1, Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());
+        top = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId()+1, Voxels.getCurrentChunkZId());
+        bottom = chunkManager.getChunk(Voxels.getCurrentChunkXId()+1, Voxels.getCurrentChunkYId()-1, Voxels.getCurrentChunkZId());
     }
 
     public Chunk getMiddle() {
         return middle;
     }
 
-    public Chunk getMidRight() {
-        return midRight;
+    public Chunk getBottom() {
+        return bottom;
     }
 
-    public Chunk getLowLeft() {
-        return lowLeft;
-    }
-
-    public Chunk getLowRight() {
-        return lowRight;
-    }
-
-    public Chunk getLowMiddle() {
-        return lowMiddle;
-    }
-
+    
     public boolean isRunning() {
         return running;
     }

@@ -71,9 +71,12 @@ public class ChunkManager {
         }
     }
 
-    public void editBlock(final short type, final int x, final int y, final int z, final int chunkX, final int chunkY, final int chunkZ) {
+    public void editBlock(final short type, final int x, int y, final int z, final int chunkX, int chunkY, final int chunkZ) {
         //long start = System.nanoTime();
-
+        if (y < 0) {
+            chunkY--;
+            y = Chunk.CHUNK_SIZE + y;
+        }
         final Chunk chunk = getChunk(chunkX, chunkY, chunkZ);
         if (chunk == null) {
             System.out.println("Tried to modify a null chunk.");
@@ -87,6 +90,10 @@ public class ChunkManager {
             updateThread.updateLeft(getChunk(chunkX + 1, chunkY, chunkZ));
         if (x == 0)
             updateThread.updateRight(getChunk(chunkX - 1, chunkY, chunkZ));
+        if (y == Chunk.CHUNK_SIZE - 1)
+            updateThread.updateLeft(getChunk(chunkX, chunkY + 1, chunkZ));
+        if (y == 0)
+            updateThread.updateRight(getChunk(chunkX, chunkY - 1, chunkZ));
         if (z == Chunk.CHUNK_SIZE - 1)
             updateThread.updateBack(getChunk(chunkX, chunkY, chunkZ + 1));
         if (z == 0)
@@ -268,40 +275,12 @@ public class ChunkManager {
         return chunkLoader;
     }
 
-    public Chunk getTopLeft() {
-        return chunkLoader.getTopLeft();
-    }
-
-    public Chunk getTopMiddle() {
-        return chunkLoader.getTopMiddle();
-    }
-
-    public Chunk getTopRight() {
-        return chunkLoader.getTopRight();
-    }
-
-    public Chunk getMidLeft() {
-        return chunkLoader.getMidLeft();
-    }
-
     public Chunk getMiddle() {
         return chunkLoader.getMiddle();
     }
-
-    public Chunk getMidRight() {
-        return chunkLoader.getMidRight();
-    }
-
-    public Chunk getLowLeft() {
-        return chunkLoader.getLowLeft();
-    }
-
-    public Chunk getLowRight() {
-        return chunkLoader.getLowRight();
-    }
-
-    public Chunk getLowMiddle() {
-        return chunkLoader.getLowMiddle();
+    
+    public Chunk getBottom() {
+        return chunkLoader.getBottom();
     }
 
     private boolean hasFreeThreads() {

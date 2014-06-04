@@ -67,7 +67,7 @@ public class Voxels {
     /**
      * Set if night cycle is in use.
      */
-    public static final boolean NIGHT_CYCLE = true;
+    public static final boolean NIGHT_CYCLE = false;
     /**
      * Set if terrain generation uses a seed.
      */
@@ -89,7 +89,7 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 2;
+    public static int chunkCreationDistance = 1;
     public static int chunkRenderDistance = 12;
     private static Texture atlas;
     public static final float WaterOffs = 0.28f;
@@ -186,7 +186,7 @@ public class Voxels {
             if (chunkManager.chunkAmount() % 20 == 0)
                 Display.update();
         }
-        chunkCreationDistance = 2;
+        chunkCreationDistance = 1;
         System.out.println("Time taken: " + (System.nanoTime() - time) / 1000000000 + " s.");
 
         chunkManager.getChunkLoader().loadChunks();
@@ -203,6 +203,7 @@ public class Voxels {
             updateFPS();
             Display.update();
             Display.sync(60);
+            System.out.println("x: "+xInChunk()+" y: "+yInChunk()+" z: "+zInChunk());
         }
         Display.destroy();
         System.exit(0);
@@ -329,14 +330,14 @@ public class Voxels {
 
     public final static int xInChunk() {
         int x = (int) (camera.x());
-        if (x < 0)
+        if (x <= 0)
             x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE - 1;
         return x % Chunk.CHUNK_SIZE;
     }
 
     public final static int zInChunk() {
         int z = (int) (camera.z());
-        if (z < 0)
+        if (z <= 0)
             z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE - 1;
         return z % Chunk.CHUNK_SIZE;
     }
@@ -348,7 +349,7 @@ public class Voxels {
         else
             noise = (int) (FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), 5)* (Chunk.WORLD_HEIGHT*Chunk.CHUNK_SIZE / 256f)) - 1;
 
-        return Math.max(noise, 0);
+        return 63+(int)(Math.random()*2);//Math.max(noise, 0);
     }
 
     public static int get3DNoise(float x, float y, float z) {

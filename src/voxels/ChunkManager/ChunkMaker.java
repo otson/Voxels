@@ -86,7 +86,8 @@ public class ChunkMaker extends Thread {
             drawChunkVBO();
             map.put(new Pair(chunkX, chunkY, chunkZ).hashCode(), toByte(chunk));
             dataToProcess.add(new Data(chunkX, chunkY, chunkZ, chunk.getVertices(), vertexData, normalData, texData, false));
-
+            //long start = System.nanoTime();
+            
             boolean twoLeft = map.containsKey(new Pair(chunkX - 2, chunkY, chunkZ).hashCode());
             boolean twoRight = map.containsKey(new Pair(chunkX + 2, chunkY, chunkZ).hashCode());
             boolean twoBack = map.containsKey(new Pair(chunkX, chunkY, chunkZ - 2).hashCode());
@@ -105,7 +106,7 @@ public class ChunkMaker extends Thread {
             boolean frontRight = map.containsKey(new Pair(chunkX + 1, chunkY, chunkZ + 1).hashCode());
             boolean backLeft = map.containsKey(new Pair(chunkX - 1, chunkY, chunkZ - 1).hashCode());
             boolean backRight = map.containsKey(new Pair(chunkX + 1, chunkY, chunkZ - 1).hashCode());
-
+            
             if (twoRight && frontRight && backRight && upRight && downRight)
                 updateSides(chunkManager.getChunk(chunkX + 1, chunkY, chunkZ));
             if (twoLeft && frontLeft && backLeft && upLeft && downLeft)
@@ -118,6 +119,8 @@ public class ChunkMaker extends Thread {
                 updateSides(chunkManager.getChunk(chunkX, chunkY + 1, chunkZ));
             if (twoDown && downFront && downFront && downRight && downLeft)
                 updateSides(chunkManager.getChunk(chunkX, chunkY - 1, chunkZ));
+            //System.out.println("Boolean check time: "+(System.nanoTime()-start)/1000000+" ms.");
+
         }
         else
             System.out.println("Already contains");
@@ -1294,6 +1297,34 @@ public class ChunkMaker extends Thread {
         leftChunk = null;
     }
 
+    private void updateBottom() {
+        bottomChunk = chunkManager.getChunk(chunk.xId, chunk.yId - 1, chunk.zId);
+        updateBottomBack();
+        updateBottomFront();
+        updateBottomLeft();
+        updateBottomLeftBack();
+        updateBottomLeftFront();
+        updateBottomRight();
+        updateBottomRightBack();
+        updateBottomRightFront();
+        updateBottomSide();
+        bottomChunk = null;
+    }
+
+    private void updateTop() {
+        topChunk = chunkManager.getChunk(chunk.xId, chunk.yId + 1, chunk.zId);
+        updateTopBack();
+        updateTopFront();
+        updateTopLeft();
+        updateTopLeftBack();
+        updateTopLeftFront();
+        updateTopRight();
+        updateTopRightBack();
+        updateTopRightFront();
+        updateTopSide();
+        topChunk = null;
+    }
+
     private void updateRight() {
         rightChunk = chunkManager.getChunk(chunk.xId + 1, chunk.yId, chunk.zId);
         updateTopRightBack();
@@ -2087,34 +2118,6 @@ public class ChunkMaker extends Thread {
 
             }
         }
-    }
-
-    private void updateBottom() {
-        bottomChunk = chunkManager.getChunk(chunk.xId, chunk.yId - 1, chunk.zId);
-        updateBottomBack();
-        updateBottomFront();
-        updateBottomLeft();
-        updateBottomLeftBack();
-        updateBottomLeftFront();
-        updateBottomRight();
-        updateBottomRightBack();
-        updateBottomRightFront();
-        updateBottomSide();
-        bottomChunk = null;
-    }
-
-    private void updateTop() {
-        topChunk = chunkManager.getChunk(chunk.xId, chunk.yId + 1, chunk.zId);
-        updateTopBack();
-        updateTopFront();
-        updateTopLeft();
-        updateTopLeftBack();
-        updateTopLeftFront();
-        updateTopRight();
-        updateTopRightBack();
-        updateTopRightFront();
-        updateTopSide();
-        topChunk = null;
     }
 
 }

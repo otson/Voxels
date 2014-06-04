@@ -329,16 +329,16 @@ public class Voxels {
     }
 
     public final static int xInChunk() {
-        int x = (int) (camera.x());
+        int x = (int)Math.floor(camera.x());
         if (x <= 0)
-            x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE - 1;
+            x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE;
         return x % Chunk.CHUNK_SIZE;
     }
 
     public final static int zInChunk() {
-        int z = (int) (camera.z());
+        int z = (int)Math.floor(camera.z());
         if (z <= 0)
-            z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE - 1;
+            z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE;
         return z % Chunk.CHUNK_SIZE;
     }
 

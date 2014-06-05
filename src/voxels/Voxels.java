@@ -6,6 +6,7 @@ import voxels.ChunkManager.ChunkManager;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,6 +34,7 @@ import static org.lwjgl.opengl.GL30.glRenderbufferStorage;
 import static org.lwjgl.util.glu.GLU.gluErrorString;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.TrueTypeFont;
+import org.newdawn.slick.opengl.PNGDecoder;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import voxels.Camera.EulerCamera;
@@ -92,8 +94,18 @@ public class Voxels {
     public static int chunkCreationDistance = 1;
     public static int chunkRenderDistance = 12;
     private static Texture atlas;
+    private static Texture bitMapFont;
     public static final float WaterOffs = 0.28f;
     public static float START_TIME;
+
+    /**
+     * The string that is rendered on-screen.
+     */
+    private static final StringBuilder renderString = new StringBuilder("Enter your text");
+    /**
+     * The texture object for the bitmap font.
+     */
+    private static int fontTexture;
 
     private static ChunkManager chunkManager;
 
@@ -106,11 +118,11 @@ public class Voxels {
     private static long lastFrame = System.nanoTime();
 
     public static void main(String[] args) {
+
         initDisplay();
         initOpenGL();
         initLighting();
         initTextures();
-        glPolygonOffset(2.5F, 0.0F);
         gameLoop();
     }
 
@@ -139,7 +151,33 @@ public class Voxels {
 
     private static void initTextures() {
         glEnable(GL_TEXTURE_2D);
+
+        // Create a new texture for the bitmap font.
+        fontTexture = glGenTextures();
+        // Bind the texture object to the GL_TEXTURE_2D target, specifying that it will be a 2D texture.
+        glBindTexture(GL_TEXTURE_2D, fontTexture);
+        // Use TWL's utility classes to load the png file.
+        PNGDecoder decoder = null;
+        try {
+            decoder = new PNGDecoder(new FileInputStream("res/font2.png"));
+        } catch (IOException ex) {
+            Logger.getLogger(Voxels.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        ByteBuffer buffer = BufferUtils.createByteBuffer(4 * decoder.getWidth() * decoder.getHeight());
+        try {
+            decoder.decode(buffer, decoder.getWidth() * 4, PNGDecoder.RGBA);
+        } catch (IOException ex) {
+            Logger.getLogger(Voxels.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        buffer.flip();
+        // Load the previously loaded texture data into the texture object.
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, decoder.getWidth(), decoder.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                buffer);
+        // Unbind the texture.
+        glBindTexture(GL_TEXTURE_2D, 0);
+
         atlas = loadTexture(ATLAS);
+
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -196,11 +234,13 @@ public class Voxels {
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             updateView();
+
             processInput(getDelta());
+
             chunkManager.checkChunkUpdates();
 
             render();
-
+            renderString(renderString.toString(), fontTexture, 16, 0, 0, 30f, 23f);
             updateFPS();
             Display.update();
             Display.sync(60);
@@ -219,7 +259,7 @@ public class Voxels {
     }
 
     private static void render() {
-
+        atlas.bind();
         for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
             for (int z = -chunkRenderDistance; z <= chunkRenderDistance; z++) {
                 for (int y = 0; y < 16; y++) {
@@ -392,5 +432,64 @@ public class Voxels {
             lastFPS += 1000; //add one second
         }
         fps++;
+    }
+
+    /**
+     * Renders text using a font bitmap.
+     *
+     * @param string the string to render
+     * @param textureObject the texture object containing the font glyphs
+     * @param gridSize the dimensions of the bitmap grid (e.g. 16 -> 16x16 grid;
+     * 8 -> 8x8 grid)
+     * @param x the x-coordinate of the bottom-left corner of where the string
+     * starts rendering
+     * @param y the y-coordinate of the bottom-left corner of where the string
+     * starts rendering
+     * @param characterWidth the width of the character
+     * @param characterHeight the height of the character
+     */
+    private static void renderString(String string, int textureObject, int gridSize, float x, float y,
+            float characterWidth, float characterHeight) {
+        glPushAttrib(GL_TEXTURE_BIT | GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT);
+        glEnable(GL_CULL_FACE);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, textureObject);
+        // Enable linear texture filtering for smoothed results.
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        // Enable additive blending. This means that the colours will be added to already existing colours in the
+        // frame buffer. In practice, this makes the black parts of the texture become invisible.
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE);
+        // Store the current model-view matrix.
+        glPushMatrix();
+        
+        // Offset all subsequent (at least up until 'glPopMatrix') vertex coordinates.
+        glTranslatef(-50, 250, -50);
+        glBegin(GL_QUADS);
+        // Iterate over all the characters in the string.
+        for (int i = 0; i < string.length(); i++) {
+            // Get the ASCII-code of the character by type-casting to integer.
+            int asciiCode = (int) string.charAt(i);
+            // There are 16 cells in a texture, and a texture coordinate ranges from 0.0 to 1.0.
+            final float cellSize = 1.0f / gridSize;
+            // The cell's x-coordinate is the greatest integer smaller than remainder of the ASCII-code divided by the
+            // amount of cells on the x-axis, times the cell size.
+            float cellX = ((int) asciiCode % gridSize) * cellSize;
+            // The cell's y-coordinate is the greatest integer smaller than the ASCII-code divided by the amount of
+            // cells on the y-axis.
+            float cellY = ((int) asciiCode / gridSize) * cellSize;
+            glTexCoord2f(cellX, cellY + cellSize);
+            glVertex2f(i * characterWidth / 3, y);
+            glTexCoord2f(cellX + cellSize, cellY + cellSize);
+            glVertex2f(i * characterWidth / 3 + characterWidth / 2, y);
+            glTexCoord2f(cellX + cellSize, cellY);
+            glVertex2f(i * characterWidth / 3 + characterWidth / 2, y + characterHeight);
+            glTexCoord2f(cellX, cellY);
+            glVertex2f(i * characterWidth / 3, y + characterHeight);
+        }
+        glEnd();
+        glPopMatrix();
+        glPopAttrib();
     }
 }

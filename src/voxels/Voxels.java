@@ -104,6 +104,7 @@ public class Voxels {
     private static long lastFPS = getTime();
     public static int count = 0;
     private static long lastFrame = System.nanoTime();
+
     public static void main(String[] args) {
         initDisplay();
         initOpenGL();
@@ -203,7 +204,8 @@ public class Voxels {
             updateFPS();
             Display.update();
             Display.sync(60);
-            System.out.println("x: "+xInChunk()+" y: "+yInChunk()+" z: "+zInChunk());
+            //System.out.println("x: "+xInChunk()+" y: "+yInChunk()+" z: "+zInChunk());
+            //System.out.println("ChunkX: " + getCurrentChunkXId() + " ChunkZ: " + getCurrentChunkZId());
         }
         Display.destroy();
         System.exit(0);
@@ -251,7 +253,7 @@ public class Voxels {
                 }
             }
         }
-     
+
     }
 
     private static void processInput(float delta) {
@@ -277,7 +279,7 @@ public class Voxels {
                 chunkManager.editBlock(Type.DIRT, xInChunk(), yInChunk(), zInChunk(), getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_Q)) {
-                chunkManager.editBlock(Type.AIR, xInChunk(), yInChunk()-1, zInChunk(), getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
+                chunkManager.editBlock(Type.AIR, xInChunk(), yInChunk() - 1, zInChunk(), getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
             }
 
         }
@@ -305,14 +307,14 @@ public class Voxels {
     }
 
     public final static int getCurrentChunkXId() {
-        int x = (int) (camera.x());
+        int x = (int) Math.floor(camera.x());
         if (x < 0)
             x -= Chunk.CHUNK_SIZE;
         return x / Chunk.CHUNK_SIZE;
     }
 
     public final static int getCurrentChunkZId() {
-        int z = (int) (camera.z());
+        int z = (int) Math.floor(camera.z());
         if (z < 0)
             z -= Chunk.CHUNK_SIZE;
         return z / Chunk.CHUNK_SIZE;
@@ -329,14 +331,15 @@ public class Voxels {
     }
 
     public final static int xInChunk() {
-        int x = (int)Math.floor(camera.x());
+        int x = (int) Math.floor(camera.x());
         if (x <= 0)
             x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE;
         return x % Chunk.CHUNK_SIZE;
+
     }
 
     public final static int zInChunk() {
-        int z = (int)Math.floor(camera.z());
+        int z = (int) Math.floor(camera.z());
         if (z <= 0)
             z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE;
         return z % Chunk.CHUNK_SIZE;
@@ -347,13 +350,13 @@ public class Voxels {
         if (USE_SEED)
             noise = (int) ((FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS) + SEED, z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS) + SEED, 5)) * (Chunk.CHUNK_SIZE / 256f)) - 1;
         else
-            noise = (int) (FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), 5)* (Chunk.WORLD_HEIGHT*Chunk.CHUNK_SIZE / 256f)) - 1;
+            noise = (int) (FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), 5) * (Chunk.WORLD_HEIGHT * Chunk.CHUNK_SIZE / 256f)) - 1;
 
-        return 63+(int)(Math.random()*2);//Math.max(noise, 0);
+        return 63 + (int) (Math.random() * 2);//Math.max(noise, 0);
     }
 
     public static int get3DNoise(float x, float y, float z) {
-        return (int) ((SimplexNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * 2f), y / (1f * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * 2f)) + 1) * 128* (Chunk.CHUNK_SIZE / 256f));
+        return (int) ((SimplexNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * 2f), y / (1f * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * 2f)) + 1) * 128 * (Chunk.CHUNK_SIZE / 256f));
     }
 
     public static Texture loadTexture(String key) {

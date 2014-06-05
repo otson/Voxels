@@ -1605,7 +1605,6 @@ public class ChunkMaker extends Thread {
                         //if (topChunk.blocks[x][0][z].isOpaque())
                             chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setTop(true);
                     }
-                    System.out.println(topChunk == null);
 
                     if (chunk.blocks[x + 1][Chunk.CHUNK_SIZE - 1][z].isOpaque())
                         chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setRight(true);

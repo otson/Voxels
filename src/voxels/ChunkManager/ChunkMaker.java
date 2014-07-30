@@ -82,45 +82,7 @@ public class ChunkMaker extends Thread {
     public void run() {
         if (!map.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
             chunk = new Chunk(chunkX, chunkY, chunkZ);
-            //updateAllBlocks();
-            //drawChunkVBO();
             map.put(new Pair(chunkX, chunkY, chunkZ).hashCode(), toByte(chunk));
-            //dataToProcess.add(new Data(chunkX, chunkY, chunkZ, chunk.getVertices(), vertexData, normalData, texData, false));
-            //long start = System.nanoTime();
-            
-//            boolean twoLeft = map.containsKey(new Pair(chunkX - 2, chunkY, chunkZ).hashCode());
-//            boolean twoRight = map.containsKey(new Pair(chunkX + 2, chunkY, chunkZ).hashCode());
-//            boolean twoBack = map.containsKey(new Pair(chunkX, chunkY, chunkZ - 2).hashCode());
-//            boolean twoFront = map.containsKey(new Pair(chunkX, chunkY, chunkZ + 2).hashCode());
-//            boolean twoUp = map.containsKey(new Pair(chunkX, chunkY + 2, chunkZ).hashCode());
-//            boolean twoDown = map.containsKey(new Pair(chunkX, chunkY - 2, chunkZ).hashCode());
-//            boolean upLeft = map.containsKey(new Pair(chunkX - 1, chunkY + 1, chunkZ).hashCode());
-//            boolean upRight = map.containsKey(new Pair(chunkX + 1, chunkY + 1, chunkZ).hashCode());
-//            boolean upFront = map.containsKey(new Pair(chunkX, chunkY + 1, chunkZ + 1).hashCode());
-//            boolean upBack = map.containsKey(new Pair(chunkX, chunkY + 1, chunkZ - 1).hashCode());
-//            boolean downLeft = map.containsKey(new Pair(chunkX - 1, chunkY - 1, chunkZ).hashCode());
-//            boolean downRight = map.containsKey(new Pair(chunkX + 1, chunkY - 1, chunkZ).hashCode());
-//            boolean downFront = map.containsKey(new Pair(chunkX, chunkY - 1, chunkZ + 1).hashCode());
-//            boolean downBack = map.containsKey(new Pair(chunkX, chunkY - 1, chunkZ - 1).hashCode());
-//            boolean frontLeft = map.containsKey(new Pair(chunkX - 1, chunkY, chunkZ + 1).hashCode());
-//            boolean frontRight = map.containsKey(new Pair(chunkX + 1, chunkY, chunkZ + 1).hashCode());
-//            boolean backLeft = map.containsKey(new Pair(chunkX - 1, chunkY, chunkZ - 1).hashCode());
-//            boolean backRight = map.containsKey(new Pair(chunkX + 1, chunkY, chunkZ - 1).hashCode());
-//            
-//            if (twoRight && frontRight && backRight && upRight && downRight)
-//                updateSides(chunkManager.getChunk(chunkX + 1, chunkY, chunkZ));
-//            if (twoLeft && frontLeft && backLeft && upLeft && downLeft)
-//                updateSides(chunkManager.getChunk(chunkX - 1, chunkY, chunkZ));
-//            if (twoFront && frontLeft && frontRight && upFront && downFront)
-//                updateSides(chunkManager.getChunk(chunkX, chunkY, chunkZ + 1));
-//            if (twoBack && backLeft && backRight && upBack && downBack)
-//                updateSides(chunkManager.getChunk(chunkX, chunkY, chunkZ - 1));
-//            if (twoUp && upFront && upBack && upRight && upLeft)
-//                updateSides(chunkManager.getChunk(chunkX, chunkY + 1, chunkZ));
-//            if (twoDown && downFront && downBack && downRight && downLeft)
-//                updateSides(chunkManager.getChunk(chunkX, chunkY - 1, chunkZ));
-            //System.out.println("Boolean check time: "+(System.nanoTime()-start)/1000000+" ms.");
-
         }
         else
             System.out.println("Already contains");
@@ -153,6 +115,46 @@ public class ChunkMaker extends Thread {
             Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.yId, this.chunk.zId);
             dataToProcess.add(new Data(this.chunk.xId, this.chunk.yId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
         }
+    }
+    
+    public void updateXYZ(int x, int y, int z){
+        Chunk chunk = chunkManager.getChunk(x/Chunk.CHUNK_SIZE, y/Chunk.CHUNK_SIZE, z/Chunk.CHUNK_SIZE);
+        int xIn = x%Chunk.CHUNK_SIZE;
+        int yIn = y%Chunk.CHUNK_SIZE;
+        int zIn = z%Chunk.CHUNK_SIZE;
+        
+        Chunk right = chunkManager.getChunk(chunk.xId+1,chunk.yId, chunk.zId);
+        Chunk left = chunkManager.getChunk(chunk.xId-1,chunk.yId, chunk.zId);
+        Chunk top = chunkManager.getChunk(chunk.xId,chunk.yId+1, chunk.zId);
+        Chunk bottom = chunkManager.getChunk(chunk.xId,chunk.yId-1, chunk.zId);
+        Chunk front = chunkManager.getChunk(chunk.xId,chunk.yId, chunk.zId+1);
+        Chunk back = chunkManager.getChunk(chunk.xId,chunk.yId, chunk.zId-1);
+        
+        if(xIn == 0 && yIn == 0 && zIn == 0){
+
+        }
+        if(xIn == Chunk.CHUNK_SIZE-1 && yIn == 0 && zIn == 0){
+            
+        }
+        if(xIn == 0 && yIn == Chunk.CHUNK_SIZE && zIn == 0){
+            
+        }  
+        if(xIn == Chunk.CHUNK_SIZE-1 && yIn == Chunk.CHUNK_SIZE-1 && zIn == 0){
+            
+        }
+        if(xIn == 0 && yIn == 0 && zIn == Chunk.CHUNK_SIZE-1){
+            
+        }
+        if(xIn == Chunk.CHUNK_SIZE-1 && yIn == 0 && zIn == Chunk.CHUNK_SIZE-1){
+            
+        }
+        if(xIn == 0 && yIn == Chunk.CHUNK_SIZE-1 && zIn == Chunk.CHUNK_SIZE-1){
+            
+        }
+        if(xIn == Chunk.CHUNK_SIZE-1 && yIn == Chunk.CHUNK_SIZE-1 && zIn == Chunk.CHUNK_SIZE-1){
+            
+        }
+
     }
 
     public void updateSides(Chunk chunk) {

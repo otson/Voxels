@@ -45,6 +45,7 @@ import static java.lang.Math.*;
 import static org.lwjgl.opengl.ARBDepthClamp.GL_DEPTH_CLAMP;
 import static org.lwjgl.opengl.GL11.*;
 import voxels.Voxels;
+import static voxels.Voxels.running;
 
 /**
  * A camera set in 3D perspective. The camera uses Euler angles internally, so
@@ -53,6 +54,8 @@ import voxels.Voxels;
  * @author Oskar Veerhoek
  */
 public class EulerCamera implements Camera {
+
+    private static long runningPrevious = System.nanoTime();
 
     private float x = 0;
     private float y = 0;
@@ -68,6 +71,7 @@ public class EulerCamera implements Camera {
     private float fallingSpeed = 0;
 
     private boolean flying = false;
+    private boolean moving = false;
 
     private ChunkManager chunkManager;
 
@@ -198,20 +202,16 @@ public class EulerCamera implements Camera {
         float mouseDY = Mouse.getDY() * 0.16f;
         if (yaw + mouseDX >= 360) {
             yaw = yaw + mouseDX - 360;
-        }
-        else if (yaw + mouseDX < 0) {
+        } else if (yaw + mouseDX < 0) {
             yaw = 360 - yaw + mouseDX;
-        }
-        else {
+        } else {
             yaw += mouseDX;
         }
         if (pitch - mouseDY >= MAX_LOOK_DOWN && pitch - mouseDY <= MAX_LOOK_UP) {
             pitch += -mouseDY;
-        }
-        else if (pitch - mouseDY < MAX_LOOK_DOWN) {
+        } else if (pitch - mouseDY < MAX_LOOK_DOWN) {
             pitch = MAX_LOOK_DOWN;
-        }
-        else if (pitch - mouseDY > MAX_LOOK_UP) {
+        } else if (pitch - mouseDY > MAX_LOOK_UP) {
             pitch = MAX_LOOK_UP;
         }
     }
@@ -229,20 +229,16 @@ public class EulerCamera implements Camera {
         float mouseDY = Mouse.getDY() * mouseSpeed * 0.16f;
         if (yaw + mouseDX >= 360) {
             yaw = yaw + mouseDX - 360;
-        }
-        else if (yaw + mouseDX < 0) {
+        } else if (yaw + mouseDX < 0) {
             yaw = 360 - yaw + mouseDX;
-        }
-        else {
+        } else {
             yaw += mouseDX;
         }
         if (pitch - mouseDY >= MAX_LOOK_DOWN && pitch - mouseDY <= MAX_LOOK_UP) {
             pitch += -mouseDY;
-        }
-        else if (pitch - mouseDY < MAX_LOOK_DOWN) {
+        } else if (pitch - mouseDY < MAX_LOOK_DOWN) {
             pitch = MAX_LOOK_DOWN;
-        }
-        else if (pitch - mouseDY > MAX_LOOK_UP) {
+        } else if (pitch - mouseDY > MAX_LOOK_UP) {
             pitch = MAX_LOOK_UP;
         }
     }
@@ -262,20 +258,16 @@ public class EulerCamera implements Camera {
         float mouseDY = Mouse.getDY() * mouseSpeed * 0.16f;
         if (yaw + mouseDX >= 360) {
             yaw = yaw + mouseDX - 360;
-        }
-        else if (yaw + mouseDX < 0) {
+        } else if (yaw + mouseDX < 0) {
             yaw = 360 - yaw + mouseDX;
-        }
-        else {
+        } else {
             yaw += mouseDX;
         }
         if (pitch - mouseDY >= maxLookDown && pitch - mouseDY <= maxLookUp) {
             pitch += -mouseDY;
-        }
-        else if (pitch - mouseDY < maxLookDown) {
+        } else if (pitch - mouseDY < maxLookDown) {
             pitch = maxLookDown;
-        }
-        else if (pitch - mouseDY > maxLookUp) {
+        } else if (pitch - mouseDY > maxLookUp) {
             pitch = maxLookUp;
         }
     }
@@ -303,10 +295,12 @@ public class EulerCamera implements Camera {
 
         chunkManager.getChunkLoader().loadChunks();
 
-        if (moveFaster)
+        if (moveFaster) {
             speed *= 10;
-        if (moveSlower)
+        }
+        if (moveSlower) {
             speed /= 3;
+        }
 
         if (inWater()) {
             speed /= 3;
@@ -318,9 +312,7 @@ public class EulerCamera implements Camera {
             glLight(GL_LIGHT1, GL_DIFFUSE, Voxels.asFloatBuffer(lightDiffuse));
 
             glDisable(GL_CULL_FACE);
-        }
-
-        else {
+        } else {
             float lightAmbient[] = {0.3f, 0.3f, 0.3f, 1.0f};
             float lightDiffuse[] = {1f, 1f, 1f, 1.0f};
 
@@ -357,15 +349,20 @@ public class EulerCamera implements Camera {
             moveFromLook(speed * delta * 0.003f, 0, 0);
         }
 
-        if (flyUp && !flyDown)
-            if (flying)
+        if (flyUp && !flyDown) {
+            if (flying) {
                 y += speed * delta * 0.003f;
-            else if (fallingSpeed == 0)
-                fallingSpeed = -16 * 0.0165f;
+            } else if (fallingSpeed == 0) {
+                fallingSpeed = -16 * 0.0225f;
+                running.stop();
+            }
+        }
 
-        if (flyDown && !flyUp)
-            if (flying)
+        if (flyDown && !flyUp) {
+            if (flying) {
                 y -= speed * delta * 0.003f;
+            }
+        }
 
         if (flying == false) {
 
@@ -376,7 +373,7 @@ public class EulerCamera implements Camera {
                     fallingSpeed += fallingSpeedIncrease;
                 }
                 chunkUnderFeet = chunkManager.getChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
-                if (chunkUnderFeet != null){
+                if (chunkUnderFeet != null) {
                     if (yInChunk() < Chunk.CHUNK_SIZE && yInChunk() >= 0 && chunkUnderFeet.blocks[xInChunk()][yInChunk()][zInChunk()].is(Type.DIRT)) {
                         y = (int) y + 1;
                         fallingSpeed = 0;
@@ -384,8 +381,19 @@ public class EulerCamera implements Camera {
                 }
             }
             if (chunkUnderFeet == null) {
-                setPosition(0, Chunk.CHUNK_SIZE*Chunk.WORLD_HEIGHT, 0);
-                System.out.println("Player tried to enter a chunk that does not exist. \n Position reset to (0, "+Chunk.CHUNK_SIZE*Chunk.WORLD_HEIGHT+", 0)");
+                setPosition(0, Chunk.CHUNK_SIZE * Chunk.WORLD_HEIGHT, 0);
+                System.out.println("Player tried to enter a chunk that does not exist. \n Position reset to (0, " + Chunk.CHUNK_SIZE * Chunk.WORLD_HEIGHT + ", 0)");
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_W) || Keyboard.isKeyDown(Keyboard.KEY_A) || Keyboard.isKeyDown(Keyboard.KEY_S) || (Keyboard.isKeyDown(Keyboard.KEY_D))) {
+                if (!flying && fallingSpeed == 0 && System.nanoTime() - runningPrevious > 871000000) {
+                    running.play();
+                    runningPrevious = System.nanoTime();
+                }
+
+            }
+            if (!keyUp && !keyDown && !keyLeft && !keyRight) {
+                running.stop();
+                runningPrevious = 0;
             }
         }
     }
@@ -400,9 +408,11 @@ public class EulerCamera implements Camera {
      * @param dz the movement along the z-axis
      */
     public void moveFromLook(float dx, float dy, float dz) {
+
         this.x -= dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw));
-        if (flying)
+        if (flying) {
             this.y += dy * (float) sin(toRadians(pitch - 90)) + dz * sin(toRadians(pitch));
+        }
         this.z += dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw));
 
     }

@@ -1,8 +1,5 @@
 package voxels;
 
-import java.awt.Font;
-import voxels.ChunkManager.Chunk;
-import voxels.ChunkManager.ChunkManager;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -16,30 +13,26 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL14.GL_DEPTH_COMPONENT32;
+
 import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL30.GL_DEPTH_ATTACHMENT;
-import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
-import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER_COMPLETE;
-import static org.lwjgl.opengl.GL30.GL_MAX_RENDERBUFFER_SIZE;
-import static org.lwjgl.opengl.GL30.GL_RENDERBUFFER;
-import static org.lwjgl.opengl.GL30.glBindFramebuffer;
-import static org.lwjgl.opengl.GL30.glBindRenderbuffer;
-import static org.lwjgl.opengl.GL30.glCheckFramebufferStatus;
-import static org.lwjgl.opengl.GL30.glFramebufferRenderbuffer;
-import static org.lwjgl.opengl.GL30.glGenFramebuffers;
-import static org.lwjgl.opengl.GL30.glGenRenderbuffers;
-import static org.lwjgl.opengl.GL30.glRenderbufferStorage;
-import static org.lwjgl.util.glu.GLU.gluErrorString;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.TrueTypeFont;
+
+
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
+
 import voxels.Camera.EulerCamera;
+import voxels.ChunkManager.Chunk;
+import voxels.ChunkManager.ChunkManager;
 import voxels.ChunkManager.Handle;
 import voxels.ChunkManager.Type;
 import voxels.Noise.FastNoise;
 import voxels.Noise.SimplexNoise;
+
+import kuusisto.tinysound.Sound;
+import kuusisto.tinysound.TinySound;
+
+
+
 
 /**
  *
@@ -67,7 +60,7 @@ public class Voxels {
     /**
      * Set if night cycle is in use.
      */
-    public static final boolean NIGHT_CYCLE = false;
+    public static final boolean NIGHT_CYCLE = true;
     /**
      * Set if terrain generation uses a seed.
      */
@@ -75,7 +68,7 @@ public class Voxels {
     /**
      * Set if 3D simplex noise is used to generate terrain.
      */
-    public static final boolean USE_3D_NOISE = true;
+    public static final boolean USE_3D_NOISE = false;
 
     /**
      * Set air block percentage if 3D noise is in use.
@@ -89,9 +82,10 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 9;
+    public static int chunkCreationDistance = 3;
     public static int chunkRenderDistance = 20;
-    private static Texture atlas;
+    public static Texture atlas;
+    public static Sound running;
     public static final float WaterOffs = 0.28f;
     public static float START_TIME;
 
@@ -110,6 +104,7 @@ public class Voxels {
         initOpenGL();
         initLighting();
         initTextures();
+        initSounds();
         //glPolygonOffset(2.5F, 0.0F);
         gameLoop();
     }
@@ -135,6 +130,12 @@ public class Voxels {
         glCullFace(GL_BACK);
         glLoadIdentity();
 
+    }
+    
+    public static void initSounds(){
+        TinySound.init();
+        running = TinySound.loadSound(new File("res\\sounds\\running.ogg"));
+        
     }
 
     private static void initTextures() {
@@ -211,6 +212,7 @@ public class Voxels {
             //System.out.println("ChunkX: " + getCurrentChunkXId() + " ChunkZ: " + getCurrentChunkZId());
         }
         Display.destroy();
+        TinySound.shutdown();
         System.exit(0);
     }
 
@@ -268,6 +270,7 @@ public class Voxels {
             if (Keyboard.isKeyDown(Keyboard.KEY_2)) {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             }
+            
             if (Keyboard.isKeyDown(Keyboard.KEY_G)) {
                 chunkManager.startGeneration();
             }
@@ -289,6 +292,8 @@ public class Voxels {
         if (Keyboard.isKeyDown(Keyboard.KEY_U)) {
             glTranslatef(0, -200, 0);
         }
+        
+        
 
         if (Mouse.isGrabbed()) {
             if (Mouse.isButtonDown(0)) {

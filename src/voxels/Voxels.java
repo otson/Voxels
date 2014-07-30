@@ -52,7 +52,7 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 30;
+    public static final int TERRAIN_SMOOTHNESS = 15;
     /**
      * Set player's height. One block's height is 1.
      */
@@ -82,10 +82,12 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 3;
+    public static int chunkCreationDistance = 7;
     public static int chunkRenderDistance = 20;
     public static Texture atlas;
     public static Sound running;
+    public static Sound jumping;
+    public static Sound impact;
     public static final float WaterOffs = 0.28f;
     public static float START_TIME;
 
@@ -135,6 +137,8 @@ public class Voxels {
     public static void initSounds(){
         TinySound.init();
         running = TinySound.loadSound(new File("res\\sounds\\running.ogg"));
+        jumping = TinySound.loadSound(new File("res\\sounds\\jump1.wav"));
+        impact = TinySound.loadSound(new File("res\\sounds\\impact.ogg"));
         
     }
 

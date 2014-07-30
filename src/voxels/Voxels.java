@@ -56,10 +56,10 @@ public class Voxels {
      */
     public static final String ATLAS = "atlas";
     /**
-     * Set terrain smoothness. Value of one gives mountains withs a width of one
+     * Set terrain smoothness. Value of one gives mountains widths a width of one
      * block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 15;
+    public static final int TERRAIN_SMOOTHNESS = 10;
     /**
      * Set player's height. One block's height is 1.
      */
@@ -89,8 +89,8 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 1;
-    public static int chunkRenderDistance = 12;
+    public static int chunkCreationDistance = 11;
+    public static int chunkRenderDistance = 11;
     private static Texture atlas;
     public static final float WaterOffs = 0.28f;
     public static float START_TIME;
@@ -110,13 +110,13 @@ public class Voxels {
         initOpenGL();
         initLighting();
         initTextures();
-        glPolygonOffset(2.5F, 0.0F);
+        //glPolygonOffset(2.5F, 0.0F);
         gameLoop();
     }
 
     private static void initDisplay() {
         try {
-            Display.setDisplayMode(new DisplayMode(1024, 768));
+            Display.setDisplayMode(new DisplayMode(1650, 1050));
             Display.setVSyncEnabled(true);
             Display.setTitle("Voxels");
             Display.create();
@@ -171,7 +171,7 @@ public class Voxels {
         camera.setChunkManager(chunkManager);
         camera.applyPerspectiveMatrix();
         camera.applyOptimalStates();
-        camera.setPosition(camera.x(), 255, camera.z());
+        camera.setPosition(camera.x(), Chunk.CHUNK_SIZE*Chunk.WORLD_HEIGHT, camera.z());
         Mouse.setGrabbed(true);
         return camera;
     }
@@ -187,11 +187,13 @@ public class Voxels {
             if (chunkManager.chunkAmount() % 20 == 0)
                 Display.update();
         }
-        chunkCreationDistance = 1;
-        System.out.println("Time taken: " + (System.nanoTime() - time) / 1000000000 + " s.");
-
+        System.out.println("Chunks created in " + (System.nanoTime() - time) / 1000000000 + " seconds.");
+        time = System.nanoTime();
+        chunkManager.createVBOs();
+        System.out.println("VBOs created in " + (System.nanoTime() - time) / 1000000000 + " seconds.");
         chunkManager.getChunkLoader().loadChunks();
         chunkManager.getChunkLoader().start();
+        chunkManager.stopGeneration();
 
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -288,6 +290,12 @@ public class Voxels {
         }
 
         if (Mouse.isGrabbed()) {
+            if (Mouse.isButtonDown(0)) {
+                chunkManager.editBlock(Type.DIRT, xInChunk(), yInChunk(), zInChunk(), getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
+            }
+            if (Mouse.isButtonDown(1)) {
+                chunkManager.editBlock(Type.AIR, xInChunk(), yInChunk() - 1, zInChunk(), getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
+            }
             camera.processMouse();
             camera.processKeyboard(delta, 1.4f);
             if (NIGHT_CYCLE) {
@@ -309,14 +317,14 @@ public class Voxels {
     public final static int getCurrentChunkXId() {
         int x = (int) Math.floor(camera.x());
         if (x < 0)
-            x -= Chunk.CHUNK_SIZE;
+            x -= Chunk.CHUNK_SIZE-1;
         return x / Chunk.CHUNK_SIZE;
     }
 
     public final static int getCurrentChunkZId() {
         int z = (int) Math.floor(camera.z());
         if (z < 0)
-            z -= Chunk.CHUNK_SIZE;
+            z -= Chunk.CHUNK_SIZE-1;
         return z / Chunk.CHUNK_SIZE;
     }
 
@@ -335,7 +343,6 @@ public class Voxels {
         if (x <= 0)
             x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE;
         return x % Chunk.CHUNK_SIZE;
-
     }
 
     public final static int zInChunk() {

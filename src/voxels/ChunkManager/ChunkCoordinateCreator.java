@@ -69,10 +69,12 @@ public class ChunkCoordinateCreator {
     public Coordinates getXYZ() {
         while (notAtMax()) {
             if (heightCount < Chunk.WORLD_HEIGHT) {
-                if (!map.containsKey(new Pair(x + currentChunkX, heightCount, z + currentChunkZ).hashCode())) {
-                    return new Coordinates(x + currentChunkX, heightCount, z + currentChunkZ);
-                }
-                heightCount++;
+                heightCount++;    
+                //if (!map.containsKey(new Pair(x + currentChunkX, heightCount, z + currentChunkZ).hashCode())) {
+                
+                return new Coordinates(x + currentChunkX, heightCount, z + currentChunkZ);
+                //}
+               
 
             }
             else {

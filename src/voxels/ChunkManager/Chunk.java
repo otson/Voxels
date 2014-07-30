@@ -12,8 +12,9 @@ public class Chunk implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public static final int CHUNK_SIZE = 16;
+    public static final int WORLD_HEIGHT = 8;
     public static final int WATER_HEIGHT = -1;
-    public static final int WORLD_HEIGHT = 16;
+    
 
     private int vboVertexHandle;
     private int vboNormalHandle;
@@ -73,6 +74,9 @@ public class Chunk implements Serializable {
                             blocks[x][y][z] = new Block(Type.DIRT);
                             dirtCount++;
                         }
+                        else
+                            if(y <= WATER_HEIGHT)
+                                blocks[x][y][z] = new Block(Type.WATER);
                         else
                             blocks[x][y][z] = new Block(Type.AIR);
                     }

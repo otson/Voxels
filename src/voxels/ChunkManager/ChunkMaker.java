@@ -82,43 +82,43 @@ public class ChunkMaker extends Thread {
     public void run() {
         if (!map.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
             chunk = new Chunk(chunkX, chunkY, chunkZ);
-            updateAllBlocks();
-            drawChunkVBO();
+            //updateAllBlocks();
+            //drawChunkVBO();
             map.put(new Pair(chunkX, chunkY, chunkZ).hashCode(), toByte(chunk));
-            dataToProcess.add(new Data(chunkX, chunkY, chunkZ, chunk.getVertices(), vertexData, normalData, texData, false));
+            //dataToProcess.add(new Data(chunkX, chunkY, chunkZ, chunk.getVertices(), vertexData, normalData, texData, false));
             //long start = System.nanoTime();
             
-            boolean twoLeft = map.containsKey(new Pair(chunkX - 2, chunkY, chunkZ).hashCode());
-            boolean twoRight = map.containsKey(new Pair(chunkX + 2, chunkY, chunkZ).hashCode());
-            boolean twoBack = map.containsKey(new Pair(chunkX, chunkY, chunkZ - 2).hashCode());
-            boolean twoFront = map.containsKey(new Pair(chunkX, chunkY, chunkZ + 2).hashCode());
-            boolean twoUp = map.containsKey(new Pair(chunkX, chunkY + 2, chunkZ).hashCode());
-            boolean twoDown = map.containsKey(new Pair(chunkX, chunkY - 2, chunkZ).hashCode());
-            boolean upLeft = map.containsKey(new Pair(chunkX - 1, chunkY + 1, chunkZ).hashCode());
-            boolean upRight = map.containsKey(new Pair(chunkX + 1, chunkY + 1, chunkZ).hashCode());
-            boolean upFront = map.containsKey(new Pair(chunkX, chunkY + 1, chunkZ + 1).hashCode());
-            boolean upBack = map.containsKey(new Pair(chunkX, chunkY + 1, chunkZ - 1).hashCode());
-            boolean downLeft = map.containsKey(new Pair(chunkX - 1, chunkY - 1, chunkZ).hashCode());
-            boolean downRight = map.containsKey(new Pair(chunkX + 1, chunkY - 1, chunkZ).hashCode());
-            boolean downFront = map.containsKey(new Pair(chunkX, chunkY - 1, chunkZ + 1).hashCode());
-            boolean downBack = map.containsKey(new Pair(chunkX, chunkY - 1, chunkZ - 1).hashCode());
-            boolean frontLeft = map.containsKey(new Pair(chunkX - 1, chunkY, chunkZ + 1).hashCode());
-            boolean frontRight = map.containsKey(new Pair(chunkX + 1, chunkY, chunkZ + 1).hashCode());
-            boolean backLeft = map.containsKey(new Pair(chunkX - 1, chunkY, chunkZ - 1).hashCode());
-            boolean backRight = map.containsKey(new Pair(chunkX + 1, chunkY, chunkZ - 1).hashCode());
-            
-            if (twoRight && frontRight && backRight && upRight && downRight)
-                updateSides(chunkManager.getChunk(chunkX + 1, chunkY, chunkZ));
-            if (twoLeft && frontLeft && backLeft && upLeft && downLeft)
-                updateSides(chunkManager.getChunk(chunkX - 1, chunkY, chunkZ));
-            if (twoFront && frontLeft && frontRight && upFront && downFront)
-                updateSides(chunkManager.getChunk(chunkX, chunkY, chunkZ + 1));
-            if (twoBack && backLeft && backRight && upBack && downBack)
-                updateSides(chunkManager.getChunk(chunkX, chunkY, chunkZ - 1));
-            if (twoUp && upFront && upBack && upRight && upLeft)
-                updateSides(chunkManager.getChunk(chunkX, chunkY + 1, chunkZ));
-            if (twoDown && downFront && downBack && downRight && downLeft)
-                updateSides(chunkManager.getChunk(chunkX, chunkY - 1, chunkZ));
+//            boolean twoLeft = map.containsKey(new Pair(chunkX - 2, chunkY, chunkZ).hashCode());
+//            boolean twoRight = map.containsKey(new Pair(chunkX + 2, chunkY, chunkZ).hashCode());
+//            boolean twoBack = map.containsKey(new Pair(chunkX, chunkY, chunkZ - 2).hashCode());
+//            boolean twoFront = map.containsKey(new Pair(chunkX, chunkY, chunkZ + 2).hashCode());
+//            boolean twoUp = map.containsKey(new Pair(chunkX, chunkY + 2, chunkZ).hashCode());
+//            boolean twoDown = map.containsKey(new Pair(chunkX, chunkY - 2, chunkZ).hashCode());
+//            boolean upLeft = map.containsKey(new Pair(chunkX - 1, chunkY + 1, chunkZ).hashCode());
+//            boolean upRight = map.containsKey(new Pair(chunkX + 1, chunkY + 1, chunkZ).hashCode());
+//            boolean upFront = map.containsKey(new Pair(chunkX, chunkY + 1, chunkZ + 1).hashCode());
+//            boolean upBack = map.containsKey(new Pair(chunkX, chunkY + 1, chunkZ - 1).hashCode());
+//            boolean downLeft = map.containsKey(new Pair(chunkX - 1, chunkY - 1, chunkZ).hashCode());
+//            boolean downRight = map.containsKey(new Pair(chunkX + 1, chunkY - 1, chunkZ).hashCode());
+//            boolean downFront = map.containsKey(new Pair(chunkX, chunkY - 1, chunkZ + 1).hashCode());
+//            boolean downBack = map.containsKey(new Pair(chunkX, chunkY - 1, chunkZ - 1).hashCode());
+//            boolean frontLeft = map.containsKey(new Pair(chunkX - 1, chunkY, chunkZ + 1).hashCode());
+//            boolean frontRight = map.containsKey(new Pair(chunkX + 1, chunkY, chunkZ + 1).hashCode());
+//            boolean backLeft = map.containsKey(new Pair(chunkX - 1, chunkY, chunkZ - 1).hashCode());
+//            boolean backRight = map.containsKey(new Pair(chunkX + 1, chunkY, chunkZ - 1).hashCode());
+//            
+//            if (twoRight && frontRight && backRight && upRight && downRight)
+//                updateSides(chunkManager.getChunk(chunkX + 1, chunkY, chunkZ));
+//            if (twoLeft && frontLeft && backLeft && upLeft && downLeft)
+//                updateSides(chunkManager.getChunk(chunkX - 1, chunkY, chunkZ));
+//            if (twoFront && frontLeft && frontRight && upFront && downFront)
+//                updateSides(chunkManager.getChunk(chunkX, chunkY, chunkZ + 1));
+//            if (twoBack && backLeft && backRight && upBack && downBack)
+//                updateSides(chunkManager.getChunk(chunkX, chunkY, chunkZ - 1));
+//            if (twoUp && upFront && upBack && upRight && upLeft)
+//                updateSides(chunkManager.getChunk(chunkX, chunkY + 1, chunkZ));
+//            if (twoDown && downFront && downBack && downRight && downLeft)
+//                updateSides(chunkManager.getChunk(chunkX, chunkY - 1, chunkZ));
             //System.out.println("Boolean check time: "+(System.nanoTime()-start)/1000000+" ms.");
 
         }
@@ -173,6 +173,10 @@ public class ChunkMaker extends Thread {
             Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.yId, this.chunk.zId);
             dataToProcess.add(new Data(this.chunk.xId, this.chunk.yId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
         }
+    }
+    
+    public void addDataToProcess(){
+       dataToProcess.add(new Data(chunkX, chunkY, chunkZ, chunk.getVertices(), vertexData, normalData, texData, false));
     }
 
     public void updateRight(Chunk chunk) {
@@ -1200,7 +1204,7 @@ public class ChunkMaker extends Thread {
         return updateData;
     }
 
-    private void updateAllBlocks() {
+    public void updateAllBlocks() {
         getAdjacentChunks();
 
         updateMiddle();
@@ -1444,7 +1448,7 @@ public class ChunkMaker extends Thread {
         }
 
         if (topChunk != null) {
-            if (topChunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+            if (topChunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].isOpaque())
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setTop(true);
         }
 
@@ -1528,13 +1532,13 @@ public class ChunkMaker extends Thread {
             if (chunk.blocks[Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1][z].isOpaque())
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setLeft(true);
 
-            if (chunk.blocks[0][Chunk.CHUNK_SIZE - 2][z].isOpaque())
+            if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2][z].isOpaque())
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setBottom(true);
 
-            if (chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z + 1].isOpaque())
+            if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z + 1].isOpaque())
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setFront(true);
 
-            if (chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z - 1].isOpaque())
+            if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z - 1].isOpaque())
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setBack(true);
         }
     }
@@ -1602,7 +1606,7 @@ public class ChunkMaker extends Thread {
                 if (chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].is(Type.AIR) == false) {
 
                     if (topChunk != null) {
-                        //if (topChunk.blocks[x][0][z].isOpaque())
+                        if (topChunk.blocks[x][0][z].isOpaque())
                             chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setTop(true);
                     }
 
@@ -1700,7 +1704,7 @@ public class ChunkMaker extends Thread {
     private void updateBottomRightFront() {
 
         if (rightChunk != null) {
-            if (rightChunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+            if (rightChunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].isOpaque())
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setRight(true);
         }
 
@@ -1716,10 +1720,10 @@ public class ChunkMaker extends Thread {
         if (chunk.blocks[Chunk.CHUNK_SIZE - 2][0][Chunk.CHUNK_SIZE - 1].isOpaque())
             chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setLeft(true);
 
-        if (chunk.blocks[0][1][Chunk.CHUNK_SIZE - 1].isOpaque())
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][1][Chunk.CHUNK_SIZE - 1].isOpaque())
             chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setTop(true);
 
-        if (chunk.blocks[0][0][Chunk.CHUNK_SIZE - 2].isOpaque())
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 2].isOpaque())
             chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setBack(true);
     }
 
@@ -1856,7 +1860,7 @@ public class ChunkMaker extends Thread {
                     if (chunk.blocks[x][0][z + 1].isOpaque())
                         chunk.blocks[x][0][z].setFront(true);
 
-                    if (chunk.blocks[x + 1][0][z - 1].isOpaque())
+                    if (chunk.blocks[x][0][z - 1].isOpaque())
                         chunk.blocks[x][0][z].setBack(true);
                 }
             }
@@ -2119,5 +2123,10 @@ public class ChunkMaker extends Thread {
             }
         }
     }
+
+    public void setChunk(Chunk chunk) {
+        this.chunk = chunk;
+    }
+    
 
 }

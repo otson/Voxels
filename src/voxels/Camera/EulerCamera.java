@@ -361,7 +361,7 @@ public class EulerCamera implements Camera {
             if (flying)
                 y += speed * delta * 0.003f;
             else if (fallingSpeed == 0)
-                fallingSpeed = -16 * 0.0125f;
+                fallingSpeed = -16 * 0.0165f;
 
         if (flyDown && !flyUp)
             if (flying)
@@ -384,8 +384,8 @@ public class EulerCamera implements Camera {
                 }
             }
             if (chunkUnderFeet == null) {
-                setPosition(0, 255, 0);
-                System.out.println("Player tried to enter a chunk that does not exist. \n Position reset to (0, 255, 0)");
+                setPosition(0, Chunk.CHUNK_SIZE*Chunk.WORLD_HEIGHT, 0);
+                System.out.println("Player tried to enter a chunk that does not exist. \n Position reset to (0, "+Chunk.CHUNK_SIZE*Chunk.WORLD_HEIGHT+", 0)");
             }
         }
     }

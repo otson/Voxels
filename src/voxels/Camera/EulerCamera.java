@@ -28,24 +28,26 @@
  */
 package voxels.Camera;
 
+import static java.lang.Math.*;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import static org.lwjgl.opengl.ARBDepthClamp.GL_DEPTH_CLAMP;
+import static org.lwjgl.opengl.GL11.*;
 import org.lwjgl.opengl.GLContext;
 import org.lwjgl.util.glu.GLU;
 import voxels.ChunkManager.Chunk;
 import voxels.ChunkManager.ChunkManager;
 import voxels.ChunkManager.Type;
-import static voxels.Voxels.xInChunk;
-import static voxels.Voxels.zInChunk;
-import static voxels.Voxels.yInChunk;
+import voxels.Voxels;
+import static voxels.Voxels.impact;
 import static voxels.Voxels.getCurrentChunkXId;
 import static voxels.Voxels.getCurrentChunkYId;
 import static voxels.Voxels.getCurrentChunkZId;
-import static java.lang.Math.*;
-import static org.lwjgl.opengl.ARBDepthClamp.GL_DEPTH_CLAMP;
-import static org.lwjgl.opengl.GL11.*;
-import voxels.Voxels;
+import static voxels.Voxels.jumping;
 import static voxels.Voxels.running;
+import static voxels.Voxels.xInChunk;
+import static voxels.Voxels.yInChunk;
+import static voxels.Voxels.zInChunk;
 
 /**
  * A camera set in 3D perspective. The camera uses Euler angles internally, so
@@ -69,6 +71,7 @@ public class EulerCamera implements Camera {
     private final float zFar;
     private float fallingSpeedIncrease = 0.013f;
     private float fallingSpeed = 0;
+    private float oldFallingSpeed = 0;
 
     private boolean flying = false;
     private boolean moving = false;
@@ -355,6 +358,8 @@ public class EulerCamera implements Camera {
             } else if (fallingSpeed == 0) {
                 fallingSpeed = -16 * 0.0225f;
                 running.stop();
+                jumping.stop();
+                jumping.play();
             }
         }
 
@@ -364,8 +369,10 @@ public class EulerCamera implements Camera {
             }
         }
 
-        if (flying == false) {
-
+        if (flying == false) { 
+            if(oldFallingSpeed >fallingSpeedIncrease*2 && fallingSpeed == 0)
+                impact.play();
+            oldFallingSpeed = fallingSpeed;
             Chunk chunkUnderFeet = chunkManager.getChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
             if (chunkUnderFeet != null) {
                 if (yInChunk() >= Chunk.CHUNK_SIZE || yInChunk() < 0 || chunkUnderFeet.blocks[xInChunk()][yInChunk()][zInChunk()].is(Type.AIR)) {

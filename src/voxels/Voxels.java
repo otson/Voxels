@@ -56,10 +56,10 @@ public class Voxels {
      */
     public static final String ATLAS = "atlas";
     /**
-     * Set terrain smoothness. Value of one gives mountains widths a width of one
-     * block, 30 gives enormous flat areas. Default value is 15.
+     * Set terrain smoothness. Value of one gives mountains widths a width of
+     * one block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 10;
+    public static final int TERRAIN_SMOOTHNESS = 30;
     /**
      * Set player's height. One block's height is 1.
      */
@@ -75,7 +75,7 @@ public class Voxels {
     /**
      * Set if 3D simplex noise is used to generate terrain.
      */
-    public static final boolean USE_3D_NOISE = false;
+    public static final boolean USE_3D_NOISE = true;
 
     /**
      * Set air block percentage if 3D noise is in use.
@@ -89,8 +89,8 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 11;
-    public static int chunkRenderDistance = 11;
+    public static int chunkCreationDistance = 9;
+    public static int chunkRenderDistance = 20;
     private static Texture atlas;
     public static final float WaterOffs = 0.28f;
     public static float START_TIME;
@@ -171,7 +171,7 @@ public class Voxels {
         camera.setChunkManager(chunkManager);
         camera.applyPerspectiveMatrix();
         camera.applyOptimalStates();
-        camera.setPosition(camera.x(), Chunk.CHUNK_SIZE*Chunk.WORLD_HEIGHT, camera.z());
+        camera.setPosition(camera.x(), Chunk.CHUNK_SIZE * Chunk.WORLD_HEIGHT, camera.z());
         Mouse.setGrabbed(true);
         return camera;
     }
@@ -184,8 +184,9 @@ public class Voxels {
 
         while (chunkManager.isAtMax() == false) {
             chunkManager.checkChunkUpdates();
-            if (chunkManager.chunkAmount() % 20 == 0)
+            if (chunkManager.chunkAmount() % 20 == 0) {
                 Display.update();
+            }
         }
         System.out.println("Chunks created in " + (System.nanoTime() - time) / 1000000000 + " seconds.");
         time = System.nanoTime();
@@ -224,7 +225,7 @@ public class Voxels {
 
         for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
             for (int z = -chunkRenderDistance; z <= chunkRenderDistance; z++) {
-                for (int y = 0; y < 16; y++) {
+                for (int y = 0; y < Chunk.WORLD_HEIGHT; y++) {
                     Handle handles = chunkManager.getHandle(getCurrentChunkXId() + x, y, getCurrentChunkZId() + z);
                     if (handles != null) {
 
@@ -301,9 +302,9 @@ public class Voxels {
             if (NIGHT_CYCLE) {
                 glClearColor(0f, (float) Math.max(0, (255 * Math.sin(timePassed() / 20000)) - 155) / 255f, (float) Math.max(25, (255 * Math.sin(timePassed() / 20000)) + 25) / 255f, 1.0f);
                 glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(new float[]{2500 + camera.x(), (float) (10000 * Math.sin(timePassed() / 20000)), (float) (10000 * Math.cos(timePassed() / 20000)), 1f}));
-            }
-            else
+            } else {
                 glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
+            }
         }
     }
 
@@ -316,15 +317,17 @@ public class Voxels {
 
     public final static int getCurrentChunkXId() {
         int x = (int) Math.floor(camera.x());
-        if (x < 0)
-            x -= Chunk.CHUNK_SIZE-1;
+        if (x < 0) {
+            x -= Chunk.CHUNK_SIZE - 1;
+        }
         return x / Chunk.CHUNK_SIZE;
     }
 
     public final static int getCurrentChunkZId() {
         int z = (int) Math.floor(camera.z());
-        if (z < 0)
-            z -= Chunk.CHUNK_SIZE-1;
+        if (z < 0) {
+            z -= Chunk.CHUNK_SIZE - 1;
+        }
         return z / Chunk.CHUNK_SIZE;
     }
 
@@ -340,30 +343,33 @@ public class Voxels {
 
     public final static int xInChunk() {
         int x = (int) Math.floor(camera.x());
-        if (x <= 0)
+        if (x <= 0) {
             x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE;
+        }
         return x % Chunk.CHUNK_SIZE;
     }
 
     public final static int zInChunk() {
         int z = (int) Math.floor(camera.z());
-        if (z <= 0)
+        if (z <= 0) {
             z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE;
+        }
         return z % Chunk.CHUNK_SIZE;
     }
 
     public static int getNoise(float x, float z) {
         int noise;
-        if (USE_SEED)
+        if (USE_SEED) {
             noise = (int) ((FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS) + SEED, z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS) + SEED, 5)) * (Chunk.CHUNK_SIZE / 256f)) - 1;
-        else
-            noise = (int) (FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), 5) * (Chunk.WORLD_HEIGHT * Chunk.CHUNK_SIZE / 256f)) - 1;
+        } else {
+            noise = (int) (FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), 5) * ((float) (Chunk.WORLD_HEIGHT * Chunk.CHUNK_SIZE) / 256f)) - 1;
+        }
 
         return noise;//63 + (int) (Math.random() * 2);//Math.max(noise, 0);
     }
 
     public static int get3DNoise(float x, float y, float z) {
-        return (int) ((SimplexNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * 2f), y / (1f * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * 2f)) + 1) * 128 * (Chunk.CHUNK_SIZE / 256f));
+        return (int) ((SimplexNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * 2f), y / (1f * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * 2f)) + 1) * 128 * (Chunk.CHUNK_SIZE*Chunk.WORLD_HEIGHT / 256f));
     }
 
     public static Texture loadTexture(String key) {
@@ -394,7 +400,7 @@ public class Voxels {
 
     public static void updateFPS() {
         if (getTime() - lastFPS > 1000) {
-            Display.setTitle(TITLE + " - FPS: " + fps +" Chunk X: "+getCurrentChunkXId()+" Chunk Y: "+getCurrentChunkYId()+" Chunk Z: "+getCurrentChunkZId()+" Inside chunk: X: "+xInChunk()+" Y:"+yInChunk()+" Z: "+zInChunk());
+            Display.setTitle(TITLE + " - FPS: " + fps + " Chunk X: " + getCurrentChunkXId() + " Chunk Y: " + getCurrentChunkYId() + " Chunk Z: " + getCurrentChunkZId() + " Inside chunk: X: " + xInChunk() + " Y:" + yInChunk() + " Z: " + zInChunk());
             fps = 0; //reset the FPS counter
             lastFPS += 1000; //add one second
         }

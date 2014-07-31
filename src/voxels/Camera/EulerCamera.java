@@ -356,7 +356,7 @@ public class EulerCamera implements Camera {
             if (flying) {
                 y += speed * delta * 0.003f;
             } else if (fallingSpeed == 0) {
-                fallingSpeed = -16 * 0.0225f;
+                fallingSpeed = -16 * 0.0325f;
                 running.stop();
                 jumping.stop();
                 jumping.play();
@@ -392,7 +392,7 @@ public class EulerCamera implements Camera {
                 System.out.println("Player tried to enter a chunk that does not exist. \n Position reset to (0, " + Chunk.CHUNK_SIZE * Chunk.WORLD_HEIGHT + ", 0)");
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_W) || Keyboard.isKeyDown(Keyboard.KEY_A) || Keyboard.isKeyDown(Keyboard.KEY_S) || (Keyboard.isKeyDown(Keyboard.KEY_D))) {
-                if (!flying && fallingSpeed == 0 && System.nanoTime() - runningPrevious > 871000000) {
+                if (!flying && fallingSpeed == 0 && System.nanoTime() - runningPrevious > 520000000) {
                     running.play();
                     runningPrevious = System.nanoTime();
                 }

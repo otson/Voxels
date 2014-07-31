@@ -2,10 +2,16 @@ package voxels;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.FloatBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import kuusisto.tinysound.Sound;
+import kuusisto.tinysound.TinySound;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -16,10 +22,8 @@ import static org.lwjgl.opengl.GL11.*;
 
 import static org.lwjgl.opengl.GL15.*;
 
-
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
-
 import voxels.Camera.EulerCamera;
 import voxels.ChunkManager.Chunk;
 import voxels.ChunkManager.ChunkManager;
@@ -27,12 +31,6 @@ import voxels.ChunkManager.Handle;
 import voxels.ChunkManager.Type;
 import voxels.Noise.FastNoise;
 import voxels.Noise.SimplexNoise;
-
-import kuusisto.tinysound.Sound;
-import kuusisto.tinysound.TinySound;
-
-
-
 
 /**
  *
@@ -47,12 +45,12 @@ public class Voxels {
     /**
      * Texture file names.
      */
-    public static final String ATLAS = "atlas";
+    public static final String ATLAS = "atlas_alternate3";
     /**
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 15;
+    public static final int TERRAIN_SMOOTHNESS = 7;
     /**
      * Set player's height. One block's height is 1.
      */
@@ -60,7 +58,7 @@ public class Voxels {
     /**
      * Set if night cycle is in use.
      */
-    public static final boolean NIGHT_CYCLE = true;
+    public static final boolean NIGHT_CYCLE = false;
     /**
      * Set if terrain generation uses a seed.
      */
@@ -82,7 +80,7 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 7;
+    public static int chunkCreationDistance = 14;
     public static int chunkRenderDistance = 20;
     public static Texture atlas;
     public static Sound running;
@@ -107,7 +105,6 @@ public class Voxels {
         initLighting();
         initTextures();
         initSounds();
-        //glPolygonOffset(2.5F, 0.0F);
         gameLoop();
     }
 
@@ -133,13 +130,15 @@ public class Voxels {
         glLoadIdentity();
 
     }
-    
-    public static void initSounds(){
+
+    public static void initSounds() {
+
         TinySound.init();
-        running = TinySound.loadSound(new File("res\\sounds\\running.ogg"));
-        jumping = TinySound.loadSound(new File("res\\sounds\\jump1.wav"));
-        impact = TinySound.loadSound(new File("res\\sounds\\impact.ogg"));
-        
+
+        running = TinySound.loadSound(Voxels.class.getClassLoader().getResource("resources/sounds/runningHardSurface.wav"));
+        jumping = TinySound.loadSound(Voxels.class.getClassLoader().getResource("resources/sounds/jump.wav"));
+        impact = TinySound.loadSound(Voxels.class.getClassLoader().getResource("resources/sounds/impact.wav"));
+
     }
 
     private static void initTextures() {
@@ -274,7 +273,7 @@ public class Voxels {
             if (Keyboard.isKeyDown(Keyboard.KEY_2)) {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             }
-            
+
             if (Keyboard.isKeyDown(Keyboard.KEY_G)) {
                 chunkManager.startGeneration();
             }
@@ -296,8 +295,6 @@ public class Voxels {
         if (Keyboard.isKeyDown(Keyboard.KEY_U)) {
             glTranslatef(0, -200, 0);
         }
-        
-        
 
         if (Mouse.isGrabbed()) {
             if (Mouse.isButtonDown(0)) {
@@ -378,12 +375,13 @@ public class Voxels {
     }
 
     public static int get3DNoise(float x, float y, float z) {
-        return (int) ((SimplexNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * 2f), y / (1f * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * 2f)) + 1) * 128 * (Chunk.CHUNK_SIZE*Chunk.WORLD_HEIGHT / 256f));
+        return (int) ((SimplexNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * 2f), y / (1f * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * 2f)) + 1) * 128 * (Chunk.CHUNK_SIZE * Chunk.WORLD_HEIGHT / 256f));
     }
 
     public static Texture loadTexture(String key) {
+        InputStream resourceAsStream = Voxels.class.getClassLoader().getResourceAsStream("resources/textures/" + key + ".png");
         try {
-            return TextureLoader.getTexture("png", new FileInputStream(new File("res\\" + key + ".png")));
+            return TextureLoader.getTexture("png", resourceAsStream);
 
         } catch (IOException ex) {
             Logger.getLogger(Voxels.class

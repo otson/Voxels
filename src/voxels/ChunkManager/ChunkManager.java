@@ -94,7 +94,10 @@ public class ChunkManager {
         }
 
         chunk.blocks[x][y][z].setType(type);
+        int oldVertexCount = chunk.getVertices();
+        System.out.print("Old vertices: "+chunk.getVertices());
         updateThread.update(chunk);
+        System.out.println("New vertices: "+chunk.getVertices()+" Change: "+(chunk.getVertices()-oldVertexCount));
 
 //        if (x == Chunk.CHUNK_SIZE - 1) {
 //            updateThread.updateLeft(getChunk(chunkX + 1, chunkY, chunkZ));
@@ -229,7 +232,7 @@ public class ChunkManager {
                 Data data = dataToProcess.get(0);
                 if (data != null) {
                     if (data.UPDATE) {
-                        updateBuffers(data);
+                        createBuffers(data);
                     } else {
                         createBuffers(data);
                     }

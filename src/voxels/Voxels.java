@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import static java.lang.Math.PI;
 import java.nio.FloatBuffer;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import kuusisto.tinysound.Sound;
@@ -23,6 +24,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 import static org.lwjgl.opengl.GL15.*;
 
+import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import voxels.Camera.EulerCamera;
@@ -46,12 +48,12 @@ public class Voxels {
     /**
      * Texture file names.
      */
-    public static final String ATLAS = "atlas_alternate3";
+    public static final String ATLAS = "atlas_alternate2";
     /**
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 7;
+    public static final int TERRAIN_SMOOTHNESS = 3;
     /**
      * Set player's height. One block's height is 1.
      */
@@ -103,7 +105,7 @@ public class Voxels {
     public static void main(String[] args) {
         initDisplay();
         initOpenGL();
-        //initLighting();
+        initLighting();
         initTextures();
         initSounds();
         gameLoop();
@@ -264,40 +266,40 @@ public class Voxels {
         drawAimLine();
 
     }
-    
-    private static void drawAimLine(){
-        glDisable(GL_TEXTURE_2D);
+
+    private static void drawAimLine() {
         
+        Vector3f direction = getDirectionVector();
+
         glPointSize(25);
         glLineWidth(3);
         glBegin(GL_LINES);
-        glVertex3f(camera.x(),camera.y()+PLAYER_HEIGHT+0.01f, camera.z());
-        glVertex3f(getAimX(),getAimY()+PLAYER_HEIGHT+0.01f,getAimZ());
+        glVertex3f(camera.x(), camera.y() + PLAYER_HEIGHT + 0.01f, camera.z());
+        glVertex3f(direction.x, direction.y + PLAYER_HEIGHT + 0.01f, direction.z);
         glEnd();
         glBegin(GL_POINTS);
-        glVertex3f(getAimX(),getAimY()+PLAYER_HEIGHT+0.01f,getAimZ());
+        glVertex3f(direction.x, direction.y + PLAYER_HEIGHT + 0.01f, direction.z);
         glEnd();
-        glEnable(GL_TEXTURE_2D);
+  
     }
-    private static float getAimX(){
-        int i = 2;
-        return (float) (camera.x()+i*Math.sin(toRadians(camera.yaw()))+(Math.sin(toRadians(camera.pitch()))));
+
+    public static Vector3f getDirectionVector() {
+        float length = 2.5f;
+        double pitchRadians = Math.toRadians(camera.pitch());
+        double yawRadians = Math.toRadians(camera.yaw());
+
+        double sinPitch = Math.sin(pitchRadians);
+        double cosPitch = Math.cos(pitchRadians);
+        double sinYaw = Math.sin(yawRadians);
+        double cosYaw = Math.cos(yawRadians);
+
+        return new Vector3f(camera.x()-length*(float)-cosPitch *(float) sinYaw, camera.y()-length*(float)sinPitch, camera.z()+length*(float)-cosPitch * (float)cosYaw);
     }
-    
-    private static float getAimY(){
-        int i = 2;
-        return (float) ((float) (camera.y())-i*Math.sin(toRadians(camera.pitch())));
-    }
-    
-    private static float getAimZ(){
-        int i = 2;
-        return (float) (camera.z()-i*Math.sin(toRadians(camera.yaw()+90))+(Math.sin(toRadians(camera.pitch()))));
-    }
-    
+
     public static double toRadians(double angdeg) {
         return angdeg / 180.0 * PI;
     }
-    
+
     private static void processInput(float delta) {
         while (Keyboard.next()) {
 
@@ -318,6 +320,7 @@ public class Voxels {
             if (Keyboard.isKeyDown(Keyboard.KEY_F)) {
                 camera.toggleFlight();
             }
+            
             if (Keyboard.isKeyDown(Keyboard.KEY_Z)) {
                 chunkManager.editBlock(Type.DIRT, xInChunk(), yInChunk(), zInChunk(), getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
             }
@@ -388,8 +391,6 @@ public class Voxels {
         }
         return x % Chunk.CHUNK_SIZE;
     }
-    
-    
 
     public final static int zInChunk() {
         int z = (int) Math.floor(camera.z());
@@ -398,24 +399,25 @@ public class Voxels {
         }
         return z % Chunk.CHUNK_SIZE;
     }
-    
+
     public final static int yInChunkPointer() {
-        int y = (int) getAimY();
+        Vector3f direction = getDirectionVector();
+        int y = (int) (direction.y+PLAYER_HEIGHT);
         return y % Chunk.CHUNK_SIZE;
     }
 
     public final static int xInChunkPointer() {
-        int x = (int) Math.floor(getAimX());
+        Vector3f direction = getDirectionVector();
+        int x = (int) Math.floor(direction.x);
         if (x <= 0) {
             x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE;
         }
         return x % Chunk.CHUNK_SIZE;
     }
-    
-    
 
     public final static int zInChunkPointer() {
-        int z = (int) Math.floor(getAimZ());
+        Vector3f direction = getDirectionVector();
+        int z = (int) Math.floor(direction.z);
         if (z <= 0) {
             z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE;
         }

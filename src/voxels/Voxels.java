@@ -1,9 +1,5 @@
 package voxels;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -268,23 +264,19 @@ public class Voxels {
     }
 
     private static void drawAimLine() {
-        
-        Vector3f direction = getDirectionVector();
-
+        glDisable(GL_TEXTURE_2D);
+        Vector3f direction = getDirectionVector(2.35f);
+        glColor3f(1f,0,0);
         glPointSize(25);
-        glLineWidth(3);
-        glBegin(GL_LINES);
-        glVertex3f(camera.x(), camera.y() + PLAYER_HEIGHT + 0.01f, camera.z());
-        glVertex3f(direction.x, direction.y + PLAYER_HEIGHT + 0.01f, direction.z);
-        glEnd();
         glBegin(GL_POINTS);
         glVertex3f(direction.x, direction.y + PLAYER_HEIGHT + 0.01f, direction.z);
         glEnd();
+        glColor3f(1f,1f,1f);
+        glEnable(GL_TEXTURE_2D);
   
     }
 
-    public static Vector3f getDirectionVector() {
-        float length = 2.5f;
+    public static Vector3f getDirectionVector(float distance) {
         double pitchRadians = Math.toRadians(camera.pitch());
         double yawRadians = Math.toRadians(camera.yaw());
 
@@ -293,7 +285,7 @@ public class Voxels {
         double sinYaw = Math.sin(yawRadians);
         double cosYaw = Math.cos(yawRadians);
 
-        return new Vector3f(camera.x()-length*(float)-cosPitch *(float) sinYaw, camera.y()-length*(float)sinPitch, camera.z()+length*(float)-cosPitch * (float)cosYaw);
+        return new Vector3f(camera.x()-distance*(float)-cosPitch *(float) sinYaw, camera.y()-distance*(float)sinPitch, camera.z()+distance*(float)-cosPitch * (float)cosYaw);
     }
 
     public static double toRadians(double angdeg) {
@@ -335,10 +327,10 @@ public class Voxels {
 
         if (Mouse.isGrabbed()) {
             if (Mouse.isButtonDown(0)) {
-                chunkManager.editBlock(Type.DIRT, xInChunkPointer(), yInChunkPointer(), zInChunkPointer(), getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
+                chunkManager.editBlock(Type.DIRT, xInChunkPointer(), yInChunkPointer(), zInChunkPointer(), getPointerChunkXId(), getPointerChunkYId(), getPointerChunkZId());
             }
             if (Mouse.isButtonDown(1)) {
-                chunkManager.editBlock(Type.AIR, xInChunkPointer(), yInChunkPointer(), zInChunkPointer(), getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
+                chunkManager.editBlock(Type.AIR, xInChunkPointer(), yInChunkPointer(), zInChunkPointer(), getPointerChunkXId(), getPointerChunkYId(), getPointerChunkZId());
             }
             camera.processMouse();
             camera.processKeyboard(delta, 1.4f);
@@ -356,6 +348,30 @@ public class Voxels {
         buffer.put(values);
         buffer.flip();
         return buffer;
+    }
+    
+    public final static int getPointerChunkXId() {
+        Vector3f dir = getDirectionVector(2.3f);
+        int x = (int) Math.floor(dir.x);
+        if (x < 0) {
+            x -= Chunk.CHUNK_SIZE - 1;
+        }
+        return x / Chunk.CHUNK_SIZE;
+    }
+
+    public final static int getPointerChunkZId() {
+        Vector3f dir = getDirectionVector(2.3f);
+        int z = (int) Math.floor(dir.z);
+        if (z < 0) {
+            z -= Chunk.CHUNK_SIZE - 1;
+        }
+        return z / Chunk.CHUNK_SIZE;
+    }
+
+    public final static int getPointerChunkYId() {
+        Vector3f dir = getDirectionVector(2.3f);
+        int y = (int) dir.y;
+        return y / Chunk.CHUNK_SIZE;
     }
 
     public final static int getCurrentChunkXId() {
@@ -401,13 +417,13 @@ public class Voxels {
     }
 
     public final static int yInChunkPointer() {
-        Vector3f direction = getDirectionVector();
+        Vector3f direction = getDirectionVector(2.35f);
         int y = (int) (direction.y+PLAYER_HEIGHT);
         return y % Chunk.CHUNK_SIZE;
     }
 
     public final static int xInChunkPointer() {
-        Vector3f direction = getDirectionVector();
+        Vector3f direction = getDirectionVector(2.35f);
         int x = (int) Math.floor(direction.x);
         if (x <= 0) {
             x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE;
@@ -416,7 +432,7 @@ public class Voxels {
     }
 
     public final static int zInChunkPointer() {
-        Vector3f direction = getDirectionVector();
+        Vector3f direction = getDirectionVector(2.35f);
         int z = (int) Math.floor(direction.z);
         if (z <= 0) {
             z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE;

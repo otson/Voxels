@@ -46,7 +46,7 @@ public class Voxels {
     /**
      * Texture file names.
      */
-    public static final String ATLAS = "atlas_alternate2";
+    public static final String ATLAS = "atlas_alternate3";
     /**
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
@@ -103,7 +103,7 @@ public class Voxels {
     public static void main(String[] args) {
         initDisplay();
         initOpenGL();
-        initLighting();
+        //initLighting();
         initTextures();
         initSounds();
         gameLoop();
@@ -266,25 +266,32 @@ public class Voxels {
     }
     
     private static void drawAimLine(){
-        glPointSize(10);
-        glBegin(GL_POINTS);
-        glVertex3f(getAimX(),getAimY(),getAimZ());
-        //getAimX();
+        glDisable(GL_TEXTURE_2D);
+        
+        glPointSize(25);
+        glLineWidth(3);
+        glBegin(GL_LINES);
+        glVertex3f(camera.x(),camera.y()+PLAYER_HEIGHT+0.01f, camera.z());
+        glVertex3f(getAimX(),getAimY()+PLAYER_HEIGHT+0.01f,getAimZ());
         glEnd();
+        glBegin(GL_POINTS);
+        glVertex3f(getAimX(),getAimY()+PLAYER_HEIGHT+0.01f,getAimZ());
+        glEnd();
+        glEnable(GL_TEXTURE_2D);
     }
     private static float getAimX(){
         int i = 2;
-        return (float) (camera.x()+i*Math.sin(toRadians(camera.yaw())));
+        return (float) (camera.x()+i*Math.sin(toRadians(camera.yaw()))+(Math.sin(toRadians(camera.pitch()))));
     }
     
     private static float getAimY(){
-        float i = 2;
-        return (float) ((float) (camera.y()));
+        int i = 2;
+        return (float) ((float) (camera.y())-i*Math.sin(toRadians(camera.pitch())));
     }
     
     private static float getAimZ(){
         int i = 2;
-        return (float) (camera.z()-i*Math.sin(toRadians(camera.yaw()+90)));
+        return (float) (camera.z()-i*Math.sin(toRadians(camera.yaw()+90))+(Math.sin(toRadians(camera.pitch()))));
     }
     
     public static double toRadians(double angdeg) {
@@ -325,10 +332,10 @@ public class Voxels {
 
         if (Mouse.isGrabbed()) {
             if (Mouse.isButtonDown(0)) {
-                chunkManager.editBlock(Type.DIRT, xInChunk(), yInChunk(), zInChunk(), getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
+                chunkManager.editBlock(Type.DIRT, xInChunkPointer(), yInChunkPointer(), zInChunkPointer(), getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
             }
             if (Mouse.isButtonDown(1)) {
-                chunkManager.editBlock(Type.AIR, xInChunk(), yInChunk() - 1, zInChunk(), getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
+                chunkManager.editBlock(Type.AIR, xInChunkPointer(), yInChunkPointer(), zInChunkPointer(), getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
             }
             camera.processMouse();
             camera.processKeyboard(delta, 1.4f);
@@ -381,9 +388,34 @@ public class Voxels {
         }
         return x % Chunk.CHUNK_SIZE;
     }
+    
+    
 
     public final static int zInChunk() {
         int z = (int) Math.floor(camera.z());
+        if (z <= 0) {
+            z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE;
+        }
+        return z % Chunk.CHUNK_SIZE;
+    }
+    
+    public final static int yInChunkPointer() {
+        int y = (int) getAimY();
+        return y % Chunk.CHUNK_SIZE;
+    }
+
+    public final static int xInChunkPointer() {
+        int x = (int) Math.floor(getAimX());
+        if (x <= 0) {
+            x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE;
+        }
+        return x % Chunk.CHUNK_SIZE;
+    }
+    
+    
+
+    public final static int zInChunkPointer() {
+        int z = (int) Math.floor(getAimZ());
         if (z <= 0) {
             z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE;
         }

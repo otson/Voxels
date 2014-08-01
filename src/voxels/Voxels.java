@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import static java.lang.Math.PI;
 import java.nio.FloatBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,7 +46,7 @@ public class Voxels {
     /**
      * Texture file names.
      */
-    public static final String ATLAS = "atlas_alternate3";
+    public static final String ATLAS = "atlas_alternate2";
     /**
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
@@ -80,7 +81,7 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 14;
+    public static int chunkCreationDistance = 5;
     public static int chunkRenderDistance = 20;
     public static Texture atlas;
     public static Sound running;
@@ -205,7 +206,6 @@ public class Voxels {
             updateView();
             processInput(getDelta());
             chunkManager.checkChunkUpdates();
-
             render();
 
             updateFPS();
@@ -261,9 +261,36 @@ public class Voxels {
                 }
             }
         }
+        drawAimLine();
 
     }
-
+    
+    private static void drawAimLine(){
+        glPointSize(10);
+        glBegin(GL_POINTS);
+        glVertex3f(getAimX(),getAimY(),getAimZ());
+        //getAimX();
+        glEnd();
+    }
+    private static float getAimX(){
+        int i = 2;
+        return (float) (camera.x()+i*Math.sin(toRadians(camera.yaw())));
+    }
+    
+    private static float getAimY(){
+        float i = 2;
+        return (float) ((float) (camera.y()));
+    }
+    
+    private static float getAimZ(){
+        int i = 2;
+        return (float) (camera.z()-i*Math.sin(toRadians(camera.yaw()+90)));
+    }
+    
+    public static double toRadians(double angdeg) {
+        return angdeg / 180.0 * PI;
+    }
+    
     private static void processInput(float delta) {
         while (Keyboard.next()) {
 
@@ -407,7 +434,9 @@ public class Voxels {
 
     public static void updateFPS() {
         if (getTime() - lastFPS > 1000) {
-            Display.setTitle(TITLE + " - FPS: " + fps + " Chunk X: " + getCurrentChunkXId() + " Chunk Y: " + getCurrentChunkYId() + " Chunk Z: " + getCurrentChunkZId() + " Inside chunk: X: " + xInChunk() + " Y:" + yInChunk() + " Z: " + zInChunk());
+            //Display.setTitle(TITLE + " - FPS: " + fps + " Chunk X: " + getCurrentChunkXId() + " Chunk Y: " + getCurrentChunkYId() + " Chunk Z: " + getCurrentChunkZId() + " Inside chunk: X: " + xInChunk() + " Y:" + yInChunk() + " Z: " + zInChunk());
+            Display.setTitle(TITLE + " - FPS: " + fps + " Pitch: " + camera.pitch() + " Yaw: " + camera.yaw());
+
             fps = 0; //reset the FPS counter
             lastFPS += 1000; //add one second
         }

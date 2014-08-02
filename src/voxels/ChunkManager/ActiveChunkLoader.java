@@ -17,11 +17,7 @@ public class ActiveChunkLoader extends Thread {
 
 
     private Chunk middle;
-    private Chunk right;
-    private Chunk left;
-    private Chunk top;
     private Chunk bottom;
-   
 
     boolean running;
     boolean refresh;
@@ -64,10 +60,7 @@ public class ActiveChunkLoader extends Thread {
     }
 
     public void loadChunks() {
-        middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());
-        right = chunkManager.getChunk(Voxels.getCurrentChunkXId()+1, Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());
-        left = chunkManager.getChunk(Voxels.getCurrentChunkXId()-1, Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());
-        top = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId()+1, Voxels.getCurrentChunkZId());
+        middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());    
         bottom = chunkManager.getChunk(Voxels.getCurrentChunkXId()+1, Voxels.getCurrentChunkYId()-1, Voxels.getCurrentChunkZId());
     }
 

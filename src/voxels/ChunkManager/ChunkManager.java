@@ -21,10 +21,13 @@ import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import org.lwjgl.util.vector.Vector3f;
 import voxels.Voxels;
 import static voxels.Voxels.getCurrentChunkXId;
 import static voxels.Voxels.getCurrentChunkZId;
@@ -86,7 +89,7 @@ public class ChunkManager {
             chunkY--;
             y = Chunk.CHUNK_SIZE + y;
         }
-        
+
         Chunk chunk = getChunk(chunkX, chunkY, chunkZ);
         if (chunk == null) {
             System.out.println("Tried to modify a null chunk.");
@@ -95,9 +98,9 @@ public class ChunkManager {
 
         chunk.blocks[x][y][z].setType(type);
         int oldVertexCount = chunk.getVertices();
-        System.out.print("Old vertices: "+chunk.getVertices());
+        System.out.print("Old vertices: " + chunk.getVertices());
         updateThread.update(chunk);
-        System.out.println("New vertices: "+chunk.getVertices()+" Change: "+(chunk.getVertices()-oldVertexCount));
+        System.out.println("New vertices: " + chunk.getVertices() + " Change: " + (chunk.getVertices() - oldVertexCount));
 
 //        if (x == Chunk.CHUNK_SIZE - 1) {
 //            updateThread.updateLeft(getChunk(chunkX + 1, chunkY, chunkZ));
@@ -117,7 +120,6 @@ public class ChunkManager {
 //        if (z == 0) {
 //            updateThread.updateFront(getChunk(chunkX, chunkY, chunkZ - 1));
 //        }
-
         chunkLoader.refresh();
 
     }
@@ -203,6 +205,44 @@ public class ChunkManager {
         }
         if (wait == false) {
             processBufferData();
+        }
+    }
+
+    public void castRay(Short type) {
+        int maxDistance = 6;
+        for (float f = 1.5f; f < maxDistance; f += 0.25f) {
+            Vector3f vector = Voxels.getDirectionVector(f);
+            int xInChunk = Voxels.xInChunkPointer(vector);
+            int yInChunk = Voxels.yInChunkPointer(vector);
+            int zInChunk = Voxels.zInChunkPointer(vector);
+
+            int xChunkId = Voxels.getPointerChunkXId(vector);
+            int yChunkId = Voxels.getPointerChunkYId(vector);
+            int zChunkId = Voxels.getPointerChunkZId(vector);
+
+            System.out.println("Chunk Z Y Z: " + xChunkId + ", " + yChunkId + ", " + zChunkId);
+
+            Chunk chunk = getChunk(xChunkId, yChunkId, zChunkId);
+            if (chunk == null) {
+                System.out.println("Tried to modify a null chunk.");
+                return;
+            }
+            if (type == Type.DIRT) {
+                if (chunk.blocks[xInChunk][yInChunk][zInChunk].is(Type.DIRT)) {
+                    chunk.blocks[xInChunk][yInChunk][zInChunk].setType(type);
+                    updateThread.update(chunk);
+                    chunkLoader.refresh();
+
+                    break;
+                }
+            } else if (type == Type.AIR) {
+                if (chunk.blocks[xInChunk][yInChunk][zInChunk].is(Type.DIRT)) {
+                    chunk.blocks[xInChunk][yInChunk][zInChunk].setType(type);
+                    updateThread.update(chunk);
+                    chunkLoader.refresh();
+                    break;
+                }
+            }
         }
     }
 

@@ -12,7 +12,7 @@ public class Chunk implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public static final int CHUNK_SIZE = 16;
-    public static final int WORLD_HEIGHT = 5;
+    public static final int WORLD_HEIGHT = 6;
     public static final int WATER_HEIGHT = -1;
     
 

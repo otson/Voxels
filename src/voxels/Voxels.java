@@ -49,7 +49,7 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 3;
+    public static final int TERRAIN_SMOOTHNESS = 30;
     /**
      * Set player's height. One block's height is 1.
      */
@@ -79,7 +79,7 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 5;
+    public static int chunkCreationDistance = 10;
     public static int chunkRenderDistance = 20;
     public static Texture atlas;
     public static Sound running;
@@ -109,7 +109,7 @@ public class Voxels {
 
     private static void initDisplay() {
         try {
-            Display.setDisplayMode(new DisplayMode(1650, 1050));
+            Display.setDisplayMode(new DisplayMode(1440, 900));
             Display.setVSyncEnabled(true);
             Display.setTitle("Voxels");
             Display.create();
@@ -266,14 +266,14 @@ public class Voxels {
     private static void drawAimLine() {
         glDisable(GL_TEXTURE_2D);
         Vector3f direction = getDirectionVector(2.35f);
-        glColor3f(1f,0,0);
+        glColor3f(1f, 0, 0);
         glPointSize(25);
         glBegin(GL_POINTS);
         glVertex3f(direction.x, direction.y + PLAYER_HEIGHT + 0.01f, direction.z);
         glEnd();
-        glColor3f(1f,1f,1f);
+        glColor3f(1f, 1f, 1f);
         glEnable(GL_TEXTURE_2D);
-  
+
     }
 
     public static Vector3f getDirectionVector(float distance) {
@@ -285,7 +285,7 @@ public class Voxels {
         double sinYaw = Math.sin(yawRadians);
         double cosYaw = Math.cos(yawRadians);
 
-        return new Vector3f(camera.x()-distance*(float)-cosPitch *(float) sinYaw, camera.y()-distance*(float)sinPitch, camera.z()+distance*(float)-cosPitch * (float)cosYaw);
+        return new Vector3f(camera.x() - distance * (float) -cosPitch * (float) sinYaw, camera.y() - distance * (float) sinPitch, camera.z() + distance * (float) -cosPitch * (float) cosYaw);
     }
 
     public static double toRadians(double angdeg) {
@@ -312,13 +312,6 @@ public class Voxels {
             if (Keyboard.isKeyDown(Keyboard.KEY_F)) {
                 camera.toggleFlight();
             }
-            
-            if (Keyboard.isKeyDown(Keyboard.KEY_Z)) {
-                chunkManager.editBlock(Type.DIRT, xInChunk(), yInChunk(), zInChunk(), getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
-            }
-            if (Keyboard.isKeyDown(Keyboard.KEY_Q)) {
-                chunkManager.editBlock(Type.AIR, xInChunk(), yInChunk() - 1, zInChunk(), getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
-            }
 
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_U)) {
@@ -326,11 +319,15 @@ public class Voxels {
         }
 
         if (Mouse.isGrabbed()) {
-            if (Mouse.isButtonDown(0)) {
-                chunkManager.editBlock(Type.DIRT, xInChunkPointer(), yInChunkPointer(), zInChunkPointer(), getPointerChunkXId(), getPointerChunkYId(), getPointerChunkZId());
-            }
-            if (Mouse.isButtonDown(1)) {
-                chunkManager.editBlock(Type.AIR, xInChunkPointer(), yInChunkPointer(), zInChunkPointer(), getPointerChunkXId(), getPointerChunkYId(), getPointerChunkZId());
+            while (Mouse.next()) {
+                if (Mouse.isButtonDown(0)) {
+                    //chunkManager.editBlock(Type.DIRT, xInChunkPointer(vector), yInChunkPointer(vector), zInChunkPointer(vector), getPointerChunkXId(vector), getPointerChunkYId(vector), getPointerChunkZId(vector));
+                    chunkManager.castRay(Type.DIRT);
+                }
+                if (Mouse.isButtonDown(1)) {
+                    //chunkManager.editBlock(Type.AIR, xInChunkPointer(vector), yInChunkPointer(vector), zInChunkPointer(vector), getPointerChunkXId(vector), getPointerChunkYId(vector), getPointerChunkZId(vector));
+                    chunkManager.castRay(Type.AIR);
+                }
             }
             camera.processMouse();
             camera.processKeyboard(delta, 1.4f);
@@ -349,28 +346,25 @@ public class Voxels {
         buffer.flip();
         return buffer;
     }
-    
-    public final static int getPointerChunkXId() {
-        Vector3f dir = getDirectionVector(2.3f);
-        int x = (int) Math.floor(dir.x);
+
+    public final static int getPointerChunkXId(Vector3f vector) {
+        int x = (int) Math.floor(vector.x);
         if (x < 0) {
             x -= Chunk.CHUNK_SIZE - 1;
         }
         return x / Chunk.CHUNK_SIZE;
     }
 
-    public final static int getPointerChunkZId() {
-        Vector3f dir = getDirectionVector(2.3f);
-        int z = (int) Math.floor(dir.z);
+    public final static int getPointerChunkZId(Vector3f vector) {
+        int z = (int) Math.floor(vector.z);
         if (z < 0) {
             z -= Chunk.CHUNK_SIZE - 1;
         }
         return z / Chunk.CHUNK_SIZE;
     }
 
-    public final static int getPointerChunkYId() {
-        Vector3f dir = getDirectionVector(2.3f);
-        int y = (int) dir.y;
+    public final static int getPointerChunkYId(Vector3f vector) {
+        int y = (int) vector.y;
         return y / Chunk.CHUNK_SIZE;
     }
 
@@ -416,14 +410,12 @@ public class Voxels {
         return z % Chunk.CHUNK_SIZE;
     }
 
-    public final static int yInChunkPointer() {
-        Vector3f direction = getDirectionVector(2.35f);
-        int y = (int) (direction.y+PLAYER_HEIGHT);
+    public final static int yInChunkPointer(Vector3f direction) {
+        int y = (int) (direction.y + PLAYER_HEIGHT);
         return y % Chunk.CHUNK_SIZE;
     }
 
-    public final static int xInChunkPointer() {
-        Vector3f direction = getDirectionVector(2.35f);
+    public final static int xInChunkPointer(Vector3f direction) {
         int x = (int) Math.floor(direction.x);
         if (x <= 0) {
             x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE;
@@ -431,8 +423,7 @@ public class Voxels {
         return x % Chunk.CHUNK_SIZE;
     }
 
-    public final static int zInChunkPointer() {
-        Vector3f direction = getDirectionVector(2.35f);
+    public final static int zInChunkPointer(Vector3f direction) {
         int z = (int) Math.floor(direction.z);
         if (z <= 0) {
             z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE;

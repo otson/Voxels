@@ -411,6 +411,11 @@ public class ChunkManager {
     }
 
     private void checkAdjacentChunks(Chunk chunk, int x, int y, int z) {
+        /**
+         * 
+         * For now, all the blocks are updated.
+         * 
+         */
         if (x == Chunk.CHUNK_SIZE - 1) {
             updateThread.update(getChunk(chunk.xId + 1, chunk.yId, chunk.zId));
         }

@@ -53,7 +53,7 @@ public class Voxels {
     /**
      * Set player's height. One block's height is 1.
      */
-    public static float PLAYER_HEIGHT = 0.1f;
+    public static float PLAYER_HEIGHT = 2.0f;
     /**
      * Set if night cycle is in use.
      */
@@ -269,7 +269,7 @@ public class Voxels {
         glColor3f(1f, 0, 0);
         glPointSize(25);
         glBegin(GL_POINTS);
-        glVertex3f(direction.x, direction.y + PLAYER_HEIGHT + 0.01f, direction.z);
+        glVertex3f(direction.x, direction.y, direction.z);
         glEnd();
         glColor3f(1f, 1f, 1f);
         glEnable(GL_TEXTURE_2D);
@@ -317,6 +317,11 @@ public class Voxels {
         if (Keyboard.isKeyDown(Keyboard.KEY_U)) {
             glTranslatef(0, -200, 0);
         }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            PLAYER_HEIGHT = 1.0f;
+        }
+        else
+            PLAYER_HEIGHT = 2.0f;
 
         if (Mouse.isGrabbed()) {
             while (Mouse.next()) {
@@ -385,12 +390,12 @@ public class Voxels {
     }
 
     public final static int getCurrentChunkYId() {
-        int y = (int) camera.y();
+        int y = (int) (camera.y()-PLAYER_HEIGHT);
         return y / Chunk.CHUNK_SIZE;
     }
 
     public final static int yInChunk() {
-        int y = (int) camera.y();
+        int y = (int) (camera.y()-PLAYER_HEIGHT);
         return y % Chunk.CHUNK_SIZE;
     }
 
@@ -411,7 +416,7 @@ public class Voxels {
     }
 
     public final static int yInChunkPointer(Vector3f direction) {
-        int y = (int) (direction.y + PLAYER_HEIGHT);
+        int y = (int) (direction.y);
         return y % Chunk.CHUNK_SIZE;
     }
 

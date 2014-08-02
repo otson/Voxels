@@ -102,24 +102,24 @@ public class ChunkManager {
         updateThread.update(chunk);
         System.out.println("New vertices: " + chunk.getVertices() + " Change: " + (chunk.getVertices() - oldVertexCount));
 
-//        if (x == Chunk.CHUNK_SIZE - 1) {
-//            updateThread.updateLeft(getChunk(chunkX + 1, chunkY, chunkZ));
-//        }
-//        if (x == 0) {
-//            updateThread.updateRight(getChunk(chunkX - 1, chunkY, chunkZ));
-//        }
-//        if (y == Chunk.CHUNK_SIZE - 1) {
-//            updateThread.updateLeft(getChunk(chunkX, chunkY + 1, chunkZ));
-//        }
-//        if (y == 0) {
-//            updateThread.updateRight(getChunk(chunkX, chunkY - 1, chunkZ));
-//        }
-//        if (z == Chunk.CHUNK_SIZE - 1) {
-//            updateThread.updateBack(getChunk(chunkX, chunkY, chunkZ + 1));
-//        }
-//        if (z == 0) {
-//            updateThread.updateFront(getChunk(chunkX, chunkY, chunkZ - 1));
-//        }
+        if (x == Chunk.CHUNK_SIZE - 1) {
+            updateThread.updateLeft(getChunk(chunkX + 1, chunkY, chunkZ));
+        }
+        if (x == 0) {
+            updateThread.updateRight(getChunk(chunkX - 1, chunkY, chunkZ));
+        }
+        if (y == Chunk.CHUNK_SIZE - 1) {
+            updateThread.updateLeft(getChunk(chunkX, chunkY + 1, chunkZ));
+        }
+        if (y == 0) {
+            updateThread.updateRight(getChunk(chunkX, chunkY - 1, chunkZ));
+        }
+        if (z == Chunk.CHUNK_SIZE - 1) {
+            updateThread.updateBack(getChunk(chunkX, chunkY, chunkZ + 1));
+        }
+        if (z == 0) {
+            updateThread.updateFront(getChunk(chunkX, chunkY, chunkZ - 1));
+        }
         chunkLoader.refresh();
 
     }
@@ -220,12 +220,9 @@ public class ChunkManager {
             int xInChunk = Voxels.xInChunkPointer(vector);
             int yInChunk = Voxels.yInChunkPointer(vector);
             int zInChunk = Voxels.zInChunkPointer(vector);
-
             int xChunkId = Voxels.getPointerChunkXId(vector);
             int yChunkId = Voxels.getPointerChunkYId(vector);
             int zChunkId = Voxels.getPointerChunkZId(vector);
-
-            System.out.println("Chunk Z Y Z: " + xChunkId + ", " + yChunkId + ", " + zChunkId);
 
             Chunk chunk = getChunk(xChunkId, yChunkId, zChunkId);
             if (chunk == null) {
@@ -236,6 +233,9 @@ public class ChunkManager {
                 if (chunk.blocks[xInChunk][yInChunk][zInChunk].is(Type.AIR)) {
                     chunk.blocks[xInChunk][yInChunk][zInChunk].setType(type);
                     updateThread.update(chunk);
+                    processBufferData();
+                    checkAdjacentChunks(chunk, xInChunk, yInChunk, zInChunk);
+                    processBufferData();
                     chunkLoader.refresh();
                     break;
                 }
@@ -243,6 +243,9 @@ public class ChunkManager {
                 if (chunk.blocks[xInChunk][yInChunk][zInChunk].is(Type.DIRT)) {
                     chunk.blocks[xInChunk][yInChunk][zInChunk].setType(type);
                     updateThread.update(chunk);
+                    processBufferData();
+                    checkAdjacentChunks(chunk, xInChunk, yInChunk, zInChunk);
+                    processBufferData();
                     chunkLoader.refresh();
                     break;
                 }
@@ -405,6 +408,27 @@ public class ChunkManager {
 
     public void setWait(boolean wait) {
         this.wait = wait;
+    }
+
+    private void checkAdjacentChunks(Chunk chunk, int x, int y, int z) {
+        if (x == Chunk.CHUNK_SIZE - 1) {
+            updateThread.update(getChunk(chunk.xId + 1, chunk.yId, chunk.zId));
+        }
+        if (x == 0) {
+            updateThread.update(getChunk(chunk.xId - 1, chunk.yId, chunk.zId));
+        }
+        if (y == Chunk.CHUNK_SIZE - 1) {
+            updateThread.update(getChunk(chunk.xId, chunk.yId + 1, chunk.zId));
+        }
+        if (y == 0) {
+            updateThread.update(getChunk(chunk.xId, chunk.yId - 1, chunk.zId));
+        }
+        if (z == Chunk.CHUNK_SIZE - 1) {
+            updateThread.update(getChunk(chunk.xId, chunk.yId, chunk.zId + 1));
+        }
+        if (z == 0) {
+            updateThread.update(getChunk(chunk.xId, chunk.yId, chunk.zId - 1));
+        }
     }
 
 }

@@ -195,6 +195,34 @@ public class ChunkMaker extends Thread {
             dataToProcess.add(new Data(this.chunk.xId, this.chunk.yId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
         }
     }
+    public void updateTop(Chunk chunk) {
+        if (chunk != null) {
+            this.chunk = chunk;
+            this.xOff = chunk.xCoordinate;
+            this.zOff = chunk.zCoordinate;
+            this.yOff = chunk.yId * Chunk.CHUNK_SIZE;
+            updateTop();
+            drawChunkVBO();
+
+            map.put(new Pair(this.chunk.xId, this.chunk.yId, this.chunk.zId).hashCode(), toByte(this.chunk));
+            Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.yId, this.chunk.zId);
+            dataToProcess.add(new Data(this.chunk.xId, this.chunk.yId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
+        }
+    }
+    public void updateBottom(Chunk chunk) {
+        if (chunk != null) {
+            this.chunk = chunk;
+            this.xOff = chunk.xCoordinate;
+            this.zOff = chunk.zCoordinate;
+            this.yOff = chunk.yId * Chunk.CHUNK_SIZE;
+            updateBottom();
+            drawChunkVBO();
+
+            map.put(new Pair(this.chunk.xId, this.chunk.yId, this.chunk.zId).hashCode(), toByte(this.chunk));
+            Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.yId, this.chunk.zId);
+            dataToProcess.add(new Data(this.chunk.xId, this.chunk.yId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
+        }
+    }
 
     public void updateBack(Chunk chunk) {
         if (chunk != null) {

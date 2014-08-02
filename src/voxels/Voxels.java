@@ -53,7 +53,7 @@ public class Voxels {
     /**
      * Set player's height. One block's height is 1.
      */
-    public static float PLAYER_HEIGHT = 2.2f;
+    public static float PLAYER_HEIGHT = 0.1f;
     /**
      * Set if night cycle is in use.
      */
@@ -265,7 +265,7 @@ public class Voxels {
 
     private static void drawAimLine() {
         glDisable(GL_TEXTURE_2D);
-        Vector3f direction = getDirectionVector(2.35f);
+        Vector3f direction = getDirectionVector(1f);
         glColor3f(1f, 0, 0);
         glPointSize(25);
         glBegin(GL_POINTS);

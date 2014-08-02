@@ -209,9 +209,14 @@ public class ChunkManager {
     }
 
     public void castRay(Short type) {
-        int maxDistance = 6;
-        for (float f = 1.5f; f < maxDistance; f += 0.25f) {
-            Vector3f vector = Voxels.getDirectionVector(f);
+        int maxDistance = 4;
+        Vector3f vector;
+        for (float f = 0f; f < maxDistance; f += 0.25f) {
+            if (type == Type.DIRT) {
+                vector = Voxels.getDirectionVector(maxDistance - f);
+            } else {
+                vector = Voxels.getDirectionVector(f);
+            }
             int xInChunk = Voxels.xInChunkPointer(vector);
             int yInChunk = Voxels.yInChunkPointer(vector);
             int zInChunk = Voxels.zInChunkPointer(vector);
@@ -228,11 +233,10 @@ public class ChunkManager {
                 return;
             }
             if (type == Type.DIRT) {
-                if (chunk.blocks[xInChunk][yInChunk][zInChunk].is(Type.DIRT)) {
+                if (chunk.blocks[xInChunk][yInChunk][zInChunk].is(Type.AIR)) {
                     chunk.blocks[xInChunk][yInChunk][zInChunk].setType(type);
                     updateThread.update(chunk);
                     chunkLoader.refresh();
-
                     break;
                 }
             } else if (type == Type.AIR) {

@@ -320,13 +320,13 @@ public class Voxels {
 
         if (Mouse.isGrabbed()) {
             while (Mouse.next()) {
-                if (Mouse.isButtonDown(0)) {
-                    //chunkManager.editBlock(Type.DIRT, xInChunkPointer(vector), yInChunkPointer(vector), zInChunkPointer(vector), getPointerChunkXId(vector), getPointerChunkYId(vector), getPointerChunkZId(vector));
-                    chunkManager.castRay(Type.DIRT);
-                }
-                if (Mouse.isButtonDown(1)) {
-                    //chunkManager.editBlock(Type.AIR, xInChunkPointer(vector), yInChunkPointer(vector), zInChunkPointer(vector), getPointerChunkXId(vector), getPointerChunkYId(vector), getPointerChunkZId(vector));
-                    chunkManager.castRay(Type.AIR);
+                if (Mouse.getEventButtonState()) {
+                    if (Mouse.getEventButton() == 0) {
+                        chunkManager.castRay(Type.DIRT);
+                    }
+                    else if (Mouse.getEventButton() == 1) {
+                        chunkManager.castRay(Type.AIR);
+                    }
                 }
             }
             camera.processMouse();

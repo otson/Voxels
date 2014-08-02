@@ -356,7 +356,10 @@ public class EulerCamera implements Camera {
             if (flying) {
                 y += speed * delta * 0.003f;
             } else if (fallingSpeed == 0) {
-                fallingSpeed = -16 * 0.0325f;
+                fallingSpeed = -16 * 0.0125f;
+                if (moveFaster) {
+                    fallingSpeed *= 2.5f;
+                }
                 running.stop();
                 jumping.stop();
                 jumping.play();
@@ -369,9 +372,10 @@ public class EulerCamera implements Camera {
             }
         }
 
-        if (flying == false) { 
-            if(oldFallingSpeed >fallingSpeedIncrease*2 && fallingSpeed == 0)
+        if (flying == false) {
+            if (oldFallingSpeed > fallingSpeedIncrease * 2 && fallingSpeed == 0) {
                 impact.play();
+            }
             oldFallingSpeed = fallingSpeed;
             Chunk chunkUnderFeet = chunkManager.getChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
             if (chunkUnderFeet != null) {
@@ -415,12 +419,35 @@ public class EulerCamera implements Camera {
      * @param dz the movement along the z-axis
      */
     public void moveFromLook(float dx, float dy, float dz) {
+        if (!flying) {
 
-        this.x -= dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw));
-        if (flying) {
+            int potentChunkXId = Voxels.getCurrentChunkXId((float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))));
+            int potentXInChunk = Voxels.xInChunk((float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))));
+            Chunk potentChunk = chunkManager.getChunk(potentChunkXId, Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());
+
+            // allowed to move in X axis
+            if (potentChunk != null) {
+                if (potentChunk.blocks[potentXInChunk][Voxels.yInChunk()][Voxels.zInChunk()].is(Type.AIR)) {
+                    this.x -= dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw));
+                }
+            }
+
+            int potentZInChunk = Voxels.zInChunk((float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw))));
+            int potentChunkZId = Voxels.getCurrentChunkZId((float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw))));
+            potentChunk = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), potentChunkZId);
+
+            // allowed to move in Z axis
+            if (potentChunk != null) {
+                if (potentChunk.blocks[xInChunk()][Voxels.yInChunk()][potentZInChunk].is(Type.AIR)) {
+                    this.z += dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw));
+                }
+            }
+
+        } else {
+            this.x -= dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw));
             this.y += dy * (float) sin(toRadians(pitch - 90)) + dz * sin(toRadians(pitch));
+            this.z += dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw));
         }
-        this.z += dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw));
 
     }
 

@@ -49,7 +49,7 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 30;
+    public static final int TERRAIN_SMOOTHNESS = 15;
     /**
      * Set player's height. One block's height is 1.
      */
@@ -209,8 +209,6 @@ public class Voxels {
             updateFPS();
             Display.update();
             Display.sync(60);
-            //System.out.println("x: "+xInChunk()+" y: "+yInChunk()+" z: "+zInChunk());
-            //System.out.println("ChunkX: " + getCurrentChunkXId() + " ChunkZ: " + getCurrentChunkZId());
         }
         Display.destroy();
         TinySound.shutdown();
@@ -393,6 +391,27 @@ public class Voxels {
         int y = (int) (camera.y()-PLAYER_HEIGHT);
         return y / Chunk.CHUNK_SIZE;
     }
+    
+    public final static int getCurrentChunkXId(float add) {
+        int x = (int) Math.floor(camera.x()-add);
+        if (x < 0) {
+            x -= Chunk.CHUNK_SIZE - 1;
+        }
+        return x / Chunk.CHUNK_SIZE;
+    }
+
+    public final static int getCurrentChunkZId(float add) {
+        int z = (int) Math.floor(camera.z()+add);
+        if (z < 0) {
+            z -= Chunk.CHUNK_SIZE - 1;
+        }
+        return z / Chunk.CHUNK_SIZE;
+    }
+
+    public final static int getCurrentChunkYId(float add) {
+        int y = (int) (camera.y()-PLAYER_HEIGHT+add);
+        return y / Chunk.CHUNK_SIZE;
+    }
 
     public final static int yInChunk() {
         int y = (int) (camera.y()-PLAYER_HEIGHT);
@@ -414,7 +433,28 @@ public class Voxels {
         }
         return z % Chunk.CHUNK_SIZE;
     }
+    
+    public final static int yInChunk(float add) {
+        int y = (int) (camera.y()-PLAYER_HEIGHT+add);
+        return y % Chunk.CHUNK_SIZE;
+    }
 
+    public final static int xInChunk(float add) {
+        int x = (int) Math.floor(camera.x()-add);
+        if (x <= 0) {
+            x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE;
+        }
+        return x % Chunk.CHUNK_SIZE;
+    }
+
+    public final static int zInChunk(float add) {
+        int z = (int) Math.floor(camera.z()+add);
+        if (z <= 0) {
+            z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE;
+        }
+        return z % Chunk.CHUNK_SIZE;
+    }
+    
     public final static int yInChunkPointer(Vector3f direction) {
         int y = (int) (direction.y);
         return y % Chunk.CHUNK_SIZE;

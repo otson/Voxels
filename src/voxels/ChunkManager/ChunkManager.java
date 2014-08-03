@@ -154,8 +154,9 @@ public class ChunkManager {
 
     public void castRay(Short type) {
         int maxDistance = 4;
+        float increment = 0.25f;
         Vector3f vector;
-        for (float f = 0f; f < maxDistance; f += 0.25f) {
+        for (float f = 0f; f < maxDistance; f += increment) {
             if (type == Type.DIRT) {
                 vector = Voxels.getDirectionVector(maxDistance - f);
             } else {
@@ -206,11 +207,11 @@ public class ChunkManager {
             cm.updateAllBlocks();
             cm.drawChunkVBO();
             cm.addDataToProcess();
-
         }
+        
         processBufferData();
-        maxThreads = 1;
-        threads = new ChunkMaker[maxThreads];
+//        maxThreads = 1;
+//        threads = new ChunkMaker[maxThreads];
     }
 
     private void processBufferData() {

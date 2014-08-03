@@ -59,59 +59,13 @@ public class ChunkManager {
         chunkLoader.setPriority(Thread.MIN_PRIORITY);
         updateThread = new ChunkMaker(map, this, dataToProcess);
     }
-
-    public Block getBlock(int x, int y, int z) {
-
-        return null;
-    }
-
+    
     public Chunk getChunk(int chunkX, int chunkY, int chunkZ) {
         if (map.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
             return toChunk(map.get(new Pair(chunkX, chunkY, chunkZ).hashCode()));
         } else {
             return null;
         }
-    }
-
-    public void editBlock(short type, int x, int y, int z, int chunkX, int chunkY, int chunkZ) {
-        //long start = System.nanoTime();
-        if (y < 0) {
-            chunkY--;
-            y = Chunk.CHUNK_SIZE + y;
-        }
-
-        Chunk chunk = getChunk(chunkX, chunkY, chunkZ);
-        if (chunk == null) {
-            System.out.println("Tried to modify a null chunk.");
-            return;
-        }
-
-        chunk.blocks[x][y][z].setType(type);
-        int oldVertexCount = chunk.getVertices();
-        System.out.print("Old vertices: " + chunk.getVertices());
-        updateThread.update(chunk);
-        System.out.println("New vertices: " + chunk.getVertices() + " Change: " + (chunk.getVertices() - oldVertexCount));
-
-        if (x == Chunk.CHUNK_SIZE - 1) {
-            updateThread.updateLeft(getChunk(chunkX + 1, chunkY, chunkZ));
-        }
-        if (x == 0) {
-            updateThread.updateRight(getChunk(chunkX - 1, chunkY, chunkZ));
-        }
-        if (y == Chunk.CHUNK_SIZE - 1) {
-            updateThread.updateLeft(getChunk(chunkX, chunkY + 1, chunkZ));
-        }
-        if (y == 0) {
-            updateThread.updateRight(getChunk(chunkX, chunkY - 1, chunkZ));
-        }
-        if (z == Chunk.CHUNK_SIZE - 1) {
-            updateThread.updateBack(getChunk(chunkX, chunkY, chunkZ + 1));
-        }
-        if (z == 0) {
-            updateThread.updateFront(getChunk(chunkX, chunkY, chunkZ - 1));
-        }
-        chunkLoader.refresh();
-
     }
 
     public Handle getHandle(int x, int y, int z) {
@@ -223,7 +177,6 @@ public class ChunkManager {
                 if (chunk.blocks[xInChunk][yInChunk][zInChunk].is(Type.AIR)) {
                     chunk.blocks[xInChunk][yInChunk][zInChunk].setType(type);
                     updateThread.update(chunk);
-                    processBufferData();
                     checkAdjacentChunks(chunk, xInChunk, yInChunk, zInChunk);
                     processBufferData();
                     chunkLoader.refresh();
@@ -233,7 +186,6 @@ public class ChunkManager {
                 if (chunk.blocks[xInChunk][yInChunk][zInChunk].is(Type.DIRT)) {
                     chunk.blocks[xInChunk][yInChunk][zInChunk].setType(type);
                     updateThread.update(chunk);
-                    processBufferData();
                     checkAdjacentChunks(chunk, xInChunk, yInChunk, zInChunk);
                     processBufferData();
                     chunkLoader.refresh();

@@ -18,10 +18,10 @@ public class Pair {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 43 * hash + this.x;
-        hash = 43 * hash + this.y;
-        hash = 43 * hash + this.z;
+        int hash = 193;
+        hash = 769 * hash + this.x;
+        hash = 769 * hash + this.y;
+        hash = 769 * hash + this.z;
         return hash;
     }
 

@@ -83,9 +83,9 @@ public class ChunkMaker extends Thread {
         if (!map.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
             chunk = new Chunk(chunkX, chunkY, chunkZ);
             map.put(new Pair(chunkX, chunkY, chunkZ).hashCode(), toByte(chunk));
-        }
-        else
+        } else {
             System.out.println("Already contains");
+        }
     }
 
     public void update(Chunk chunk) {
@@ -116,43 +116,43 @@ public class ChunkMaker extends Thread {
             dataToProcess.add(new Data(this.chunk.xId, this.chunk.yId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
         }
     }
-    
-    public void updateXYZ(int x, int y, int z){
-        Chunk chunk = chunkManager.getChunk(x/Chunk.CHUNK_SIZE, y/Chunk.CHUNK_SIZE, z/Chunk.CHUNK_SIZE);
-        int xIn = x%Chunk.CHUNK_SIZE;
-        int yIn = y%Chunk.CHUNK_SIZE;
-        int zIn = z%Chunk.CHUNK_SIZE;
-        
-        Chunk right = chunkManager.getChunk(chunk.xId+1,chunk.yId, chunk.zId);
-        Chunk left = chunkManager.getChunk(chunk.xId-1,chunk.yId, chunk.zId);
-        Chunk top = chunkManager.getChunk(chunk.xId,chunk.yId+1, chunk.zId);
-        Chunk bottom = chunkManager.getChunk(chunk.xId,chunk.yId-1, chunk.zId);
-        Chunk front = chunkManager.getChunk(chunk.xId,chunk.yId, chunk.zId+1);
-        Chunk back = chunkManager.getChunk(chunk.xId,chunk.yId, chunk.zId-1);
-        
-        if(xIn == 0 && yIn == 0 && zIn == 0){
+
+    public void updateXYZ(int x, int y, int z) {
+        Chunk chunk = chunkManager.getChunk(x / Chunk.CHUNK_SIZE, y / Chunk.CHUNK_SIZE, z / Chunk.CHUNK_SIZE);
+        int xIn = x % Chunk.CHUNK_SIZE;
+        int yIn = y % Chunk.CHUNK_SIZE;
+        int zIn = z % Chunk.CHUNK_SIZE;
+
+        Chunk right = chunkManager.getChunk(chunk.xId + 1, chunk.yId, chunk.zId);
+        Chunk left = chunkManager.getChunk(chunk.xId - 1, chunk.yId, chunk.zId);
+        Chunk top = chunkManager.getChunk(chunk.xId, chunk.yId + 1, chunk.zId);
+        Chunk bottom = chunkManager.getChunk(chunk.xId, chunk.yId - 1, chunk.zId);
+        Chunk front = chunkManager.getChunk(chunk.xId, chunk.yId, chunk.zId + 1);
+        Chunk back = chunkManager.getChunk(chunk.xId, chunk.yId, chunk.zId - 1);
+
+        if (xIn == 0 && yIn == 0 && zIn == 0) {
 
         }
-        if(xIn == Chunk.CHUNK_SIZE-1 && yIn == 0 && zIn == 0){
-            
+        if (xIn == Chunk.CHUNK_SIZE - 1 && yIn == 0 && zIn == 0) {
+
         }
-        if(xIn == 0 && yIn == Chunk.CHUNK_SIZE && zIn == 0){
-            
-        }  
-        if(xIn == Chunk.CHUNK_SIZE-1 && yIn == Chunk.CHUNK_SIZE-1 && zIn == 0){
-            
+        if (xIn == 0 && yIn == Chunk.CHUNK_SIZE && zIn == 0) {
+
         }
-        if(xIn == 0 && yIn == 0 && zIn == Chunk.CHUNK_SIZE-1){
-            
+        if (xIn == Chunk.CHUNK_SIZE - 1 && yIn == Chunk.CHUNK_SIZE - 1 && zIn == 0) {
+
         }
-        if(xIn == Chunk.CHUNK_SIZE-1 && yIn == 0 && zIn == Chunk.CHUNK_SIZE-1){
-            
+        if (xIn == 0 && yIn == 0 && zIn == Chunk.CHUNK_SIZE - 1) {
+
         }
-        if(xIn == 0 && yIn == Chunk.CHUNK_SIZE-1 && zIn == Chunk.CHUNK_SIZE-1){
-            
+        if (xIn == Chunk.CHUNK_SIZE - 1 && yIn == 0 && zIn == Chunk.CHUNK_SIZE - 1) {
+
         }
-        if(xIn == Chunk.CHUNK_SIZE-1 && yIn == Chunk.CHUNK_SIZE-1 && zIn == Chunk.CHUNK_SIZE-1){
-            
+        if (xIn == 0 && yIn == Chunk.CHUNK_SIZE - 1 && zIn == Chunk.CHUNK_SIZE - 1) {
+
+        }
+        if (xIn == Chunk.CHUNK_SIZE - 1 && yIn == Chunk.CHUNK_SIZE - 1 && zIn == Chunk.CHUNK_SIZE - 1) {
+
         }
 
     }
@@ -176,9 +176,9 @@ public class ChunkMaker extends Thread {
             dataToProcess.add(new Data(this.chunk.xId, this.chunk.yId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
         }
     }
-    
-    public void addDataToProcess(){
-       dataToProcess.add(new Data(chunkX, chunkY, chunkZ, chunk.getVertices(), vertexData, normalData, texData, false));
+
+    public void addDataToProcess() {
+        dataToProcess.add(new Data(chunkX, chunkY, chunkZ, chunk.getVertices(), vertexData, normalData, texData, false));
     }
 
     public void updateRight(Chunk chunk) {
@@ -195,6 +195,7 @@ public class ChunkMaker extends Thread {
             dataToProcess.add(new Data(this.chunk.xId, this.chunk.yId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
         }
     }
+
     public void updateTop(Chunk chunk) {
         if (chunk != null) {
             this.chunk = chunk;
@@ -209,6 +210,7 @@ public class ChunkMaker extends Thread {
             dataToProcess.add(new Data(this.chunk.xId, this.chunk.yId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
         }
     }
+
     public void updateBottom(Chunk chunk) {
         if (chunk != null) {
             this.chunk = chunk;
@@ -1383,33 +1385,47 @@ public class ChunkMaker extends Thread {
                         // set active sides to be rendered, rendered if the side is not touching dirt
                         if (chunk.blocks[x + 1][y][z].isOpaque()) {
                             chunk.blocks[x][y][z].setRight(true);
+                        } else {
+                            chunk.blocks[x][y][z].setRight(false);
                         }
                         if (chunk.blocks[x - 1][y][z].isOpaque()) {
                             chunk.blocks[x][y][z].setLeft(true);
 
+                        } else {
+                            chunk.blocks[x][y][z].setLeft(false);
                         }
                         if (chunk.blocks[x][y + 1][z].isOpaque()) {
                             chunk.blocks[x][y][z].setTop(true);
 
+                        } else {
+                            chunk.blocks[x][y][z].setTop(false);
                         }
                         if (chunk.blocks[x][y - 1][z].isOpaque()) {
                             chunk.blocks[x][y][z].setBottom(true);
 
+                        } else {
+                            chunk.blocks[x][y][z].setBottom(false);
                         }
                         if (chunk.blocks[x][y][z + 1].isOpaque()) {
                             chunk.blocks[x][y][z].setFront(true);
 
+                        } else {
+                            chunk.blocks[x][y][z].setFront(false);
                         }
                         if (chunk.blocks[x][y][z - 1].isOpaque()) {
                             chunk.blocks[x][y][z].setBack(true);
 
                         }
-                    }
-                    else if (chunk.blocks[x][y][z].is(Type.WATER))
+                        else
+                            chunk.blocks[x][y][z].setBack(false);
+                    } else if (chunk.blocks[x][y][z].is(Type.WATER)) {
                         // if water, if the block above it is not water, make it active
                         if (chunk.blocks[x][y + 1][z].is(Type.WATER) == false) {
                             chunk.blocks[x][y][z].setTop(true);
+                        } else {
+                            chunk.blocks[x][y][z].setTop(false);
                         }
+                    }
                 }
             }
         }
@@ -1417,104 +1433,176 @@ public class ChunkMaker extends Thread {
 
     private void updateTopLeftBack() {
         if (leftChunk != null) {
-            if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].isOpaque())
+            if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
                 chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setLeft(true);
+            } else {
+                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setLeft(false);
+            }
         }
 
         if (backChunk != null) {
-            if (backChunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+            if (backChunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                 chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setBack(true);
+            } else {
+                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setBack(false);
+            }
         }
 
         if (topChunk != null) {
-            if (topChunk.blocks[0][0][0].isOpaque())
+            if (topChunk.blocks[0][0][0].isOpaque()) {
                 chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setTop(true);
+            } else {
+                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setTop(false);
+            }
         }
 
-        if (chunk.blocks[1][Chunk.CHUNK_SIZE - 1][0].isOpaque())
+        if (chunk.blocks[1][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
             chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setRight(true);
+        } else {
+            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setRight(false);
+        }
 
-        if (chunk.blocks[0][Chunk.CHUNK_SIZE - 2][0].isOpaque())
+        if (chunk.blocks[0][Chunk.CHUNK_SIZE - 2][0].isOpaque()) {
             chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setBottom(true);
+        } else {
+            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setBottom(false);
+        }
 
-        if (chunk.blocks[0][Chunk.CHUNK_SIZE - 1][1].isOpaque())
+        if (chunk.blocks[0][Chunk.CHUNK_SIZE - 1][1].isOpaque()) {
             chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setFront(true);
+        } else {
+            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setFront(false);
+        }
 
     }
 
     private void updateTopLeftFront() {
         if (leftChunk != null) {
-            if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+            if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                 chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setLeft(true);
+            } else {
+                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setLeft(false);
+            }
         }
         if (frontChunk != null) {
-            if (frontChunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].isOpaque())
+            if (frontChunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
                 chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setFront(true);
+            } else {
+                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setFront(false);
+            }
         }
 
         if (topChunk != null) {
-            if (topChunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+            if (topChunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                 chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setTop(true);
+            } else {
+                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setTop(false);
+            }
         }
 
-        if (chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2].isOpaque())
+        if (chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2].isOpaque()) {
             chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBack(true);
+        } else {
+            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBack(false);
+        }
 
-        if (chunk.blocks[0][Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1].isOpaque())
+        if (chunk.blocks[0][Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1].isOpaque()) {
             chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBottom(true);
+        } else {
+            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBottom(false);
+        }
 
-        if (chunk.blocks[1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+        if (chunk.blocks[1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
             chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setRight(true);
+        } else {
+            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setRight(false);
+        }
     }
 
     private void updateTopRightBack() {
         if (backChunk != null) {
-            if (backChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+            if (backChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setBack(true);
+            } else {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setBack(false);
+            }
         }
         if (rightChunk != null) {
-            if (rightChunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].isOpaque())
+            if (rightChunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setRight(true);
+            } else {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setRight(false);
+            }
         }
 
         if (topChunk != null) {
-            if (topChunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].isOpaque())
+            if (topChunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].isOpaque()) {
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setTop(true);
+            } else {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setTop(false);
+            }
         }
 
-        if (chunk.blocks[Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1][0].isOpaque())
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
             chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setLeft(true);
+        } else {
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setLeft(false);
+        }
 
-        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2][0].isOpaque())
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2][0].isOpaque()) {
             chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setBottom(true);
+        } else {
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setBottom(false);
+        }
 
-        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][1].isOpaque())
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][1].isOpaque()) {
             chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setFront(true);
+        } else {
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setFront(false);
+        }
     }
 
     private void updateTopRightFront() {
         if (rightChunk != null) {
-            if (rightChunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+            if (rightChunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setRight(true);
+            } else {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setRight(false);
+            }
         }
         if (frontChunk != null) {
-            if (frontChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].isOpaque())
+            if (frontChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setFront(true);
+            } else {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setFront(false);
+            }
         }
 
         if (topChunk != null) {
-            if (topChunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+            if (topChunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setTop(true);
+            } else {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setTop(false);
+            }
         }
 
-        if (chunk.blocks[Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
             chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setLeft(true);
+        } else {
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setLeft(false);
+        }
 
-        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1].isOpaque())
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1].isOpaque()) {
             chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBottom(true);
+        } else {
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBottom(false);
+        }
 
-        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2].isOpaque())
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2].isOpaque()) {
             chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBack(true);
+        } else {
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBack(false);
+        }
     }
 
     private void updateTopLeft() {
@@ -1522,26 +1610,44 @@ public class ChunkMaker extends Thread {
 
         for (int z = 1; z < Chunk.CHUNK_SIZE - 1; z++) {
             if (isValid) {
-                if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].isOpaque())
+                if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].isOpaque()) {
                     chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setLeft(true);
+                } else {
+                    chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setLeft(false);
+                }
             }
 
             if (topChunk != null) {
-                if (topChunk.blocks[0][0][z].isOpaque())
+                if (topChunk.blocks[0][0][z].isOpaque()) {
                     chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setTop(true);
+                } else {
+                    chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setTop(false);
+                }
             }
 
-            if (chunk.blocks[1][Chunk.CHUNK_SIZE - 1][z].isOpaque())
+            if (chunk.blocks[1][Chunk.CHUNK_SIZE - 1][z].isOpaque()) {
                 chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setRight(true);
+            } else {
+                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setRight(false);
+            }
 
-            if (chunk.blocks[0][Chunk.CHUNK_SIZE - 2][z].isOpaque())
+            if (chunk.blocks[0][Chunk.CHUNK_SIZE - 2][z].isOpaque()) {
                 chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setBottom(true);
+            } else {
+                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setBottom(false);
+            }
 
-            if (chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z + 1].isOpaque())
+            if (chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z + 1].isOpaque()) {
                 chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setFront(true);
+            } else {
+                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setFront(false);
+            }
 
-            if (chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z - 1].isOpaque())
+            if (chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z - 1].isOpaque()) {
                 chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setBack(true);
+            } else {
+                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setBack(false);
+            }
         }
     }
 
@@ -1550,26 +1656,44 @@ public class ChunkMaker extends Thread {
 
         for (int z = 1; z < Chunk.CHUNK_SIZE - 1; z++) {
             if (isValid) {
-                if (rightChunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].isOpaque())
+                if (rightChunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].isOpaque()) {
                     chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setRight(true);
+                } else {
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setRight(false);
+                }
             }
 
             if (topChunk != null) {
-                if (topChunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].isOpaque())
+                if (topChunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].isOpaque()) {
                     chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setTop(true);
+                } else {
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setTop(false);
+                }
             }
 
-            if (chunk.blocks[Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1][z].isOpaque())
+            if (chunk.blocks[Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1][z].isOpaque()) {
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setLeft(true);
+            } else {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setLeft(false);
+            }
 
-            if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2][z].isOpaque())
+            if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2][z].isOpaque()) {
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setBottom(true);
+            } else {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setBottom(false);
+            }
 
-            if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z + 1].isOpaque())
+            if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z + 1].isOpaque()) {
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setFront(true);
+            } else {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setFront(false);
+            }
 
-            if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z - 1].isOpaque())
+            if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z - 1].isOpaque()) {
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setBack(true);
+            } else {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setBack(false);
+            }
         }
     }
 
@@ -1578,26 +1702,44 @@ public class ChunkMaker extends Thread {
 
         for (int x = 1; x < Chunk.CHUNK_SIZE - 1; x++) {
             if (isValid) {
-                if (frontChunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].isOpaque())
+                if (frontChunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
                     chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setFront(true);
+                } else {
+                    chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setFront(false);
+                }
             }
 
             if (topChunk != null) {
-                if (topChunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+                if (topChunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                     chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setTop(true);
+                } else {
+                    chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setTop(false);
+                }
             }
 
-            if (chunk.blocks[x + 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+            if (chunk.blocks[x + 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                 chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setRight(true);
+            } else {
+                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setRight(false);
+            }
 
-            if (chunk.blocks[x - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+            if (chunk.blocks[x - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                 chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setLeft(true);
+            } else {
+                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setLeft(false);
+            }
 
-            if (chunk.blocks[x][Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1].isOpaque())
+            if (chunk.blocks[x][Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                 chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBottom(true);
+            } else {
+                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBottom(false);
+            }
 
-            if (chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2].isOpaque())
+            if (chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2].isOpaque()) {
                 chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBack(true);
+            } else {
+                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBack(false);
+            }
         }
     }
 
@@ -1606,26 +1748,44 @@ public class ChunkMaker extends Thread {
 
         for (int x = 1; x < Chunk.CHUNK_SIZE - 1; x++) {
             if (isValid) {
-                if (backChunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                if (backChunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                     chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setBack(true);
+                } else {
+                    chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setBack(false);
+                }
             }
 
             if (topChunk != null) {
-                if (topChunk.blocks[x][0][0].isOpaque())
+                if (topChunk.blocks[x][0][0].isOpaque()) {
                     chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setTop(true);
+                } else {
+                    chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setTop(false);
+                }
             }
 
-            if (chunk.blocks[x + 1][Chunk.CHUNK_SIZE - 1][0].isOpaque())
+            if (chunk.blocks[x + 1][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
                 chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setRight(true);
+            } else {
+                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setRight(false);
+            }
 
-            if (chunk.blocks[x - 1][Chunk.CHUNK_SIZE - 1][0].isOpaque())
+            if (chunk.blocks[x - 1][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
                 chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setLeft(true);
+            } else {
+                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setLeft(false);
+            }
 
-            if (chunk.blocks[x][Chunk.CHUNK_SIZE - 2][0].isOpaque())
+            if (chunk.blocks[x][Chunk.CHUNK_SIZE - 2][0].isOpaque()) {
                 chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setBottom(true);
+            } else {
+                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setBottom(false);
+            }
 
-            if (chunk.blocks[x][Chunk.CHUNK_SIZE - 1][1].isOpaque())
+            if (chunk.blocks[x][Chunk.CHUNK_SIZE - 1][1].isOpaque()) {
                 chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setFront(true);
+            } else {
+                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setFront(false);
+            }
         }
 
     }
@@ -1636,24 +1796,42 @@ public class ChunkMaker extends Thread {
                 if (chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].is(Type.AIR) == false) {
 
                     if (topChunk != null) {
-                        if (topChunk.blocks[x][0][z].isOpaque())
+                        if (topChunk.blocks[x][0][z].isOpaque()) {
                             chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setTop(true);
+                        } else {
+                            chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setTop(false);
+                        }
                     }
 
-                    if (chunk.blocks[x + 1][Chunk.CHUNK_SIZE - 1][z].isOpaque())
+                    if (chunk.blocks[x + 1][Chunk.CHUNK_SIZE - 1][z].isOpaque()) {
                         chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setRight(true);
+                    } else {
+                        chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setRight(false);
+                    }
 
-                    if (chunk.blocks[x - 1][Chunk.CHUNK_SIZE - 1][z].isOpaque())
+                    if (chunk.blocks[x - 1][Chunk.CHUNK_SIZE - 1][z].isOpaque()) {
                         chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setLeft(true);
+                    } else {
+                        chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setLeft(false);
+                    }
 
-                    if (chunk.blocks[x][Chunk.CHUNK_SIZE - 2][z].isOpaque())
+                    if (chunk.blocks[x][Chunk.CHUNK_SIZE - 2][z].isOpaque()) {
                         chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setBottom(true);
+                    } else {
+                        chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setBottom(false);
+                    }
 
-                    if (chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z + 1].isOpaque())
+                    if (chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z + 1].isOpaque()) {
                         chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setFront(true);
+                    } else {
+                        chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setFront(false);
+                    }
 
-                    if (chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z - 1].isOpaque())
+                    if (chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z - 1].isOpaque()) {
                         chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setBack(true);
+                    } else {
+                        chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setBack(false);
+                    }
                 }
             }
 
@@ -1661,128 +1839,224 @@ public class ChunkMaker extends Thread {
     }
 
     private void updateBottomLeftBack() {
-        if (leftChunk != null)
-            if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].isOpaque())
+        if (leftChunk != null) {
+            if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].isOpaque()) {
                 chunk.blocks[0][0][0].setLeft(true);
+            } else {
+                chunk.blocks[0][0][0].setLeft(false);
+            }
+        }
 
-        if (backChunk != null)
-            if (backChunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+        if (backChunk != null) {
+            if (backChunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                 chunk.blocks[0][0][0].setBack(true);
+            } else {
+                chunk.blocks[0][0][0].setBack(false);
+            }
+        }
 
-        if (bottomChunk != null)
-            if (bottomChunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].isOpaque())
+        if (bottomChunk != null) {
+            if (bottomChunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
                 chunk.blocks[0][0][0].setBottom(true);
+            } else {
+                chunk.blocks[0][0][0].setBottom(false);
+            }
+        }
 
-        if (chunk.blocks[1][0][0].isOpaque())
+        if (chunk.blocks[1][0][0].isOpaque()) {
             chunk.blocks[0][0][0].setRight(true);
+        } else {
+            chunk.blocks[0][0][0].setRight(false);
+        }
 
-        if (chunk.blocks[0][1][0].isOpaque())
+        if (chunk.blocks[0][1][0].isOpaque()) {
             chunk.blocks[0][0][0].setTop(true);
+        } else {
+            chunk.blocks[0][0][0].setTop(false);
+        }
 
-        if (chunk.blocks[0][0][1].isOpaque())
+        if (chunk.blocks[0][0][1].isOpaque()) {
             chunk.blocks[0][0][0].setFront(true);
+        } else {
+            chunk.blocks[0][0][0].setFront(false);
+        }
     }
 
     private void updateBottomLeftFront() {
         if (leftChunk != null) {
-            if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+            if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                 chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setLeft(true);
+            } else {
+                chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setLeft(false);
+            }
         }
 
         if (frontChunk != null) {
-            if (frontChunk.blocks[0][0][0].isOpaque())
+            if (frontChunk.blocks[0][0][0].isOpaque()) {
                 chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setFront(true);
+            } else {
+                chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setFront(false);
+            }
         }
 
-        if (bottomChunk != null)
-            if (bottomChunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+        if (bottomChunk != null) {
+            if (bottomChunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                 chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setBottom(true);
+            } else {
+                chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setBottom(false);
+            }
+        }
 
-        if (chunk.blocks[1][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+        if (chunk.blocks[1][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
             chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setRight(true);
+        } else {
+            chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setRight(false);
+        }
 
-        if (chunk.blocks[0][1][Chunk.CHUNK_SIZE - 1].isOpaque())
+        if (chunk.blocks[0][1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
             chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setTop(true);
+        } else {
+            chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setTop(false);
+        }
 
-        if (chunk.blocks[0][0][Chunk.CHUNK_SIZE - 2].isOpaque())
+        if (chunk.blocks[0][0][Chunk.CHUNK_SIZE - 2].isOpaque()) {
             chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setBack(true);
+        } else {
+            chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setBack(false);
+        }
     }
 
     private void updateBottomRightBack() {
-        if (rightChunk != null)
-            if (rightChunk.blocks[0][0][0].isOpaque())
+        if (rightChunk != null) {
+            if (rightChunk.blocks[0][0][0].isOpaque()) {
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setRight(true);
+            } else {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setRight(false);
+            }
+        }
 
-        if (backChunk != null)
-            if (backChunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+        if (backChunk != null) {
+            if (backChunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setBack(true);
+            } else {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setBack(false);
+            }
+        }
 
-        if (bottomChunk != null)
-            if (bottomChunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+        if (bottomChunk != null) {
+            if (bottomChunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setBottom(true);
+            } else {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setBottom(false);
+            }
+        }
 
-        if (chunk.blocks[Chunk.CHUNK_SIZE - 2][0][0].isOpaque())
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 2][0][0].isOpaque()) {
             chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setLeft(true);
+        } else {
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setLeft(false);
+        }
 
-        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][1][0].isOpaque())
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][1][0].isOpaque()) {
             chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setTop(true);
+        } else {
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setTop(false);
+        }
 
-        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][0][1].isOpaque())
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][0][1].isOpaque()) {
             chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setFront(true);
+        } else {
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setFront(false);
+        }
     }
 
     private void updateBottomRightFront() {
 
         if (rightChunk != null) {
-            if (rightChunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+            if (rightChunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setRight(true);
+            } else {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setRight(false);
+            }
         }
 
         if (frontChunk != null) {
-            if (frontChunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].isOpaque())
+            if (frontChunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].isOpaque()) {
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setFront(true);
+            } else {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setFront(false);
+            }
         }
 
-        if (bottomChunk != null)
-            if (bottomChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].isOpaque())
+        if (bottomChunk != null) {
+            if (bottomChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setBottom(true);
+            } else {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setBottom(false);
+            }
+        }
 
-        if (chunk.blocks[Chunk.CHUNK_SIZE - 2][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 2][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
             chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setLeft(true);
+        } else {
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setLeft(false);
+        }
 
-        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][1][Chunk.CHUNK_SIZE - 1].isOpaque())
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
             chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setTop(true);
+        } else {
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setTop(false);
+        }
 
-        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 2].isOpaque())
+        if (chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 2].isOpaque()) {
             chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setBack(true);
+        } else {
+            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setBack(false);
+        }
     }
 
     private void updateBottomLeft() {
         boolean isValid = leftChunk != null;
 
         for (int z = 1; z < Chunk.CHUNK_SIZE - 1; z++) {
-            if (isValid)
-                if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].isOpaque())
+            if (isValid) {
+                if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].isOpaque()) {
                     chunk.blocks[0][0][z].setLeft(true);
+                } else {
+                    chunk.blocks[0][0][z].setLeft(false);
+                }
+            }
 
-            if (bottomChunk != null)
-                if (bottomChunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].isOpaque())
+            if (bottomChunk != null) {
+                if (bottomChunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].isOpaque()) {
                     chunk.blocks[0][0][z].setBottom(true);
+                } else {
+                    chunk.blocks[0][0][z].setBottom(false);
+                }
+            }
 
             if (chunk.blocks[1][0][z].isOpaque()) {
                 chunk.blocks[0][0][z].setRight(true);
+            } else {
+                chunk.blocks[0][0][z].setRight(false);
             }
 
             if (chunk.blocks[0][1][z].isOpaque()) {
                 chunk.blocks[0][0][z].setTop(true);
+            } else {
+                chunk.blocks[0][0][z].setTop(false);
             }
 
             if (chunk.blocks[0][0][z + 1].isOpaque()) {
                 chunk.blocks[0][0][z].setFront(true);
+            } else {
+                chunk.blocks[0][0][z].setFront(false);
             }
 
             if (chunk.blocks[0][0][z - 1].isOpaque()) {
                 chunk.blocks[0][0][z].setBack(true);
+            } else {
+                chunk.blocks[0][0][z].setBack(false);
             }
         }
     }
@@ -1792,28 +2066,44 @@ public class ChunkMaker extends Thread {
         boolean isValid = rightChunk != null;
 
         for (int z = 1; z < Chunk.CHUNK_SIZE - 1; z++) {
-            if (isValid)
-                if (rightChunk.blocks[0][0][z].isOpaque())
+            if (isValid) {
+                if (rightChunk.blocks[0][0][z].isOpaque()) {
                     chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setRight(true);
+                } else {
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setRight(false);
+                }
+            }
 
-            if (bottomChunk != null)
-                if (bottomChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].isOpaque())
+            if (bottomChunk != null) {
+                if (bottomChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].isOpaque()) {
                     chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setBottom(true);
+                } else {
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setBottom(false);
+                }
+            }
 
             if (chunk.blocks[Chunk.CHUNK_SIZE - 2][0][z].isOpaque()) {
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setLeft(true);
+            } else {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setLeft(false);
             }
 
             if (chunk.blocks[Chunk.CHUNK_SIZE - 1][1][z].isOpaque()) {
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setTop(true);
+            } else {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setTop(false);
             }
 
             if (chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z + 1].isOpaque()) {
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setFront(true);
+            } else {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setFront(false);
             }
 
             if (chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z - 1].isOpaque()) {
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setBack(true);
+            } else {
+                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setBack(false);
             }
         }
     }
@@ -1822,25 +2112,45 @@ public class ChunkMaker extends Thread {
         boolean isValid = frontChunk != null;
 
         for (int x = 1; x < Chunk.CHUNK_SIZE - 1; x++) {
-            if (isValid)
-                if (frontChunk.blocks[x][0][0].isOpaque())
+            if (isValid) {
+                if (frontChunk.blocks[x][0][0].isOpaque()) {
                     chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setFront(true);
+                } else {
+                    chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setFront(false);
+                }
+            }
 
-            if (bottomChunk != null)
-                if (bottomChunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+            if (bottomChunk != null) {
+                if (bottomChunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                     chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setBottom(true);
+                } else {
+                    chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setBottom(false);
+                }
+            }
 
-            if (chunk.blocks[x + 1][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+            if (chunk.blocks[x + 1][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                 chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setRight(true);
+            } else {
+                chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setRight(false);
+            }
 
-            if (chunk.blocks[x - 1][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+            if (chunk.blocks[x - 1][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                 chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setLeft(true);
+            } else {
+                chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setLeft(false);
+            }
 
-            if (chunk.blocks[x][1][Chunk.CHUNK_SIZE - 1].isOpaque())
+            if (chunk.blocks[x][1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                 chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setTop(true);
+            } else {
+                chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setTop(false);
+            }
 
-            if (chunk.blocks[x][0][Chunk.CHUNK_SIZE - 2].isOpaque())
+            if (chunk.blocks[x][0][Chunk.CHUNK_SIZE - 2].isOpaque()) {
                 chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setBack(true);
+            } else {
+                chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setBack(false);
+            }
         }
     }
 
@@ -1848,25 +2158,45 @@ public class ChunkMaker extends Thread {
         boolean isValid = backChunk != null;
 
         for (int x = 1; x < Chunk.CHUNK_SIZE - 1; x++) {
-            if (isValid)
-                if (backChunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].isOpaque())
+            if (isValid) {
+                if (backChunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                     chunk.blocks[x][0][0].setBack(true);
+                } else {
+                    chunk.blocks[x][0][0].setBack(false);
+                }
+            }
 
-            if (bottomChunk != null)
-                if (bottomChunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].isOpaque())
+            if (bottomChunk != null) {
+                if (bottomChunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
                     chunk.blocks[x][0][0].setBottom(true);
+                } else {
+                    chunk.blocks[x][0][0].setBottom(false);
+                }
+            }
 
-            if (chunk.blocks[x + 1][0][0].isOpaque())
+            if (chunk.blocks[x + 1][0][0].isOpaque()) {
                 chunk.blocks[x][0][0].setRight(true);
+            } else {
+                chunk.blocks[x][0][0].setRight(false);
+            }
 
-            if (chunk.blocks[x - 1][0][0].isOpaque())
+            if (chunk.blocks[x - 1][0][0].isOpaque()) {
                 chunk.blocks[x][0][0].setLeft(true);
+            } else {
+                chunk.blocks[x][0][0].setLeft(false);
+            }
 
-            if (chunk.blocks[x][1][0].isOpaque())
+            if (chunk.blocks[x][1][0].isOpaque()) {
                 chunk.blocks[x][0][0].setTop(true);
+            } else {
+                chunk.blocks[x][0][0].setTop(false);
+            }
 
-            if (chunk.blocks[x][0][1].isOpaque())
+            if (chunk.blocks[x][0][1].isOpaque()) {
                 chunk.blocks[x][0][0].setFront(true);
+            } else {
+                chunk.blocks[x][0][0].setFront(false);
+            }
         }
     }
 
@@ -1874,24 +2204,43 @@ public class ChunkMaker extends Thread {
         for (int x = 1; x < Chunk.CHUNK_SIZE - 1; x++) {
             for (int z = 1; z < Chunk.CHUNK_SIZE - 1; z++) {
                 if (chunk.blocks[x][0][z].is(Type.AIR) == false) {
-                    if (bottomChunk != null)
-                        if (bottomChunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].isOpaque())
+                    if (bottomChunk != null) {
+                        if (bottomChunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].isOpaque()) {
                             chunk.blocks[x][0][z].setBottom(true);
+                        } else {
+                            chunk.blocks[x][0][z].setBottom(false);
+                        }
+                    }
 
-                    if (chunk.blocks[x + 1][0][z].isOpaque())
+                    if (chunk.blocks[x + 1][0][z].isOpaque()) {
                         chunk.blocks[x][0][z].setRight(true);
+                    } else {
+                        chunk.blocks[x][0][z].setRight(false);
+                    }
 
-                    if (chunk.blocks[x - 1][0][z].isOpaque())
+                    if (chunk.blocks[x - 1][0][z].isOpaque()) {
                         chunk.blocks[x][0][z].setLeft(true);
+                    } else {
+                        chunk.blocks[x][0][z].setLeft(false);
+                    }
 
-                    if (chunk.blocks[x][1][z].isOpaque())
+                    if (chunk.blocks[x][1][z].isOpaque()) {
                         chunk.blocks[x][0][z].setTop(true);
+                    } else {
+                        chunk.blocks[x][0][z].setTop(false);
+                    }
 
-                    if (chunk.blocks[x][0][z + 1].isOpaque())
+                    if (chunk.blocks[x][0][z + 1].isOpaque()) {
                         chunk.blocks[x][0][z].setFront(true);
+                    } else {
+                        chunk.blocks[x][0][z].setFront(false);
+                    }
 
-                    if (chunk.blocks[x][0][z - 1].isOpaque())
+                    if (chunk.blocks[x][0][z - 1].isOpaque()) {
                         chunk.blocks[x][0][z].setBack(true);
+                    } else {
+                        chunk.blocks[x][0][z].setBack(false);
+                    }
                 }
             }
         }
@@ -1903,24 +2252,43 @@ public class ChunkMaker extends Thread {
         for (int z = 1; z < Chunk.CHUNK_SIZE - 1; z++) {
             for (int y = 1; y < Chunk.CHUNK_SIZE - 1; y++) {
                 if (chunk.blocks[0][y][z].is(Type.AIR) == false) {
-                    if (isValid)
-                        if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].isOpaque())
+                    if (isValid) {
+                        if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].isOpaque()) {
                             chunk.blocks[0][y][z].setLeft(true);
+                        } else {
+                            chunk.blocks[0][y][z].setLeft(false);
+                        }
+                    }
 
-                    if (chunk.blocks[0][y + 1][z].isOpaque())
+                    if (chunk.blocks[0][y + 1][z].isOpaque()) {
                         chunk.blocks[0][y][z].setTop(true);
+                    } else {
+                        chunk.blocks[0][y][z].setTop(false);
+                    }
 
-                    if (chunk.blocks[0][y - 1][z].isOpaque())
+                    if (chunk.blocks[0][y - 1][z].isOpaque()) {
                         chunk.blocks[0][y][z].setBottom(true);
+                    } else {
+                        chunk.blocks[0][y][z].setBottom(false);
+                    }
 
-                    if (chunk.blocks[0][y][z + 1].isOpaque())
+                    if (chunk.blocks[0][y][z + 1].isOpaque()) {
                         chunk.blocks[0][y][z].setFront(true);
+                    } else {
+                        chunk.blocks[0][y][z].setFront(false);
+                    }
 
-                    if (chunk.blocks[0][y][z - 1].isOpaque())
+                    if (chunk.blocks[0][y][z - 1].isOpaque()) {
                         chunk.blocks[0][y][z].setBack(true);
+                    } else {
+                        chunk.blocks[0][y][z].setBack(false);
+                    }
 
-                    if (chunk.blocks[1][y][z].isOpaque())
+                    if (chunk.blocks[1][y][z].isOpaque()) {
                         chunk.blocks[0][y][z].setRight(true);
+                    } else {
+                        chunk.blocks[0][y][z].setRight(false);
+                    }
                 }
             }
         }
@@ -1932,25 +2300,43 @@ public class ChunkMaker extends Thread {
         for (int z = 1; z < Chunk.CHUNK_SIZE - 1; z++) {
             for (int y = 1; y < Chunk.CHUNK_SIZE - 1; y++) {
                 if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].is(Type.AIR) == false) {
-                    if (isValid)
+                    if (isValid) {
                         if (rightChunk.blocks[0][y][z].isOpaque()) {
                             chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setRight(true);
+                        } else {
+                            chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setRight(false);
                         }
+                    }
 
-                    if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y + 1][z].isOpaque())
+                    if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y + 1][z].isOpaque()) {
                         chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setTop(true);
+                    } else {
+                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setTop(false);
+                    }
 
-                    if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y - 1][z].isOpaque())
+                    if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y - 1][z].isOpaque()) {
                         chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setBottom(true);
+                    } else {
+                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setBottom(false);
+                    }
 
-                    if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z + 1].isOpaque())
+                    if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z + 1].isOpaque()) {
                         chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setFront(true);
+                    } else {
+                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setFront(false);
+                    }
 
-                    if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z - 1].isOpaque())
+                    if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z - 1].isOpaque()) {
                         chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setBack(true);
+                    } else {
+                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setBack(false);
+                    }
 
-                    if (chunk.blocks[Chunk.CHUNK_SIZE - 2][y][z].isOpaque())
+                    if (chunk.blocks[Chunk.CHUNK_SIZE - 2][y][z].isOpaque()) {
                         chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setLeft(true);
+                    } else {
+                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setLeft(false);
+                    }
                 }
             }
         }
@@ -1963,24 +2349,42 @@ public class ChunkMaker extends Thread {
             for (int y = 1; y < Chunk.CHUNK_SIZE - 1; y++) {
                 if (chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].is(Type.AIR) == false) {
                     if (isValid) {
-                        if (frontChunk.blocks[x][y][0].isOpaque())
+                        if (frontChunk.blocks[x][y][0].isOpaque()) {
                             chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setFront(true);
+                        } else {
+                            chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setFront(false);
+                        }
                     }
 
-                    if (chunk.blocks[x + 1][y][Chunk.CHUNK_SIZE - 1].isOpaque())
+                    if (chunk.blocks[x + 1][y][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                         chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setRight(true);
+                    } else {
+                        chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setRight(false);
+                    }
 
-                    if (chunk.blocks[x - 1][y][Chunk.CHUNK_SIZE - 1].isOpaque())
+                    if (chunk.blocks[x - 1][y][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                         chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setLeft(true);
+                    } else {
+                        chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setLeft(false);
+                    }
 
-                    if (chunk.blocks[x][y + 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                    if (chunk.blocks[x][y + 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                         chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setTop(true);
+                    } else {
+                        chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setTop(false);
+                    }
 
-                    if (chunk.blocks[x][y - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                    if (chunk.blocks[x][y - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                         chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setBottom(true);
+                    } else {
+                        chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setBottom(false);
+                    }
 
-                    if (chunk.blocks[x][y][Chunk.CHUNK_SIZE - 2].isOpaque())
+                    if (chunk.blocks[x][y][Chunk.CHUNK_SIZE - 2].isOpaque()) {
                         chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setBack(true);
+                    } else {
+                        chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setBack(false);
+                    }
                 }
             }
         }
@@ -1992,24 +2396,43 @@ public class ChunkMaker extends Thread {
         for (int x = 1; x < Chunk.CHUNK_SIZE - 1; x++) {
             for (int y = 1; y < Chunk.CHUNK_SIZE - 1; y++) {
                 if (chunk.blocks[x][y][0].is(Type.AIR) == false) {
-                    if (isValid)
-                        if (backChunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].isOpaque())
+                    if (isValid) {
+                        if (backChunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                             chunk.blocks[x][y][0].setBack(true);
+                        } else {
+                            chunk.blocks[x][y][0].setBack(false);
+                        }
+                    }
 
-                    if (chunk.blocks[x + 1][y][0].isOpaque())
+                    if (chunk.blocks[x + 1][y][0].isOpaque()) {
                         chunk.blocks[x][y][0].setRight(true);
+                    } else {
+                        chunk.blocks[x][y][0].setRight(false);
+                    }
 
-                    if (chunk.blocks[x - 1][y][0].isOpaque())
+                    if (chunk.blocks[x - 1][y][0].isOpaque()) {
                         chunk.blocks[x][y][0].setLeft(true);
+                    } else {
+                        chunk.blocks[x][y][0].setLeft(false);
+                    }
 
-                    if (chunk.blocks[x][y + 1][0].isOpaque())
+                    if (chunk.blocks[x][y + 1][0].isOpaque()) {
                         chunk.blocks[x][y][0].setTop(true);
+                    } else {
+                        chunk.blocks[x][y][0].setTop(false);
+                    }
 
-                    if (chunk.blocks[x][y - 1][0].isOpaque())
+                    if (chunk.blocks[x][y - 1][0].isOpaque()) {
                         chunk.blocks[x][y][0].setBottom(true);
+                    } else {
+                        chunk.blocks[x][y][0].setBottom(false);
+                    }
 
-                    if (chunk.blocks[x][y][1].isOpaque())
+                    if (chunk.blocks[x][y][1].isOpaque()) {
                         chunk.blocks[x][y][0].setFront(true);
+                    } else {
+                        chunk.blocks[x][y][0].setFront(false);
+                    }
                 }
             }
         }
@@ -2017,22 +2440,30 @@ public class ChunkMaker extends Thread {
 
     private int calculateVertexCount() {
         int vertexCount = 0;
-        for (int x = 0; x < Chunk.CHUNK_SIZE; x++)
-            for (int z = 0; z < Chunk.CHUNK_SIZE; z++)
+        for (int x = 0; x < Chunk.CHUNK_SIZE; x++) {
+            for (int z = 0; z < Chunk.CHUNK_SIZE; z++) {
                 for (int y = 0; y < Chunk.CHUNK_SIZE; y++) {
-                    if (chunk.blocks[x][y][z].isBack())
+                    if (chunk.blocks[x][y][z].isBack()) {
                         vertexCount += 6;
-                    if (chunk.blocks[x][y][z].isBottom())
+                    }
+                    if (chunk.blocks[x][y][z].isBottom()) {
                         vertexCount += 6;
-                    if (chunk.blocks[x][y][z].isFront())
+                    }
+                    if (chunk.blocks[x][y][z].isFront()) {
                         vertexCount += 6;
-                    if (chunk.blocks[x][y][z].isLeft())
+                    }
+                    if (chunk.blocks[x][y][z].isLeft()) {
                         vertexCount += 6;
-                    if (chunk.blocks[x][y][z].isRight())
+                    }
+                    if (chunk.blocks[x][y][z].isRight()) {
                         vertexCount += 6;
-                    if (chunk.blocks[x][y][z].isTop())
+                    }
+                    if (chunk.blocks[x][y][z].isTop()) {
                         vertexCount += 6;
+                    }
                 }
+            }
+        }
 
         return vertexCount;
     }
@@ -2043,25 +2474,45 @@ public class ChunkMaker extends Thread {
 
         for (int y = 1; y < Chunk.CHUNK_SIZE - 1; y++) {
             if (chunk.blocks[0][y][0].is(Type.AIR) == false) {
-                if (backIsValid)
-                    if (backChunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].isOpaque())
+                if (backIsValid) {
+                    if (backChunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                         chunk.blocks[0][y][0].setBack(true);
+                    }
+                    else
+                        chunk.blocks[0][y][0].setBack(false);
+                }
 
-                if (leftIsValid)
-                    if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].isOpaque())
+                if (leftIsValid) {
+                    if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].isOpaque()) {
                         chunk.blocks[0][y][0].setLeft(true);
+                    }
+                    else
+                        chunk.blocks[0][y][0].setLeft(false);
+                }
 
-                if (chunk.blocks[1][y][0].isOpaque())
+                if (chunk.blocks[1][y][0].isOpaque()) {
                     chunk.blocks[0][y][0].setRight(true);
+                }
+                else
+                    chunk.blocks[0][y][0].setRight(false);
 
-                if (chunk.blocks[0][y + 1][0].isOpaque())
+                if (chunk.blocks[0][y + 1][0].isOpaque()) {
                     chunk.blocks[0][y][0].setTop(true);
+                }
+                else
+                    chunk.blocks[0][y][0].setTop(false);
 
-                if (chunk.blocks[0][y - 1][0].isOpaque())
+                if (chunk.blocks[0][y - 1][0].isOpaque()) {
                     chunk.blocks[0][y][0].setBottom(true);
+                }
+                else
+                    chunk.blocks[0][y][0].setBottom(false);
 
-                if (chunk.blocks[0][y][1].isOpaque())
+                if (chunk.blocks[0][y][1].isOpaque()) {
                     chunk.blocks[0][y][0].setFront(true);
+                }
+                else
+                    chunk.blocks[0][y][0].setFront(false);
             }
         }
     }
@@ -2072,25 +2523,45 @@ public class ChunkMaker extends Thread {
 
         for (int y = 1; y < Chunk.CHUNK_SIZE - 1; y++) {
             if (chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].is(Type.AIR) == false) {
-                if (frontIsValid)
-                    if (frontChunk.blocks[0][y][0].isOpaque())
+                if (frontIsValid) {
+                    if (frontChunk.blocks[0][y][0].isOpaque()) {
                         chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setFront(true);
+                    }
+                    else
+                        chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setFront(false);
+                }
 
-                if (leftIsValid)
-                    if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].isOpaque())
+                if (leftIsValid) {
+                    if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                         chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setLeft(true);
+                    }
+                    else
+                        chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setLeft(false);
+                }
 
-                if (chunk.blocks[1][y][Chunk.CHUNK_SIZE - 1].isOpaque())
+                if (chunk.blocks[1][y][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                     chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setRight(true);
+                }
+                else
+                    chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setRight(false);
 
-                if (chunk.blocks[0][y + 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                if (chunk.blocks[0][y + 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                     chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setTop(true);
+                }
+                else
+                    chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setTop(false);
 
-                if (chunk.blocks[0][y - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                if (chunk.blocks[0][y - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                     chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setBottom(true);
+                }
+                else
+                    chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setBottom(false);
 
-                if (chunk.blocks[0][y][Chunk.CHUNK_SIZE - 2].isOpaque())
+                if (chunk.blocks[0][y][Chunk.CHUNK_SIZE - 2].isOpaque()) {
                     chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setBack(true);
+                }
+                else
+                    chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setBack(false);
             }
         }
     }
@@ -2101,25 +2572,45 @@ public class ChunkMaker extends Thread {
 
         for (int y = 1; y < Chunk.CHUNK_SIZE - 1; y++) {
             if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].is(Type.AIR) == false) {
-                if (rightIsValid)
-                    if (rightChunk.blocks[0][y][0].isOpaque())
+                if (rightIsValid) {
+                    if (rightChunk.blocks[0][y][0].isOpaque()) {
                         chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setRight(true);
+                    }
+                    else
+                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setRight(false);
+                }
 
-                if (backIsValid)
-                    if (backChunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].isOpaque())
+                if (backIsValid) {
+                    if (backChunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                         chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setBack(true);
+                    }
+                    else
+                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setBack(false);
+                }
 
-                if (chunk.blocks[Chunk.CHUNK_SIZE - 2][y][0].isOpaque())
+                if (chunk.blocks[Chunk.CHUNK_SIZE - 2][y][0].isOpaque()) {
                     chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setLeft(true);
+                }
+                else
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setLeft(false);
 
-                if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y + 1][0].isOpaque())
+                if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y + 1][0].isOpaque()) {
                     chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setTop(true);
+                }
+                else
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setTop(false);
 
-                if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y - 1][0].isOpaque())
+                if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y - 1][0].isOpaque()) {
                     chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setBottom(true);
+                }
+                else
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setBottom(false);
 
-                if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][1].isOpaque())
+                if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][1].isOpaque()) {
                     chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setFront(true);
+                }
+                else
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setFront(false);
             }
         }
     }
@@ -2130,25 +2621,45 @@ public class ChunkMaker extends Thread {
 
         for (int y = 1; y < Chunk.CHUNK_SIZE - 1; y++) {
             if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].is(Type.AIR) == false) {
-                if (rightIsValid)
-                    if (rightChunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].isOpaque())
+                if (rightIsValid) {
+                    if (rightChunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                         chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setRight(true);
+                    }
+                    else
+                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setRight(false);
+                }
 
-                if (frontIsValid)
-                    if (frontChunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].isOpaque())
+                if (frontIsValid) {
+                    if (frontChunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].isOpaque()) {
                         chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setFront(true);
+                    }
+                    else
+                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setFront(false);
+                }
 
-                if (chunk.blocks[Chunk.CHUNK_SIZE - 2][y][Chunk.CHUNK_SIZE - 1].isOpaque())
+                if (chunk.blocks[Chunk.CHUNK_SIZE - 2][y][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                     chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setLeft(true);
+                }
+                else
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setLeft(false);
 
-                if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y + 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y + 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                     chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setTop(true);
+                }
+                else
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setTop(false);
 
-                if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y - 1][Chunk.CHUNK_SIZE - 1].isOpaque())
+                if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
                     chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setBottom(true);
+                }
+                else
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setBottom(false);
 
-                if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 2].isOpaque())
+                if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 2].isOpaque()) {
                     chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setBack(true);
+                }
+                else
+                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setBack(false);
 
             }
         }
@@ -2157,6 +2668,5 @@ public class ChunkMaker extends Thread {
     public void setChunk(Chunk chunk) {
         this.chunk = chunk;
     }
-    
 
 }

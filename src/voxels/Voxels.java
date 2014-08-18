@@ -49,7 +49,7 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 9;
+    public static final int TERRAIN_SMOOTHNESS = 30;
     /**
      * Set player's height. One block's height is 1.
      */

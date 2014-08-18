@@ -37,7 +37,7 @@ public class ActiveChunkLoader extends Thread {
         while (running) {
             if (refresh || hasMoved()) {
                 refresh = false;
-                //loadChunks();
+                loadChunks();
                 try {
                     sleep(3);
                 } catch (InterruptedException ex) {
@@ -48,7 +48,7 @@ public class ActiveChunkLoader extends Thread {
     }
 
     private boolean hasMoved() {
-        if (currentChunkX != Voxels.getCurrentChunkXId() || currentChunkY != Voxels.getCurrentChunkYId() || currentChunkZ != Voxels.getCurrentChunkZId()) {
+        if (currentChunkX != Voxels.getCurrentChunkXId() || currentChunkY != Voxels.getCurrentChunkYId(0.02f) || currentChunkZ != Voxels.getCurrentChunkZId()) {
             currentChunkX = Voxels.getCurrentChunkXId();
             currentChunkY = Voxels.getCurrentChunkYId();
             currentChunkZ = Voxels.getCurrentChunkZId();
@@ -61,7 +61,6 @@ public class ActiveChunkLoader extends Thread {
 
     public void loadChunks() {
         middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());    
-        bottom = chunkManager.getChunk(Voxels.getCurrentChunkXId()+1, Voxels.getCurrentChunkYId()-1, Voxels.getCurrentChunkZId());
     }
 
     public Chunk getMiddle() {

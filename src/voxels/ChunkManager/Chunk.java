@@ -12,7 +12,7 @@ public class Chunk implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public static final int CHUNK_SIZE = 16;
-    public static final int WORLD_HEIGHT = 6;
+    public static final int WORLD_HEIGHT = 8;
     public static final int WATER_HEIGHT = -1;
     
 
@@ -61,13 +61,11 @@ public class Chunk implements Serializable {
                 blocks[x][y] = new Block[CHUNK_SIZE];
                 for (int z = 0; z < blocks[x][y].length; z++) {
                     if (Voxels.USE_3D_NOISE) {
-                        float noise1 = Voxels.get3DNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate) / 255f;
-                        //float noise2 = Voxels.get3DNoise(x + xCoordinate + 10000, y + yCoordinate + 10000, z + zCoordinate + 10000) / 255f;
-
-                        if (noise1 > 0.80f)// && noise1 < 0.55f && noise2 > 0.45f && noise2 < 0.55f)
-                            if(y+yCoordinate<Chunk.CHUNK_SIZE*Chunk.WORLD_HEIGHT*0.85)
+                        float noise1 = Voxels.get3DNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate) / (float)(CHUNK_SIZE*WORLD_HEIGHT);
+                        if (noise1 > 0.80f)
+                            if(y+yCoordinate<Chunk.CHUNK_SIZE*Chunk.WORLD_HEIGHT*0.95)
                                 blocks[x][y][z] = new Block(Type.DIRT);
-                            else
+                           else
                                 blocks[x][y][z] = new Block(Type.AIR);
                         else
                             blocks[x][y][z] = new Block(Type.AIR);

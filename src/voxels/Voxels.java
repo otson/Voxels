@@ -65,7 +65,7 @@ public class Voxels {
     /**
      * Set if 3D simplex noise is used to generate terrain.
      */
-    public static final boolean USE_3D_NOISE = false;
+    public static final boolean USE_3D_NOISE = true;
 
     /**
      * Set air block percentage if 3D noise is in use.

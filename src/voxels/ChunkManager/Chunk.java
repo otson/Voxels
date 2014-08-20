@@ -12,9 +12,10 @@ public class Chunk implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public static final int CHUNK_SIZE = 16;
-    public static final int WORLD_HEIGHT = 8;
+    public static final int VERTICAL_CHUNKS = 8;
+    public static final int WORLD_HEIGHT = CHUNK_SIZE * VERTICAL_CHUNKS;
     public static final int WATER_HEIGHT = -1;
-    
+    public static final int FORCED_AIR_LAYERS = 5;
 
     private int vboVertexHandle;
     private int vboNormalHandle;
@@ -53,38 +54,37 @@ public class Chunk implements Serializable {
     }
 
     private void setBlocks() {
-        int dirtCount = 0;
         blocks = new Block[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
         for (int x = 0; x < blocks.length; x++) {
             blocks[x] = new Block[CHUNK_SIZE][CHUNK_SIZE];
             for (int y = 0; y < blocks[x].length; y++) {
                 blocks[x][y] = new Block[CHUNK_SIZE];
                 for (int z = 0; z < blocks[x][y].length; z++) {
-                    if (Voxels.USE_3D_NOISE) {
-                        float noise1 = Voxels.get3DNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate) / (float)(CHUNK_SIZE*WORLD_HEIGHT);
-                        if (noise1 > 0.80f)
-                            if(y+yCoordinate<Chunk.CHUNK_SIZE*Chunk.WORLD_HEIGHT*0.95)
-                                blocks[x][y][z] = new Block(Type.DIRT);
-                           else
-                                blocks[x][y][z] = new Block(Type.AIR);
-                        else
-                            blocks[x][y][z] = new Block(Type.AIR);
+
+                    // Make the terrain using 2d noise
+                    if (y + Chunk.CHUNK_SIZE * yId <= maxHeights[x][z] && y + Chunk.CHUNK_SIZE * yId < VERTICAL_CHUNKS * CHUNK_SIZE - FORCED_AIR_LAYERS) {
+                        blocks[x][y][z] = new Block(Type.DIRT);
+                    } else {
+                        blocks[x][y][z] = new Block(Type.AIR);
                     }
-                    else {
-                        if (y + Chunk.CHUNK_SIZE * yId <= maxHeights[x][z]) {
-                            blocks[x][y][z] = new Block(Type.DIRT);
-                            dirtCount++;
+
+                    // add 3d noise if enabled
+                    if (Voxels.USE_3D_NOISE) {
+
+                        //only add 3d noise to the upper part of the world (floating islands)
+                        if (y + Chunk.CHUNK_SIZE * yId > WORLD_HEIGHT - WORLD_HEIGHT / 8) {
+                            float noise1 = Voxels.get3DNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate) / (float) (CHUNK_SIZE * VERTICAL_CHUNKS);
+                            if (noise1 < 0.20f) {
+                                blocks[x][y][z] = new Block(Type.AIR);
+                            }
+                            if (noise1 > 0.80f && y + Chunk.CHUNK_SIZE * yId < VERTICAL_CHUNKS * CHUNK_SIZE - FORCED_AIR_LAYERS) {
+                                blocks[x][y][z] = new Block(Type.DIRT);
+                            }
                         }
-                        else
-                            if(y <= WATER_HEIGHT)
-                                blocks[x][y][z] = new Block(Type.WATER);
-                        else
-                            blocks[x][y][z] = new Block(Type.AIR);
                     }
                 }
             }
         }
-        //System.out.println("Dirt blocks in chunk x: "+xId+" y: "+yId+" z: "+zId+": "+dirtCount);
     }
 
     public int getVboVertexHandle() {

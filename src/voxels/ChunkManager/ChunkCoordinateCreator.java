@@ -68,7 +68,7 @@ public class ChunkCoordinateCreator {
 
     public Coordinates getXYZ() {
         while (notAtMax()) {
-            if (heightCount < Chunk.WORLD_HEIGHT) {
+            if (heightCount < Chunk.VERTICAL_CHUNKS) {
                 heightCount++;    
                 //if (!map.containsKey(new Pair(x + currentChunkX, heightCount, z + currentChunkZ).hashCode())) {
                 

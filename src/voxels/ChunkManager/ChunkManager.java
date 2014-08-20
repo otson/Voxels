@@ -141,7 +141,7 @@ public class ChunkManager {
                 if (map.size() > lastMessage) {
 
                     lastMessage = map.size();
-                    String string = "Chunks created: " + (int) ((float) map.size() / (float) ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1) * Chunk.WORLD_HEIGHT) * 100) + " % (" + map.size() + "/" + ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1) * Chunk.WORLD_HEIGHT) + ")";
+                    String string = "Chunks created: " + (int) ((float) map.size() / (float) ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1) * Chunk.VERTICAL_CHUNKS) * 100) + " % (" + map.size() + "/" + ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1) * Chunk.VERTICAL_CHUNKS) + ")";
                     System.out.println(string);
                     Display.setTitle(string);
                 }

@@ -25,6 +25,7 @@ import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import voxels.Camera.EulerCamera;
 import voxels.ChunkManager.Chunk;
+import static voxels.ChunkManager.Chunk.WORLD_HEIGHT;
 import voxels.ChunkManager.ChunkManager;
 import voxels.ChunkManager.Handle;
 import voxels.ChunkManager.Type;
@@ -49,7 +50,8 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 30;
+    public static final int TERRAIN_SMOOTHNESS = 12;
+    public static final int THREE_DIM_SMOOTHNESS = 20;
     /**
      * Set player's height. One block's height is 1.
      */
@@ -174,7 +176,7 @@ public class Voxels {
         camera.setChunkManager(chunkManager);
         camera.applyPerspectiveMatrix();
         camera.applyOptimalStates();
-        camera.setPosition(camera.x(), Chunk.CHUNK_SIZE * Chunk.WORLD_HEIGHT, camera.z());
+        camera.setPosition(camera.x(), Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS, camera.z());
         Mouse.setGrabbed(true);
         return camera;
     }
@@ -226,7 +228,7 @@ public class Voxels {
 
         for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
             for (int z = -chunkRenderDistance; z <= chunkRenderDistance; z++) {
-                for (int y = 0; y < Chunk.WORLD_HEIGHT; y++) {
+                for (int y = 0; y < Chunk.VERTICAL_CHUNKS; y++) {
                     Handle handles = chunkManager.getHandle(getCurrentChunkXId() + x, y, getCurrentChunkZId() + z);
                     if (handles != null) {
 
@@ -481,14 +483,15 @@ public class Voxels {
         if (USE_SEED) {
             noise = (int) ((FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS) + SEED, z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS) + SEED, 5)) * (Chunk.CHUNK_SIZE / 256f)) - 1;
         } else {
-            noise = (int) (FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), 5) * ((float) (Chunk.WORLD_HEIGHT * Chunk.CHUNK_SIZE) / 256f)) - 1;
+            noise = (int) (FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), 5) * ((float) (Chunk.VERTICAL_CHUNKS * Chunk.CHUNK_SIZE) / 256f)) - 1;
         }
 
-        return noise;//63 + (int) (Math.random() * 2);//Math.max(noise, 0);
+        return noise-WORLD_HEIGHT/8-5;
     }
 
     public static int get3DNoise(float x, float y, float z) {
-        return (int) ((SimplexNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * 2f), y / (1f * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * 2f)) + 1) * 128 * (Chunk.CHUNK_SIZE * Chunk.WORLD_HEIGHT / 256f));
+        int i = (int) ((SimplexNoise.noise(x / (1f * THREE_DIM_SMOOTHNESS * 2f), y / (1f * THREE_DIM_SMOOTHNESS), z / (1f * THREE_DIM_SMOOTHNESS * 2f)) + 1) * 128 * (Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS / 256f));
+        return i;
     }
 
     public static Texture loadTexture(String key) {

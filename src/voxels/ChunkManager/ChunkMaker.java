@@ -272,7 +272,8 @@ public class ChunkMaker extends Thread {
         vertexData = BufferUtils.createFloatBuffer(vertices * vertexSize);
         normalData = BufferUtils.createFloatBuffer(vertices * vertexSize);
         texData = BufferUtils.createFloatBuffer(vertices * texSize);
-
+        int tXOff;
+        int tYOff;
         for (int x = 0; x < chunk.blocks.length; x++) {
             for (int z = 0; z < chunk.blocks[x][0].length; z++) {
                 for (int y = 0; y < chunk.blocks[x].length; y++) {

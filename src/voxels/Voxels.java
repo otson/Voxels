@@ -26,6 +26,7 @@ import org.newdawn.slick.opengl.TextureLoader;
 import voxels.Camera.EulerCamera;
 import voxels.ChunkManager.Chunk;
 import static voxels.ChunkManager.Chunk.WORLD_HEIGHT;
+import static voxels.ChunkManager.Chunk.GROUND_SHARE;
 import voxels.ChunkManager.ChunkManager;
 import voxels.ChunkManager.Handle;
 import voxels.ChunkManager.Type;
@@ -319,17 +320,16 @@ public class Voxels {
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             PLAYER_HEIGHT = 1.0f;
-        }
-        else
+        } else {
             PLAYER_HEIGHT = 2.0f;
+        }
 
         if (Mouse.isGrabbed()) {
             while (Mouse.next()) {
                 if (Mouse.getEventButtonState()) {
                     if (Mouse.getEventButton() == 0) {
                         chunkManager.castRay(Type.DIRT);
-                    }
-                    else if (Mouse.getEventButton() == 1) {
+                    } else if (Mouse.getEventButton() == 1) {
                         chunkManager.castRay(Type.AIR);
                     }
                 }
@@ -390,12 +390,12 @@ public class Voxels {
     }
 
     public final static int getCurrentChunkYId() {
-        int y = (int) (camera.y()-PLAYER_HEIGHT);
+        int y = (int) (camera.y() - PLAYER_HEIGHT);
         return y / Chunk.CHUNK_SIZE;
     }
-    
+
     public final static int getCurrentChunkXId(float add) {
-        int x = (int) Math.floor(camera.x()-add);
+        int x = (int) Math.floor(camera.x() - add);
         if (x < 0) {
             x -= Chunk.CHUNK_SIZE - 1;
         }
@@ -403,7 +403,7 @@ public class Voxels {
     }
 
     public final static int getCurrentChunkZId(float add) {
-        int z = (int) Math.floor(camera.z()+add);
+        int z = (int) Math.floor(camera.z() + add);
         if (z < 0) {
             z -= Chunk.CHUNK_SIZE - 1;
         }
@@ -411,12 +411,12 @@ public class Voxels {
     }
 
     public final static int getCurrentChunkYId(float add) {
-        int y = (int) (camera.y()-PLAYER_HEIGHT+add);
+        int y = (int) (camera.y() - PLAYER_HEIGHT + add);
         return y / Chunk.CHUNK_SIZE;
     }
 
     public final static int yInChunk() {
-        int y = (int) (camera.y()-PLAYER_HEIGHT);
+        int y = (int) (camera.y() - PLAYER_HEIGHT);
         return y % Chunk.CHUNK_SIZE;
     }
 
@@ -435,14 +435,14 @@ public class Voxels {
         }
         return z % Chunk.CHUNK_SIZE;
     }
-    
+
     public final static int yInChunk(float add) {
-        int y = (int) (camera.y()-PLAYER_HEIGHT+add);
+        int y = (int) (camera.y() - PLAYER_HEIGHT + add);
         return y % Chunk.CHUNK_SIZE;
     }
 
     public final static int xInChunk(float add) {
-        int x = (int) Math.floor(camera.x()-add);
+        int x = (int) Math.floor(camera.x() - add);
         if (x <= 0) {
             x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE;
         }
@@ -450,13 +450,13 @@ public class Voxels {
     }
 
     public final static int zInChunk(float add) {
-        int z = (int) Math.floor(camera.z()+add);
+        int z = (int) Math.floor(camera.z() + add);
         if (z <= 0) {
             z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE;
         }
         return z % Chunk.CHUNK_SIZE;
     }
-    
+
     public final static int yInChunkPointer(Vector3f direction) {
         int y = (int) (direction.y);
         return y % Chunk.CHUNK_SIZE;
@@ -485,8 +485,8 @@ public class Voxels {
         } else {
             noise = (int) (FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), 5) * ((float) (Chunk.VERTICAL_CHUNKS * Chunk.CHUNK_SIZE) / 256f)) - 1;
         }
-
-        return noise-WORLD_HEIGHT/8-5;
+        noise *= GROUND_SHARE;
+        return noise;
     }
 
     public static int get3DNoise(float x, float y, float z) {

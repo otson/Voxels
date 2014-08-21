@@ -392,7 +392,7 @@ public class EulerCamera implements Camera {
                 }
             }
             if (chunkUnderFeet == null) {
-                setPosition(0, Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS, 0);
+                setPosition(0.5f, Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS, 0.5f);
                 System.out.println("Player tried to enter a chunk that does not exist. \n Position reset to (0, " + Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS + ", 0)");
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_W) || Keyboard.isKeyDown(Keyboard.KEY_A) || Keyboard.isKeyDown(Keyboard.KEY_S) || (Keyboard.isKeyDown(Keyboard.KEY_D))) {

@@ -46,13 +46,13 @@ public class Voxels {
     /**
      * Texture file names.
      */
-    public static final String ATLAS = "atlas_simple";
+    public static final String ATLAS = "atlas_alternate2";
     /**
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
      */
     public static final int TERRAIN_SMOOTHNESS = 12;
-    public static final int THREE_DIM_SMOOTHNESS = 20;
+    public static final int THREE_DIM_SMOOTHNESS = 30;
     /**
      * Set player's height. One block's height is 1.
      */
@@ -490,7 +490,7 @@ public class Voxels {
     }
 
     public static int get3DNoise(float x, float y, float z) {
-        int i = (int) ((SimplexNoise.noise(x / (1f * THREE_DIM_SMOOTHNESS * 2f), y / (1f * THREE_DIM_SMOOTHNESS), z / (1f * THREE_DIM_SMOOTHNESS * 2f)) + 1) * 128 * (Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS / 256f));
+        int i = (int) ((SimplexNoise.noise(x / (1f * THREE_DIM_SMOOTHNESS * 2f), y*1.8f / (1f * THREE_DIM_SMOOTHNESS), z / (1f * THREE_DIM_SMOOTHNESS * 2f)) + 1) * 128 * (Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS / 256f));
         return i;
     }
 
@@ -523,8 +523,8 @@ public class Voxels {
 
     public static void updateFPS() {
         if (getTime() - lastFPS > 1000) {
-            //Display.setTitle(TITLE + " - FPS: " + fps + " Chunk X: " + getCurrentChunkXId() + " Chunk Y: " + getCurrentChunkYId() + " Chunk Z: " + getCurrentChunkZId() + " Inside chunk: X: " + xInChunk() + " Y:" + yInChunk() + " Z: " + zInChunk());
-            Display.setTitle(TITLE + " - FPS: " + fps + " Pitch: " + camera.pitch() + " Yaw: " + camera.yaw());
+            Display.setTitle(TITLE + " - FPS: " + fps + " Chunk X: " + getCurrentChunkXId() + " Chunk Y: " + getCurrentChunkYId() + " Chunk Z: " + getCurrentChunkZId() + " Inside chunk: X: " + xInChunk() + " Y:" + yInChunk() + " Z: " + zInChunk());
+            //Display.setTitle(TITLE + " - FPS: " + fps + " Pitch: " + camera.pitch() + " Yaw: " + camera.yaw());
 
             fps = 0; //reset the FPS counter
             lastFPS += 1000; //add one second

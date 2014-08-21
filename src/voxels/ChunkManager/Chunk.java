@@ -16,6 +16,13 @@ public class Chunk implements Serializable {
     public static final int WORLD_HEIGHT = CHUNK_SIZE * VERTICAL_CHUNKS;
     public static final int WATER_HEIGHT = -1;
     public static final int FORCED_AIR_LAYERS = 5;
+    public static final float GROUND_SHARE = 0.9f;
+
+    //3d noise min and max values
+    private static final float noiseOneMin = 0.7f;
+    private static final float noiseOneMax = 1f;
+    private static final float noiseTwoMin = 0f;
+    private static final float noiseTwoMax = 0.8f;
 
     private int vboVertexHandle;
     private int vboNormalHandle;
@@ -72,13 +79,19 @@ public class Chunk implements Serializable {
                     if (Voxels.USE_3D_NOISE) {
 
                         //only add 3d noise to the upper part of the world (floating islands)
-                        if (y + Chunk.CHUNK_SIZE * yId > WORLD_HEIGHT - WORLD_HEIGHT / 8) {
+                        if (y + Chunk.CHUNK_SIZE * yId > WORLD_HEIGHT * GROUND_SHARE) {
                             float noise1 = Voxels.get3DNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate) / (float) (CHUNK_SIZE * VERTICAL_CHUNKS);
-                            if (noise1 < 0.20f) {
-                                blocks[x][y][z] = new Block(Type.AIR);
-                            }
                             if (noise1 > 0.80f && y + Chunk.CHUNK_SIZE * yId < VERTICAL_CHUNKS * CHUNK_SIZE - FORCED_AIR_LAYERS) {
                                 blocks[x][y][z] = new Block(Type.DIRT);
+                            }
+                            // modify the ground portion of the world (caves)
+                        } else if (yId != 1 || y != 0) {
+
+                            float noise1 = Voxels.get3DNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate) / (float) (CHUNK_SIZE * VERTICAL_CHUNKS);
+                            float noise2 = Voxels.get3DNoise(x + xCoordinate + 10000, y + yCoordinate + 10000, z + zCoordinate + 10000) / (float) (CHUNK_SIZE * VERTICAL_CHUNKS);
+
+                            if (noise1 > noiseOneMin && noise2 < noiseTwoMax) {
+                                blocks[x][y][z] = new Block(Type.AIR);
                             }
                         }
                     }

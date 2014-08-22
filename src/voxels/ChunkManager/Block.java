@@ -86,6 +86,10 @@ public class Block implements Serializable {
     public void setBottom(boolean bottom) {
         this.bottom = bottom;
     }
+
+    public short getType() {
+        return type;
+    }
     
 
 }

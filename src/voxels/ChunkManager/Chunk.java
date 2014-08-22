@@ -71,6 +71,8 @@ public class Chunk implements Serializable {
                     // Make the terrain using 2d noise
                     if (y + Chunk.CHUNK_SIZE * yId <= maxHeights[x][z] && y + Chunk.CHUNK_SIZE * yId < VERTICAL_CHUNKS * CHUNK_SIZE - FORCED_AIR_LAYERS) {
                         blocks[x][y][z] = new Block(Type.DIRT);
+                        if(y == 0 && yId == 1)
+                            blocks[x][y][z] = new Block(Type.UNBREAKABLE);
                     } else {
                         blocks[x][y][z] = new Block(Type.AIR);
                     }
@@ -78,11 +80,11 @@ public class Chunk implements Serializable {
                     // add 3d noise if enabled
                     if (Voxels.USE_3D_NOISE) {
 
-                        //only add 3d noise to the upper part of the world (floating islands)
+                        //only add 3d noise to the upper part of the world (clouds)
                         if (y + Chunk.CHUNK_SIZE * yId > WORLD_HEIGHT * GROUND_SHARE) {
                             float noise1 = Voxels.get3DNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate) / (float) (CHUNK_SIZE * VERTICAL_CHUNKS);
                             if (noise1 > 0.90f && y + Chunk.CHUNK_SIZE * yId < VERTICAL_CHUNKS * CHUNK_SIZE - FORCED_AIR_LAYERS) {
-                                blocks[x][y][z] = new Block(Type.DIRT);
+                                blocks[x][y][z] = new Block(Type.CLOUD);
                             }
                             // modify the ground portion of the world (caves)
                         } else if (yId != 1 || y != 0) {

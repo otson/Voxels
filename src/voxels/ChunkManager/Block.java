@@ -32,11 +32,7 @@ public class Block implements Serializable {
     }
     
     public final boolean isOpaque(){
-        if (type == Type.WATER)
-            return true;
-        else if(type == Type.AIR)
-            return true;
-        return false;
+        return type == Type.AIR;
     }
     
     public boolean isLeft() {

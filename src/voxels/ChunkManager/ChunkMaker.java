@@ -284,7 +284,7 @@ public class ChunkMaker extends Thread {
         float topYOff;
         float bottomXOff;
         float bottomYOff;
-        float tSize = 1f/8f;
+        float tSize = 1f / 8f;
         for (int x = 0; x < chunk.blocks.length; x++) {
             for (int z = 0; z < chunk.blocks[x][0].length; z++) {
                 for (int y = 0; y < chunk.blocks[x].length; y++) {
@@ -303,17 +303,22 @@ public class ChunkMaker extends Thread {
                         leftXOff = AtlasManager.getLeftXOff(type);
                         leftYOff = AtlasManager.getLeftYOff(type);
 
-                        topXOff = AtlasManager.getTopXOff(type);
-                        topYOff = AtlasManager.getTopYOff(type);
+                        if (type != Type.DIRT) {
+                            topXOff = AtlasManager.getTopXOff(type);
+                            topYOff = AtlasManager.getTopYOff(type);
+                        }
+                        else{
+                            topXOff = AtlasManager.getTopXOff(Type.GRASS);
+                            topYOff = AtlasManager.getTopYOff(Type.GRASS);
+                        }
 
                         bottomXOff = AtlasManager.getBottomXOff(type);
                         bottomYOff = AtlasManager.getBottomYOff(type);
-                        
+
 //                        if(type == Type.DIRT){
 //                            System.out.println("topXOff:"+topXOff);
 //                            System.out.println("topYOff:"+topYOff);
 //                        }
-
                         if (chunk.blocks[x][y][z].isFront()) {
                             // 1st
                             // upper left - +
@@ -353,7 +358,7 @@ public class ChunkMaker extends Thread {
 
                             texArray[tArrayPos] = frontXOff;
                             tArrayPos++;
-                            texArray[tArrayPos] = frontYOff+tSize;
+                            texArray[tArrayPos] = frontYOff + tSize;
                             tArrayPos++;
 
                             // lower right + -
@@ -371,9 +376,9 @@ public class ChunkMaker extends Thread {
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
 
-                            texArray[tArrayPos] = frontXOff+tSize;
+                            texArray[tArrayPos] = frontXOff + tSize;
                             tArrayPos++;
-                            texArray[tArrayPos] = frontYOff+tSize;
+                            texArray[tArrayPos] = frontYOff + tSize;
                             tArrayPos++;
 
                             // 2nd
@@ -412,9 +417,9 @@ public class ChunkMaker extends Thread {
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
 
-                            texArray[tArrayPos] = frontXOff+tSize;
+                            texArray[tArrayPos] = frontXOff + tSize;
                             tArrayPos++;
-                            texArray[tArrayPos] = frontYOff+tSize;
+                            texArray[tArrayPos] = frontYOff + tSize;
                             tArrayPos++;
 
                             // upper right + +
@@ -432,7 +437,7 @@ public class ChunkMaker extends Thread {
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
 
-                            texArray[tArrayPos] = frontXOff+tSize;
+                            texArray[tArrayPos] = frontXOff + tSize;
                             tArrayPos++;
                             texArray[tArrayPos] = frontYOff;
                             tArrayPos++;
@@ -446,12 +451,12 @@ public class ChunkMaker extends Thread {
 
                             texArray[tArrayPos] = backXOff;
                             tArrayPos++;
-                            texArray[tArrayPos] = backYOff+tSize;
+                            texArray[tArrayPos] = backYOff + tSize;
                             tArrayPos++;
 
-                            texArray[tArrayPos] = backXOff+tSize;
+                            texArray[tArrayPos] = backXOff + tSize;
                             tArrayPos++;
-                            texArray[tArrayPos] = backYOff+tSize;
+                            texArray[tArrayPos] = backYOff + tSize;
                             tArrayPos++;
 
                             //2nd
@@ -460,12 +465,12 @@ public class ChunkMaker extends Thread {
                             texArray[tArrayPos] = backYOff;
                             tArrayPos++;
 
-                            texArray[tArrayPos] = backXOff+tSize;
+                            texArray[tArrayPos] = backXOff + tSize;
                             tArrayPos++;
-                            texArray[tArrayPos] = backYOff+tSize;
+                            texArray[tArrayPos] = backYOff + tSize;
                             tArrayPos++;
 
-                            texArray[tArrayPos] = backXOff+tSize;
+                            texArray[tArrayPos] = backXOff + tSize;
                             tArrayPos++;
                             texArray[tArrayPos] = backYOff;
                             tArrayPos++;
@@ -570,12 +575,12 @@ public class ChunkMaker extends Thread {
 
                             texArray[tArrayPos] = rightXOff;
                             tArrayPos++;
-                            texArray[tArrayPos] = rightYOff+tSize;
+                            texArray[tArrayPos] = rightYOff + tSize;
                             tArrayPos++;
 
-                            texArray[tArrayPos] = rightXOff+tSize;
+                            texArray[tArrayPos] = rightXOff + tSize;
                             tArrayPos++;
-                            texArray[tArrayPos] = rightYOff+tSize;
+                            texArray[tArrayPos] = rightYOff + tSize;
                             tArrayPos++;
 
                             // 2nd
@@ -584,12 +589,12 @@ public class ChunkMaker extends Thread {
                             texArray[tArrayPos] = rightYOff;
                             tArrayPos++;
 
-                            texArray[tArrayPos] = rightXOff+tSize;
+                            texArray[tArrayPos] = rightXOff + tSize;
                             tArrayPos++;
-                            texArray[tArrayPos] = rightYOff+tSize;
+                            texArray[tArrayPos] = rightYOff + tSize;
                             tArrayPos++;
 
-                            texArray[tArrayPos] = rightXOff+tSize;
+                            texArray[tArrayPos] = rightXOff + tSize;
                             tArrayPos++;
                             texArray[tArrayPos] = rightYOff;
                             tArrayPos++;
@@ -695,12 +700,12 @@ public class ChunkMaker extends Thread {
 
                             texArray[tArrayPos] = leftXOff;
                             tArrayPos++;
-                            texArray[tArrayPos] = leftYOff+tSize;
+                            texArray[tArrayPos] = leftYOff + tSize;
                             tArrayPos++;
 
-                            texArray[tArrayPos] = leftXOff+tSize;
+                            texArray[tArrayPos] = leftXOff + tSize;
                             tArrayPos++;
-                            texArray[tArrayPos] = leftYOff+tSize;
+                            texArray[tArrayPos] = leftYOff + tSize;
                             tArrayPos++;
 
                             // 2nd
@@ -709,12 +714,12 @@ public class ChunkMaker extends Thread {
                             texArray[tArrayPos] = leftYOff;
                             tArrayPos++;
 
-                            texArray[tArrayPos] = leftXOff+tSize;
+                            texArray[tArrayPos] = leftXOff + tSize;
                             tArrayPos++;
-                            texArray[tArrayPos] = leftYOff+tSize;
+                            texArray[tArrayPos] = leftYOff + tSize;
                             tArrayPos++;
 
-                            texArray[tArrayPos] = leftXOff+tSize;
+                            texArray[tArrayPos] = leftXOff + tSize;
                             tArrayPos++;
                             texArray[tArrayPos] = leftYOff;
                             tArrayPos++;
@@ -850,7 +855,7 @@ public class ChunkMaker extends Thread {
 
                             texArray[tArrayPos] = topXOff;
                             tArrayPos++;
-                            texArray[tArrayPos] = topYOff+tSize;
+                            texArray[tArrayPos] = topYOff + tSize;
                             tArrayPos++;
 
                             // lower right
@@ -909,9 +914,9 @@ public class ChunkMaker extends Thread {
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
 
-                            texArray[tArrayPos] = topXOff+tSize;
+                            texArray[tArrayPos] = topXOff + tSize;
                             tArrayPos++;
-                            texArray[tArrayPos] = topYOff+tSize;
+                            texArray[tArrayPos] = topYOff + tSize;
                             tArrayPos++;
 
                             // upper right
@@ -929,7 +934,7 @@ public class ChunkMaker extends Thread {
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
 
-                            texArray[tArrayPos] = topXOff+tSize;
+                            texArray[tArrayPos] = topXOff + tSize;
                             tArrayPos++;
                             texArray[tArrayPos] = topYOff;
                             tArrayPos++;
@@ -940,14 +945,14 @@ public class ChunkMaker extends Thread {
                             texArray[tArrayPos] = bottomYOff;
                             tArrayPos++;
 
-                            texArray[tArrayPos] = bottomXOff+tSize;
+                            texArray[tArrayPos] = bottomXOff + tSize;
                             tArrayPos++;
-                            texArray[tArrayPos] = bottomYOff+tSize;
+                            texArray[tArrayPos] = bottomYOff + tSize;
                             tArrayPos++;
 
                             texArray[tArrayPos] = bottomXOff;
                             tArrayPos++;
-                            texArray[tArrayPos] = bottomYOff+tSize;
+                            texArray[tArrayPos] = bottomYOff + tSize;
                             tArrayPos++;
 
                             // 2nd
@@ -956,14 +961,14 @@ public class ChunkMaker extends Thread {
                             texArray[tArrayPos] = bottomYOff;
                             tArrayPos++;
 
-                            texArray[tArrayPos] = bottomXOff+tSize;
+                            texArray[tArrayPos] = bottomXOff + tSize;
                             tArrayPos++;
                             texArray[tArrayPos] = bottomYOff;
                             tArrayPos++;
 
-                            texArray[tArrayPos] = bottomXOff+tSize;
+                            texArray[tArrayPos] = bottomXOff + tSize;
                             tArrayPos++;
-                            texArray[tArrayPos] = bottomYOff+tSize;
+                            texArray[tArrayPos] = bottomYOff + tSize;
                             tArrayPos++;
 
                             // 1st

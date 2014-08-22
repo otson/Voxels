@@ -284,7 +284,7 @@ public class ChunkMaker extends Thread {
         float topYOff;
         float bottomXOff;
         float bottomYOff;
-        float tSize = 1/10f;
+        float tSize = 0.1f;
         for (int x = 0; x < chunk.blocks.length; x++) {
             for (int z = 0; z < chunk.blocks[x][0].length; z++) {
                 for (int y = 0; y < chunk.blocks[x].length; y++) {
@@ -807,7 +807,6 @@ public class ChunkMaker extends Thread {
                             vArrayPos++;
                         }
                         if (chunk.blocks[x][y][z].isTop()) {
-
                             // 1st
                             // upper left
                             normalArray[nArrayPos] = 0;
@@ -824,9 +823,9 @@ public class ChunkMaker extends Thread {
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
 
-                            texArray[tArrayPos] = 0f;
+                            texArray[tArrayPos] = topXOff;
                             tArrayPos++;
-                            texArray[tArrayPos] = 0f;
+                            texArray[tArrayPos] = topYOff;
                             tArrayPos++;
 
                             // lower left
@@ -844,9 +843,9 @@ public class ChunkMaker extends Thread {
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
 
-                            texArray[tArrayPos] = 0f;
+                            texArray[tArrayPos] = topXOff;
                             tArrayPos++;
-                            texArray[tArrayPos] = 1f / 2f;
+                            texArray[tArrayPos] = topYOff-tSize;
                             tArrayPos++;
 
                             // lower right
@@ -864,9 +863,9 @@ public class ChunkMaker extends Thread {
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
 
-                            texArray[tArrayPos] = 1f / 2f;
+                            texArray[tArrayPos] = topXOff + tSize;
                             tArrayPos++;
-                            texArray[tArrayPos] = 1f / 2f;
+                            texArray[tArrayPos] = topYOff - tSize;
                             tArrayPos++;
 
                             // 2nd
@@ -885,9 +884,9 @@ public class ChunkMaker extends Thread {
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
 
-                            texArray[tArrayPos] = 0f;
+                            texArray[tArrayPos] = topXOff;
                             tArrayPos++;
-                            texArray[tArrayPos] = 0f;
+                            texArray[tArrayPos] = topYOff;
                             tArrayPos++;
 
                             // lower right
@@ -905,9 +904,9 @@ public class ChunkMaker extends Thread {
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
 
-                            texArray[tArrayPos] = 1f / 2f;
+                            texArray[tArrayPos] = topXOff+tSize;
                             tArrayPos++;
-                            texArray[tArrayPos] = 1f / 2f;
+                            texArray[tArrayPos] = topYOff-tSize;
                             tArrayPos++;
 
                             // upper right
@@ -925,9 +924,9 @@ public class ChunkMaker extends Thread {
                             vertexArray[vArrayPos] = 0 + z + zOff;
                             vArrayPos++;
 
-                            texArray[tArrayPos] = 1f / 2f;
+                            texArray[tArrayPos] = topXOff;
                             tArrayPos++;
-                            texArray[tArrayPos] = 0f;
+                            texArray[tArrayPos] = topYOff- tSize;
                             tArrayPos++;
                         }
                         if (chunk.blocks[x][y][z].isBottom()) {

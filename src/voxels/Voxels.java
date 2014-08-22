@@ -46,7 +46,7 @@ public class Voxels {
     /**
      * Texture file names.
      */
-    public static final String ATLAS = "atlas_alternate2";
+    public static final String ATLAS = "atlas2";
     /**
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.

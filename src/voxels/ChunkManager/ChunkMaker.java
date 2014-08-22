@@ -1290,7 +1290,7 @@ public class ChunkMaker extends Thread {
             for (int y = 1; y < chunk.blocks[x].length - 1; y++) {
                 for (int z = 1; z < chunk.blocks[x][y].length - 1; z++) {
 
-                    if (chunk.blocks[x][y][z].is(Type.DIRT)) {
+                    if (!chunk.blocks[x][y][z].is(Type.AIR)) {
 
                         // set active sides to be rendered, rendered if the side is not touching dirt
                         if (chunk.blocks[x + 1][y][z].isOpaque()) {

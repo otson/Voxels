@@ -184,7 +184,7 @@ public class ChunkManager {
                     break;
                 }
             } else if (type == Type.AIR) {
-                if (chunk.blocks[xInChunk][yInChunk][zInChunk].is(Type.DIRT)) {
+                if (!chunk.blocks[xInChunk][yInChunk][zInChunk].is(Type.AIR)) {
                     chunk.blocks[xInChunk][yInChunk][zInChunk].setType(type);
                     updateThread.update(chunk);
                     checkAdjacentChunks(chunk, xInChunk, yInChunk, zInChunk);

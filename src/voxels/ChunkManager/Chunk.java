@@ -17,6 +17,7 @@ public class Chunk implements Serializable {
     public static final int WATER_HEIGHT = -1;
     public static final int FORCED_AIR_LAYERS = 5;
     public static final float GROUND_SHARE = 0.9f;
+    public static final int DIRT_LAYERS = 5;
 
     //3d noise min and max values
     private static final float noiseOneMin = 0.7f;
@@ -70,9 +71,12 @@ public class Chunk implements Serializable {
 
                     // Make the terrain using 2d noise
                     if (y + Chunk.CHUNK_SIZE * yId <= maxHeights[x][z] && y + Chunk.CHUNK_SIZE * yId < VERTICAL_CHUNKS * CHUNK_SIZE - FORCED_AIR_LAYERS) {
-                        blocks[x][y][z] = new Block(Type.DIRT);
                         if(y == 0 && yId == 1)
                             blocks[x][y][z] = new Block(Type.UNBREAKABLE);
+                        else if(y + Chunk.CHUNK_SIZE * yId <= maxHeights[x][z]-DIRT_LAYERS)
+                            blocks[x][y][z] = new Block(Type.STONE);
+                        else
+                            blocks[x][y][z] = new Block(Type.DIRT);
                     } else {
                         blocks[x][y][z] = new Block(Type.AIR);
                     }

@@ -315,10 +315,6 @@ public class ChunkMaker extends Thread {
                         bottomXOff = AtlasManager.getBottomXOff(type);
                         bottomYOff = AtlasManager.getBottomYOff(type);
 
-//                        if(type == Type.DIRT){
-//                            System.out.println("topXOff:"+topXOff);
-//                            System.out.println("topYOff:"+topYOff);
-//                        }
                         if (chunk.blocks[x][y][z].isFront()) {
                             // 1st
                             // upper left - +

@@ -44,11 +44,11 @@ public class ChunkCoordinateCreator {
                 dx = dz;
                 dz = 0;
                 turnCount++;
-                if (turnCount == 2)
+                if (turnCount == 2) {
                     length++;
+                }
             }
-        }
-        else {
+        } else {
             x += dx;
             currentLength++;
             if (currentLength == length) {
@@ -69,15 +69,12 @@ public class ChunkCoordinateCreator {
     public Coordinates getXYZ() {
         while (notAtMax()) {
             if (heightCount < Chunk.VERTICAL_CHUNKS) {
-                heightCount++;    
-                //if (!map.containsKey(new Pair(x + currentChunkX, heightCount, z + currentChunkZ).hashCode())) {
-                
-                return new Coordinates(x + currentChunkX, heightCount, z + currentChunkZ);
-                //}
-               
+                heightCount++;
+                if (!map.containsKey(new Pair(x + currentChunkX, heightCount, z + currentChunkZ).hashCode())) {
+                    return new Coordinates(x + currentChunkX, heightCount, z + currentChunkZ);
+                }
 
-            }
-            else {
+            } else {
                 heightCount = 0;
                 getNewXZCoordinates();
             }
@@ -86,14 +83,16 @@ public class ChunkCoordinateCreator {
     }
 
     public void setCurrentChunkX(int currentChunkX) {
-        if (currentChunkX != this.currentChunkX)
+        if (currentChunkX != this.currentChunkX) {
             reset();
+        }
         this.currentChunkX = currentChunkX;
     }
 
     public void setCurrentChunkZ(int currentChunkZ) {
-        if (currentChunkZ != this.currentChunkZ)
+        if (currentChunkZ != this.currentChunkZ) {
             reset();
+        }
         this.currentChunkZ = currentChunkZ;
     }
 

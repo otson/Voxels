@@ -196,25 +196,24 @@ public class ChunkManager {
         }
     }
 
-    public void createVBOs() {
+//    public void createVBOs() {
+//
+//        Collection c = map.values();
+//        Iterator itr = c.iterator();
+//        while (itr.hasNext()) {
+//            Chunk chunk = toChunk((byte[]) itr.next());
+//            ChunkMaker cm = new ChunkMaker(dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this);
+//            cm.setChunk(chunk);
+//            cm.updateAllBlocks();
+//            cm.drawChunkVBO();
+//            cm.addDataToProcess();
+//        }
+//        processBufferData();
+////        maxThreads = 1;
+////        threads = new ChunkMaker[maxThreads];
+//    }
 
-        Collection c = map.values();
-        Iterator itr = c.iterator();
-        while (itr.hasNext()) {
-            Chunk chunk = toChunk((byte[]) itr.next());
-            ChunkMaker cm = new ChunkMaker(dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this);
-            cm.setChunk(chunk);
-            cm.updateAllBlocks();
-            cm.drawChunkVBO();
-            cm.addDataToProcess();
-        }
-        
-        processBufferData();
-//        maxThreads = 1;
-//        threads = new ChunkMaker[maxThreads];
-    }
-
-    private void processBufferData() {
+    public void processBufferData() {
         int count = 0;
         if (dataToProcess != null) {
             while (dataToProcess.isEmpty() == false && count < 50000) {

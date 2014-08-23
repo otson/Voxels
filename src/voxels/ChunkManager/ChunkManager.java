@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,6 +17,8 @@ import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import org.lwjgl.util.vector.Vector3f;
 import voxels.Voxels;
@@ -36,8 +39,10 @@ public class ChunkManager {
 
     private ConcurrentHashMap<Integer, byte[]> map;
     private ConcurrentHashMap<Integer, Handle> handles;
+    private LinkedList<Pair> chunksToRender;
     private ArrayList<Data> dataToProcess;
     private ChunkCoordinateCreator chunkCreator;
+    private ChunkRenderChecker chunkRenderChecker;
     private ActiveChunkLoader chunkLoader;
     private ChunkMaker[] threads = new ChunkMaker[maxThreads];
     private ChunkMaker updateThread;
@@ -54,12 +59,14 @@ public class ChunkManager {
         map = new ConcurrentHashMap<>(16, 0.9f, 1);
         handles = new ConcurrentHashMap<>(16, 0.9f, 1);
         dataToProcess = new ArrayList<>();
+        chunksToRender = new LinkedList<>();
         chunkCreator = new ChunkCoordinateCreator(map);
         chunkLoader = new ActiveChunkLoader(this);
         chunkLoader.setPriority(Thread.MIN_PRIORITY);
-        updateThread = new ChunkMaker(map, this, dataToProcess);
+        updateThread = new ChunkMaker(map, this, dataToProcess, chunksToRender);
+        chunkRenderChecker = new ChunkRenderChecker(chunksToRender, map, this);
     }
-    
+
     public Chunk getChunk(int chunkX, int chunkY, int chunkZ) {
         if (map.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
             return toChunk(map.get(new Pair(chunkX, chunkY, chunkZ).hashCode()));
@@ -104,7 +111,7 @@ public class ChunkManager {
 
                 // Start a new thread, make a new chunk
                 int threadId = getFreeThread();
-                threads[threadId] = new ChunkMaker(dataToProcess, newChunkX, newChunkY, newChunkZ, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE, map, this);
+                threads[threadId] = new ChunkMaker(dataToProcess, newChunkX, newChunkY, newChunkZ, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE, map, this, chunksToRender);
                 threads[threadId].setPriority(Thread.MIN_PRIORITY);
                 threads[threadId].start();
 
@@ -115,7 +122,7 @@ public class ChunkManager {
                     System.out.println("Loaded all chunks. Seed: " + Voxels.SEED);
                 }
                 if (initialLoad) {
-                    threads = new ChunkMaker[2];
+                    threads = new ChunkMaker[maxThreads];
                 }
                 initialLoad = false;
             }
@@ -196,27 +203,34 @@ public class ChunkManager {
         }
     }
 
-//    public void createVBOs() {
-//
-//        Collection c = map.values();
-//        Iterator itr = c.iterator();
-//        while (itr.hasNext()) {
-//            Chunk chunk = toChunk((byte[]) itr.next());
-//            ChunkMaker cm = new ChunkMaker(dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this);
-//            cm.setChunk(chunk);
-//            cm.updateAllBlocks();
-//            cm.drawChunkVBO();
-//            cm.addDataToProcess();
-//        }
-//        processBufferData();
-////        maxThreads = 1;
-////        threads = new ChunkMaker[maxThreads];
-//    }
+    public void createVBO(Chunk chunk) {
+        ChunkMaker cm = new ChunkMaker(dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this, chunksToRender);
+        cm.setChunk(chunk);
+        cm.updateAllBlocks();
+        cm.drawChunkVBO();
+        cm.addDataToProcess();
+        //processBufferData();
+    }
+
+    public void createVBOs() {
+
+        Collection c = map.values();
+        Iterator itr = c.iterator();
+        while (itr.hasNext()) {
+            Chunk chunk = toChunk((byte[]) itr.next());
+            ChunkMaker cm = new ChunkMaker(dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this, chunksToRender);
+            cm.setChunk(chunk);
+            cm.updateAllBlocks();
+            cm.drawChunkVBO();
+            cm.addDataToProcess();
+        }
+        processBufferData();
+    }
 
     public void processBufferData() {
         int count = 0;
         if (dataToProcess != null) {
-            while (dataToProcess.isEmpty() == false && count < 50000) {
+            while (dataToProcess.isEmpty() == false && count < 500000) {
                 count++;
                 Data data = dataToProcess.get(0);
                 if (data != null) {
@@ -354,9 +368,9 @@ public class ChunkManager {
 
     private void checkAdjacentChunks(Chunk chunk, int x, int y, int z) {
         /**
-         * 
+         *
          * For now, all the blocks are updated.
-         * 
+         *
          */
         if (x == Chunk.CHUNK_SIZE - 1) {
             updateThread.update(getChunk(chunk.xId + 1, chunk.yId, chunk.zId));
@@ -376,6 +390,14 @@ public class ChunkManager {
         if (z == 0) {
             updateThread.update(getChunk(chunk.xId, chunk.yId, chunk.zId - 1));
         }
+    }
+
+    public int getTotalChunks() {
+        return map.size();
+    }
+    
+    public void startChunkRenderChecker(){
+        chunkRenderChecker.start();
     }
 
 }

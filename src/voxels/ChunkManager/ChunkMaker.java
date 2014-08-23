@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,6 +42,7 @@ public class ChunkMaker extends Thread {
     private int yOff;
     private int zOff;
     private ConcurrentHashMap<Integer, byte[]> map;
+    private LinkedList<Pair> chunksToRender;
     private boolean ready = false;
 
     private Chunk rightChunk;
@@ -56,11 +58,8 @@ public class ChunkMaker extends Thread {
     private Data updateData;
 
     boolean update;
-    private int baseXId;
-    private int baseYId;
-    private int baseZId;
 
-    public ChunkMaker(ArrayList<Data> dataToProcess, int chunkX, int chunkY, int chunkZ, int xOff, int yOff, int zOff, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager) {
+    public ChunkMaker(ArrayList<Data> dataToProcess, int chunkX, int chunkY, int chunkZ, int xOff, int yOff, int zOff, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager, LinkedList<Pair> chunksToRender) {
         this.xOff = xOff;
         this.yOff = yOff;
         this.zOff = zOff;
@@ -70,15 +69,17 @@ public class ChunkMaker extends Thread {
         this.map = map;
         this.dataToProcess = dataToProcess;
         this.chunkManager = chunkManager;
+        this.chunksToRender = chunksToRender;
 
         update = false;
 
     }
 
-    public ChunkMaker(ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager, ArrayList<Data> dataToProcess) {
+    public ChunkMaker(ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager, ArrayList<Data> dataToProcess, LinkedList<Pair> chunksToRender) {
         this.map = map;
         this.chunkManager = chunkManager;
         this.dataToProcess = dataToProcess;
+        this.chunksToRender = chunksToRender;
     }
 
     @Override
@@ -86,11 +87,7 @@ public class ChunkMaker extends Thread {
         if (!map.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
             chunk = new Chunk(chunkX, chunkY, chunkZ);
             map.put(new Pair(chunkX, chunkY, chunkZ).hashCode(), toByte(chunk));
-            //setChunk(chunk);
-            //updateAllBlocks();
-            
-            checkNeighbors();
-
+            chunksToRender.add(new Pair(chunkX, chunkY, chunkZ));
         } else {
             System.out.println("Already contains");
         }
@@ -104,91 +101,9 @@ public class ChunkMaker extends Thread {
             this.yOff = chunk.yId * Chunk.CHUNK_SIZE;
             updateAllBlocks();
             drawChunkVBO();
-            
             map.put(new Pair(this.chunk.xId, this.chunk.yId, this.chunk.zId).hashCode(), toByte(this.chunk));
             Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.yId, this.chunk.zId);
             dataToProcess.add(new Data(this.chunk.xId, this.chunk.yId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
-            
-            
-        }
-    }
-
-    private void checkNeighbors() {
-        boolean right = (chunkManager.getChunk(chunk.xId + 1, chunk.yId, chunk.zId) != null);
-        boolean left = (chunkManager.getChunk(chunk.xId - 1, chunk.yId, chunk.zId) != null);
-        boolean top = (chunkManager.getChunk(chunk.xId, chunk.yId + 1, chunk.zId) != null);
-        boolean bottom = (chunkManager.getChunk(chunk.xId, chunk.yId - 1, chunk.zId) != null);
-        boolean front = (chunkManager.getChunk(chunk.xId, chunk.yId, chunk.zId + 1) != null);
-        boolean back = (chunkManager.getChunk(chunk.xId, chunk.yId, chunk.zId - 1) != null);
-
-        boolean twoRight = (chunkManager.getChunk(chunk.xId + 2, chunk.yId, chunk.zId) != null);
-        boolean twoLeft = (chunkManager.getChunk(chunk.xId - 2, chunk.yId, chunk.zId) != null);
-        boolean twoTop = (chunkManager.getChunk(chunk.xId, chunk.yId + 2, chunk.zId) != null);
-        boolean twoBottom = (chunkManager.getChunk(chunk.xId, chunk.yId - 2, chunk.zId) != null);
-        boolean twoFront = (chunkManager.getChunk(chunk.xId, chunk.yId, chunk.zId + 2) != null);
-        boolean twoBack = (chunkManager.getChunk(chunk.xId, chunk.yId, chunk.zId - 2) != null);
-
-        boolean rightTop = (chunkManager.getChunk(chunk.xId + 1, chunk.yId + 1, chunk.zId) != null);
-        boolean rightBottom = (chunkManager.getChunk(chunk.xId + 1, chunk.yId - 1, chunk.zId) != null);
-        boolean rightFront = (chunkManager.getChunk(chunk.xId + 1, chunk.yId, chunk.zId + 1) != null);
-        boolean rightBack = (chunkManager.getChunk(chunk.xId + 1, chunk.yId, chunk.zId - 1) != null);
-
-        boolean leftTop = (chunkManager.getChunk(chunk.xId - 1, chunk.yId + 1, chunk.zId) != null);
-        boolean leftBottom = (chunkManager.getChunk(chunk.xId - 1, chunk.yId - 1, chunk.zId) != null);
-        boolean leftFront = (chunkManager.getChunk(chunk.xId - 1, chunk.yId, chunk.zId + 1) != null);
-        boolean leftBack = (chunkManager.getChunk(chunk.xId - 1, chunk.yId, chunk.zId - 1) != null);
-
-        boolean frontTop = (chunkManager.getChunk(chunk.xId, chunk.yId + 1, chunk.zId + 1) != null);
-        boolean frontBottom = (chunkManager.getChunk(chunk.xId, chunk.yId - 1, chunk.zId + 1) != null);
-        boolean backTop = (chunkManager.getChunk(chunk.xId, chunk.yId + 1, chunk.zId - 1) != null);
-        boolean backBottom = (chunkManager.getChunk(chunk.xId, chunk.yId - 1, chunk.zId - 1) != null);
-
-        baseXId = chunk.xId;
-        baseYId = chunk.yId;
-        baseZId = chunk.zId;
-        
-        if (right) {
-           
-            if (twoRight && rightTop && rightBottom && rightFront && rightBack) {
-                
-                setChunk(chunkManager.getChunk(baseXId + 1, baseYId, baseZId));
-                updateAllBlocks();
-            }
-        }
-
-        if (left) {
-            if (twoLeft && leftTop && leftBottom && leftFront && leftBack) {
-                setChunk(chunkManager.getChunk(baseXId - 1, baseYId, baseZId));
-                updateAllBlocks();
-            }
-        }
-
-        if (top) {
-            if (twoTop && leftTop && rightTop && frontTop && backTop) {
-                setChunk(chunkManager.getChunk(baseXId, baseYId+1, baseZId));
-                updateAllBlocks();
-            }
-        }
-
-        if (bottom) {
-            if (twoBottom && leftBottom && rightBottom && frontBottom && backBottom) {
-                setChunk(chunkManager.getChunk(baseXId, baseYId-1, baseZId));
-                updateAllBlocks();
-            }
-        }
-
-        if (front) {
-            if(twoFront && rightFront && leftFront && frontTop && frontBottom){
-                setChunk(chunkManager.getChunk(baseXId, baseYId, baseZId+1));
-                updateAllBlocks();
-            }
-        }
-
-        if (back) {
-            if(twoBack && rightBack && leftBack && backTop && backBottom){
-                setChunk(chunkManager.getChunk(baseXId, baseYId, baseZId-1));
-                updateAllBlocks();
-            }
         }
     }
 
@@ -268,7 +183,7 @@ public class ChunkMaker extends Thread {
     }
 
     public void addDataToProcess() {
-        dataToProcess.add(new Data(chunk.xId, chunk.yId, chunk.zId, chunk.getVertices(), vertexData, normalData, texData, false));
+        dataToProcess.add(new Data(chunkX, chunkY, chunkZ, chunk.getVertices(), vertexData, normalData, texData, false));
     }
 
     public void updateRight(Chunk chunk) {
@@ -396,7 +311,8 @@ public class ChunkMaker extends Thread {
                         if (type != Type.DIRT) {
                             topXOff = AtlasManager.getTopXOff(type);
                             topYOff = AtlasManager.getTopYOff(type);
-                        } else {
+                        }
+                        else{
                             topXOff = AtlasManager.getTopXOff(Type.GRASS);
                             topYOff = AtlasManager.getTopYOff(Type.GRASS);
                         }
@@ -1239,44 +1155,39 @@ public class ChunkMaker extends Thread {
     public void updateAllBlocks() {
         getAdjacentChunks();
 
-        if (rightChunk != null && leftChunk != null && frontChunk != null && backChunk != null) {
-            updateMiddle();
+        updateMiddle();
 
-            updateTopLeftBack();
-            updateTopLeftFront();
-            updateTopRightBack();
-            updateTopRightFront();
+        updateTopLeftBack();
+        updateTopLeftFront();
+        updateTopRightBack();
+        updateTopRightFront();
 
-            updateBottomLeftBack();
-            updateBottomLeftFront();
-            updateBottomRightBack();
-            updateBottomRightFront();
+        updateBottomLeftBack();
+        updateBottomLeftFront();
+        updateBottomRightBack();
+        updateBottomRightFront();
 
-            updateTopLeft();
-            updateTopRight();
-            updateTopFront();
-            updateTopBack();
+        updateTopLeft();
+        updateTopRight();
+        updateTopFront();
+        updateTopBack();
 
-            updateBottomLeft();
-            updateBottomRight();
-            updateBottomFront();
-            updateBottomBack();
+        updateBottomLeft();
+        updateBottomRight();
+        updateBottomFront();
+        updateBottomBack();
 
-            updateLeftBack();
-            updateLeftFront();
-            updateRightBack();
-            updateRightFront();
+        updateLeftBack();
+        updateLeftFront();
+        updateRightBack();
+        updateRightFront();
 
-            updateLeftSide();
-            updateRightSide();
-            updateTopSide();
-            updateBottomSide();
-            updateFrontSide();
-            updateBackSide();
-
-            drawChunkVBO();
-            addDataToProcess();
-        }
+        updateLeftSide();
+        updateRightSide();
+        updateTopSide();
+        updateBottomSide();
+        updateFrontSide();
+        updateBackSide();
 
         rightChunk = null;
         leftChunk = null;

@@ -51,8 +51,8 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 20;
-    public static final int THREE_DIM_SMOOTHNESS = 50;
+    public static final int TERRAIN_SMOOTHNESS = 12;
+    public static final int THREE_DIM_SMOOTHNESS = 20;
     /**
      * Set player's height. One block's height is 1.
      */
@@ -83,7 +83,7 @@ public class Voxels {
      */
     public static final int FIELD_OF_VIEW = 90;
     public static int chunkCreationDistance = 0;
-    public static int inGameCreationDistance = 15;
+    public static int inGameCreationDistance = 11;
     public static int chunkRenderDistance = 10;
     public static Texture atlas;
     public static Sound running;
@@ -201,7 +201,7 @@ public class Voxels {
         System.out.println("VBOs created in " + (System.nanoTime() - time) / 1000000000 + " seconds.");
         chunkManager.getChunkLoader().loadChunks();
         chunkManager.getChunkLoader().start();
-        //chunkManager.stopGeneration();
+        //chunkManager.stopGeneration();  
         chunkManager.startChunkRenderChecker();
         chunkCreationDistance = inGameCreationDistance;
 
@@ -209,7 +209,7 @@ public class Voxels {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             updateView();
             processInput(getDelta());
-            for(int i = 0; i<ChunkManager.maxThreads; i++){
+            for(int i = 0; i<ChunkManager.maxThreads/2; i++){
                 chunkManager.checkChunkUpdates();
             }
             chunkManager.processBufferData();

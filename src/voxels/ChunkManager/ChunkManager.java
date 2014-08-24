@@ -37,7 +37,7 @@ public class ChunkManager {
      * Set the maximum amount of threads use to create chunks. Default number is
      * equal to the number of cores in the system CPU.
      */
-    public static int maxThreads = Runtime.getRuntime().availableProcessors();
+    public static int maxThreads = Runtime.getRuntime().availableProcessors()-2;
 
     private ConcurrentHashMap<Integer, byte[]> map;
     private ConcurrentHashMap<Integer, Handle> handles;
@@ -68,6 +68,7 @@ public class ChunkManager {
         chunkLoader.setPriority(Thread.MIN_PRIORITY);
         updateThread = new ChunkMaker(map, this, dataToProcess, queue);
         chunkRenderChecker = new ChunkRenderChecker(queue, map, this);
+        chunkRenderChecker.setPriority(Thread.MAX_PRIORITY);
     }
 
     public Chunk getChunk(int chunkX, int chunkY, int chunkZ) {
@@ -115,7 +116,7 @@ public class ChunkManager {
                 // Start a new thread, make a new chunk
                 int threadId = getFreeThread();
                 threads[threadId] = new ChunkMaker(dataToProcess, newChunkX, newChunkY, newChunkZ, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE, map, this, queue);
-                //threads[threadId].setPriority(Thread.MIN_PRIORITY);
+                threads[threadId].setPriority(Thread.MIN_PRIORITY);
                 threads[threadId].start();
 
             } else {

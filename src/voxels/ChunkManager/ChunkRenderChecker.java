@@ -27,6 +27,12 @@ public class ChunkRenderChecker extends Thread {
         this.map = map;
         this.chunkManager = chunkManager;
     }
+    /**
+     * 
+     * Maybe add different BlockingQueue for each layer,
+     * and prioritize the closest layers to player's Y coordinate?
+     * 
+     */
 
     @Override
     public void run() {

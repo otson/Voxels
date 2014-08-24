@@ -137,7 +137,7 @@ public class Voxels {
     
     private static void initFog(){
         glEnable(GL_FOG);
-        glFog(GL_FOG_COLOR, asFloatBuffer(new float[]{0.6f, 0.6f, 0.6f, 1f}));
+        glFog(GL_FOG_COLOR, asFloatBuffer(new float[]{0.65f, 0.65f, 0.85f, 1f}));
         glFogi(GL_FOG_MODE, GL_LINEAR);
         glFogf(GL_FOG_START, 48.f);
         glFogf(GL_FOG_END, 144.f);

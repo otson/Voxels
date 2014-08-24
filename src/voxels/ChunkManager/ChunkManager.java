@@ -7,9 +7,13 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.opengl.Display;
@@ -17,8 +21,6 @@ import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import org.lwjgl.util.vector.Vector3f;
 import voxels.Voxels;
@@ -39,13 +41,15 @@ public class ChunkManager {
 
     private ConcurrentHashMap<Integer, byte[]> map;
     private ConcurrentHashMap<Integer, Handle> handles;
-    private LinkedList<Pair> chunksToRender;
     private ArrayList<Data> dataToProcess;
     private ChunkCoordinateCreator chunkCreator;
     private ChunkRenderChecker chunkRenderChecker;
     private ActiveChunkLoader chunkLoader;
     private ChunkMaker[] threads = new ChunkMaker[maxThreads];
     private ChunkMaker updateThread;
+    
+    BlockingQueue<Pair> queue = new LinkedBlockingQueue<>();
+
 
     private boolean atMax = false;
     private boolean inLoop;
@@ -59,12 +63,11 @@ public class ChunkManager {
         map = new ConcurrentHashMap<>(16, 0.9f, 1);
         handles = new ConcurrentHashMap<>(16, 0.9f, 1);
         dataToProcess = new ArrayList<>();
-        chunksToRender = new LinkedList<>();
         chunkCreator = new ChunkCoordinateCreator(map);
         chunkLoader = new ActiveChunkLoader(this);
         chunkLoader.setPriority(Thread.MIN_PRIORITY);
-        updateThread = new ChunkMaker(map, this, dataToProcess, chunksToRender);
-        chunkRenderChecker = new ChunkRenderChecker(chunksToRender, map, this);
+        updateThread = new ChunkMaker(map, this, dataToProcess, queue);
+        chunkRenderChecker = new ChunkRenderChecker(queue, map, this);
     }
 
     public Chunk getChunk(int chunkX, int chunkY, int chunkZ) {
@@ -111,8 +114,8 @@ public class ChunkManager {
 
                 // Start a new thread, make a new chunk
                 int threadId = getFreeThread();
-                threads[threadId] = new ChunkMaker(dataToProcess, newChunkX, newChunkY, newChunkZ, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE, map, this, chunksToRender);
-                threads[threadId].setPriority(Thread.MIN_PRIORITY);
+                threads[threadId] = new ChunkMaker(dataToProcess, newChunkX, newChunkY, newChunkZ, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE, map, this, queue);
+                //threads[threadId].setPriority(Thread.MIN_PRIORITY);
                 threads[threadId].start();
 
             } else {
@@ -181,7 +184,7 @@ public class ChunkManager {
                 System.out.println("Tried to modify a null chunk.");
                 return;
             }
-            if (type == Type.DIRT) {
+            else if (type == Type.DIRT) {
                 if (chunk.blocks[xInChunk][yInChunk][zInChunk].is(Type.AIR)) {
                     chunk.blocks[xInChunk][yInChunk][zInChunk].setType(type);
                     updateThread.update(chunk);
@@ -204,12 +207,11 @@ public class ChunkManager {
     }
 
     public void createVBO(Chunk chunk) {
-        ChunkMaker cm = new ChunkMaker(dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this, chunksToRender);
+        ChunkMaker cm = new ChunkMaker(dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this, queue);
         cm.setChunk(chunk);
         cm.updateAllBlocks();
         cm.drawChunkVBO();
         cm.addDataToProcess();
-        //processBufferData();
     }
 
     public void createVBOs() {
@@ -218,7 +220,7 @@ public class ChunkManager {
         Iterator itr = c.iterator();
         while (itr.hasNext()) {
             Chunk chunk = toChunk((byte[]) itr.next());
-            ChunkMaker cm = new ChunkMaker(dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this, chunksToRender);
+            ChunkMaker cm = new ChunkMaker(dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this, queue);
             cm.setChunk(chunk);
             cm.updateAllBlocks();
             cm.drawChunkVBO();
@@ -398,6 +400,10 @@ public class ChunkManager {
     
     public void startChunkRenderChecker(){
         chunkRenderChecker.start();
+    }
+
+    public ChunkRenderChecker getChunkRenderChecker() {
+        return chunkRenderChecker;
     }
 
 }

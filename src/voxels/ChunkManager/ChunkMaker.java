@@ -7,11 +7,12 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.BufferUtils;
-import static voxels.Voxels.WaterOffs;
 
 /**
  *
@@ -43,6 +44,7 @@ public class ChunkMaker extends Thread {
     private int zOff;
     private ConcurrentHashMap<Integer, byte[]> map;
     private LinkedList<Pair> chunksToRender;
+    private BlockingQueue<Pair> queue;
     private boolean ready = false;
 
     private Chunk rightChunk;
@@ -59,7 +61,7 @@ public class ChunkMaker extends Thread {
 
     boolean update;
 
-    public ChunkMaker(ArrayList<Data> dataToProcess, int chunkX, int chunkY, int chunkZ, int xOff, int yOff, int zOff, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager, LinkedList<Pair> chunksToRender) {
+    public ChunkMaker(ArrayList<Data> dataToProcess, int chunkX, int chunkY, int chunkZ, int xOff, int yOff, int zOff, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager, BlockingQueue<Pair> queue) {
         this.xOff = xOff;
         this.yOff = yOff;
         this.zOff = zOff;
@@ -69,17 +71,17 @@ public class ChunkMaker extends Thread {
         this.map = map;
         this.dataToProcess = dataToProcess;
         this.chunkManager = chunkManager;
-        this.chunksToRender = chunksToRender;
+        this.queue = queue;
 
         update = false;
 
     }
 
-    public ChunkMaker(ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager, ArrayList<Data> dataToProcess, LinkedList<Pair> chunksToRender) {
+    public ChunkMaker(ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager, ArrayList<Data> dataToProcess, BlockingQueue<Pair> queue) {
         this.map = map;
         this.chunkManager = chunkManager;
         this.dataToProcess = dataToProcess;
-        this.chunksToRender = chunksToRender;
+        this.queue = queue;
     }
 
     @Override
@@ -87,7 +89,12 @@ public class ChunkMaker extends Thread {
         if (!map.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
             chunk = new Chunk(chunkX, chunkY, chunkZ);
             map.put(new Pair(chunkX, chunkY, chunkZ).hashCode(), toByte(chunk));
-            chunksToRender.add(new Pair(chunkX, chunkY, chunkZ));
+            try {
+                queue.offer(new Pair(chunkX, chunkY, chunkZ), 1, TimeUnit.DAYS);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ChunkMaker.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
         } else {
             System.out.println("Already contains");
         }

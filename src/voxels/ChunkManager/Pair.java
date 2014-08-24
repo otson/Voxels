@@ -18,7 +18,7 @@ public class Pair {
 
     @Override
     public int hashCode() {
-        int hash = 193;
+        int hash = 7243;
         hash = 769 * hash + this.x;
         hash = 769 * hash + this.y;
         hash = 769 * hash + this.z;

@@ -5,9 +5,11 @@
  */
 package voxels.ChunkManager;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -16,12 +18,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ChunkRenderChecker extends Thread {
 
     private ConcurrentHashMap<Integer, byte[]> map;
-    private LinkedList<Pair> chunksToRender;
     private boolean running = false;
     private ChunkManager chunkManager;
+    private BlockingQueue<Pair> queue;
 
-    public ChunkRenderChecker(LinkedList<Pair> chunksToRender, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager) {
-        this.chunksToRender = chunksToRender;
+    public ChunkRenderChecker(BlockingQueue<Pair> queue, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager) {
+        this.queue = queue;
         this.map = map;
         this.chunkManager = chunkManager;
     }
@@ -29,44 +31,59 @@ public class ChunkRenderChecker extends Thread {
     @Override
     public void run() {
         running = true;
-        Pair current;
+        Pair current = null;
         while (running) {
+            int size = queue.size();
             long start = System.nanoTime();
-            for (int i = 0; i < chunksToRender.size(); i++) {
-                current = chunksToRender.get(i);
-                if (map.containsKey(new Pair(current.x + 1, current.y, current.z).hashCode())
-                        && map.containsKey(new Pair(current.x - 1, current.y, current.z).hashCode())
-                        && map.containsKey(new Pair(current.x, current.y, current.z + 1).hashCode())
-                        && map.containsKey(new Pair(current.x, current.y, current.z - 1).hashCode())) {
+            for (int i = 0; i < size; i++) {
+                try {
+                    current = queue.take();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(ChunkRenderChecker.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                if (current != null) {
+                    if (map.containsKey(new Pair(current.x + 1, current.y, current.z).hashCode())
+                            && map.containsKey(new Pair(current.x - 1, current.y, current.z).hashCode())
+                            && map.containsKey(new Pair(current.x, current.y, current.z + 1).hashCode())
+                            && map.containsKey(new Pair(current.x, current.y, current.z - 1).hashCode())) {
 
-                    if (current.y != 1 && current.y != Chunk.WORLD_HEIGHT) {
-                        if (map.containsKey(new Pair(current.x, current.y + 1, current.z).hashCode())
-                                && map.containsKey(new Pair(current.x, current.y - 1, current.z).hashCode())) {
-                            // create render
-                            chunksToRender.remove(i);
-                            i--;
-                            chunkManager.createVBO(chunkManager.getChunk(current.x, current.y, current.z));
+                        if (current.y != 1 && current.y != Chunk.WORLD_HEIGHT) {
+                            if (map.containsKey(new Pair(current.x, current.y + 1, current.z).hashCode())
+                                    && map.containsKey(new Pair(current.x, current.y - 1, current.z).hashCode())) {
+                                i--;
+                                chunkManager.createVBO(chunkManager.getChunk(current.x, current.y, current.z));
+                            }
+                        } else if (current.y == 1) {
+                            if (map.containsKey(new Pair(current.x, current.y + 1, current.z).hashCode())) {
+                                i--;
+                                chunkManager.createVBO(chunkManager.getChunk(current.x, current.y, current.z));
+                            }
+                        } else if (current.y == Chunk.WORLD_HEIGHT) {
+                            if (map.containsKey(new Pair(current.x, current.y - 1, current.z).hashCode())) {
+                                i--;
+                                chunkManager.createVBO(chunkManager.getChunk(current.x, current.y, current.z));
+                            }
                         }
-                    } else if (current.y == 1) {
-                        if (map.containsKey(new Pair(current.x, current.y + 1, current.z).hashCode())) {
-                            // create render
-                            chunksToRender.remove(i);
-                            i--;
-                            chunkManager.createVBO(chunkManager.getChunk(current.x, current.y, current.z));
-                        }
-                    } else if (current.y == Chunk.WORLD_HEIGHT) {
-                        if (map.containsKey(new Pair(current.x, current.y - 1, current.z).hashCode())) {
-                            // create render
-                            chunksToRender.remove(i);
-                            i--;
-                            chunkManager.createVBO(chunkManager.getChunk(current.x, current.y, current.z));
+                    } else {
+                        try {
+                            // put it back
+                            queue.offer(current, 1, TimeUnit.DAYS);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(ChunkRenderChecker.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
                 }
             }
-            System.out.println("chunksToRender size: " + chunksToRender.size() + "Time taken: " + (System.nanoTime() - start) / 1000000 + " ms.");
-
-        }
+            System.out.println("Queue size: " + size + " Time taken: " + (System.nanoTime() - start) / 1000000 + " ms.");
+            try {
+                sleep(50);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ChunkRenderChecker.class.getName()).log(Level.SEVERE, null, ex);
+            }
+       }
+    }
+    public boolean isRunning(){
+        return running;
     }
 
 }

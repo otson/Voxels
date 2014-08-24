@@ -1861,7 +1861,7 @@ public class ChunkMaker extends Thread {
         }
 
         if (bottomChunk != null) {
-            if (bottomChunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
+            if (bottomChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setBottom(true);
             } else {
                 chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setBottom(false);

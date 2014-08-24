@@ -59,11 +59,11 @@ public class AtlasManager {
     }
     
     public static float getBottomXOff(short type){
-        return getY(type);
+        return getX(type);
     }
     
     public static float getBottomYOff(short type){
-        return getX(type);
+        return getY(type);
     }
 
 }

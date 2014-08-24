@@ -86,7 +86,7 @@ public class Chunk implements Serializable {
 
                         //only add 3d noise to the upper part of the world (clouds)
                         if (y + Chunk.CHUNK_SIZE * yId > WORLD_HEIGHT * GROUND_SHARE) {
-                            float noise1 = Voxels.get3DNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate) / (float) (CHUNK_SIZE * VERTICAL_CHUNKS);
+                            float noise1 = Voxels.get3DNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate+10) / (float) (CHUNK_SIZE * VERTICAL_CHUNKS);
                             if (noise1 > 0.90f && y + Chunk.CHUNK_SIZE * yId < VERTICAL_CHUNKS * CHUNK_SIZE - FORCED_AIR_LAYERS) {
                                 blocks[x][y][z] = new Block(Type.CLOUD);
                             }

@@ -105,6 +105,7 @@ public class Voxels {
     public static void main(String[] args) {
         initDisplay();
         initOpenGL();
+        initFog();
         initLighting();
         initTextures();
         initSounds();
@@ -132,6 +133,14 @@ public class Voxels {
         glCullFace(GL_BACK);
         glLoadIdentity();
 
+    }
+    
+    private static void initFog(){
+        glEnable(GL_FOG);
+        glFog(GL_FOG_COLOR, asFloatBuffer(new float[]{0.6f, 0.6f, 0.6f, 1f}));
+        glFogi(GL_FOG_MODE, GL_LINEAR);
+        glFogf(GL_FOG_START, 48.f);
+        glFogf(GL_FOG_END, 144.f);
     }
 
     public static void initSounds() {
@@ -209,7 +218,7 @@ public class Voxels {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             updateView();
             processInput(getDelta());
-            for(int i = 0; i<ChunkManager.maxThreads/2; i++){
+            for (int i = 0; i < ChunkManager.maxThreads / 2; i++) {
                 chunkManager.checkChunkUpdates();
             }
             chunkManager.processBufferData();

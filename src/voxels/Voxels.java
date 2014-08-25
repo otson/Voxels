@@ -134,8 +134,8 @@ public class Voxels {
         glLoadIdentity();
 
     }
-    
-    private static void initFog(){
+
+    private static void initFog() {
         glEnable(GL_FOG);
         glFog(GL_FOG_COLOR, asFloatBuffer(new float[]{0.65f, 0.65f, 0.85f, 1f}));
         glFogi(GL_FOG_MODE, GL_LINEAR);
@@ -503,6 +503,19 @@ public class Voxels {
         }
         noise *= GROUND_SHARE;
         return noise;
+    }
+
+    public static int getTreeNoise(float x, float z) {
+        int noise = (int) (FastNoise.noise(x + 1000, z + 1000, 7));
+        if (noise == 30) {
+            return 0;
+        }
+        else if(noise == 31)
+            return 1;
+        else {
+            return -1;
+        }
+
     }
 
     public static int get3DNoise(float x, float y, float z) {

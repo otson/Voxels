@@ -1,5 +1,7 @@
 package voxels;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -20,18 +22,40 @@ import static org.lwjgl.opengl.GL11.*;
 
 import static org.lwjgl.opengl.GL15.*;
 
+import static org.lwjgl.opengl.GL20.GL_COMPILE_STATUS;
+import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
+import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
+import static org.lwjgl.opengl.GL20.glAttachShader;
+import static org.lwjgl.opengl.GL20.glCompileShader;
+import static org.lwjgl.opengl.GL20.glCreateProgram;
+import static org.lwjgl.opengl.GL20.glCreateShader;
+import static org.lwjgl.opengl.GL20.glGetShaderi;
+import static org.lwjgl.opengl.GL20.glLinkProgram;
+import static org.lwjgl.opengl.GL20.glShaderSource;
+import static org.lwjgl.opengl.GL20.glShaderSource;
+import static org.lwjgl.opengl.GL20.glShaderSource;
+import static org.lwjgl.opengl.GL20.glShaderSource;
+import static org.lwjgl.opengl.GL20.glShaderSource;
+import static org.lwjgl.opengl.GL20.glShaderSource;
+import static org.lwjgl.opengl.GL20.glShaderSource;
+import static org.lwjgl.opengl.GL20.glShaderSource;
+import static org.lwjgl.opengl.GL20.glShaderSource;
+import static org.lwjgl.opengl.GL20.glShaderSource;
+import static org.lwjgl.opengl.GL20.glUseProgram;
+import static org.lwjgl.opengl.GL20.glValidateProgram;
 import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import voxels.Camera.EulerCamera;
 import voxels.ChunkManager.Chunk;
-import static voxels.ChunkManager.Chunk.WORLD_HEIGHT;
 import static voxels.ChunkManager.Chunk.GROUND_SHARE;
+import static voxels.ChunkManager.Chunk.WORLD_HEIGHT;
 import voxels.ChunkManager.ChunkManager;
 import voxels.ChunkManager.Handle;
 import voxels.ChunkManager.Type;
 import voxels.Noise.FastNoise;
 import voxels.Noise.SimplexNoise;
+import voxels.Shaders.ShaderLoader;
 
 /**
  *
@@ -91,16 +115,26 @@ public class Voxels {
     public static Sound impact;
     public static final float WaterOffs = 0.28f;
     public static float START_TIME;
-
     private static ChunkManager chunkManager;
-
     private static EulerCamera camera;
     private static float light0Position[] = {-2000.0f, 50000.0f, 8000.0f, 1.0f};
-
     private static int fps = 0;
     private static long lastFPS = getTime();
     public static int count = 0;
     private static long lastFrame = System.nanoTime();
+    
+    // shaders
+    
+    
+    private static int vertexShader;
+    private static int fragmentShader;
+    private static StringBuilder vertexShaderSource;
+    private static StringBuilder fragmentShaderSource;
+    private static BufferedReader reader = null;
+    
+    private static final String VERTEX_SHADER_LOCATION = "src/resources/shaders/vertex_phong_lighting.vs";
+    private static final String FRAGMENT_SHADER_LOCATION = "src/resources/shaders/vertex_phong_lighting.fs";
+    private static int shaderProgram;
 
     public static void main(String[] args) {
         initDisplay();
@@ -109,7 +143,13 @@ public class Voxels {
         initLighting();
         initTextures();
         initSounds();
+        setUpShaders();
+        
         gameLoop();
+        
+    }
+    private static void setUpShaders() {
+        shaderProgram = ShaderLoader.loadShaderPair(VERTEX_SHADER_LOCATION, FRAGMENT_SHADER_LOCATION);
     }
 
     private static void initDisplay() {
@@ -133,6 +173,69 @@ public class Voxels {
         glCullFace(GL_BACK);
         glLoadIdentity();
 
+    }
+    
+    private static void initShaders(){
+        shaderProgram = glCreateProgram();
+        vertexShader = glCreateShader(GL_VERTEX_SHADER);
+        fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+        vertexShaderSource = new StringBuilder();
+        fragmentShaderSource = new StringBuilder();
+        reader = null;
+        try {
+            reader = new BufferedReader(new FileReader("src/resources/shaders/shader.vs"));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                vertexShaderSource.append(line).append('\n');
+            }
+        } catch (IOException e) {
+            System.err.println("Vertex shader wasn't loaded properly.");
+            e.printStackTrace();
+            Display.destroy();
+            System.exit(1);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        BufferedReader reader2 = null;
+        try {
+            reader2 = new BufferedReader(new FileReader("src/resources/shaders/shader.fs"));
+            String line;
+            while ((line = reader2.readLine()) != null) {
+                fragmentShaderSource.append(line).append('\n');
+            }
+        } catch (IOException e) {
+            System.err.println("Fragment shader wasn't loaded properly.");
+            Display.destroy();
+            System.exit(1);
+        } finally {
+            if (reader2 != null) {
+                try {
+                    reader2.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        glShaderSource(vertexShader, vertexShaderSource);
+        glCompileShader(vertexShader);
+        if (glGetShaderi(vertexShader, GL_COMPILE_STATUS) == GL_FALSE) {
+            System.err.println("Vertex shader wasn't able to be compiled correctly.");
+        }
+        glShaderSource(fragmentShader, fragmentShaderSource);
+        glCompileShader(fragmentShader);
+        if (glGetShaderi(fragmentShader, GL_COMPILE_STATUS) == GL_FALSE) {
+            System.err.println("Fragment shader wasn't able to be compiled correctly.");
+        }
+        glAttachShader(shaderProgram, vertexShader);
+        glAttachShader(shaderProgram, fragmentShader);
+        glLinkProgram(shaderProgram);
+        glValidateProgram(shaderProgram);
     }
 
     private static void initFog() {
@@ -215,6 +318,7 @@ public class Voxels {
         chunkCreationDistance = inGameCreationDistance;
 
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+            
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             updateView();
             processInput(getDelta());
@@ -222,12 +326,13 @@ public class Voxels {
                 chunkManager.checkChunkUpdates();
             }
             chunkManager.processBufferData();
+            glUseProgram(shaderProgram);
             render();
-
+            glUseProgram(0);
             updateFPS();
             Display.update();
             Display.sync(60);
-            //System.out.println("Chunks: "+chunkManager.getTotalChunks());
+            
         }
         Display.destroy();
         TinySound.shutdown();
@@ -452,6 +557,22 @@ public class Voxels {
         return z % Chunk.CHUNK_SIZE;
     }
 
+    public final static int xInChunk(int xx) {
+        int x = xx;
+        if (x <= 0) {
+            x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE;
+        }
+        return x % Chunk.CHUNK_SIZE;
+    }
+
+    public final static int zInChunk(int zz) {
+        int z = zz;
+        if (z <= 0) {
+            z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE;
+        }
+        return z % Chunk.CHUNK_SIZE;
+    }
+
     public final static int yInChunk(float add) {
         int y = (int) (camera.y() - PLAYER_HEIGHT + add);
         return y % Chunk.CHUNK_SIZE;
@@ -501,26 +622,25 @@ public class Voxels {
         } else {
             noise = (int) (FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), 5) * ((float) (Chunk.VERTICAL_CHUNKS * Chunk.CHUNK_SIZE) / 256f)) - 1;
         }
-        noise *= GROUND_SHARE;
-        //noise = getExpValue(noise);
-        return noise;
-    }
-    
-    private static int getExpValue(int noise){
-        noise = (int) (noise*(noise/50f));
-        return noise;
+        return (int) (noise * GROUND_SHARE);
+        //return Math.max((int) ((noise+getLargeNoise(x, z))*GROUND_SHARE),2);
     }
 
-    public static int getTreeNoise(float x, float z) {
-        int noise = (int) (FastNoise.noise(x + 1000, z + 1000, 7));
-        if (noise == 30) {
-            return 0;
+    private static int getLargeNoise(float x, float z) {
+        return (int) (FastNoise.noise(x / (1f * 500), z / (1f * 100), 1) * ((float) (Chunk.VERTICAL_CHUNKS / 2 * Chunk.CHUNK_SIZE) / 256f)) - 1;
+
+    }
+
+    public static int getTreeNoise(int x, int z) {
+        int xx = xInChunk(x);
+        int zz = zInChunk(z);
+        if (xx > 1 && xx < Chunk.CHUNK_SIZE - 2 && zz > 1 && zz < Chunk.CHUNK_SIZE - 2) {
+            int noise = (int) (FastNoise.noise(x + 1000, z + 1000, 7));
+            if (noise == 30) {
+                return 0;
+            }
         }
-        else if(noise == 31)
-            return 1;
-        else {
-            return -1;
-        }
+        return -1;
 
     }
 

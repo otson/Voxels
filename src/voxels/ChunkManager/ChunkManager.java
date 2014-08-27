@@ -158,9 +158,6 @@ public class ChunkManager {
                 }
             }
         }
-        if (wait == false) {
-            processBufferData();
-        }
     }
 
     public void castRay(Short type) {

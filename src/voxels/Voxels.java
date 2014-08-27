@@ -1,7 +1,5 @@
 package voxels;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,116 +14,24 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import static org.lwjgl.opengl.ARBFramebufferObject.GL_DEPTH_ATTACHMENT;
-import static org.lwjgl.opengl.ARBFramebufferObject.GL_FRAMEBUFFER;
-import static org.lwjgl.opengl.ARBFramebufferObject.GL_FRAMEBUFFER_COMPLETE;
-import static org.lwjgl.opengl.ARBFramebufferObject.GL_MAX_RENDERBUFFER_SIZE;
-import static org.lwjgl.opengl.ARBFramebufferObject.GL_RENDERBUFFER;
-import static org.lwjgl.opengl.ARBFramebufferObject.glBindFramebuffer;
-import static org.lwjgl.opengl.ARBFramebufferObject.glBindRenderbuffer;
-import static org.lwjgl.opengl.ARBFramebufferObject.glCheckFramebufferStatus;
-import static org.lwjgl.opengl.ARBFramebufferObject.glFramebufferRenderbuffer;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenFramebuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenFramebuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenFramebuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenFramebuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenFramebuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenFramebuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenFramebuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenFramebuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenFramebuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenFramebuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenFramebuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenFramebuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenFramebuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenFramebuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenFramebuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenFramebuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenFramebuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenFramebuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenRenderbuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenRenderbuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenRenderbuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenRenderbuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenRenderbuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenRenderbuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenRenderbuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenRenderbuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenRenderbuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenRenderbuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenRenderbuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenRenderbuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenRenderbuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenRenderbuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenRenderbuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glGenRenderbuffers;
-import static org.lwjgl.opengl.ARBFramebufferObject.glRenderbufferStorage;
-import static org.lwjgl.opengl.ARBShadowAmbient.GL_TEXTURE_COMPARE_FAIL_VALUE_ARB;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL14.GL_DEPTH_COMPONENT32;
-import static org.lwjgl.opengl.GL14.GL_DEPTH_TEXTURE_MODE;
 
 import static org.lwjgl.opengl.GL15.*;
 
-import static org.lwjgl.opengl.GL20.GL_COMPILE_STATUS;
-import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
-import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
-import static org.lwjgl.opengl.GL20.glAttachShader;
-import static org.lwjgl.opengl.GL20.glCompileShader;
-import static org.lwjgl.opengl.GL20.glCreateProgram;
-import static org.lwjgl.opengl.GL20.glCreateShader;
-import static org.lwjgl.opengl.GL20.glGetShaderi;
-import static org.lwjgl.opengl.GL20.glLinkProgram;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glUseProgram;
-import static org.lwjgl.opengl.GL20.glValidateProgram;
-import static org.lwjgl.util.glu.GLU.gluErrorString;
-import static org.lwjgl.util.glu.GLU.gluLookAt;
-import static org.lwjgl.util.glu.GLU.gluPerspective;
-import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import voxels.Camera.EulerCamera;
 import voxels.ChunkManager.Chunk;
-import static voxels.ChunkManager.Chunk.GROUND_SHARE;
 import static voxels.ChunkManager.Chunk.WORLD_HEIGHT;
+import static voxels.ChunkManager.Chunk.GROUND_SHARE;
 import voxels.ChunkManager.ChunkManager;
 import voxels.ChunkManager.Handle;
 import voxels.ChunkManager.Type;
 import voxels.Noise.FastNoise;
 import voxels.Noise.SimplexNoise;
-import voxels.Shaders.ShaderLoader;
 
 /**
  *
@@ -177,57 +83,24 @@ public class Voxels {
      */
     public static final int FIELD_OF_VIEW = 90;
     public static int chunkCreationDistance = 0;
-    public static int inGameCreationDistance = 11;
-    public static int chunkRenderDistance = 10;
+    public static int inGameCreationDistance = 15;
+    public static int chunkRenderDistance = 14;
     public static Texture atlas;
     public static Sound running;
     public static Sound jumping;
     public static Sound impact;
     public static final float WaterOffs = 0.28f;
     public static float START_TIME;
+
     private static ChunkManager chunkManager;
+
     private static EulerCamera camera;
     private static float light0Position[] = {-2000.0f, 50000.0f, 8000.0f, 1.0f};
+
     private static int fps = 0;
     private static long lastFPS = getTime();
     public static int count = 0;
     private static long lastFrame = System.nanoTime();
-    
-    // shaders
-    
-    
-    private static int vertexShader;
-    private static int fragmentShader;
-    private static StringBuilder vertexShaderSource;
-    private static StringBuilder fragmentShaderSource;
-    private static BufferedReader reader = null;
-    
-    private static final String VERTEX_SHADER_LOCATION = "src/resources/shaders/vertex_phong_lighting.vs";
-    private static final String FRAGMENT_SHADER_LOCATION = "src/resources/shaders/vertex_phong_lighting.fs";
-    private static int shaderProgram;
-    
-    /** The position of the omnidirectional shadow-casting light. */
-    private static final FloatBuffer lightPosition = asFloatBuffer(new float[]{-2000.0f, 50000.0f, 8000.0f, 1.0f});
-    private static final FloatBuffer textureBuffer = BufferUtils.createFloatBuffer(16);
-    private static final Matrix4f depthModelViewProjection = new Matrix4f();
-    private static final DisplayMode DISPLAY_MODE = new DisplayMode(800, 600);
-    /**
-     * The width of the depth texture that is known as the shadow map. The higher the width, the more detailed the
-     * shadows.
-     */
-    private static int shadowMapWidth;
-    /**
-     * The height of the depth texture that is known as the shadow map. The higher the height, the more detailed the
-     * shadows.
-     */
-    private static int shadowMapHeight;
-    /**
-     * The frame buffer holding the shadow map. This frame buffer is an off-screen rendering location to which we will
-     * draw the shadow map.
-     */
-    private static int frameBuffer;
-    /** The render buffer holding the shadow map in the form of a depth texture. */
-    private static int renderBuffer;
 
     public static void main(String[] args) {
         initDisplay();
@@ -236,186 +109,7 @@ public class Voxels {
         initLighting();
         initTextures();
         initSounds();
-        setUpFrameBufferObject();
-        
-        
         gameLoop();
-        
-    }
-    
-    /** Sets up the OpenGL states. */
-    private static void setUpFrameBufferObject() {
-        
-        // State that the texture holds nondescript 'intensity' data.
-        glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
-        // If the intensity of a given texel is lower than 0.5f, then the texture should not be sampled. In practice,
-        // the higher the value, the less of the shadow is visible, and the other way around.
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FAIL_VALUE_ARB, 0.5F);
-        // Set the automatic texture coordinate generation mode to eye linear. The texture coordinate is calculated
-        // with the inverse of the model-view matrix and a plane that we will specify later on.
-        glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-        glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-        glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-        glTexGeni(GL_Q, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-        
-        final int MAX_RENDERBUFFER_SIZE = glGetInteger(GL_MAX_RENDERBUFFER_SIZE);
-        final int MAX_TEXTURE_SIZE = glGetInteger(GL_MAX_TEXTURE_SIZE);
-        /**
-         * Cap the maximum shadow map size at 1024x1024 pixels or at the maximum render buffer size. If you have a good
-         * graphics card, feel free to increase this value. The program will lag
-         * if I record and run the program at the same time with higher values.
-         */
-        if (MAX_TEXTURE_SIZE > 1024) {
-            if (MAX_RENDERBUFFER_SIZE < MAX_TEXTURE_SIZE) {
-                shadowMapWidth = shadowMapHeight = MAX_RENDERBUFFER_SIZE;
-            } else {
-                shadowMapWidth = shadowMapHeight = 1024;
-            }
-        } else {
-            shadowMapWidth = shadowMapHeight = MAX_TEXTURE_SIZE;
-        }
-        // Generate and bind a frame buffer.
-        frameBuffer = glGenFramebuffers();
-        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
-        // Generate and bind a render buffer.
-        renderBuffer = glGenRenderbuffers();
-        glBindRenderbuffer(GL_RENDERBUFFER, renderBuffer);
-        // Set the internal storage format of the render buffer to a depth component of 32 bits (4 bytes).
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, shadowMapWidth, shadowMapHeight);
-        // Attach the render buffer to the frame buffer as a depth attachment. This means that, if the frame buffer is
-        // bound, any depth texture values will be copied to the render buffer object.
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderBuffer);
-        // OpenGL shall make no amendment to the colour or multisample buffer.
-        glDrawBuffer(GL_NONE);
-        // Disable the colour buffer for pixel read operations (such as glReadPixels or glCopyTexImage2D).
-        glReadBuffer(GL_NONE);
-        // Check for frame buffer errors.
-        int FBOStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-        if (FBOStatus != GL_FRAMEBUFFER_COMPLETE) {
-            System.err.println("Framebuffer error: " + gluErrorString(glGetError()));
-        }
-        // Bind the default frame buffer, which is used for ordinary drawing.
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
-    
-    /** Generate the shadow map. */
-    private static void drawShadowMap() {
-        /**
-         * The model-view matrix of the light.
-         */
-        FloatBuffer lightModelView = BufferUtils.createFloatBuffer(16);
-        /**
-         * The projection matrix of the light.
-         */
-        FloatBuffer lightProjection = BufferUtils.createFloatBuffer(16);
-        Matrix4f lightProjectionTemp = new Matrix4f();
-        Matrix4f lightModelViewTemp = new Matrix4f();
-        /**
-         * The radius that encompasses all the objects that cast shadows in the scene. There should
-         * be no object farther away than 50 units from [0, 0, 0] in any direction.
-         * If an object exceeds the radius, the object may cast shadows wrongly.
-         */
-        float sceneBoundingRadius = 50;
-        /**
-         * The distance from the light to the scene, assuming that the scene is located
-         * at [0, 0, 0]. Using the Pythagorean theorem, the distance is calculated by taking the square-root of the
-         * sum of each of the components of the light position squared.
-         */
-        float lightToSceneDistance = (float) Math.sqrt(lightPosition.get(0) * lightPosition.get(0) +
-                lightPosition.get(1) * lightPosition.get(1) +
-                lightPosition.get(2) * lightPosition.get(2));
-        /**
-         * The distance to the object that is nearest to the camera. This excludes objects that do not cast shadows.
-         * This will be used as the zNear parameter in gluPerspective.
-         */
-        float nearPlane = lightToSceneDistance - sceneBoundingRadius;
-        if (nearPlane < 0) {
-            System.err.println("Camera is too close to scene. A valid shadow map cannot be generated.");
-        }
-        /**
-         * The field-of-view of the shadow frustum in degrees. Formula taken from the OpenGL SuperBible.
-         */
-        float fieldOfView = (float) Math.toDegrees(2.0F * Math.atan(sceneBoundingRadius / lightToSceneDistance));
-        glMatrixMode(GL_PROJECTION);
-        // Store the current projection matrix.
-        glPushMatrix();
-        glLoadIdentity();
-        // Generate the 'shadow frustum', a perspective projection matrix that shows all the objects in the scene.
-        gluPerspective(fieldOfView, 1, nearPlane, nearPlane + sceneBoundingRadius * 2);
-        // Store the shadow frustum in 'lightProjection'.
-        glGetFloat(GL_PROJECTION_MATRIX, lightProjection);
-        glMatrixMode(GL_MODELVIEW);
-        // Store the current model-view matrix.
-        glPushMatrix();
-        glLoadIdentity();
-        // Have the 'shadow camera' look toward [0, 0, 0] and be location at the light's position.
-        gluLookAt(lightPosition.get(0), lightPosition.get(1), lightPosition.get(2), 0, 0, 0, 0, 1, 0);
-        glGetFloat(GL_MODELVIEW_MATRIX, lightModelView);
-        // Set the view port to the shadow map dimensions so no part of the shadow is cut off.
-        glViewport(0, 0, shadowMapWidth, shadowMapHeight);
-        // Bind the extra frame buffer in which to store the shadow map in the form a depth texture.
-        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
-        // Clear only the depth buffer bit. Clearing the colour buffer is unnecessary, because it is disabled (we
-        // only need depth components).
-        glClear(GL_DEPTH_BUFFER_BIT);
-        // Store the current attribute state.
-        glPushAttrib(GL_ALL_ATTRIB_BITS);
-        {
-            // Disable smooth shading, because the shading in a shadow map is irrelevant. It only matters where the
-            // shape
-            // vertices are positioned, and not what colour they have.
-            glShadeModel(GL_FLAT);
-            // Enabling all these lighting states is unnecessary for reasons listed above.
-            glDisable(GL_LIGHTING);
-            glDisable(GL_COLOR_MATERIAL);
-            glDisable(GL_NORMALIZE);
-            // Disable the writing of the red, green, blue, and alpha colour components,
-            // because we only need the depth component.
-            glColorMask(false, false, false, false);
-            // An offset is given to every depth value of every polygon fragment to prevent a visual quirk called
-            // 'shadow
-            // acne'.
-            glEnable(GL_POLYGON_OFFSET_FILL);
-            // Draw the objects that cast shadows.
-            render();
-            /**
-             * Copy the pixels of the shadow map to the frame buffer object depth attachment.
-             *  int target -> GL_TEXTURE_2D
-             *  int level  -> 0, has to do with mip-mapping, which is not applicable to shadow maps
-             *  int internalformat -> GL_DEPTH_COMPONENT
-             *  int x, y -> 0, 0
-             *  int width, height -> shadowMapWidth, shadowMapHeight
-             *  int border -> 0
-             */
-            glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 0, 0, shadowMapWidth, shadowMapHeight, 0);
-            // Restore the previous model-view matrix.
-            glPopMatrix();
-            glMatrixMode(GL_PROJECTION);
-            // Restore the previous projection matrix.
-            glPopMatrix();
-            glMatrixMode(GL_MODELVIEW);
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        }// Restore the previous attribute state.
-        glPopAttrib();
-        // Restore the view port.
-        glViewport(0, 0, Display.getWidth(), Display.getHeight());
-        lightProjectionTemp.load(lightProjection);
-        lightModelViewTemp.load(lightModelView);
-        lightProjection.flip();
-        lightModelView.flip();
-        depthModelViewProjection.setIdentity();
-        // [-1,1] -> [-0.5,0.5] -> [0,1]
-        depthModelViewProjection.translate(new Vector3f(0.5F, 0.5F, 0.5F));
-        depthModelViewProjection.scale(new Vector3f(0.5F, 0.5F, 0.5F));
-        // Multiply the texture matrix by the projection and model-view matrices of the light.
-        Matrix4f.mul(depthModelViewProjection, lightProjectionTemp, depthModelViewProjection);
-        Matrix4f.mul(depthModelViewProjection, lightModelViewTemp, depthModelViewProjection);
-        // Transpose the texture matrix.
-        Matrix4f.transpose(depthModelViewProjection, depthModelViewProjection);
-    }
-    
-    private static void setUpShaders() {
-        shaderProgram = ShaderLoader.loadShaderPair(VERTEX_SHADER_LOCATION, FRAGMENT_SHADER_LOCATION);
     }
 
     private static void initDisplay() {
@@ -439,69 +133,6 @@ public class Voxels {
         glCullFace(GL_BACK);
         glLoadIdentity();
 
-    }
-    
-    private static void initShaders(){
-        shaderProgram = glCreateProgram();
-        vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        vertexShaderSource = new StringBuilder();
-        fragmentShaderSource = new StringBuilder();
-        reader = null;
-        try {
-            reader = new BufferedReader(new FileReader("src/resources/shaders/shader.vs"));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                vertexShaderSource.append(line).append('\n');
-            }
-        } catch (IOException e) {
-            System.err.println("Vertex shader wasn't loaded properly.");
-            e.printStackTrace();
-            Display.destroy();
-            System.exit(1);
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        BufferedReader reader2 = null;
-        try {
-            reader2 = new BufferedReader(new FileReader("src/resources/shaders/shader.fs"));
-            String line;
-            while ((line = reader2.readLine()) != null) {
-                fragmentShaderSource.append(line).append('\n');
-            }
-        } catch (IOException e) {
-            System.err.println("Fragment shader wasn't loaded properly.");
-            Display.destroy();
-            System.exit(1);
-        } finally {
-            if (reader2 != null) {
-                try {
-                    reader2.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        glShaderSource(vertexShader, vertexShaderSource);
-        glCompileShader(vertexShader);
-        if (glGetShaderi(vertexShader, GL_COMPILE_STATUS) == GL_FALSE) {
-            System.err.println("Vertex shader wasn't able to be compiled correctly.");
-        }
-        glShaderSource(fragmentShader, fragmentShaderSource);
-        glCompileShader(fragmentShader);
-        if (glGetShaderi(fragmentShader, GL_COMPILE_STATUS) == GL_FALSE) {
-            System.err.println("Fragment shader wasn't able to be compiled correctly.");
-        }
-        glAttachShader(shaderProgram, vertexShader);
-        glAttachShader(shaderProgram, fragmentShader);
-        glLinkProgram(shaderProgram);
-        glValidateProgram(shaderProgram);
     }
 
     private static void initFog() {
@@ -582,25 +213,34 @@ public class Voxels {
         //chunkManager.stopGeneration();  
         chunkManager.startChunkRenderChecker();
         chunkCreationDistance = inGameCreationDistance;
-        drawShadowMap();
+        Thread thread = new Thread(
+            new Runnable() {
+                public void run() {
+                    while(true){
+                        chunkManager.checkChunkUpdates();
+                        try {
+                            Thread.sleep(3);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(Voxels.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                }
+            }
+        );
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.start();
         
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
-            
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             updateView();
             processInput(getDelta());
-            for (int i = 0; i < ChunkManager.maxThreads / 2; i++) {
-                chunkManager.checkChunkUpdates();
-            }
             chunkManager.processBufferData();
-            //glUseProgram(shaderProgram);
             render();
-            drawShadowMap();
-            //glUseProgram(0);
+
             updateFPS();
             Display.update();
             Display.sync(60);
-            
+            //System.out.println("Chunks: "+chunkManager.getTotalChunks());
         }
         Display.destroy();
         TinySound.shutdown();
@@ -825,22 +465,6 @@ public class Voxels {
         return z % Chunk.CHUNK_SIZE;
     }
 
-    public final static int xInChunk(int xx) {
-        int x = xx;
-        if (x <= 0) {
-            x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE;
-        }
-        return x % Chunk.CHUNK_SIZE;
-    }
-
-    public final static int zInChunk(int zz) {
-        int z = zz;
-        if (z <= 0) {
-            z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE;
-        }
-        return z % Chunk.CHUNK_SIZE;
-    }
-
     public final static int yInChunk(float add) {
         int y = (int) (camera.y() - PLAYER_HEIGHT + add);
         return y % Chunk.CHUNK_SIZE;
@@ -890,25 +514,26 @@ public class Voxels {
         } else {
             noise = (int) (FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), 5) * ((float) (Chunk.VERTICAL_CHUNKS * Chunk.CHUNK_SIZE) / 256f)) - 1;
         }
-        return (int) (noise * GROUND_SHARE);
-        //return Math.max((int) ((noise+getLargeNoise(x, z))*GROUND_SHARE),2);
+        noise *= GROUND_SHARE;
+        //noise = getExpValue(noise);
+        return noise;
+    }
+    
+    private static int getExpValue(int noise){
+        noise = (int) (noise*(noise/50f));
+        return noise;
     }
 
-    private static int getLargeNoise(float x, float z) {
-        return (int) (FastNoise.noise(x / (1f * 500), z / (1f * 100), 1) * ((float) (Chunk.VERTICAL_CHUNKS / 2 * Chunk.CHUNK_SIZE) / 256f)) - 1;
-
-    }
-
-    public static int getTreeNoise(int x, int z) {
-        int xx = xInChunk(x);
-        int zz = zInChunk(z);
-        if (xx > 1 && xx < Chunk.CHUNK_SIZE - 2 && zz > 1 && zz < Chunk.CHUNK_SIZE - 2) {
-            int noise = (int) (FastNoise.noise(x + 1000, z + 1000, 7));
-            if (noise == 30) {
-                return 0;
-            }
+    public static int getTreeNoise(float x, float z) {
+        int noise = (int) (FastNoise.noise(x + 1000, z + 1000, 7));
+        if (noise == 30) {
+            return 0;
         }
-        return -1;
+        else if(noise == 31)
+            return 1;
+        else {
+            return -1;
+        }
 
     }
 

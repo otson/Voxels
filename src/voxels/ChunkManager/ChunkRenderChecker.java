@@ -27,13 +27,13 @@ public class ChunkRenderChecker extends Thread {
         this.map = map;
         this.chunkManager = chunkManager;
     }
-    /**
-     * 
-     * Maybe add different BlockingQueue for each layer,
-     * and prioritize the closest layers to player's Y coordinate?
-     * 
-     */
 
+    /**
+     *
+     * Maybe add different BlockingQueue for each layer, and prioritize the
+     * closest layers to player's Y coordinate?
+     *
+     */
     @Override
     public void run() {
         running = true;
@@ -57,17 +57,38 @@ public class ChunkRenderChecker extends Thread {
                             if (map.containsKey(new Pair(current.x, current.y + 1, current.z).hashCode())
                                     && map.containsKey(new Pair(current.x, current.y - 1, current.z).hashCode())) {
                                 i--;
-                                chunkManager.createVBO(chunkManager.getChunk(current.x, current.y, current.z));
+                                final Pair p = current;
+                                new Thread(
+                                        new Runnable() {
+                                            public void run() {
+                                                chunkManager.createVBO(chunkManager.getChunk(p.x, p.y, p.z));
+                                            }
+                                        }
+                                ).start();
                             }
                         } else if (current.y == 1) {
                             if (map.containsKey(new Pair(current.x, current.y + 1, current.z).hashCode())) {
                                 i--;
-                                chunkManager.createVBO(chunkManager.getChunk(current.x, current.y, current.z));
+                                final Pair p = current;
+                                new Thread(
+                                        new Runnable() {
+                                            public void run() {
+                                                chunkManager.createVBO(chunkManager.getChunk(p.x, p.y, p.z));
+                                            }
+                                        }
+                                ).start();
                             }
                         } else if (current.y == Chunk.WORLD_HEIGHT) {
                             if (map.containsKey(new Pair(current.x, current.y - 1, current.z).hashCode())) {
                                 i--;
-                                chunkManager.createVBO(chunkManager.getChunk(current.x, current.y, current.z));
+                                final Pair p = current;
+                                new Thread(
+                                        new Runnable() {
+                                            public void run() {
+                                                chunkManager.createVBO(chunkManager.getChunk(p.x, p.y, p.z));
+                                            }
+                                        }
+                                ).start();
                             }
                         }
                     } else {
@@ -86,9 +107,10 @@ public class ChunkRenderChecker extends Thread {
             } catch (InterruptedException ex) {
                 Logger.getLogger(ChunkRenderChecker.class.getName()).log(Level.SEVERE, null, ex);
             }
-       }
+        }
     }
-    public boolean isRunning(){
+
+    public boolean isRunning() {
         return running;
     }
 

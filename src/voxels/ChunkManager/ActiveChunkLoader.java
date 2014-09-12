@@ -33,9 +33,14 @@ public class ActiveChunkLoader extends Thread {
 
     @Override
     public void run() {
+        int count = 0;
         running = true;
+        
         while (running) {
+            
             if (refresh || hasMoved()) {
+                System.out.println("In a new chunk "+count);
+                count++;
                 refresh = false;
                 loadChunks();
                 try {
@@ -60,6 +65,29 @@ public class ActiveChunkLoader extends Thread {
     }
 
     public void loadChunks() {
+        
+        middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());    
+        middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());
+        middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());    
+        middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());    
+        middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());    
+        
+        middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());    
+        middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());    
+        middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());    
+        middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());    
+        middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());    
+        
+        middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());    
+        middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());    
+        middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());    
+        middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());    
+        middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());    
+        
+        middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());    
+        middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());    
+        middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());    
+        middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());    
         middle = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());    
     }
 

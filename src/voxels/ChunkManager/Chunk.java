@@ -20,10 +20,10 @@ public class Chunk implements Serializable {
     public static final int DIRT_LAYERS = 5;
 
     //3d noise min and max values
-    private static final float noiseOneMin = 0.7f;
+    public static final float noiseOneMin = 0.7f;
     private static final float noiseOneMax = 1f;
     private static final float noiseTwoMin = 0f;
-    private static final float noiseTwoMax = 0.7f;
+    public static final float noiseTwoMax = 0.7f;
 
     private int vboVertexHandle;
     private int vboNormalHandle;
@@ -94,41 +94,35 @@ public class Chunk implements Serializable {
                             // modify the ground portion of the world (caves)
                         } else if (yId != 1 || y != 0) {
 
-                            float noise1 = Voxels.get3DNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate) / (float) (CHUNK_SIZE * VERTICAL_CHUNKS);
-                            float noise2 = Voxels.get3DNoise(x + xCoordinate + 10000, y + yCoordinate + 10000, z + zCoordinate + 10000) / (float) (CHUNK_SIZE * VERTICAL_CHUNKS);
-
-                            if (noise1 > noiseOneMin && noise2 < noiseTwoMax) {
+                            if (Voxels.getCaveNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate)) {
                                 blocks[x][y][z] = new Block(Type.AIR);
                             }
+
                         }
                     }
                     // add trees
-     
-                        if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 1) {
-                            if (Voxels.getTreeNoise(x+CHUNK_SIZE*xId, z+CHUNK_SIZE*zId) == 0) {
-                                blocks[x][y][z] = new Block(Type.WOOD);
-                            }
+
+                    if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 1) {
+                        if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate-1, z + CHUNK_SIZE * zId) == 0) {
+                            blocks[x][y][z] = new Block(Type.WOOD);
                         }
-                        else if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 2) {
-                            if (Voxels.getTreeNoise(x+CHUNK_SIZE*xId, z+CHUNK_SIZE*zId) == 0) {
-                                blocks[x][y][z] = new Block(Type.WOOD);
-                            }
+                    } else if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 2) {
+                        if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate-2, z + CHUNK_SIZE * zId) == 0) {
+                            blocks[x][y][z] = new Block(Type.WOOD);
                         }
-                        else if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 3) {
-                            if (Voxels.getTreeNoise(x+CHUNK_SIZE*xId, z+CHUNK_SIZE*zId) == 0) {
-                                blocks[x][y][z] = new Block(Type.WOOD);
-                            }
+                    } else if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 3) {
+                        if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate-3, z + CHUNK_SIZE * zId) == 0) {
+                            blocks[x][y][z] = new Block(Type.WOOD);
                         }
-                        else if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 4) {
-                            if (Voxels.getTreeNoise(x+CHUNK_SIZE*xId, z+CHUNK_SIZE*zId) == 0) {
-                                blocks[x][y][z] = new Block(Type.WOOD);
-                            }
+                    } else if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 4) {
+                        if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate-4, z + CHUNK_SIZE * zId) == 0) {
+                            blocks[x][y][z] = new Block(Type.WOOD);
                         }
-                        else if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 5) {
-                            if (Voxels.getTreeNoise(x+CHUNK_SIZE*xId, z+CHUNK_SIZE*zId) == 0) {
-                                blocks[x][y][z] = new Block(Type.LEAVES);
-                            }
+                    } else if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 5) {
+                        if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate-5, z + CHUNK_SIZE * zId) == 0) {
+                            blocks[x][y][z] = new Block(Type.LEAVES);
                         }
+                    }
                 }
             }
         }

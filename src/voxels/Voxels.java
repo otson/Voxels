@@ -83,8 +83,8 @@ public class Voxels {
      */
     public static final int FIELD_OF_VIEW = 90;
     public static int chunkCreationDistance = 0;
-    public static int inGameCreationDistance = 15;
-    public static int chunkRenderDistance = 14;
+    public static int inGameCreationDistance = 11;
+    public static int chunkRenderDistance = 10;
     public static Texture atlas;
     public static Sound running;
     public static Sound jumping;
@@ -105,7 +105,7 @@ public class Voxels {
     public static void main(String[] args) {
         initDisplay();
         initOpenGL();
-        initFog();
+        //initFog();
         initLighting();
         initTextures();
         initSounds();
@@ -129,8 +129,8 @@ public class Voxels {
         glMatrixMode(GL_PROJECTION);
         glMatrixMode(GL_MODELVIEW);
         glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
+        //glEnable(GL_CULL_FACE);
+        //glCullFace(GL_BACK);
         glLoadIdentity();
 
     }
@@ -139,8 +139,8 @@ public class Voxels {
         glEnable(GL_FOG);
         glFog(GL_FOG_COLOR, asFloatBuffer(new float[]{0.65f, 0.65f, 0.85f, 1f}));
         glFogi(GL_FOG_MODE, GL_LINEAR);
-        glFogf(GL_FOG_START, 48.f);
-        glFogf(GL_FOG_END, 144.f);
+        glFogf(GL_FOG_START, 3 * Chunk.CHUNK_SIZE);
+        glFogf(GL_FOG_END, Chunk.CHUNK_SIZE * inGameCreationDistance);
     }
 
     public static void initSounds() {
@@ -208,28 +208,28 @@ public class Voxels {
         time = System.nanoTime();
         //chunkManager.createVBOs();
         System.out.println("VBOs created in " + (System.nanoTime() - time) / 1000000000 + " seconds.");
-        chunkManager.getChunkLoader().loadChunks();
-        chunkManager.getChunkLoader().start();
+//        chunkManager.getChunkLoader().loadChunks();
+//        chunkManager.getChunkLoader().start();
         //chunkManager.stopGeneration();  
         chunkManager.startChunkRenderChecker();
         chunkCreationDistance = inGameCreationDistance;
         Thread thread = new Thread(
-            new Runnable() {
-                public void run() {
-                    while(true){
-                        chunkManager.checkChunkUpdates();
-                        try {
-                            Thread.sleep(3);
-                        } catch (InterruptedException ex) {
-                            Logger.getLogger(Voxels.class.getName()).log(Level.SEVERE, null, ex);
+                new Runnable() {
+                    public void run() {
+                        while (true) {
+                            chunkManager.checkChunkUpdates();
+                            try {
+                                Thread.sleep(5);
+                            } catch (InterruptedException ex) {
+                                Logger.getLogger(Voxels.class.getName()).log(Level.SEVERE, null, ex);
+                            }
                         }
                     }
                 }
-            }
         );
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.start();
-        
+
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             updateView();
@@ -465,6 +465,13 @@ public class Voxels {
         return z % Chunk.CHUNK_SIZE;
     }
 
+    public static boolean getCaveNoise(float x, float y, float z) {
+        float noise1 = get3DNoise(x, y, z) / (float) (Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS);
+        float noise2 = get3DNoise(x + 10000, y + 10000, z + 10000) / (float) (Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS);
+
+        return noise1 > Chunk.noiseOneMin && noise2 < Chunk.noiseTwoMax;
+    }
+
     public final static int yInChunk(float add) {
         int y = (int) (camera.y() - PLAYER_HEIGHT + add);
         return y % Chunk.CHUNK_SIZE;
@@ -515,23 +522,19 @@ public class Voxels {
             noise = (int) (FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), 5) * ((float) (Chunk.VERTICAL_CHUNKS * Chunk.CHUNK_SIZE) / 256f)) - 1;
         }
         noise *= GROUND_SHARE;
-        //noise = getExpValue(noise);
-        return noise;
-    }
-    
-    private static int getExpValue(int noise){
-        noise = (int) (noise*(noise/50f));
         return noise;
     }
 
-    public static int getTreeNoise(float x, float z) {
+    public static int getTreeNoise(float x, float y, float z) {
         int noise = (int) (FastNoise.noise(x + 1000, z + 1000, 7));
         if (noise == 30) {
-            return 0;
-        }
-        else if(noise == 31)
+            if(getCaveNoise(x, y, z) == false)
+                return 0;
+            else
+                return 1;
+        } else if (noise == 31) {
             return 1;
-        else {
+        } else {
             return -1;
         }
 

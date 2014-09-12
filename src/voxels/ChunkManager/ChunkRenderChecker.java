@@ -58,37 +58,25 @@ public class ChunkRenderChecker extends Thread {
                                     && map.containsKey(new Pair(current.x, current.y - 1, current.z).hashCode())) {
                                 i--;
                                 final Pair p = current;
-                                new Thread(
-                                        new Runnable() {
-                                            public void run() {
+
                                                 chunkManager.createVBO(chunkManager.getChunk(p.x, p.y, p.z));
-                                            }
-                                        }
-                                ).start();
+        
                             }
                         } else if (current.y == 1) {
                             if (map.containsKey(new Pair(current.x, current.y + 1, current.z).hashCode())) {
                                 i--;
                                 final Pair p = current;
-                                new Thread(
-                                        new Runnable() {
-                                            public void run() {
+       
                                                 chunkManager.createVBO(chunkManager.getChunk(p.x, p.y, p.z));
-                                            }
-                                        }
-                                ).start();
+     
                             }
                         } else if (current.y == Chunk.WORLD_HEIGHT) {
                             if (map.containsKey(new Pair(current.x, current.y - 1, current.z).hashCode())) {
                                 i--;
                                 final Pair p = current;
-                                new Thread(
-                                        new Runnable() {
-                                            public void run() {
+  
                                                 chunkManager.createVBO(chunkManager.getChunk(p.x, p.y, p.z));
-                                            }
-                                        }
-                                ).start();
+    
                             }
                         }
                     } else {
@@ -101,9 +89,9 @@ public class ChunkRenderChecker extends Thread {
                     }
                 }
             }
-            System.out.println("Queue size: " + size + " Time taken: " + (System.nanoTime() - start) / 1000000 + " ms.");
+            //System.out.println("Queue size: " + size + " Time taken: " + (System.nanoTime() - start) / 1000000 + " ms.");
             try {
-                sleep(50);
+                sleep(17);
             } catch (InterruptedException ex) {
                 Logger.getLogger(ChunkRenderChecker.class.getName()).log(Level.SEVERE, null, ex);
             }

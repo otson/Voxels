@@ -1195,6 +1195,8 @@ public class ChunkMaker extends Thread {
         updateBottomSide();
         updateFrontSide();
         updateBackSide();
+        
+        chunk.checkBuffer();
 
         rightChunk = null;
         leftChunk = null;

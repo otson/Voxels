@@ -5,7 +5,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import static java.lang.Math.PI;
 import java.nio.FloatBuffer;
+import java.util.LinkedList;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import kuusisto.tinysound.Sound;
@@ -24,11 +26,13 @@ import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import voxels.Camera.EulerCamera;
+import voxels.ChunkManager.BlockCoord;
 import voxels.ChunkManager.Chunk;
-import static voxels.ChunkManager.Chunk.WORLD_HEIGHT;
 import static voxels.ChunkManager.Chunk.GROUND_SHARE;
+import static voxels.ChunkManager.Chunk.WORLD_HEIGHT;
 import voxels.ChunkManager.ChunkManager;
 import voxels.ChunkManager.Handle;
+import voxels.ChunkManager.Pair;
 import voxels.ChunkManager.Type;
 import voxels.Noise.FastNoise;
 import voxels.Noise.SimplexNoise;
@@ -430,6 +434,24 @@ public class Voxels {
         }
         return x / Chunk.CHUNK_SIZE;
     }
+    
+    public final static int convertToChunkZId(int z) {
+        if (z < 0) {
+            z -= Chunk.CHUNK_SIZE - 1;
+        }
+        return z / Chunk.CHUNK_SIZE;
+    }
+    
+    public final static int convertToChunkXId(int x) {
+        if (x < 0) {
+            x -= Chunk.CHUNK_SIZE - 1;
+        }
+        return x / Chunk.CHUNK_SIZE;
+    }
+    
+    public final static int convertToChunkYId(int y) {
+        return y / Chunk.CHUNK_SIZE;
+    }
 
     public final static int getCurrentChunkZId(float add) {
         int z = (int) Math.floor(camera.z() + add);
@@ -487,6 +509,22 @@ public class Voxels {
 
     public final static int zInChunk(float add) {
         int z = (int) Math.floor(camera.z() + add);
+        if (z <= 0) {
+            z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE;
+        }
+        return z % Chunk.CHUNK_SIZE;
+    }
+    
+    public static int convertToXInChunk(int x){
+        if (x <= 0) {
+            x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE;
+        }
+        return x % Chunk.CHUNK_SIZE;
+    }
+    public static int convertToYInChunk(int y){
+        return y % Chunk.CHUNK_SIZE;
+    }
+    public static int convertToZInChunk(int z){
         if (z <= 0) {
             z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE;
         }
@@ -581,5 +619,32 @@ public class Voxels {
             lastFPS += 1000; //add one second
         }
         fps++;
+    }
+    
+    public static void putToBuffer(short type, int x, int y, int z){
+        int chunkXId = convertToChunkXId(x);
+        int chunkYId = convertToChunkYId(y);
+        int chunkZId = convertToChunkZId(z);
+        
+        int xInChunk = convertToXInChunk(x);
+        int yInChunk = convertToYInChunk(y);
+        int zInChunk = convertToZInChunk(z);
+        
+        if(!chunkManager.getBlockBuffer().containsKey(new Pair(chunkXId,chunkYId, chunkZId).hashCode())){
+            LinkedList<BlockCoord> list = new LinkedList<>();
+            list.add(new BlockCoord(type,xInChunk,yInChunk,zInChunk));
+            chunkManager.getBlockBuffer().put(new Pair(chunkXId,chunkYId, chunkZId).hashCode(), list);
+        }
+        else{
+            LinkedList<BlockCoord> list = chunkManager.getBlockBuffer().get(new Pair(chunkXId,chunkYId, chunkZId).hashCode());
+            list.add(new BlockCoord(type,xInChunk,yInChunk,zInChunk));
+            chunkManager.getBlockBuffer().put(new Pair(chunkXId,chunkYId, chunkZId).hashCode(), list);
+        }
+        
+        System.out.println("Buffer size: "+chunkManager.getBlockBuffer().size());
+    }
+    
+    public static ConcurrentHashMap<Integer, LinkedList<BlockCoord>> getBlockBuffer(){
+        return chunkManager.getBlockBuffer();
     }
 }

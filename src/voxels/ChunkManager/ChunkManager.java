@@ -31,7 +31,7 @@ import static voxels.Voxels.getCurrentChunkZId;
  *
  * @author otso
  */
-public class ChunkManager {
+public  class ChunkManager {
 
     /**
      * Set the maximum amount of threads use to create chunks. Default number is
@@ -41,6 +41,7 @@ public class ChunkManager {
 
     private ConcurrentHashMap<Integer, byte[]> map;
     private ConcurrentHashMap<Integer, Handle> handles;
+    private ConcurrentHashMap<Integer, LinkedList<BlockCoord>> blockBuffer;
     private ArrayList<Data> dataToProcess;
     private ChunkCoordinateCreator chunkCreator;
     private ChunkRenderChecker chunkRenderChecker;
@@ -58,10 +59,13 @@ public class ChunkManager {
     private int lastMessage = -1;
 
     private boolean wait = false;
+    
+    
 
     public ChunkManager() {
         map = new ConcurrentHashMap<>(16, 0.9f, 1);
         handles = new ConcurrentHashMap<>(16, 0.9f, 1);
+        blockBuffer = new ConcurrentHashMap<>(16, 0.9f, 1);
         dataToProcess = new ArrayList<>();
         chunkCreator = new ChunkCoordinateCreator(map);
         chunkLoader = new ActiveChunkLoader(this);
@@ -403,5 +407,11 @@ public class ChunkManager {
     public ChunkRenderChecker getChunkRenderChecker() {
         return chunkRenderChecker;
     }
+
+    public ConcurrentHashMap<Integer, LinkedList<BlockCoord>> getBlockBuffer() {
+        return blockBuffer;
+    }
+    
+    
 
 }

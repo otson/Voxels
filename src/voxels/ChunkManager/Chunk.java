@@ -1,6 +1,7 @@
 package voxels.ChunkManager;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import voxels.Voxels;
 
 /**
@@ -103,27 +104,33 @@ public class Chunk implements Serializable {
                     // add trees
 
                     if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 1) {
-                        if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate-1, z + CHUNK_SIZE * zId) == 0) {
+                        if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate - 1, z + CHUNK_SIZE * zId) == 0) {
                             blocks[x][y][z] = new Block(Type.WOOD);
-                        }
-                    } else if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 2) {
-                        if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate-2, z + CHUNK_SIZE * zId) == 0) {
-                            blocks[x][y][z] = new Block(Type.WOOD);
-                        }
-                    } else if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 3) {
-                        if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate-3, z + CHUNK_SIZE * zId) == 0) {
-                            blocks[x][y][z] = new Block(Type.WOOD);
-                        }
-                    } else if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 4) {
-                        if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate-4, z + CHUNK_SIZE * zId) == 0) {
-                            blocks[x][y][z] = new Block(Type.WOOD);
-                        }
-                    } else if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 5) {
-                        if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate-5, z + CHUNK_SIZE * zId) == 0) {
-                            blocks[x][y][z] = new Block(Type.LEAVES);
+                            Voxels.putToBuffer(Type.WOOD, x+xCoordinate, y+yCoordinate+1, z+zCoordinate);
+                            Voxels.putToBuffer(Type.WOOD, x+xCoordinate, y+yCoordinate+2, z+zCoordinate);
+                            Voxels.putToBuffer(Type.WOOD, x+xCoordinate, y+yCoordinate+3, z+zCoordinate);
+                            Voxels.putToBuffer(Type.LEAVES, x+xCoordinate+1, y+yCoordinate+3, z+zCoordinate);
+                            Voxels.putToBuffer(Type.LEAVES, x+xCoordinate-1, y+yCoordinate+3, z+zCoordinate);
+                            Voxels.putToBuffer(Type.LEAVES, x+xCoordinate, y+yCoordinate+3, z+zCoordinate+1);
+                            Voxels.putToBuffer(Type.LEAVES, x+xCoordinate, y+yCoordinate+3, z+zCoordinate-1);
                         }
                     }
+
                 }
+            }
+        }
+        
+        checkBuffer();
+    }
+    
+    public void checkBuffer(){
+        if(Voxels.getBlockBuffer().containsKey(new Pair(xId, yId, zId).hashCode())){
+            System.out.println("here");
+            LinkedList<BlockCoord> list = Voxels.getBlockBuffer().get(new Pair(xId, yId, zId).hashCode());
+            while(!list.isEmpty()){
+                BlockCoord bc = list.remove();
+                blocks[bc.x][bc.y][bc.z] = new Block(bc.Type);
+                
             }
         }
     }

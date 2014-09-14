@@ -5,6 +5,8 @@ import com.ning.compress.lzf.LZFException;
 import de.ruedigermoeller.serialization.FSTObjectInput;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,6 +23,10 @@ import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import org.lwjgl.util.vector.Vector3f;
 import voxels.Voxels;
@@ -31,7 +37,7 @@ import static voxels.Voxels.getCurrentChunkZId;
  *
  * @author otso
  */
-public  class ChunkManager {
+public class ChunkManager {
 
     /**
      * Set the maximum amount of threads use to create chunks. Default number is
@@ -48,9 +54,8 @@ public  class ChunkManager {
     private ActiveChunkLoader chunkLoader;
     private ChunkMaker[] threads = new ChunkMaker[maxThreads];
     private ChunkMaker updateThread;
-    
-    BlockingQueue<Pair> queue = new LinkedBlockingQueue<>();
 
+    BlockingQueue<Pair> queue = new LinkedBlockingQueue<>();
 
     private boolean atMax = false;
     private boolean inLoop;
@@ -59,8 +64,6 @@ public  class ChunkManager {
     private int lastMessage = -1;
 
     private boolean wait = false;
-    
-    
 
     public ChunkManager() {
         map = new ConcurrentHashMap<>(16, 0.9f, 1);
@@ -69,7 +72,7 @@ public  class ChunkManager {
         dataToProcess = new ArrayList<>();
         chunkCreator = new ChunkCoordinateCreator(map);
         chunkLoader = new ActiveChunkLoader(this);
-        chunkLoader.setPriority(Thread.MIN_PRIORITY);
+        chunkLoader.setPriority(Thread.NORM_PRIORITY);
         updateThread = new ChunkMaker(map, this, dataToProcess, queue);
         chunkRenderChecker = new ChunkRenderChecker(queue, map, this);
         chunkRenderChecker.setPriority(Thread.MAX_PRIORITY);
@@ -185,8 +188,7 @@ public  class ChunkManager {
             if (chunk == null) {
                 System.out.println("Tried to modify a null chunk.");
                 return;
-            }
-            else if (type == Type.DIRT) {
+            } else if (type == Type.DIRT) {
                 if (chunk.blocks[xInChunk][yInChunk][zInChunk].is(Type.AIR)) {
                     chunk.blocks[xInChunk][yInChunk][zInChunk].setType(type);
                     updateThread.update(chunk);
@@ -209,11 +211,14 @@ public  class ChunkManager {
     }
 
     public void createVBO(Chunk chunk) {
+        long start = System.nanoTime();
         ChunkMaker cm = new ChunkMaker(dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this, queue);
         cm.setChunk(chunk);
         cm.updateAllBlocks();
         cm.drawChunkVBO();
         cm.addDataToProcess();
+        //System.out.println("CreateVBO took: " + (System.nanoTime() - start) / 1000000 + " ms.");
+
     }
 
     public void createVBOs() {
@@ -296,8 +301,12 @@ public  class ChunkManager {
     }
 
     public Chunk toChunk(byte[] bytes) {
+        long start = System.nanoTime();
+        byte[] temp;
         try {
-            return deserialize(LZFDecoder.decode(bytes));
+            temp = LZFDecoder.decode(bytes);
+            //System.out.println("Decoding: " + (System.nanoTime() - start) / 1000000 + " ms.");
+            return deserialize(temp);
 
         } catch (LZFException ex) {
             Logger.getLogger(ChunkManager.class
@@ -314,6 +323,31 @@ public  class ChunkManager {
             Logger.getLogger(ChunkManager.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
+//        long start = System.nanoTime();
+//        ByteArrayInputStream bis = new ByteArrayInputStream(data);
+//        ObjectInput in = null;
+//        try {
+//            in = new ObjectInputStream(bis);
+//            Chunk temp = (Chunk) in.readObject();
+//            //System.out.println("Deserializing: " + (System.nanoTime() - start) / 1000000 + " ms.");
+//
+//            return temp;//(Chunk) in.readObject();
+//        } catch (IOException | ClassNotFoundException ex) {
+//            Logger.getLogger(ChunkManager.class.getName()).log(Level.SEVERE, null, ex);
+//        } finally {
+//            try {
+//                bis.close();
+//            } catch (IOException ex) {
+//                // ignore close exception
+//            }
+//            try {
+//                if (in != null) {
+//                    in.close();
+//                }
+//            } catch (IOException ex) {
+//                // ignore close exception
+//            }
+//        }
         return null;
     }
 
@@ -399,8 +433,8 @@ public  class ChunkManager {
     public int getTotalChunks() {
         return map.size();
     }
-    
-    public void startChunkRenderChecker(){
+
+    public void startChunkRenderChecker() {
         chunkRenderChecker.start();
     }
 
@@ -411,7 +445,9 @@ public  class ChunkManager {
     public ConcurrentHashMap<Integer, LinkedList<BlockCoord>> getBlockBuffer() {
         return blockBuffer;
     }
-    
-    
+
+    public ConcurrentHashMap<Integer, byte[]> getMap() {
+        return map;
+    }
 
 }

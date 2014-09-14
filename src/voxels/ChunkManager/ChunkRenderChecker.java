@@ -59,24 +59,24 @@ public class ChunkRenderChecker extends Thread {
                                 i--;
                                 final Pair p = current;
 
-                                                chunkManager.createVBO(chunkManager.getChunk(p.x, p.y, p.z));
-        
+                                chunkManager.createVBO(chunkManager.getChunk(p.x, p.y, p.z));
+
                             }
                         } else if (current.y == 1) {
                             if (map.containsKey(new Pair(current.x, current.y + 1, current.z).hashCode())) {
                                 i--;
                                 final Pair p = current;
-       
-                                                chunkManager.createVBO(chunkManager.getChunk(p.x, p.y, p.z));
-     
+
+                                chunkManager.createVBO(chunkManager.getChunk(p.x, p.y, p.z));
+
                             }
                         } else if (current.y == Chunk.WORLD_HEIGHT) {
                             if (map.containsKey(new Pair(current.x, current.y - 1, current.z).hashCode())) {
                                 i--;
                                 final Pair p = current;
-  
-                                                chunkManager.createVBO(chunkManager.getChunk(p.x, p.y, p.z));
-    
+
+                                chunkManager.createVBO(chunkManager.getChunk(p.x, p.y, p.z));
+
                             }
                         }
                     } else {
@@ -91,7 +91,7 @@ public class ChunkRenderChecker extends Thread {
             }
             //System.out.println("Queue size: " + size + " Time taken: " + (System.nanoTime() - start) / 1000000 + " ms.");
             try {
-                sleep(17);
+                sleep(50);
             } catch (InterruptedException ex) {
                 Logger.getLogger(ChunkRenderChecker.class.getName()).log(Level.SEVERE, null, ex);
             }

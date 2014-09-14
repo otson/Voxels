@@ -296,7 +296,7 @@ public class EulerCamera implements Camera {
         boolean moveFaster = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
         boolean moveSlower = Keyboard.isKeyDown(Keyboard.KEY_C);
 
-        chunkManager.getChunkLoader().loadChunks();
+        //chunkManager.getChunkLoader().loadChunks();
 
         if (moveFaster) {
             speed *= 10;

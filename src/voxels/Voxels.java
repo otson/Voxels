@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import static java.lang.Math.PI;
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,8 +31,11 @@ import voxels.ChunkManager.BlockCoord;
 import voxels.ChunkManager.Chunk;
 import static voxels.ChunkManager.Chunk.GROUND_SHARE;
 import static voxels.ChunkManager.Chunk.WORLD_HEIGHT;
+import voxels.ChunkManager.ChunkMaker;
 import voxels.ChunkManager.ChunkManager;
+import voxels.ChunkManager.Coordinates;
 import voxels.ChunkManager.Handle;
+import voxels.ChunkManager.Location;
 import voxels.ChunkManager.Pair;
 import voxels.ChunkManager.Type;
 import voxels.Noise.FastNoise;
@@ -87,7 +91,7 @@ public class Voxels {
      */
     public static final int FIELD_OF_VIEW = 90;
     public static int chunkCreationDistance = 0;
-    public static int inGameCreationDistance = 11;
+    public static int inGameCreationDistance = 9;
     public static int chunkRenderDistance = 10;
     public static Texture atlas;
     public static Sound running;
@@ -198,6 +202,27 @@ public class Voxels {
 
     private static void gameLoop() {
         chunkManager = new ChunkManager();
+        
+        //test
+//        ChunkMaker maker = new ChunkMaker(null,0,0,0,0,0,0,null,null,null);
+//        
+//        Chunk chunk = new Chunk(2,2,2);
+//        long start = System.nanoTime();
+//        for(int i = 0; i<3000; i++){
+//            chunkManager.getMap().put(new Pair(1+i,1,1).hashCode(), maker.toByte(chunk));
+//        }
+//        System.out.println("To put 3000: "+(System.nanoTime()-start)/1000000 +" ms.");
+//        start = System.nanoTime();
+//        
+//        ArrayList<Chunk> array = new ArrayList<>(); 
+//        for(int i = 0; i<3000; i++){
+//            Chunk temp = chunkManager.getChunk(i+1, 1, 1);   
+//            array.add(temp);
+//        }
+//        
+//        System.out.println("To read and store 3000: "+(System.nanoTime()-start)/1000000 +" ms.");
+//        
+//        System.exit(0);
         camera = InitCamera();
         chunkManager.startGeneration();
         long time = System.nanoTime();
@@ -214,7 +239,8 @@ public class Voxels {
         System.out.println("VBOs created in " + (System.nanoTime() - time) / 1000000000 + " seconds.");
 //        chunkManager.getChunkLoader().loadChunks();
 //        chunkManager.getChunkLoader().start();
-        //chunkManager.stopGeneration();  
+        //chunkManager.stopGeneration();
+        //System.exit(0);
         chunkManager.startChunkRenderChecker();
         chunkCreationDistance = inGameCreationDistance;
         Thread thread = new Thread(
@@ -233,7 +259,6 @@ public class Voxels {
         );
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.start();
-
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             updateView();
@@ -345,6 +370,9 @@ public class Voxels {
 
             if (Keyboard.isKeyDown(Keyboard.KEY_F)) {
                 camera.toggleFlight();
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_B)) {
+                chunkManager.getChunkLoader().loadChunks();
             }
 
         }
@@ -641,10 +669,14 @@ public class Voxels {
             chunkManager.getBlockBuffer().put(new Pair(chunkXId,chunkYId, chunkZId).hashCode(), list);
         }
         
-        System.out.println("Buffer size: "+chunkManager.getBlockBuffer().size());
+        //System.out.println("Buffer size: "+chunkManager.getBlockBuffer().size());
     }
     
     public static ConcurrentHashMap<Integer, LinkedList<BlockCoord>> getBlockBuffer(){
         return chunkManager.getBlockBuffer();
+    }
+    
+    public static Location getPlayerLocation(){
+        return new Location(camera.x(), camera.y(), camera.z());
     }
 }

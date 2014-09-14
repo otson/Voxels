@@ -4,6 +4,8 @@ import com.ning.compress.lzf.LZFEncoder;
 import de.ruedigermoeller.serialization.FSTObjectOutput;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -94,7 +96,7 @@ public class ChunkMaker extends Thread {
             } catch (InterruptedException ex) {
                 Logger.getLogger(ChunkMaker.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+
         } else {
             System.out.println("Already contains");
         }
@@ -318,8 +320,7 @@ public class ChunkMaker extends Thread {
                         if (type != Type.DIRT) {
                             topXOff = AtlasManager.getTopXOff(type);
                             topYOff = AtlasManager.getTopYOff(type);
-                        }
-                        else{
+                        } else {
                             topXOff = AtlasManager.getTopXOff(Type.GRASS);
                             topYOff = AtlasManager.getTopYOff(Type.GRASS);
                         }
@@ -1088,10 +1089,16 @@ public class ChunkMaker extends Thread {
     }
 
     public byte[] toByte(Chunk chunk) {
-        return LZFEncoder.encode(serialize(chunk));
+        long start = System.nanoTime();
+        byte[] temp = LZFEncoder.encode(serialize(chunk));
+        //System.out.println("Encode (including serialize): " + (System.nanoTime() - start) / 1000000 + " ms.");
+        return temp;
+
     }
 
     public static byte[] serialize(Object obj) {
+
+        long start = System.nanoTime();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         FSTObjectOutput os;
         try {
@@ -1100,7 +1107,37 @@ public class ChunkMaker extends Thread {
         } catch (IOException ex) {
             Logger.getLogger(ChunkMaker.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return out.toByteArray();
+        
+        byte[] temp = out.toByteArray();
+        return temp;
+
+//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//        ObjectOutput out = null;
+//        byte[] yourBytes = null;
+//        try {
+//            out = new ObjectOutputStream(bos);
+//            out.writeObject(obj);
+//            yourBytes = bos.toByteArray();
+//        } catch (IOException ex) {
+//            Logger.getLogger(ChunkMaker.class.getName()).log(Level.SEVERE, null, ex);
+//        } finally {
+//            try {
+//                if (out != null) {
+//                    out.close();
+//                }
+//            } catch (IOException ex) {
+//                // ignore close exception
+//            }
+//            try {
+//                bos.close();
+//            } catch (IOException ex) {
+//                // ignore close exception
+//            }
+//        }
+
+        //System.out.println("Serializing: " + (System.nanoTime() - start) / 1000000 + " ms.");
+        //return yourBytes;
+        //return out.toByteArray();
     }
 
     public static int getNormalSize() {
@@ -1195,7 +1232,7 @@ public class ChunkMaker extends Thread {
         updateBottomSide();
         updateFrontSide();
         updateBackSide();
-        
+
         chunk.checkBuffer();
 
         rightChunk = null;

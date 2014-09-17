@@ -82,7 +82,7 @@ public class ChunkRenderChecker extends Thread {
                     } else {
                         try {
                             // put it back
-                            queue.offer(current, 1, TimeUnit.DAYS);
+                            queue.offer(current, 5, TimeUnit.SECONDS);
                         } catch (InterruptedException ex) {
                             Logger.getLogger(ChunkRenderChecker.class.getName()).log(Level.SEVERE, null, ex);
                         }

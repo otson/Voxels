@@ -43,11 +43,13 @@ public class ChunkManager {
      * Set the maximum amount of threads use to create chunks. Default number is
      * equal to the number of cores in the system CPU.
      */
-    public static int maxThreads = Runtime.getRuntime().availableProcessors()-4;
+    public static int maxThreads = Runtime.getRuntime().availableProcessors() - 4;
 
     private ConcurrentHashMap<Integer, byte[]> map;
     private ConcurrentHashMap<Integer, Handle> handles;
     private ConcurrentHashMap<Integer, LinkedList<BlockCoord>> blockBuffer;
+    private ConcurrentHashMap<Integer, Chunk> activeChunkMap;
+
     private ArrayList<Data> dataToProcess;
     private ChunkCoordinateCreator chunkCreator;
     private ChunkRenderChecker chunkRenderChecker;
@@ -69,9 +71,10 @@ public class ChunkManager {
         map = new ConcurrentHashMap<>(16, 0.9f, 1);
         handles = new ConcurrentHashMap<>(16, 0.9f, 1);
         blockBuffer = new ConcurrentHashMap<>(16, 0.9f, 1);
+        activeChunkMap = new ConcurrentHashMap<>(16, 0.9f, 1);
         dataToProcess = new ArrayList<>();
         chunkCreator = new ChunkCoordinateCreator(map);
-        chunkLoader = new ActiveChunkLoader(this);
+        chunkLoader = new ActiveChunkLoader(this, activeChunkMap);
         chunkLoader.setPriority(Thread.NORM_PRIORITY);
         updateThread = new ChunkMaker(map, this, dataToProcess, queue);
         chunkRenderChecker = new ChunkRenderChecker(queue, map, this);
@@ -223,10 +226,11 @@ public class ChunkManager {
 
     public void createVBOs() {
 
-        Collection c = map.values();
+        Collection c = activeChunkMap.values();
+        System.out.println("Values in activeChunkMap: "+activeChunkMap.size());
         Iterator itr = c.iterator();
         while (itr.hasNext()) {
-            Chunk chunk = toChunk((byte[]) itr.next());
+            Chunk chunk = (Chunk) itr.next();
             ChunkMaker cm = new ChunkMaker(dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this, queue);
             cm.setChunk(chunk);
             cm.updateAllBlocks();
@@ -402,6 +406,10 @@ public class ChunkManager {
 
     public void setWait(boolean wait) {
         this.wait = wait;
+    }
+    
+    public void putUncompressed(Chunk chunk){
+        chunkLoader.put(chunk);
     }
 
     private void checkAdjacentChunks(Chunk chunk, int x, int y, int z) {

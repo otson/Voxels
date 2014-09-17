@@ -27,54 +27,6 @@ public class Block implements Serializable {
     public final boolean isOpaque(){
         return type == Type.AIR;
     }
-    
-//    public boolean isLeft() {
-//        return left;
-//    }
-//
-//    public void setLeft(boolean left) {
-//        this.left = left;
-//    }
-//
-//    public boolean isRight() {
-//        return right;
-//    }
-//
-//    public void setRight(boolean right) {
-//        this.right = right;
-//    }
-//
-//    public boolean isFront() {
-//        return front;
-//    }
-//
-//    public void setFront(boolean front) {
-//        this.front = front;
-//    }
-//
-//    public boolean isBack() {
-//        return back;
-//    }
-//
-//    public void setBack(boolean back) {
-//        this.back = back;
-//    }
-//
-//    public boolean isTop() {
-//        return top;
-//    }
-//
-//    public void setTop(boolean top) {
-//        this.top = top;
-//    }
-//
-//    public boolean isBottom() {
-//        return bottom;
-//    }
-//
-//    public void setBottom(boolean bottom) {
-//        this.bottom = bottom;
-//    }
 
     public short getType() {
         return type;

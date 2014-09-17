@@ -122,9 +122,6 @@ public class Chunk implements Serializable {
 
     private void createTree(int x, int y, int z, int height) {
         
-        int length = 0;
-        int turnCount = 0;
-
         // trunk
         for (int i = 0; i < height; i++) {
             Voxels.putToBuffer(Type.WOOD, x, y + i, z);

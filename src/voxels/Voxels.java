@@ -91,8 +91,8 @@ public class Voxels {
      */
     public static final int FIELD_OF_VIEW = 90;
     public static int chunkCreationDistance = 2;
-    public static int inGameCreationDistance = 11;
-    public static final int chunkRenderDistance = 10;
+    public static int inGameCreationDistance = 6;
+    public static final int chunkRenderDistance = 5;
     public static Texture atlas;
     public static Sound running;
     public static Sound jumping;
@@ -137,8 +137,8 @@ public class Voxels {
         glMatrixMode(GL_PROJECTION);
         glMatrixMode(GL_MODELVIEW);
         glEnable(GL_DEPTH_TEST);
-        //glEnable(GL_CULL_FACE);
-        //glCullFace(GL_BACK);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
         glLoadIdentity();
 
     }
@@ -146,9 +146,11 @@ public class Voxels {
     private static void initFog() {
         glEnable(GL_FOG);
         glFog(GL_FOG_COLOR, asFloatBuffer(new float[]{0.65f, 0.65f, 0.85f, 1f}));
+        //glFog(GL_FOG_COLOR, asFloatBuffer(new float[]{0f / 255f, 0f / 255f, 190f / 255f, 1.0f}));
+        
         glFogi(GL_FOG_MODE, GL_LINEAR);
-        glFogf(GL_FOG_START, 3 * Chunk.CHUNK_SIZE);
-        glFogf(GL_FOG_END, Chunk.CHUNK_SIZE * inGameCreationDistance);
+        glFogf(GL_FOG_START, (float) (0.50 * Chunk.CHUNK_SIZE * Voxels.chunkRenderDistance));
+        glFogf(GL_FOG_END, Chunk.CHUNK_SIZE * Voxels.chunkRenderDistance);
     }
 
     public static void initSounds() {
@@ -202,7 +204,7 @@ public class Voxels {
 
     private static void gameLoop() {
         chunkManager = new ChunkManager();
-        
+
         //test
 //        ChunkMaker maker = new ChunkMaker(null,0,0,0,0,0,0,null,null,null);
 //        
@@ -462,21 +464,21 @@ public class Voxels {
         }
         return x / Chunk.CHUNK_SIZE;
     }
-    
+
     public final static int convertToChunkZId(int z) {
         if (z < 0) {
             z -= Chunk.CHUNK_SIZE - 1;
         }
         return z / Chunk.CHUNK_SIZE;
     }
-    
+
     public final static int convertToChunkXId(int x) {
         if (x < 0) {
             x -= Chunk.CHUNK_SIZE - 1;
         }
         return x / Chunk.CHUNK_SIZE;
     }
-    
+
     public final static int convertToChunkYId(int y) {
         return y / Chunk.CHUNK_SIZE;
     }
@@ -542,17 +544,19 @@ public class Voxels {
         }
         return z % Chunk.CHUNK_SIZE;
     }
-    
-    public static int convertToXInChunk(int x){
+
+    public static int convertToXInChunk(int x) {
         if (x <= 0) {
             x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE;
         }
         return x % Chunk.CHUNK_SIZE;
     }
-    public static int convertToYInChunk(int y){
+
+    public static int convertToYInChunk(int y) {
         return y % Chunk.CHUNK_SIZE;
     }
-    public static int convertToZInChunk(int z){
+
+    public static int convertToZInChunk(int z) {
         if (z <= 0) {
             z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE;
         }
@@ -594,10 +598,11 @@ public class Voxels {
     public static int getTreeNoise(float x, float y, float z) {
         int noise = (int) (FastNoise.noise(x + 1000, z + 1000, 7));
         if (noise == 30) {
-            if(getCaveNoise(x, y, z) == false)
+            if (getCaveNoise(x, y, z) == false) {
                 return 0;
-            else
+            } else {
                 return 1;
+            }
         } else if (noise == 31) {
             return 1;
         } else {
@@ -648,35 +653,34 @@ public class Voxels {
         }
         fps++;
     }
-    
-    public static void putToBuffer(short type, int x, int y, int z){
+
+    public static void putToBuffer(short type, int x, int y, int z) {
         int chunkXId = convertToChunkXId(x);
         int chunkYId = convertToChunkYId(y);
         int chunkZId = convertToChunkZId(z);
-        
+
         int xInChunk = convertToXInChunk(x);
         int yInChunk = convertToYInChunk(y);
         int zInChunk = convertToZInChunk(z);
-        
-        if(!chunkManager.getBlockBuffer().containsKey(new Pair(chunkXId,chunkYId, chunkZId).hashCode())){
+
+        if (!chunkManager.getBlockBuffer().containsKey(new Pair(chunkXId, chunkYId, chunkZId).hashCode())) {
             LinkedList<BlockCoord> list = new LinkedList<>();
-            list.add(new BlockCoord(type,xInChunk,yInChunk,zInChunk));
-            chunkManager.getBlockBuffer().put(new Pair(chunkXId,chunkYId, chunkZId).hashCode(), list);
+            list.add(new BlockCoord(type, xInChunk, yInChunk, zInChunk));
+            chunkManager.getBlockBuffer().put(new Pair(chunkXId, chunkYId, chunkZId).hashCode(), list);
+        } else {
+            LinkedList<BlockCoord> list = chunkManager.getBlockBuffer().get(new Pair(chunkXId, chunkYId, chunkZId).hashCode());
+            list.add(new BlockCoord(type, xInChunk, yInChunk, zInChunk));
+            chunkManager.getBlockBuffer().put(new Pair(chunkXId, chunkYId, chunkZId).hashCode(), list);
         }
-        else{
-            LinkedList<BlockCoord> list = chunkManager.getBlockBuffer().get(new Pair(chunkXId,chunkYId, chunkZId).hashCode());
-            list.add(new BlockCoord(type,xInChunk,yInChunk,zInChunk));
-            chunkManager.getBlockBuffer().put(new Pair(chunkXId,chunkYId, chunkZId).hashCode(), list);
-        }
-        
+
         //System.out.println("Buffer size: "+chunkManager.getBlockBuffer().size());
     }
-    
-    public static ConcurrentHashMap<Integer, LinkedList<BlockCoord>> getBlockBuffer(){
+
+    public static ConcurrentHashMap<Integer, LinkedList<BlockCoord>> getBlockBuffer() {
         return chunkManager.getBlockBuffer();
     }
-    
-    public static Location getPlayerLocation(){
+
+    public static Location getPlayerLocation() {
         return new Location(camera.x(), camera.y(), camera.z());
     }
 }

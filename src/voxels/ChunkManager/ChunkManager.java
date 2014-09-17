@@ -227,7 +227,7 @@ public class ChunkManager {
     public void createVBOs() {
 
         Collection c = activeChunkMap.values();
-        System.out.println("Values in activeChunkMap: "+activeChunkMap.size());
+        System.out.println("Values in activeChunkMap: " + activeChunkMap.size());
         Iterator itr = c.iterator();
         while (itr.hasNext()) {
             Chunk chunk = (Chunk) itr.next();
@@ -407,8 +407,8 @@ public class ChunkManager {
     public void setWait(boolean wait) {
         this.wait = wait;
     }
-    
-    public void putUncompressed(Chunk chunk){
+
+    public void putUncompressed(Chunk chunk) {
         chunkLoader.put(chunk);
     }
 
@@ -459,11 +459,12 @@ public class ChunkManager {
     }
 
     public Chunk getActiveChunk(int currentChunkXId, int currentChunkYId, int currentChunkZId) {
-        Chunk chunk = activeChunkMap.get(new Pair(currentChunkXId,currentChunkYId,currentChunkZId).hashCode());
-        if(chunk == null)
+        Chunk chunk = activeChunkMap.get(new Pair(currentChunkXId, currentChunkYId, currentChunkZId).hashCode());
+        if (chunk == null) {
             return null;
-        else
+        } else {
             return chunk;
+        }
     }
 
 }

@@ -90,9 +90,9 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 8;
-    public static int inGameCreationDistance = 8;
-    public static final int chunkRenderDistance = 8;
+    public static int chunkCreationDistance = 2;
+    public static int inGameCreationDistance = 11;
+    public static final int chunkRenderDistance = 10;
     public static Texture atlas;
     public static Sound running;
     public static Sound jumping;

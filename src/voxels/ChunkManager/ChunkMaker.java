@@ -129,8 +129,8 @@ public class ChunkMaker extends Thread {
             this.yOff = chunk.yId * Chunk.CHUNK_SIZE;
             updateAllBlocks();
             drawChunkVBO();
+            chunk.setModified(true);
             map.put(new Pair(this.chunk.xId, this.chunk.yId, this.chunk.zId).hashCode(), toByte(this.chunk));
-            //chunkManager.putUncompressed(chunk);
             Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.yId, this.chunk.zId);
             dataToProcess.add(new Data(this.chunk.xId, this.chunk.yId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
         }

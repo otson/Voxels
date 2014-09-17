@@ -41,6 +41,10 @@ public class Chunk implements Serializable {
 
     public Block[][][] blocks;
     public int[][] maxHeights;
+    
+    private boolean modified = false;
+
+    
 
     public Chunk(int xId, int yId, int zId) {
         this.xId = xId;
@@ -191,6 +195,13 @@ public class Chunk implements Serializable {
 
     public void setVboColorHandle(int vboColorHandle) {
         this.vboColorHandle = vboColorHandle;
+    }
+    public boolean isModified() {
+        return modified;
+    }
+
+    public void setModified(boolean modified) {
+        this.modified = modified;
     }
 
 }

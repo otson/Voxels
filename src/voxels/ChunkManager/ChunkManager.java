@@ -419,22 +419,22 @@ public class ChunkManager {
          *
          */
         if (x == Chunk.CHUNK_SIZE - 1) {
-            updateThread.update(getChunk(chunk.xId + 1, chunk.yId, chunk.zId));
+            updateThread.update(getActiveChunk(chunk.xId + 1, chunk.yId, chunk.zId));
         }
         if (x == 0) {
-            updateThread.update(getChunk(chunk.xId - 1, chunk.yId, chunk.zId));
+            updateThread.update(getActiveChunk(chunk.xId - 1, chunk.yId, chunk.zId));
         }
         if (y == Chunk.CHUNK_SIZE - 1) {
-            updateThread.update(getChunk(chunk.xId, chunk.yId + 1, chunk.zId));
+            updateThread.update(getActiveChunk(chunk.xId, chunk.yId + 1, chunk.zId));
         }
         if (y == 0) {
-            updateThread.update(getChunk(chunk.xId, chunk.yId - 1, chunk.zId));
+            updateThread.update(getActiveChunk(chunk.xId, chunk.yId - 1, chunk.zId));
         }
         if (z == Chunk.CHUNK_SIZE - 1) {
-            updateThread.update(getChunk(chunk.xId, chunk.yId, chunk.zId + 1));
+            updateThread.update(getActiveChunk(chunk.xId, chunk.yId, chunk.zId + 1));
         }
         if (z == 0) {
-            updateThread.update(getChunk(chunk.xId, chunk.yId, chunk.zId - 1));
+            updateThread.update(getActiveChunk(chunk.xId, chunk.yId, chunk.zId - 1));
         }
     }
 

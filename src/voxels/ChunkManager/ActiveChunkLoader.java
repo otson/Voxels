@@ -45,12 +45,12 @@ public class ActiveChunkLoader extends Thread {
         while (running) {
 
             if (refresh || hasMoved()) {
-                System.out.println("Moved to a new chunk");
+                System.out.println("Moved to a new chunk.");
                 count++;
                 refresh = false;
                 loadChunks();
                 try {
-                    sleep(17);
+                    sleep(5);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(ActiveChunkLoader.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -81,51 +81,45 @@ public class ActiveChunkLoader extends Thread {
     }
 
     public void loadChunks() {
-        new Thread(
-                new Runnable() {
-                    public void run() {
-
-                        int count = 0;
-                        int loadDistance = 1;
-                        long start = System.nanoTime();
-                        for (int y = -loadDistance; y <= loadDistance; y++) {
-                            for (int x = -loadDistance; x <= loadDistance; x++) {
-                                for (int z = -loadDistance; z <= loadDistance; z++) {
-                                    count++;
-                                    Chunk temp = chunkManager.getChunk(currentChunkX + x, currentChunkY+y, currentChunkZ + z);
-                                    if (temp != null) {
-                                        //if (!chunkMap.containsKey(new Pair(temp.xId, temp.yId, temp.zId).hashCode())) {
-                                            chunkMap.put(new Pair(temp.xId, temp.yId, temp.zId).hashCode(), temp);
-                                        //}
-                                    } else {
-                                        //System.out.println("null chunk at x: " + (currentChunkX + x) + " y: " + y + " z: " + (currentChunkZ + z));
-                                    }
-
-                                }
-                            }
+        //int count = 0;
+        int loadDistance = 1;
+        //long start = System.nanoTime();
+        for (int y = -loadDistance; y <= loadDistance; y++) {
+            for (int x = -loadDistance; x <= loadDistance; x++) {
+                for (int z = -loadDistance; z <= loadDistance; z++) {
+                    Chunk chunk = chunkManager.getChunk(currentChunkX + x, currentChunkY + y, currentChunkZ + z);
+                    if (chunk != null) {
+                        if (chunk.isModified() || !chunkMap.containsKey(new Pair(chunk.xId, chunk.yId, chunk.zId).hashCode())) {
+                            chunk.setModified(false);
+                            chunkMap.put(new Pair(chunk.xId, chunk.yId, chunk.zId).hashCode(), chunk);
                         }
-                        updateLocation();
-                        clearEntries();
-                        System.out.println("count: " + count);
-                        System.out.println("Loading chunks took: " + (System.nanoTime() - start) / 1000000 + " ms.");
-                        System.out.println("Size: " + chunkMap.size());
+                    } else {
+                        //System.out.println("null chunk at x: " + (currentChunkX + x) + " y: " + y + " z: " + (currentChunkZ + z));
                     }
+
                 }
-        ).start();
+            }
+        }
         updateLocation();
+        clearEntries();
+        //System.out.println("count: " + count);
+        //System.out.println("Loading chunks took: " + (System.nanoTime() - start) / 1000000 + " ms.");
+        //System.out.println("Size: " + chunkMap.size());
+
     }
 
     private void clearEntries() {
         int distance = 2;
         int count = 0;
         for (Chunk chunk : chunkMap.values()) {
-            if (chunk.xId > currentChunkX + distance || chunk.xId < currentChunkX - distance || chunk.zId > currentChunkZ + distance || chunk.zId < currentChunkZ - distance) {
+            if (chunk.xId > currentChunkX + distance || chunk.xId < currentChunkX - distance || chunk.zId > currentChunkZ + distance || chunk.zId < currentChunkZ - distance || chunk.yId > currentChunkY + distance || chunk.yId < currentChunkY - distance) {
                 chunkMap.remove(new Pair(chunk.xId, chunk.yId, chunk.zId).hashCode());
                 count++;
             }
         }
         if (count != 0) {
             System.out.println("Removed entries: " + count);
+            System.out.println("Updated size: "+chunkMap.size());
         }
     }
 

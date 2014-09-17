@@ -383,6 +383,7 @@ public class EulerCamera implements Camera {
                     y -= fallingSpeed;
                     fallingSpeed += fallingSpeedIncrease;
                 }
+                //chunkManager.getChunkLoader().loadChunks();
                 chunkUnderFeet = chunkManager.getChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
                 if (chunkUnderFeet != null) {
                     if (yInChunk() < Chunk.CHUNK_SIZE && yInChunk() >= 0 && !chunkUnderFeet.blocks[xInChunk()][yInChunk()][zInChunk()].is(Type.AIR)) {

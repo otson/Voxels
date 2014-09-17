@@ -43,12 +43,13 @@ public class ActiveChunkLoader extends Thread {
         while (running) {
 
             if (refresh || hasMoved()) {
-                System.out.println("In a new chunk " + count);
+                System.out.println("Moved to a new chunk");
                 count++;
                 refresh = false;
+                middle = chunkManager.getChunk(Voxels.xInChunk(),Voxels.yInChunk(), Voxels.zInChunk());
                 //loadChunks();
                 try {
-                    sleep(3);
+                    sleep(17);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(ActiveChunkLoader.class.getName()).log(Level.SEVERE, null, ex);
                 }

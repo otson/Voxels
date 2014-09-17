@@ -90,9 +90,9 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 10;
-    public static int inGameCreationDistance = 10;
-    public static final int chunkRenderDistance = 10;
+    public static int chunkCreationDistance = 8;
+    public static int inGameCreationDistance = 8;
+    public static final int chunkRenderDistance = 8;
     public static Texture atlas;
     public static Sound running;
     public static Sound jumping;
@@ -234,11 +234,11 @@ public class Voxels {
             }
         }
         System.out.println("Chunks created in " + (System.nanoTime() - time) / 1000000000 + " seconds.");
-        time = System.nanoTime();
-        chunkManager.createVBOs();
-        System.out.println("VBOs created in " + (System.nanoTime() - time) / 1000000000 + " seconds.");
-//        chunkManager.getChunkLoader().loadChunks();
-//        chunkManager.getChunkLoader().start();
+        //time = System.nanoTime();
+        //chunkManager.createVBOs();
+        //System.out.println("VBOs created in " + (System.nanoTime() - time) / 1000000000 + " seconds.");
+        //chunkManager.getChunkLoader().loadChunks();
+        chunkManager.getChunkLoader().start();
         //chunkManager.stopGeneration();
         //System.exit(0);
         chunkManager.startChunkRenderChecker();

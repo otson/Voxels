@@ -38,7 +38,12 @@ public class ChunkMaker extends Thread {
     private float[] colorArray;
 
     private Chunk chunk;
-    private boolean[][][] renders;
+    private boolean[][][] left;
+    private boolean[][][] right;
+    private boolean[][][] top;
+    private boolean[][][] bottom;
+    private boolean[][][] front;
+    private boolean[][][] back;
     private int chunkX;
     private int chunkY;
     private int chunkZ;
@@ -75,7 +80,12 @@ public class ChunkMaker extends Thread {
         this.dataToProcess = dataToProcess;
         this.chunkManager = chunkManager;
         this.queue = queue;
-        //renders = new boolean[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
+        left = new boolean[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
+        right = new boolean[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
+        top = new boolean[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
+        bottom = new boolean[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
+        front = new boolean[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
+        back = new boolean[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
 
         update = false;
 
@@ -86,7 +96,12 @@ public class ChunkMaker extends Thread {
         this.chunkManager = chunkManager;
         this.dataToProcess = dataToProcess;
         this.queue = queue;
-        //renders = new boolean[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
+        left = new boolean[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
+        right = new boolean[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
+        top = new boolean[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
+        bottom = new boolean[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
+        front = new boolean[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
+        back = new boolean[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
     }
 
     @Override
@@ -94,6 +109,7 @@ public class ChunkMaker extends Thread {
         if (!map.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
             chunk = new Chunk(chunkX, chunkY, chunkZ);
             map.put(new Pair(chunkX, chunkY, chunkZ).hashCode(), toByte(chunk));
+            //chunkManager.putUncompressed(chunk);
             try {
                 queue.offer(new Pair(chunkX, chunkY, chunkZ), 1, TimeUnit.DAYS);
             } catch (InterruptedException ex) {
@@ -114,6 +130,7 @@ public class ChunkMaker extends Thread {
             updateAllBlocks();
             drawChunkVBO();
             map.put(new Pair(this.chunk.xId, this.chunk.yId, this.chunk.zId).hashCode(), toByte(this.chunk));
+            //chunkManager.putUncompressed(chunk);
             Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.yId, this.chunk.zId);
             dataToProcess.add(new Data(this.chunk.xId, this.chunk.yId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
         }
@@ -181,7 +198,7 @@ public class ChunkMaker extends Thread {
                         bottomXOff = AtlasManager.getBottomXOff(type);
                         bottomYOff = AtlasManager.getBottomYOff(type);
 
-                        if (chunk.blocks[x][y][z].isFront()) {
+                        if (front[x][y][z]) {
                             // 1st
                             // upper left - +
                             normalArray[nArrayPos] = 0;
@@ -305,7 +322,7 @@ public class ChunkMaker extends Thread {
                             tArrayPos++;
 
                         }
-                        if (chunk.blocks[x][y][z].isBack()) {
+                        if (back[x][y][z]) {
                             texArray[tArrayPos] = backXOff;
                             tArrayPos++;
                             texArray[tArrayPos] = backYOff;
@@ -428,7 +445,7 @@ public class ChunkMaker extends Thread {
                             vArrayPos++;
 
                         }
-                        if (chunk.blocks[x][y][z].isRight()) {
+                        if (right[x][y][z]) {
 
                             texArray[tArrayPos] = rightXOff;
                             tArrayPos++;
@@ -554,7 +571,7 @@ public class ChunkMaker extends Thread {
                             vArrayPos++;
 
                         }
-                        if (chunk.blocks[x][y][z].isLeft()) {
+                        if (left[x][y][z]) {
                             texArray[tArrayPos] = leftXOff;
                             tArrayPos++;
                             texArray[tArrayPos] = leftYOff;
@@ -678,7 +695,7 @@ public class ChunkMaker extends Thread {
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
                         }
-                        if (chunk.blocks[x][y][z].isTop()) {
+                        if (top[x][y][z]) {
                             // 1st
                             // upper left
                             normalArray[nArrayPos] = 0;
@@ -801,7 +818,7 @@ public class ChunkMaker extends Thread {
                             texArray[tArrayPos] = topYOff;
                             tArrayPos++;
                         }
-                        if (chunk.blocks[x][y][z].isBottom()) {
+                        if (bottom[x][y][z]) {
                             texArray[tArrayPos] = bottomXOff;
                             tArrayPos++;
                             texArray[tArrayPos] = bottomYOff;
@@ -1114,48 +1131,35 @@ public class ChunkMaker extends Thread {
 
                         // set active sides to be rendered, rendered if the side is not touching dirt
                         if (chunk.blocks[x + 1][y][z].isOpaque()) {
-                            chunk.blocks[x][y][z].setRight(true);
-                        } else {
-                            chunk.blocks[x][y][z].setRight(false);
+                            //chunk.blocks[x][y][z].setRight(true);
+                            right[x][y][z] = true;
                         }
                         if (chunk.blocks[x - 1][y][z].isOpaque()) {
-                            chunk.blocks[x][y][z].setLeft(true);
+                            //chunk.blocks[x][y][z].setLeft(true);
+                            left[x][y][z] = true;
 
-                        } else {
-                            chunk.blocks[x][y][z].setLeft(false);
                         }
                         if (chunk.blocks[x][y + 1][z].isOpaque()) {
-                            chunk.blocks[x][y][z].setTop(true);
+                            //chunk.blocks[x][y][z].setTop(true);
+                            top[x][y][z] = true;
 
-                        } else {
-                            chunk.blocks[x][y][z].setTop(false);
                         }
                         if (chunk.blocks[x][y - 1][z].isOpaque()) {
-                            chunk.blocks[x][y][z].setBottom(true);
+                            //chunk.blocks[x][y][z].setBottom(true);
+                            bottom[x][y][z] = true;
 
-                        } else {
-                            chunk.blocks[x][y][z].setBottom(false);
                         }
                         if (chunk.blocks[x][y][z + 1].isOpaque()) {
-                            chunk.blocks[x][y][z].setFront(true);
+                            //chunk.blocks[x][y][z].setFront(true);
+                            front[x][y][z] = true;
 
-                        } else {
-                            chunk.blocks[x][y][z].setFront(false);
                         }
                         if (chunk.blocks[x][y][z - 1].isOpaque()) {
-                            chunk.blocks[x][y][z].setBack(true);
+                            //chunk.blocks[x][y][z].setBack(true);
+                            back[x][y][z] = true;
 
-                        } else {
-                            chunk.blocks[x][y][z].setBack(false);
                         }
-                    } else if (chunk.blocks[x][y][z].is(Type.WATER)) {
-                        // if water, if the block above it is not water, make it active
-                        if (chunk.blocks[x][y + 1][z].is(Type.WATER) == false) {
-                            chunk.blocks[x][y][z].setTop(true);
-                        } else {
-                            chunk.blocks[x][y][z].setTop(false);
-                        }
-                    }
+                    } 
                 }
             }
         }
@@ -1164,44 +1168,38 @@ public class ChunkMaker extends Thread {
     private void updateTopLeftBack() {
         if (leftChunk != null) {
             if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
-                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setLeft(true);
-            } else {
-                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setLeft(false);
-            }
+                //chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setLeft(true);
+                left[0][Chunk.CHUNK_SIZE - 1][0] = true;
+            } 
         }
 
         if (backChunk != null) {
             if (backChunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setBack(true);
-            } else {
-                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setBack(false);
-            }
+                //chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setBack(true);
+                back[0][Chunk.CHUNK_SIZE - 1][0] = true;
+            } 
         }
 
         if (topChunk != null) {
             if (topChunk.blocks[0][0][0].isOpaque()) {
-                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setTop(true);
-            } else {
-                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setTop(false);
+                //chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setTop(true);
+                top[0][Chunk.CHUNK_SIZE - 1][0] = true;
             }
         }
 
         if (chunk.blocks[1][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
-            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setRight(true);
-        } else {
-            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setRight(false);
+            //chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setRight(true);
+            right[0][Chunk.CHUNK_SIZE - 1][0] = true;
         }
 
         if (chunk.blocks[0][Chunk.CHUNK_SIZE - 2][0].isOpaque()) {
-            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setBottom(true);
-        } else {
-            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setBottom(false);
+            //chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setBottom(true);
+            bottom[0][Chunk.CHUNK_SIZE - 1][0] = true;
         }
 
         if (chunk.blocks[0][Chunk.CHUNK_SIZE - 1][1].isOpaque()) {
-            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setFront(true);
-        } else {
-            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setFront(false);
+            //chunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].setFront(true);
+            front[0][Chunk.CHUNK_SIZE - 1][0] = true;
         }
 
     }
@@ -1209,130 +1207,113 @@ public class ChunkMaker extends Thread {
     private void updateTopLeftFront() {
         if (leftChunk != null) {
             if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setLeft(true);
-            } else {
-                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setLeft(false);
+                //chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setLeft(true);
+                left[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1] = true;
             }
         }
         if (frontChunk != null) {
             if (frontChunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
-                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setFront(true);
-            } else {
-                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setFront(false);
+                //chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setFront(true);
+                front[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1] = true;
             }
         }
 
         if (topChunk != null) {
             if (topChunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setTop(true);
-            } else {
-                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setTop(false);
+                //chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setTop(true);
+                top[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1] = true;
             }
         }
 
         if (chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2].isOpaque()) {
-            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBack(true);
-        } else {
-            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBack(false);
-        }
+            //chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBack(true);
+            back[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1] = true;
+        } 
 
         if (chunk.blocks[0][Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBottom(true);
-        } else {
-            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBottom(false);
+            //chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBottom(true);
+            bottom[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1] = true;
         }
 
         if (chunk.blocks[1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setRight(true);
-        } else {
-            chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setRight(false);
+            //chunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setRight(true);
+            right[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1] = true;
         }
     }
 
     private void updateTopRightBack() {
         if (backChunk != null) {
             if (backChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setBack(true);
-            } else {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setBack(false);
-            }
+                //chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setBack(true);
+                back[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0] = true;
+            } 
         }
         if (rightChunk != null) {
             if (rightChunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setRight(true);
-            } else {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setRight(false);
+                //chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setRight(true);
+                right[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0] = true;
             }
         }
 
         if (topChunk != null) {
             if (topChunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setTop(true);
-            } else {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setTop(false);
+                //chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setTop(true);
+                top[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0] = true;
             }
         }
 
         if (chunk.blocks[Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setLeft(true);
-        } else {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setLeft(false);
+            //chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setLeft(true);
+            left[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0] = true;
         }
 
         if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2][0].isOpaque()) {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setBottom(true);
-        } else {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setBottom(false);
+            //chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setBottom(true);
+            bottom[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0] = true;
         }
 
         if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][1].isOpaque()) {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setFront(true);
-        } else {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setFront(false);
+            //chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].setFront(true);
+            front[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0] = true;
         }
     }
 
     private void updateTopRightFront() {
         if (rightChunk != null) {
             if (rightChunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setRight(true);
-            } else {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setRight(false);
+                //chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setRight(true);
+                right[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1] = true;
             }
         }
         if (frontChunk != null) {
             if (frontChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setFront(true);
-            } else {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setFront(false);
+                //chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setFront(true);
+                front[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1] = true;
             }
+            
         }
 
         if (topChunk != null) {
 
             if (topChunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setTop(true);
-            } else {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setTop(false);
+                //chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setTop(true);
+                top[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1] = true;
             }
         }
 
         if (chunk.blocks[Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setLeft(true);
-        } else {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setLeft(false);
-        }
+            //chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setLeft(true);
+            left[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1] = true;
+        } 
 
         if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBottom(true);
-        } else {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBottom(false);
+            //chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBottom(true);
+            bottom[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1] = true;
         }
 
         if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2].isOpaque()) {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBack(true);
-        } else {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBack(false);
+            //chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBack(true);
+            back[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1] = true;
         }
     }
 
@@ -1342,42 +1323,35 @@ public class ChunkMaker extends Thread {
         for (int z = 1; z < Chunk.CHUNK_SIZE - 1; z++) {
             if (isValid) {
                 if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].isOpaque()) {
-                    chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setLeft(true);
-                } else {
-                    chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setLeft(false);
+                   //chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setLeft(true);
+                    left[0][Chunk.CHUNK_SIZE - 1][z] = true;
                 }
             }
 
             if (topChunk != null) {
                 if (topChunk.blocks[0][0][z].isOpaque()) {
-                    chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setTop(true);
-                } else {
-                    chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setTop(false);
+                    //chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setTop(true);
+                    top[0][Chunk.CHUNK_SIZE - 1][z] = true;
                 }
             }
 
             if (chunk.blocks[1][Chunk.CHUNK_SIZE - 1][z].isOpaque()) {
-                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setRight(true);
-            } else {
-                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setRight(false);
+                //chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setRight(true);
+                right[0][Chunk.CHUNK_SIZE - 1][z] = true;
             }
-
             if (chunk.blocks[0][Chunk.CHUNK_SIZE - 2][z].isOpaque()) {
-                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setBottom(true);
-            } else {
-                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setBottom(false);
+                //chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setBottom(true);
+                bottom[0][Chunk.CHUNK_SIZE - 1][z] = true;
             }
 
             if (chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z + 1].isOpaque()) {
-                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setFront(true);
-            } else {
-                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setFront(false);
+                //chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setFront(true);
+                front[0][Chunk.CHUNK_SIZE - 1][z] = true;
             }
 
             if (chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z - 1].isOpaque()) {
-                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setBack(true);
-            } else {
-                chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setBack(false);
+                //chunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].setBack(true);
+                back[0][Chunk.CHUNK_SIZE - 1][z] = true;
             }
         }
     }
@@ -1388,42 +1362,36 @@ public class ChunkMaker extends Thread {
         for (int z = 1; z < Chunk.CHUNK_SIZE - 1; z++) {
             if (isValid) {
                 if (rightChunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].isOpaque()) {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setRight(true);
-                } else {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setRight(false);
+                    //chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setRight(true);
+                    right[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z] = true;
                 }
             }
 
             if (topChunk != null) {
                 if (topChunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].isOpaque()) {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setTop(true);
-                } else {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setTop(false);
+                    //chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setTop(true);
+                    top[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z] = true;
                 }
             }
 
             if (chunk.blocks[Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1][z].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setLeft(true);
-            } else {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setLeft(false);
+                //chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setLeft(true);
+                left[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z] = true;
             }
 
             if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2][z].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setBottom(true);
-            } else {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setBottom(false);
+                //chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setBottom(true);
+                bottom[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z] = true;
             }
 
             if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z + 1].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setFront(true);
-            } else {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setFront(false);
+                //chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setFront(true);
+                front[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z] = true;
             }
 
             if (chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z - 1].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setBack(true);
-            } else {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setBack(false);
+                //chunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].setBack(true);
+                back[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z] = true;
             }
         }
     }
@@ -1434,43 +1402,37 @@ public class ChunkMaker extends Thread {
         for (int x = 1; x < Chunk.CHUNK_SIZE - 1; x++) {
             if (isValid) {
                 if (frontChunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
-                    chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setFront(true);
-                } else {
-                    chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setFront(false);
+                    //chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setFront(true);
+                    front[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1] = true;
                 }
             }
 
             if (topChunk != null) {
                 if (topChunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                    chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setTop(true);
-                } else {
-                    chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setTop(false);
+                    //chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setTop(true);
+                    top[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1] = true;
                 }
             }
 
             if (chunk.blocks[x + 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setRight(true);
-            } else {
-                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setRight(false);
+                //chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setRight(true);
+                right[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1] = true;
             }
 
             if (chunk.blocks[x - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setLeft(true);
-            } else {
-                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setLeft(false);
+                //chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setLeft(true);
+                left[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1] = true;
             }
 
             if (chunk.blocks[x][Chunk.CHUNK_SIZE - 2][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBottom(true);
-            } else {
-                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBottom(false);
-            }
+                //chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBottom(true);
+                bottom[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1] = true;
+            } 
 
             if (chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 2].isOpaque()) {
-                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBack(true);
-            } else {
-                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBack(false);
-            }
+                //chunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].setBack(true);
+                back[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1] = true;
+            } 
         }
     }
 
@@ -1480,43 +1442,37 @@ public class ChunkMaker extends Thread {
         for (int x = 1; x < Chunk.CHUNK_SIZE - 1; x++) {
             if (isValid) {
                 if (backChunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                    chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setBack(true);
-                } else {
-                    chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setBack(false);
-                }
+                    //chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setBack(true);
+                    back[x][Chunk.CHUNK_SIZE - 1][0] = true;
+                } 
             }
 
             if (topChunk != null) {
                 if (topChunk.blocks[x][0][0].isOpaque()) {
-                    chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setTop(true);
-                } else {
-                    chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setTop(false);
-                }
+                    //chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setTop(true);
+                    top[x][Chunk.CHUNK_SIZE - 1][0] = true;
+                } 
             }
 
             if (chunk.blocks[x + 1][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
-                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setRight(true);
-            } else {
-                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setRight(false);
-            }
+                //chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setRight(true);
+                right[x][Chunk.CHUNK_SIZE - 1][0] = true;
+            } 
 
             if (chunk.blocks[x - 1][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
-                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setLeft(true);
-            } else {
-                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setLeft(false);
-            }
+                //chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setLeft(true);
+                left[x][Chunk.CHUNK_SIZE - 1][0] = true;
+            } 
 
             if (chunk.blocks[x][Chunk.CHUNK_SIZE - 2][0].isOpaque()) {
-                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setBottom(true);
-            } else {
-                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setBottom(false);
-            }
+                //chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setBottom(true);
+                bottom[x][Chunk.CHUNK_SIZE - 1][0] = true;
+            } 
 
             if (chunk.blocks[x][Chunk.CHUNK_SIZE - 1][1].isOpaque()) {
-                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setFront(true);
-            } else {
-                chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setFront(false);
-            }
+                //chunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].setFront(true);
+                front[x][Chunk.CHUNK_SIZE - 1][0] = true;
+            } 
         }
 
     }
@@ -1528,41 +1484,35 @@ public class ChunkMaker extends Thread {
 
                     if (topChunk != null) {
                         if (topChunk.blocks[x][0][z].isOpaque()) {
-                            chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setTop(true);
-                        } else {
-                            chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setTop(false);
-                        }
+                            //chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setTop(true);
+                            top[x][Chunk.CHUNK_SIZE - 1][z] = true;
+                        } 
                     }
 
                     if (chunk.blocks[x + 1][Chunk.CHUNK_SIZE - 1][z].isOpaque()) {
-                        chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setRight(true);
-                    } else {
-                        chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setRight(false);
-                    }
+                        //chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setRight(true);
+                        right[x][Chunk.CHUNK_SIZE - 1][z] = true;
+                    } 
 
                     if (chunk.blocks[x - 1][Chunk.CHUNK_SIZE - 1][z].isOpaque()) {
-                        chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setLeft(true);
-                    } else {
-                        chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setLeft(false);
-                    }
+                        //chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setLeft(true);
+                        left[x][Chunk.CHUNK_SIZE - 1][z] = true;
+                    } 
 
                     if (chunk.blocks[x][Chunk.CHUNK_SIZE - 2][z].isOpaque()) {
-                        chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setBottom(true);
-                    } else {
-                        chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setBottom(false);
-                    }
+                        //chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setBottom(true);
+                        bottom[x][Chunk.CHUNK_SIZE - 1][z] = true;
+                    } 
 
                     if (chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z + 1].isOpaque()) {
-                        chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setFront(true);
-                    } else {
-                        chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setFront(false);
-                    }
+                        //chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setFront(true);
+                        front[x][Chunk.CHUNK_SIZE - 1][z] = true;
+                    } 
 
                     if (chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z - 1].isOpaque()) {
-                        chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setBack(true);
-                    } else {
-                        chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setBack(false);
-                    }
+                        //chunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].setBack(true);
+                        back[x][Chunk.CHUNK_SIZE - 1][z] = true;
+                    } 
                 }
             }
 
@@ -1572,178 +1522,155 @@ public class ChunkMaker extends Thread {
     private void updateBottomLeftBack() {
         if (leftChunk != null) {
             if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].isOpaque()) {
-                chunk.blocks[0][0][0].setLeft(true);
-            } else {
-                chunk.blocks[0][0][0].setLeft(false);
-            }
+                //chunk.blocks[0][0][0].setLeft(true);
+                left[0][0][0] = true;
+                
+            } 
         }
 
         if (backChunk != null) {
             if (backChunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                chunk.blocks[0][0][0].setBack(true);
-            } else {
-                chunk.blocks[0][0][0].setBack(false);
-            }
+                //chunk.blocks[0][0][0].setBack(true);
+                back[0][0][0] = true;
+            } 
         }
 
         if (bottomChunk != null) {
             if (bottomChunk.blocks[0][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
-                chunk.blocks[0][0][0].setBottom(true);
-            } else {
-                chunk.blocks[0][0][0].setBottom(false);
-            }
+                //chunk.blocks[0][0][0].setBottom(true);
+                bottom[0][0][0] = true;
+            } 
         }
 
         if (chunk.blocks[1][0][0].isOpaque()) {
-            chunk.blocks[0][0][0].setRight(true);
-        } else {
-            chunk.blocks[0][0][0].setRight(false);
-        }
+            //chunk.blocks[0][0][0].setRight(true);
+            right[0][0][0] = true;
+        } 
 
         if (chunk.blocks[0][1][0].isOpaque()) {
-            chunk.blocks[0][0][0].setTop(true);
-        } else {
-            chunk.blocks[0][0][0].setTop(false);
-        }
+            //chunk.blocks[0][0][0].setTop(true);
+            top[0][0][0] = true;
+        } 
 
         if (chunk.blocks[0][0][1].isOpaque()) {
-            chunk.blocks[0][0][0].setFront(true);
-        } else {
-            chunk.blocks[0][0][0].setFront(false);
-        }
+            //chunk.blocks[0][0][0].setFront(true);
+            front[0][0][0] = true;
+        } 
     }
 
     private void updateBottomLeftFront() {
         if (leftChunk != null) {
             if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setLeft(true);
-            } else {
-                chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setLeft(false);
-            }
+                //chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setLeft(true);
+                left[0][0][Chunk.CHUNK_SIZE - 1] = true;
+            } 
         }
 
         if (frontChunk != null) {
             if (frontChunk.blocks[0][0][0].isOpaque()) {
-                chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setFront(true);
-            } else {
-                chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setFront(false);
-            }
+                //chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setFront(true);
+                front[0][0][Chunk.CHUNK_SIZE - 1] = true;
+            } 
         }
 
         if (bottomChunk != null) {
             if (bottomChunk.blocks[0][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setBottom(true);
-            } else {
-                chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setBottom(false);
-            }
+                //chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setBottom(true);
+                bottom[0][0][Chunk.CHUNK_SIZE - 1] = true;
+            } 
         }
 
         if (chunk.blocks[1][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-            chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setRight(true);
-        } else {
-            chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setRight(false);
-        }
+            //chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setRight(true);
+            right[0][0][Chunk.CHUNK_SIZE - 1] = true;
+        } 
 
         if (chunk.blocks[0][1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-            chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setTop(true);
-        } else {
-            chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setTop(false);
-        }
+            //chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setTop(true);
+            top[0][0][Chunk.CHUNK_SIZE - 1] = true;
+        } 
 
         if (chunk.blocks[0][0][Chunk.CHUNK_SIZE - 2].isOpaque()) {
-            chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setBack(true);
-        } else {
-            chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setBack(false);
-        }
+            //chunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].setBack(true);
+            back[0][0][Chunk.CHUNK_SIZE - 1] = true;
+        } 
     }
 
     private void updateBottomRightBack() {
         if (rightChunk != null) {
             if (rightChunk.blocks[0][0][0].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setRight(true);
-            } else {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setRight(false);
-            }
+                //chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setRight(true);
+                right[Chunk.CHUNK_SIZE - 1][0][0] = true;
+            } 
         }
 
         if (backChunk != null) {
             if (backChunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setBack(true);
-            } else {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setBack(false);
-            }
+                //chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setBack(true);
+                back[Chunk.CHUNK_SIZE - 1][0][0] = true;
+            } 
         }
 
         if (bottomChunk != null) {
             if (bottomChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setBottom(true);
-            } else {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setBottom(false);
-            }
+                //chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setBottom(true);
+                bottom[Chunk.CHUNK_SIZE - 1][0][0] = true;
+            } 
         }
 
         if (chunk.blocks[Chunk.CHUNK_SIZE - 2][0][0].isOpaque()) {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setLeft(true);
-        } else {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setLeft(false);
-        }
+            //chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setLeft(true);
+            left[Chunk.CHUNK_SIZE - 1][0][0] = true;
+        } 
 
         if (chunk.blocks[Chunk.CHUNK_SIZE - 1][1][0].isOpaque()) {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setTop(true);
-        } else {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setTop(false);
-        }
+            //chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setTop(true);
+            top[Chunk.CHUNK_SIZE - 1][0][0] = true;
+        } 
 
         if (chunk.blocks[Chunk.CHUNK_SIZE - 1][0][1].isOpaque()) {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setFront(true);
-        } else {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setFront(false);
-        }
+            //chunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].setFront(true);
+            front[Chunk.CHUNK_SIZE - 1][0][0] = true;
+        } 
     }
 
     private void updateBottomRightFront() {
 
         if (rightChunk != null) {
             if (rightChunk.blocks[0][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setRight(true);
-            } else {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setRight(false);
-            }
+                //chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setRight(true);
+                right[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1] = true;
+            } 
         }
 
         if (frontChunk != null) {
             if (frontChunk.blocks[Chunk.CHUNK_SIZE - 1][0][0].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setFront(true);
-            } else {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setFront(false);
-            }
+                //chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setFront(true);
+                front[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1] = true;
+            } 
         }
 
         if (bottomChunk != null) {
             if (bottomChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setBottom(true);
-            } else {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setBottom(false);
+                //chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setBottom(true);
+                bottom[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1] = true;
             }
         }
 
         if (chunk.blocks[Chunk.CHUNK_SIZE - 2][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setLeft(true);
-        } else {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setLeft(false);
-        }
+            //chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setLeft(true);
+            left[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1] = true;
+        } 
 
         if (chunk.blocks[Chunk.CHUNK_SIZE - 1][1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setTop(true);
-        } else {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setTop(false);
-        }
+            //chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setTop(true);
+            top[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1] = true;
+        } 
 
         if (chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 2].isOpaque()) {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setBack(true);
-        } else {
-            chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setBack(false);
-        }
+            //chunk.blocks[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1].setBack(true);
+            back[Chunk.CHUNK_SIZE - 1][0][Chunk.CHUNK_SIZE - 1] = true;
+        } 
     }
 
     private void updateBottomLeft() {
@@ -1752,42 +1679,36 @@ public class ChunkMaker extends Thread {
         for (int z = 1; z < Chunk.CHUNK_SIZE - 1; z++) {
             if (isValid) {
                 if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].isOpaque()) {
-                    chunk.blocks[0][0][z].setLeft(true);
-                } else {
-                    chunk.blocks[0][0][z].setLeft(false);
-                }
+                    //chunk.blocks[0][0][z].setLeft(true);
+                    left[0][0][z] = true;
+                } 
             }
 
             if (bottomChunk != null) {
                 if (bottomChunk.blocks[0][Chunk.CHUNK_SIZE - 1][z].isOpaque()) {
-                    chunk.blocks[0][0][z].setBottom(true);
-                } else {
-                    chunk.blocks[0][0][z].setBottom(false);
-                }
+                    //chunk.blocks[0][0][z].setBottom(true);
+                    bottom[0][0][z] = true;
+                } 
             }
 
             if (chunk.blocks[1][0][z].isOpaque()) {
-                chunk.blocks[0][0][z].setRight(true);
-            } else {
-                chunk.blocks[0][0][z].setRight(false);
-            }
+                //chunk.blocks[0][0][z].setRight(true);
+                right[0][0][z] = true;
+            } 
 
             if (chunk.blocks[0][1][z].isOpaque()) {
-                chunk.blocks[0][0][z].setTop(true);
-            } else {
-                chunk.blocks[0][0][z].setTop(false);
-            }
+                //chunk.blocks[0][0][z].setTop(true);
+                top[0][0][z] = true;
+            } 
 
             if (chunk.blocks[0][0][z + 1].isOpaque()) {
-                chunk.blocks[0][0][z].setFront(true);
-            } else {
-                chunk.blocks[0][0][z].setFront(false);
-            }
+                //chunk.blocks[0][0][z].setFront(true);
+                front[0][0][z] = true;
+            } 
 
             if (chunk.blocks[0][0][z - 1].isOpaque()) {
-                chunk.blocks[0][0][z].setBack(true);
-            } else {
-                chunk.blocks[0][0][z].setBack(false);
+                //chunk.blocks[0][0][z].setBack(true);
+                back[0][0][z] = true;
             }
         }
     }
@@ -1799,43 +1720,37 @@ public class ChunkMaker extends Thread {
         for (int z = 1; z < Chunk.CHUNK_SIZE - 1; z++) {
             if (isValid) {
                 if (rightChunk.blocks[0][0][z].isOpaque()) {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setRight(true);
-                } else {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setRight(false);
-                }
+                    //chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setRight(true);
+                    right[Chunk.CHUNK_SIZE - 1][0][z] = true;
+                } 
             }
 
             if (bottomChunk != null) {
                 if (bottomChunk.blocks[Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1][z].isOpaque()) {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setBottom(true);
-                } else {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setBottom(false);
-                }
+                    //chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setBottom(true);
+                    bottom[Chunk.CHUNK_SIZE - 1][0][z] = true;
+                } 
             }
 
             if (chunk.blocks[Chunk.CHUNK_SIZE - 2][0][z].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setLeft(true);
-            } else {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setLeft(false);
-            }
+                //chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setLeft(true);
+                left[Chunk.CHUNK_SIZE - 1][0][z] = true;
+            } 
 
             if (chunk.blocks[Chunk.CHUNK_SIZE - 1][1][z].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setTop(true);
-            } else {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setTop(false);
-            }
+                //chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setTop(true);
+                top[Chunk.CHUNK_SIZE - 1][0][z] = true;
+            } 
 
             if (chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z + 1].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setFront(true);
-            } else {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setFront(false);
-            }
+                //chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setFront(true);
+                front[Chunk.CHUNK_SIZE - 1][0][z] = true;
+            } 
 
             if (chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z - 1].isOpaque()) {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setBack(true);
-            } else {
-                chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setBack(false);
-            }
+                //chunk.blocks[Chunk.CHUNK_SIZE - 1][0][z].setBack(true);
+                back[Chunk.CHUNK_SIZE - 1][0][z] = true;
+            } 
         }
     }
 
@@ -1845,42 +1760,36 @@ public class ChunkMaker extends Thread {
         for (int x = 1; x < Chunk.CHUNK_SIZE - 1; x++) {
             if (isValid) {
                 if (frontChunk.blocks[x][0][0].isOpaque()) {
-                    chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setFront(true);
-                } else {
-                    chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setFront(false);
-                }
+                    //chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setFront(true);
+                    front [x][0][Chunk.CHUNK_SIZE - 1] = true;
+                } 
             }
 
             if (bottomChunk != null) {
                 if (bottomChunk.blocks[x][Chunk.CHUNK_SIZE - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                    chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setBottom(true);
-                } else {
-                    chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setBottom(false);
-                }
+                    //chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setBottom(true);
+                    bottom [x][0][Chunk.CHUNK_SIZE - 1] = true;
+                } 
             }
 
             if (chunk.blocks[x + 1][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setRight(true);
-            } else {
-                chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setRight(false);
+                //chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setRight(true);
+                right [x][0][Chunk.CHUNK_SIZE - 1] = true;
             }
 
             if (chunk.blocks[x - 1][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setLeft(true);
-            } else {
-                chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setLeft(false);
-            }
+                //chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setLeft(true);
+                left [x][0][Chunk.CHUNK_SIZE - 1] = true;
+            } 
 
             if (chunk.blocks[x][1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setTop(true);
-            } else {
-                chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setTop(false);
+                //chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setTop(true);
+                top [x][0][Chunk.CHUNK_SIZE - 1] = true;
             }
 
             if (chunk.blocks[x][0][Chunk.CHUNK_SIZE - 2].isOpaque()) {
-                chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setBack(true);
-            } else {
-                chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setBack(false);
+                //chunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].setBack(true);
+                back [x][0][Chunk.CHUNK_SIZE - 1] = true;
             }
         }
     }
@@ -1891,43 +1800,37 @@ public class ChunkMaker extends Thread {
         for (int x = 1; x < Chunk.CHUNK_SIZE - 1; x++) {
             if (isValid) {
                 if (backChunk.blocks[x][0][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                    chunk.blocks[x][0][0].setBack(true);
-                } else {
-                    chunk.blocks[x][0][0].setBack(false);
-                }
+                    //chunk.blocks[x][0][0].setBack(true);
+                    back[x][0][0] = true;
+                } 
             }
 
             if (bottomChunk != null) {
                 if (bottomChunk.blocks[x][Chunk.CHUNK_SIZE - 1][0].isOpaque()) {
-                    chunk.blocks[x][0][0].setBottom(true);
-                } else {
-                    chunk.blocks[x][0][0].setBottom(false);
-                }
+                    //chunk.blocks[x][0][0].setBottom(true);
+                    bottom[x][0][0] = true;
+                } 
             }
 
             if (chunk.blocks[x + 1][0][0].isOpaque()) {
-                chunk.blocks[x][0][0].setRight(true);
-            } else {
-                chunk.blocks[x][0][0].setRight(false);
-            }
+                //chunk.blocks[x][0][0].setRight(true);
+                right[x][0][0] = true;
+            } 
 
             if (chunk.blocks[x - 1][0][0].isOpaque()) {
-                chunk.blocks[x][0][0].setLeft(true);
-            } else {
-                chunk.blocks[x][0][0].setLeft(false);
-            }
+                //chunk.blocks[x][0][0].setLeft(true);
+                left[x][0][0] = true;
+            } 
 
             if (chunk.blocks[x][1][0].isOpaque()) {
-                chunk.blocks[x][0][0].setTop(true);
-            } else {
-                chunk.blocks[x][0][0].setTop(false);
-            }
+                //chunk.blocks[x][0][0].setTop(true);
+                top[x][0][0] = true;
+            } 
 
             if (chunk.blocks[x][0][1].isOpaque()) {
-                chunk.blocks[x][0][0].setFront(true);
-            } else {
-                chunk.blocks[x][0][0].setFront(false);
-            }
+                //chunk.blocks[x][0][0].setFront(true);
+                front[x][0][0] = true;
+            } 
         }
     }
 
@@ -1937,41 +1840,35 @@ public class ChunkMaker extends Thread {
                 if (chunk.blocks[x][0][z].is(Type.AIR) == false) {
                     if (bottomChunk != null) {
                         if (bottomChunk.blocks[x][Chunk.CHUNK_SIZE - 1][z].isOpaque()) {
-                            chunk.blocks[x][0][z].setBottom(true);
-                        } else {
-                            chunk.blocks[x][0][z].setBottom(false);
-                        }
+                            //chunk.blocks[x][0][z].setBottom(true);
+                            bottom[x][0][z] = true;
+                        } 
                     }
 
                     if (chunk.blocks[x + 1][0][z].isOpaque()) {
-                        chunk.blocks[x][0][z].setRight(true);
-                    } else {
-                        chunk.blocks[x][0][z].setRight(false);
-                    }
+                        //chunk.blocks[x][0][z].setRight(true);
+                        right[x][0][z] = true;
+                    } 
 
                     if (chunk.blocks[x - 1][0][z].isOpaque()) {
-                        chunk.blocks[x][0][z].setLeft(true);
-                    } else {
-                        chunk.blocks[x][0][z].setLeft(false);
-                    }
+                        //chunk.blocks[x][0][z].setLeft(true);
+                        left[x][0][z] = true;
+                    } 
 
                     if (chunk.blocks[x][1][z].isOpaque()) {
-                        chunk.blocks[x][0][z].setTop(true);
-                    } else {
-                        chunk.blocks[x][0][z].setTop(false);
+                        //chunk.blocks[x][0][z].setTop(true);
+                        top[x][0][z] = true;
                     }
 
                     if (chunk.blocks[x][0][z + 1].isOpaque()) {
-                        chunk.blocks[x][0][z].setFront(true);
-                    } else {
-                        chunk.blocks[x][0][z].setFront(false);
-                    }
+                        //chunk.blocks[x][0][z].setFront(true);
+                        front[x][0][z] = true;
+                    } 
 
                     if (chunk.blocks[x][0][z - 1].isOpaque()) {
-                        chunk.blocks[x][0][z].setBack(true);
-                    } else {
-                        chunk.blocks[x][0][z].setBack(false);
-                    }
+                        //chunk.blocks[x][0][z].setBack(true);
+                        back[x][0][z] = true;
+                    } 
                 }
             }
         }
@@ -1985,41 +1882,35 @@ public class ChunkMaker extends Thread {
                 if (chunk.blocks[0][y][z].is(Type.AIR) == false) {
                     if (isValid) {
                         if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].isOpaque()) {
-                            chunk.blocks[0][y][z].setLeft(true);
-                        } else {
-                            chunk.blocks[0][y][z].setLeft(false);
-                        }
+                            //chunk.blocks[0][y][z].setLeft(true);
+                            left[0][y][z] = true;
+                        } 
                     }
 
                     if (chunk.blocks[0][y + 1][z].isOpaque()) {
-                        chunk.blocks[0][y][z].setTop(true);
-                    } else {
-                        chunk.blocks[0][y][z].setTop(false);
-                    }
+                        //chunk.blocks[0][y][z].setTop(true);
+                        top[0][y][z] = true;
+                    } 
 
                     if (chunk.blocks[0][y - 1][z].isOpaque()) {
-                        chunk.blocks[0][y][z].setBottom(true);
-                    } else {
-                        chunk.blocks[0][y][z].setBottom(false);
+                        //chunk.blocks[0][y][z].setBottom(true);
+                        bottom[0][y][z] = true;
                     }
 
                     if (chunk.blocks[0][y][z + 1].isOpaque()) {
-                        chunk.blocks[0][y][z].setFront(true);
-                    } else {
-                        chunk.blocks[0][y][z].setFront(false);
+                        //chunk.blocks[0][y][z].setFront(true);
+                        front[0][y][z] = true;
                     }
 
                     if (chunk.blocks[0][y][z - 1].isOpaque()) {
-                        chunk.blocks[0][y][z].setBack(true);
-                    } else {
-                        chunk.blocks[0][y][z].setBack(false);
+                        //chunk.blocks[0][y][z].setBack(true);
+                        back[0][y][z] = true;
                     }
 
                     if (chunk.blocks[1][y][z].isOpaque()) {
-                        chunk.blocks[0][y][z].setRight(true);
-                    } else {
-                        chunk.blocks[0][y][z].setRight(false);
-                    }
+                        //chunk.blocks[0][y][z].setRight(true);
+                        right[0][y][z] = true;
+                    } 
                 }
             }
         }
@@ -2033,41 +1924,35 @@ public class ChunkMaker extends Thread {
                 if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].is(Type.AIR) == false) {
                     if (isValid) {
                         if (rightChunk.blocks[0][y][z].isOpaque()) {
-                            chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setRight(true);
-                        } else {
-                            chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setRight(false);
-                        }
+                            //chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setRight(true);
+                            right[Chunk.CHUNK_SIZE - 1][y][z] = true;
+                        } 
                     }
 
                     if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y + 1][z].isOpaque()) {
-                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setTop(true);
-                    } else {
-                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setTop(false);
-                    }
+                        //chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setTop(true);
+                        top[Chunk.CHUNK_SIZE - 1][y][z] = true;
+                    } 
 
                     if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y - 1][z].isOpaque()) {
-                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setBottom(true);
-                    } else {
-                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setBottom(false);
-                    }
+                        //chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setBottom(true);
+                        bottom[Chunk.CHUNK_SIZE - 1][y][z] = true;
+                    } 
 
                     if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z + 1].isOpaque()) {
-                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setFront(true);
-                    } else {
-                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setFront(false);
-                    }
+                        //chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setFront(true);
+                        front[Chunk.CHUNK_SIZE - 1][y][z] = true;
+                    } 
 
                     if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z - 1].isOpaque()) {
-                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setBack(true);
-                    } else {
-                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setBack(false);
-                    }
+                        //chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setBack(true);
+                        back[Chunk.CHUNK_SIZE - 1][y][z] = true;
+                    } 
 
                     if (chunk.blocks[Chunk.CHUNK_SIZE - 2][y][z].isOpaque()) {
-                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setLeft(true);
-                    } else {
-                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setLeft(false);
-                    }
+                        //chunk.blocks[Chunk.CHUNK_SIZE - 1][y][z].setLeft(true);
+                        left[Chunk.CHUNK_SIZE - 1][y][z] = true;
+                    } 
                 }
             }
         }
@@ -2081,41 +1966,34 @@ public class ChunkMaker extends Thread {
                 if (chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].is(Type.AIR) == false) {
                     if (isValid) {
                         if (frontChunk.blocks[x][y][0].isOpaque()) {
-                            chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setFront(true);
-                        } else {
-                            chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setFront(false);
-                        }
+                            //chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setFront(true);
+                            front[x][y][Chunk.CHUNK_SIZE - 1] = true;
+                        } 
                     }
 
                     if (chunk.blocks[x + 1][y][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                        chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setRight(true);
-                    } else {
-                        chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setRight(false);
-                    }
+                        //chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setRight(true);
+                        right[x][y][Chunk.CHUNK_SIZE - 1] = true;
+                    } 
 
                     if (chunk.blocks[x - 1][y][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                        chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setLeft(true);
-                    } else {
-                        chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setLeft(false);
-                    }
-
+                        //chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setLeft(true);
+                        left[x][y][Chunk.CHUNK_SIZE - 1] = true;    
+                    } 
                     if (chunk.blocks[x][y + 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                        chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setTop(true);
-                    } else {
-                        chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setTop(false);
-                    }
+                        //chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setTop(true);
+                        top[x][y][Chunk.CHUNK_SIZE - 1] = true;
+                    } 
 
                     if (chunk.blocks[x][y - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                        chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setBottom(true);
-                    } else {
-                        chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setBottom(false);
-                    }
+                        //chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setBottom(true);
+                        bottom[x][y][Chunk.CHUNK_SIZE - 1] = true;
+                    } 
 
                     if (chunk.blocks[x][y][Chunk.CHUNK_SIZE - 2].isOpaque()) {
-                        chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setBack(true);
-                    } else {
-                        chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setBack(false);
-                    }
+                        //chunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].setBack(true);
+                        back[x][y][Chunk.CHUNK_SIZE - 1] = true;
+                    } 
                 }
             }
         }
@@ -2129,41 +2007,35 @@ public class ChunkMaker extends Thread {
                 if (chunk.blocks[x][y][0].is(Type.AIR) == false) {
                     if (isValid) {
                         if (backChunk.blocks[x][y][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                            chunk.blocks[x][y][0].setBack(true);
-                        } else {
-                            chunk.blocks[x][y][0].setBack(false);
-                        }
+                            //chunk.blocks[x][y][0].setBack(true);
+                            back[x][y][0] = true;
+                        } 
                     }
 
                     if (chunk.blocks[x + 1][y][0].isOpaque()) {
-                        chunk.blocks[x][y][0].setRight(true);
-                    } else {
-                        chunk.blocks[x][y][0].setRight(false);
-                    }
+                        //chunk.blocks[x][y][0].setRight(true);
+                        right[x][y][0] = true;
+                    } 
 
                     if (chunk.blocks[x - 1][y][0].isOpaque()) {
-                        chunk.blocks[x][y][0].setLeft(true);
-                    } else {
-                        chunk.blocks[x][y][0].setLeft(false);
-                    }
+                        //chunk.blocks[x][y][0].setLeft(true);
+                        left[x][y][0] = true;
+                    } 
 
                     if (chunk.blocks[x][y + 1][0].isOpaque()) {
-                        chunk.blocks[x][y][0].setTop(true);
-                    } else {
-                        chunk.blocks[x][y][0].setTop(false);
-                    }
+                        //chunk.blocks[x][y][0].setTop(true);
+                        top[x][y][0] = true;
+                    } 
 
                     if (chunk.blocks[x][y - 1][0].isOpaque()) {
-                        chunk.blocks[x][y][0].setBottom(true);
-                    } else {
-                        chunk.blocks[x][y][0].setBottom(false);
-                    }
+                        //chunk.blocks[x][y][0].setBottom(true);
+                        bottom[x][y][0] = true;
+                    } 
 
                     if (chunk.blocks[x][y][1].isOpaque()) {
-                        chunk.blocks[x][y][0].setFront(true);
-                    } else {
-                        chunk.blocks[x][y][0].setFront(false);
-                    }
+                        //chunk.blocks[x][y][0].setFront(true);
+                        front[x][y][0] = true;
+                    } 
                 }
             }
         }
@@ -2174,22 +2046,22 @@ public class ChunkMaker extends Thread {
         for (int x = 0; x < Chunk.CHUNK_SIZE; x++) {
             for (int z = 0; z < Chunk.CHUNK_SIZE; z++) {
                 for (int y = 0; y < Chunk.CHUNK_SIZE; y++) {
-                    if (chunk.blocks[x][y][z].isBack()) {
+                    if (left[x][y][z]) {
                         vertexCount += 6;
                     }
-                    if (chunk.blocks[x][y][z].isBottom()) {
+                    if (right[x][y][z]) {
                         vertexCount += 6;
                     }
-                    if (chunk.blocks[x][y][z].isFront()) {
+                    if (top[x][y][z]) {
                         vertexCount += 6;
                     }
-                    if (chunk.blocks[x][y][z].isLeft()) {
+                    if (bottom[x][y][z]) {
                         vertexCount += 6;
                     }
-                    if (chunk.blocks[x][y][z].isRight()) {
+                    if (front[x][y][z]) {
                         vertexCount += 6;
                     }
-                    if (chunk.blocks[x][y][z].isTop()) {
+                    if (back[x][y][z]) {
                         vertexCount += 6;
                     }
                 }
@@ -2207,43 +2079,37 @@ public class ChunkMaker extends Thread {
             if (chunk.blocks[0][y][0].is(Type.AIR) == false) {
                 if (backIsValid) {
                     if (backChunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                        chunk.blocks[0][y][0].setBack(true);
-                    } else {
-                        chunk.blocks[0][y][0].setBack(false);
-                    }
+                        //chunk.blocks[0][y][0].setBack(true);
+                        back[0][y][0] = true;
+                    } 
                 }
 
                 if (leftIsValid) {
                     if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].isOpaque()) {
-                        chunk.blocks[0][y][0].setLeft(true);
-                    } else {
-                        chunk.blocks[0][y][0].setLeft(false);
-                    }
+                        //chunk.blocks[0][y][0].setLeft(true);
+                        left[0][y][0] = true;
+                    } 
                 }
 
                 if (chunk.blocks[1][y][0].isOpaque()) {
-                    chunk.blocks[0][y][0].setRight(true);
-                } else {
-                    chunk.blocks[0][y][0].setRight(false);
+                    //chunk.blocks[0][y][0].setRight(true);
+                    right[0][y][0] = true;
                 }
 
                 if (chunk.blocks[0][y + 1][0].isOpaque()) {
-                    chunk.blocks[0][y][0].setTop(true);
-                } else {
-                    chunk.blocks[0][y][0].setTop(false);
-                }
+                    //chunk.blocks[0][y][0].setTop(true);
+                    top[0][y][0] = true;
+                } 
 
                 if (chunk.blocks[0][y - 1][0].isOpaque()) {
-                    chunk.blocks[0][y][0].setBottom(true);
-                } else {
-                    chunk.blocks[0][y][0].setBottom(false);
-                }
+                    //chunk.blocks[0][y][0].setBottom(true);
+                    bottom[0][y][0] = true;
+                } 
 
                 if (chunk.blocks[0][y][1].isOpaque()) {
-                    chunk.blocks[0][y][0].setFront(true);
-                } else {
-                    chunk.blocks[0][y][0].setFront(false);
-                }
+                    //chunk.blocks[0][y][0].setFront(true);
+                    front[0][y][0] = true;
+                } 
             }
         }
     }
@@ -2256,43 +2122,37 @@ public class ChunkMaker extends Thread {
             if (chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].is(Type.AIR) == false) {
                 if (frontIsValid) {
                     if (frontChunk.blocks[0][y][0].isOpaque()) {
-                        chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setFront(true);
-                    } else {
-                        chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setFront(false);
-                    }
+                        //chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setFront(true);
+                        front[0][y][Chunk.CHUNK_SIZE - 1] = true;
+                    } 
                 }
 
                 if (leftIsValid) {
                     if (leftChunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                        chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setLeft(true);
-                    } else {
-                        chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setLeft(false);
-                    }
+                        //chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setLeft(true);
+                        left[0][y][Chunk.CHUNK_SIZE - 1] = true;
+                    } 
                 }
 
                 if (chunk.blocks[1][y][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                    chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setRight(true);
-                } else {
-                    chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setRight(false);
-                }
+                    //chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setRight(true);
+                    right[0][y][Chunk.CHUNK_SIZE - 1] = true;
+                } 
 
                 if (chunk.blocks[0][y + 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                    chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setTop(true);
-                } else {
-                    chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setTop(false);
-                }
+                    //chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setTop(true);
+                    top[0][y][Chunk.CHUNK_SIZE - 1] = true;
+                } 
 
                 if (chunk.blocks[0][y - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                    chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setBottom(true);
-                } else {
-                    chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setBottom(false);
-                }
+                    //chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setBottom(true);
+                    bottom[0][y][Chunk.CHUNK_SIZE - 1] = true;
+                } 
 
                 if (chunk.blocks[0][y][Chunk.CHUNK_SIZE - 2].isOpaque()) {
-                    chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setBack(true);
-                } else {
-                    chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setBack(false);
-                }
+                    //chunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].setBack(true);
+                    back[0][y][Chunk.CHUNK_SIZE - 1] = true;
+                } 
             }
         }
     }
@@ -2305,43 +2165,36 @@ public class ChunkMaker extends Thread {
             if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].is(Type.AIR) == false) {
                 if (rightIsValid) {
                     if (rightChunk.blocks[0][y][0].isOpaque()) {
-                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setRight(true);
-                    } else {
-                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setRight(false);
-                    }
+                        //chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setRight(true);
+                        right[Chunk.CHUNK_SIZE - 1][y][0] = true;
+                    } 
                 }
 
                 if (backIsValid) {
                     if (backChunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setBack(true);
-                    } else {
-                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setBack(false);
-                    }
+                        //chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setBack(true);
+                        back[Chunk.CHUNK_SIZE - 1][y][0] = true;
+                    } 
                 }
 
                 if (chunk.blocks[Chunk.CHUNK_SIZE - 2][y][0].isOpaque()) {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setLeft(true);
-                } else {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setLeft(false);
-                }
+                    //chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setLeft(true);
+                    left[Chunk.CHUNK_SIZE - 1][y][0] = true;
+                } 
 
                 if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y + 1][0].isOpaque()) {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setTop(true);
-                } else {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setTop(false);
-                }
-
+                    //chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setTop(true);
+                    top[Chunk.CHUNK_SIZE - 1][y][0] = true;
+                } 
                 if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y - 1][0].isOpaque()) {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setBottom(true);
-                } else {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setBottom(false);
-                }
+                    //chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setBottom(true);
+                    bottom[Chunk.CHUNK_SIZE - 1][y][0] = true;
+                } 
 
                 if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][1].isOpaque()) {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setFront(true);
-                } else {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setFront(false);
-                }
+                    //chunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].setFront(true);
+                    front[Chunk.CHUNK_SIZE - 1][y][0] = true;
+                } 
             }
         }
     }
@@ -2354,43 +2207,37 @@ public class ChunkMaker extends Thread {
             if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].is(Type.AIR) == false) {
                 if (rightIsValid) {
                     if (rightChunk.blocks[0][y][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setRight(true);
-                    } else {
-                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setRight(false);
-                    }
+                        //chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setRight(true);
+                        right[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1] = true;
+                    } 
                 }
 
                 if (frontIsValid) {
                     if (frontChunk.blocks[Chunk.CHUNK_SIZE - 1][y][0].isOpaque()) {
-                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setFront(true);
-                    } else {
-                        chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setFront(false);
-                    }
+                        //chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setFront(true);
+                        front[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1] = true;
+                    } 
                 }
 
                 if (chunk.blocks[Chunk.CHUNK_SIZE - 2][y][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setLeft(true);
-                } else {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setLeft(false);
-                }
+                    //chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setLeft(true);
+                    left[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1] = true;
+                } 
 
                 if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y + 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setTop(true);
-                } else {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setTop(false);
-                }
+                    //chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setTop(true);
+                    top[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1] = true;
+                } 
 
                 if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y - 1][Chunk.CHUNK_SIZE - 1].isOpaque()) {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setBottom(true);
-                } else {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setBottom(false);
-                }
+                    //chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setBottom(true);
+                    bottom[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1] = true;
+                } 
 
                 if (chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 2].isOpaque()) {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setBack(true);
-                } else {
-                    chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setBack(false);
-                }
+                    //chunk.blocks[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1].setBack(true);
+                    back[Chunk.CHUNK_SIZE - 1][y][Chunk.CHUNK_SIZE - 1] = true;
+                } 
 
             }
         }

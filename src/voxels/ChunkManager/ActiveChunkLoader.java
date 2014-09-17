@@ -6,6 +6,8 @@
 package voxels.ChunkManager;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,8 +48,7 @@ public class ActiveChunkLoader extends Thread {
                 System.out.println("Moved to a new chunk");
                 count++;
                 refresh = false;
-                middle = chunkManager.getChunk(Voxels.xInChunk(),Voxels.yInChunk(), Voxels.zInChunk());
-                //loadChunks();
+                loadChunks();
                 try {
                     sleep(17);
                 } catch (InterruptedException ex) {
@@ -56,8 +57,8 @@ public class ActiveChunkLoader extends Thread {
             }
         }
     }
-    
-    public void put(Chunk chunk){
+
+    public void put(Chunk chunk) {
         chunkMap.put(new Pair(chunk.xId, chunk.yId, chunk.zId).hashCode(), chunk);
     }
 
@@ -80,40 +81,52 @@ public class ActiveChunkLoader extends Thread {
     }
 
     public void loadChunks() {
-
-        Thread thread = new Thread(
+        new Thread(
                 new Runnable() {
                     public void run() {
-                        updateLocation();
+
                         int count = 0;
-                        int loadDistance = Voxels.chunkRenderDistance;
+                        int loadDistance = 1;
                         long start = System.nanoTime();
-                        for (int y = 0; y < Chunk.VERTICAL_CHUNKS; y++) {
-                            for (int x = -loadDistance; x < loadDistance; x++) {
-                                for (int z = -loadDistance; z < loadDistance; z++) {
+                        for (int y = -loadDistance; y <= loadDistance; y++) {
+                            for (int x = -loadDistance; x <= loadDistance; x++) {
+                                for (int z = -loadDistance; z <= loadDistance; z++) {
                                     count++;
-                                    Chunk temp = chunkManager.getChunk(currentChunkX + x, y, currentChunkZ + z);
+                                    Chunk temp = chunkManager.getChunk(currentChunkX + x, currentChunkY+y, currentChunkZ + z);
                                     if (temp != null) {
-                                        if (!chunkMap.containsKey(new Pair(temp.xId, temp.yId, temp.zId).hashCode())) {
+                                        //if (!chunkMap.containsKey(new Pair(temp.xId, temp.yId, temp.zId).hashCode())) {
                                             chunkMap.put(new Pair(temp.xId, temp.yId, temp.zId).hashCode(), temp);
-                                        }
+                                        //}
+                                    } else {
+                                        //System.out.println("null chunk at x: " + (currentChunkX + x) + " y: " + y + " z: " + (currentChunkZ + z));
                                     }
-                                    else
-                                        System.out.println("null chunk");
 
                                 }
                             }
                         }
                         updateLocation();
+                        clearEntries();
                         System.out.println("count: " + count);
                         System.out.println("Loading chunks took: " + (System.nanoTime() - start) / 1000000 + " ms.");
                         System.out.println("Size: " + chunkMap.size());
                     }
                 }
-        );
-        thread.setPriority(Thread.MIN_PRIORITY);
-        thread.start();
+        ).start();
+        updateLocation();
+    }
 
+    private void clearEntries() {
+        int distance = 2;
+        int count = 0;
+        for (Chunk chunk : chunkMap.values()) {
+            if (chunk.xId > currentChunkX + distance || chunk.xId < currentChunkX - distance || chunk.zId > currentChunkZ + distance || chunk.zId < currentChunkZ - distance) {
+                chunkMap.remove(new Pair(chunk.xId, chunk.yId, chunk.zId).hashCode());
+                count++;
+            }
+        }
+        if (count != 0) {
+            System.out.println("Removed entries: " + count);
+        }
     }
 
     public Chunk getMiddle() {
@@ -127,8 +140,6 @@ public class ActiveChunkLoader extends Thread {
     public boolean isRunning() {
         return running;
     }
-    
-    
 
     void refresh() {
         refresh = true;

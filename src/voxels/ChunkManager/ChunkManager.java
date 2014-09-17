@@ -187,7 +187,7 @@ public class ChunkManager {
             int yChunkId = Voxels.getPointerChunkYId(vector);
             int zChunkId = Voxels.getPointerChunkZId(vector);
 
-            Chunk chunk = getChunk(xChunkId, yChunkId, zChunkId);
+            Chunk chunk = getActiveChunk(xChunkId, yChunkId, zChunkId);
             if (chunk == null) {
                 System.out.println("Tried to modify a null chunk.");
                 return;
@@ -456,6 +456,14 @@ public class ChunkManager {
 
     public ConcurrentHashMap<Integer, byte[]> getMap() {
         return map;
+    }
+
+    public Chunk getActiveChunk(int currentChunkXId, int currentChunkYId, int currentChunkZId) {
+        Chunk chunk = activeChunkMap.get(new Pair(currentChunkXId,currentChunkYId,currentChunkZId).hashCode());
+        if(chunk == null)
+            return null;
+        else
+            return chunk;
     }
 
 }

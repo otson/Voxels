@@ -377,14 +377,13 @@ public class EulerCamera implements Camera {
                 impact.play();
             }
             oldFallingSpeed = fallingSpeed;
-            Chunk chunkUnderFeet = chunkManager.getChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
+            Chunk chunkUnderFeet = chunkManager.getActiveChunk(getCurrentChunkXId(),getCurrentChunkYId(),getCurrentChunkZId());//chunkManager.getChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
             if (chunkUnderFeet != null) {
                 if (yInChunk() >= Chunk.CHUNK_SIZE || yInChunk() < 0 || chunkUnderFeet.blocks[xInChunk()][yInChunk()][zInChunk()].is(Type.AIR)) {
                     y -= fallingSpeed;
                     fallingSpeed += fallingSpeedIncrease;
                 }
-                //chunkManager.getChunkLoader().loadChunks();
-                chunkUnderFeet = chunkManager.getChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
+                chunkUnderFeet = chunkManager.getActiveChunk(getCurrentChunkXId(),getCurrentChunkYId(),getCurrentChunkZId());//chunkManager.getChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
                 if (chunkUnderFeet != null) {
                     if (yInChunk() < Chunk.CHUNK_SIZE && yInChunk() >= 0 && !chunkUnderFeet.blocks[xInChunk()][yInChunk()][zInChunk()].is(Type.AIR)) {
                         y = (int) y + 1;
@@ -424,7 +423,7 @@ public class EulerCamera implements Camera {
 
             int potentChunkXId = Voxels.getCurrentChunkXId((float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))));
             int potentXInChunk = Voxels.xInChunk((float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))));
-            Chunk potentChunk = chunkManager.getChunk(potentChunkXId, Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());
+            Chunk potentChunk = chunkManager.getActiveChunk(potentChunkXId, Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());
             
 
             // allowed to move in X axis
@@ -436,7 +435,7 @@ public class EulerCamera implements Camera {
 
             int potentZInChunk = Voxels.zInChunk((float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw))));
             int potentChunkZId = Voxels.getCurrentChunkZId((float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw))));
-            potentChunk = chunkManager.getChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), potentChunkZId);
+            potentChunk = chunkManager.getActiveChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), potentChunkZId);
 
             // allowed to move in Z axis
             if (potentChunk != null) {

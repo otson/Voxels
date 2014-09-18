@@ -69,7 +69,7 @@ public class ChunkMaker extends Thread {
 
     boolean update;
 
-    public ChunkMaker(ArrayList<Data> dataToProcess, int chunkX, int chunkY, int chunkZ, int xOff, int yOff, int zOff, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager, BlockingQueue<Pair> queue) {
+    public ChunkMaker(ArrayList<Data> dataToProcess, int chunkX, int chunkY, int chunkZ, int xOff, int yOff, int zOff, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager) {
         this.xOff = xOff;
         this.yOff = yOff;
         this.zOff = zOff;
@@ -79,7 +79,7 @@ public class ChunkMaker extends Thread {
         this.map = map;
         this.dataToProcess = dataToProcess;
         this.chunkManager = chunkManager;
-        this.queue = queue;
+
         left = new boolean[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
         right = new boolean[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
         top = new boolean[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
@@ -91,11 +91,11 @@ public class ChunkMaker extends Thread {
 
     }
 
-    public ChunkMaker(ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager, ArrayList<Data> dataToProcess, BlockingQueue<Pair> queue) {
+    public ChunkMaker(ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager, ArrayList<Data> dataToProcess) {
         this.map = map;
         this.chunkManager = chunkManager;
         this.dataToProcess = dataToProcess;
-        this.queue = queue;
+
         left = new boolean[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
         right = new boolean[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
         top = new boolean[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
@@ -110,11 +110,12 @@ public class ChunkMaker extends Thread {
             chunk = new Chunk(chunkX, chunkY, chunkZ);
             map.put(new Pair(chunkX, chunkY, chunkZ).hashCode(), toByte(chunk));
             //chunkManager.putUncompressed(chunk);
-            try {
-                queue.offer(new Pair(chunkX, chunkY, chunkZ), 1, TimeUnit.DAYS);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(ChunkMaker.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            chunkManager.offerToRender(new Pair(chunkX, chunkY, chunkZ), chunkY);
+//            try {
+//                queue.offer(new Pair(chunkX, chunkY, chunkZ), 1, TimeUnit.DAYS);
+//            } catch (InterruptedException ex) {
+//                Logger.getLogger(ChunkMaker.class.getName()).log(Level.SEVERE, null, ex);
+//            }
 
         } else {
             System.out.println("Already contains");

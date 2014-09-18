@@ -16,6 +16,7 @@ import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.opengl.Display;
@@ -52,12 +53,12 @@ public class ChunkManager {
 
     private ArrayList<Data> dataToProcess;
     private ChunkCoordinateCreator chunkCreator;
-    private ChunkRenderChecker chunkRenderChecker;
+    private ChunkRenderChecker[] chunkRenderChecker;
     private ActiveChunkLoader chunkLoader;
     private ChunkMaker[] threads = new ChunkMaker[maxThreads];
     private ChunkMaker updateThread;
 
-    BlockingQueue<Pair> queue = new LinkedBlockingQueue<>();
+    //BlockingQueue<Pair> queue = new LinkedBlockingQueue<>();
 
     private boolean atMax = false;
     private boolean inLoop;
@@ -76,9 +77,10 @@ public class ChunkManager {
         chunkCreator = new ChunkCoordinateCreator(map);
         chunkLoader = new ActiveChunkLoader(this, activeChunkMap);
         chunkLoader.setPriority(Thread.NORM_PRIORITY);
-        updateThread = new ChunkMaker(map, this, dataToProcess, queue);
-        chunkRenderChecker = new ChunkRenderChecker(queue, map, this);
-        chunkRenderChecker.setPriority(Thread.MAX_PRIORITY);
+        updateThread = new ChunkMaker(map, this, dataToProcess);
+        chunkRenderChecker = new ChunkRenderChecker[Chunk.WORLD_HEIGHT];//(queue, map, this);
+        initChunkRenderCheckers();
+        //chunkRenderChecker.setPriority(Thread.MAX_PRIORITY);
     }
 
     public Chunk getChunk(int chunkX, int chunkY, int chunkZ) {
@@ -125,7 +127,7 @@ public class ChunkManager {
 
                 // Start a new thread, make a new chunk
                 int threadId = getFreeThread();
-                threads[threadId] = new ChunkMaker(dataToProcess, newChunkX, newChunkY, newChunkZ, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE, map, this, queue);
+                threads[threadId] = new ChunkMaker(dataToProcess, newChunkX, newChunkY, newChunkZ, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE, map, this);
                 threads[threadId].setPriority(Thread.MIN_PRIORITY);
                 threads[threadId].start();
 
@@ -215,7 +217,7 @@ public class ChunkManager {
 
     public void createVBO(Chunk chunk) {
         long start = System.nanoTime();
-        ChunkMaker cm = new ChunkMaker(dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this, queue);
+        ChunkMaker cm = new ChunkMaker(dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this);
         cm.setChunk(chunk);
         cm.updateAllBlocks();
         cm.drawChunkVBO();
@@ -231,7 +233,7 @@ public class ChunkManager {
         Iterator itr = c.iterator();
         while (itr.hasNext()) {
             Chunk chunk = (Chunk) itr.next();
-            ChunkMaker cm = new ChunkMaker(dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this, queue);
+            ChunkMaker cm = new ChunkMaker(dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this);
             cm.setChunk(chunk);
             cm.updateAllBlocks();
             cm.drawChunkVBO();
@@ -442,13 +444,6 @@ public class ChunkManager {
         return map.size();
     }
 
-    public void startChunkRenderChecker() {
-        chunkRenderChecker.start();
-    }
-
-    public ChunkRenderChecker getChunkRenderChecker() {
-        return chunkRenderChecker;
-    }
 
     public ConcurrentHashMap<Integer, LinkedList<BlockCoord>> getBlockBuffer() {
         return blockBuffer;
@@ -464,6 +459,26 @@ public class ChunkManager {
             return null;
         } else {
             return chunk;
+        }
+    }
+
+    private void initChunkRenderCheckers() {
+        for (int i = 0; i < Chunk.WORLD_HEIGHT; i++) {
+            chunkRenderChecker[i] = new ChunkRenderChecker(i, map, this);
+        }
+    }
+    
+    public void startChunkRenderCheckers() {
+        for (int i = 0; i < Chunk.WORLD_HEIGHT; i++) {
+            chunkRenderChecker[i].start();
+        }
+    }
+
+    void offerToRender(Pair pair, int y) {
+        try {
+            chunkRenderChecker[y].getQueue().offer(pair, 5, TimeUnit.SECONDS);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(ChunkManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

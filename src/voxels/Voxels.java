@@ -90,9 +90,9 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 2;
+    public static int chunkCreationDistance = 10;
     public static int inGameCreationDistance = 6;
-    public static final int chunkRenderDistance = 5;
+    public static final int chunkRenderDistance = 10;
     public static Texture atlas;
     public static Sound running;
     public static Sound jumping;
@@ -243,7 +243,7 @@ public class Voxels {
         chunkManager.getChunkLoader().start();
         //chunkManager.stopGeneration();
         //System.exit(0);
-        chunkManager.startChunkRenderChecker();
+        chunkManager.startChunkRenderCheckers();
         chunkCreationDistance = inGameCreationDistance;
         Thread thread = new Thread(
                 new Runnable() {

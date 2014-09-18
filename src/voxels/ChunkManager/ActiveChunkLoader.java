@@ -45,7 +45,7 @@ public class ActiveChunkLoader extends Thread {
         while (running) {
 
             if (refresh || hasMoved()) {
-                System.out.println("Moved to a new chunk.");
+                //System.out.println("Moved to a new chunk.");
                 count++;
                 refresh = false;
                 loadChunks();
@@ -118,8 +118,8 @@ public class ActiveChunkLoader extends Thread {
             }
         }
         if (count != 0) {
-            System.out.println("Removed entries: " + count);
-            System.out.println("Updated size: "+chunkMap.size());
+            //System.out.println("Removed entries: " + count);
+            //System.out.println("Updated size: "+chunkMap.size());
         }
     }
 

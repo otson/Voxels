@@ -37,6 +37,7 @@ public class ChunkRenderChecker extends Thread {
     @Override
     public void run() {
         running = true;
+        int count = 0;
         Pair current = null;
         while (running) {
             int size = queue.size();
@@ -57,25 +58,24 @@ public class ChunkRenderChecker extends Thread {
                             if (map.containsKey(new Pair(current.x, current.y + 1, current.z).hashCode())
                                     && map.containsKey(new Pair(current.x, current.y - 1, current.z).hashCode())) {
                                 i--;
-                                final Pair p = current;
 
-                                chunkManager.createVBO(chunkManager.getChunk(p.x, p.y, p.z));
+                                //count++;
+                                chunkManager.createVBO(chunkManager.getChunk(current.x, current.y, current.z));
+                                //System.out.println("Created VBO!" +count);
 
                             }
                         } else if (current.y == 1) {
                             if (map.containsKey(new Pair(current.x, current.y + 1, current.z).hashCode())) {
                                 i--;
-                                final Pair p = current;
 
-                                chunkManager.createVBO(chunkManager.getChunk(p.x, p.y, p.z));
+                                chunkManager.createVBO(chunkManager.getChunk(current.x, current.y, current.z));
 
                             }
                         } else if (current.y == Chunk.WORLD_HEIGHT) {
                             if (map.containsKey(new Pair(current.x, current.y - 1, current.z).hashCode())) {
                                 i--;
-                                final Pair p = current;
 
-                                chunkManager.createVBO(chunkManager.getChunk(p.x, p.y, p.z));
+                                chunkManager.createVBO(chunkManager.getChunk(current.x, current.y, current.z));
 
                             }
                         }

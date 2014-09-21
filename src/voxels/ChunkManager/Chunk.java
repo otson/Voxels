@@ -1,6 +1,7 @@
 package voxels.ChunkManager;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import voxels.Voxels;
 
@@ -44,7 +45,7 @@ public class Chunk implements Serializable {
     
     private boolean modified = false;
 
-    
+    private ArrayList<Water> waterArray;
 
     public Chunk(int xId, int yId, int zId) {
         this.xId = xId;
@@ -53,6 +54,7 @@ public class Chunk implements Serializable {
         xCoordinate = xId * CHUNK_SIZE;
         zCoordinate = zId * CHUNK_SIZE;
         yCoordinate = yId * CHUNK_SIZE;
+        waterArray = new ArrayList<>(64);
         initMaxHeights();
         setBlocks();
     }
@@ -200,5 +202,18 @@ public class Chunk implements Serializable {
     public void setModified(boolean modified) {
         this.modified = modified;
     }
+    
+    public void setBlock(int x, int y, int z, short type){
+        blocks[x][y][z].setType(type);
+        if(type == Type.WATER){
+            waterArray.add(new Water(x,y,z,10));
+            System.out.println("here");
+        }
+    }
+
+    public ArrayList<Water> getWaterArray() {
+        return waterArray;
+    }
+    
 
 }

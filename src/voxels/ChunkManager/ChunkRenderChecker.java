@@ -7,7 +7,6 @@ package voxels.ChunkManager;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,10 +21,9 @@ public class ChunkRenderChecker extends Thread {
     private boolean running = false;
     private ChunkManager chunkManager;
     private BlockingQueue<Pair> queue;
-    private int yLayer;
 
-    public ChunkRenderChecker(int yLayer, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager) {
-        queue = new LinkedBlockingQueue<>();
+    public ChunkRenderChecker(BlockingQueue<Pair> queue, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager) {
+        this.queue = queue;
         this.map = map;
         this.chunkManager = chunkManager;
     }
@@ -61,9 +59,9 @@ public class ChunkRenderChecker extends Thread {
                                     && map.containsKey(new Pair(current.x, current.y - 1, current.z).hashCode())) {
                                 i--;
 
-                                count++;
+                                //count++;
                                 chunkManager.createVBO(chunkManager.getChunk(current.x, current.y, current.z));
-                                System.out.println("Created VBO!" +count);
+                                //System.out.println("Created VBO!" +count);
 
                             }
                         } else if (current.y == 1) {
@@ -103,11 +101,5 @@ public class ChunkRenderChecker extends Thread {
     public boolean isRunning() {
         return running;
     }
-
-    public BlockingQueue<Pair> getQueue() {
-        return queue;
-    }
-    
-    
 
 }

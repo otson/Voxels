@@ -90,9 +90,9 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 10;
+    public static int chunkCreationDistance = 0;
     public static int inGameCreationDistance = 6;
-    public static final int chunkRenderDistance = 10;
+    public static int chunkRenderDistance = 5;
     public static Texture atlas;
     public static Sound running;
     public static Sound jumping;
@@ -147,7 +147,7 @@ public class Voxels {
         glEnable(GL_FOG);
         glFog(GL_FOG_COLOR, asFloatBuffer(new float[]{0.65f, 0.65f, 0.85f, 1f}));
         //glFog(GL_FOG_COLOR, asFloatBuffer(new float[]{0f / 255f, 0f / 255f, 190f / 255f, 1.0f}));
-        
+
         glFogi(GL_FOG_MODE, GL_LINEAR);
         glFogf(GL_FOG_START, (float) (0.50 * Chunk.CHUNK_SIZE * Voxels.chunkRenderDistance));
         glFogf(GL_FOG_END, Chunk.CHUNK_SIZE * Voxels.chunkRenderDistance);
@@ -243,7 +243,7 @@ public class Voxels {
         chunkManager.getChunkLoader().start();
         //chunkManager.stopGeneration();
         //System.exit(0);
-        chunkManager.startChunkRenderCheckers();
+        chunkManager.startChunkRenderChecker();
         chunkCreationDistance = inGameCreationDistance;
         Thread thread = new Thread(
                 new Runnable() {
@@ -265,6 +265,7 @@ public class Voxels {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             updateView();
             processInput(getDelta());
+            chunkManager.processWater();
             chunkManager.processBufferData();
             render();
 
@@ -376,6 +377,22 @@ public class Voxels {
             if (Keyboard.isKeyDown(Keyboard.KEY_B)) {
                 chunkManager.getChunkLoader().loadChunks();
             }
+            if (Keyboard.isKeyDown(Keyboard.KEY_ADD)) {
+                chunkCreationDistance++;
+                chunkRenderDistance++;
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_MINUS)) {
+                if (chunkCreationDistance > 2 && chunkRenderDistance > 1) {
+                    chunkCreationDistance--;
+                    chunkRenderDistance--;
+                }
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_V)) {
+                chunkManager.getChunkLoader().simulateWater();
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_B)) {
+                chunkManager.getChunkLoader().loadChunks();
+            }
 
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_U)) {
@@ -391,7 +408,7 @@ public class Voxels {
             while (Mouse.next()) {
                 if (Mouse.getEventButtonState()) {
                     if (Mouse.getEventButton() == 0) {
-                        chunkManager.castRay(Type.DIRT);
+                        chunkManager.castRay(Type.WATER);
                     } else if (Mouse.getEventButton() == 1) {
                         chunkManager.castRay(Type.AIR);
                     }

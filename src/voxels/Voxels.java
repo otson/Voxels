@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import static java.lang.Math.PI;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
@@ -90,9 +91,9 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 0;
-    public static int inGameCreationDistance = 6;
-    public static int chunkRenderDistance = 5;
+    public static int chunkCreationDistance = 11;
+    public static int inGameCreationDistance = 11;
+    public static int chunkRenderDistance = 10;
     public static Texture atlas;
     public static Sound running;
     public static Sound jumping;
@@ -111,6 +112,7 @@ public class Voxels {
     private static long lastFrame = System.nanoTime();
 
     public static void main(String[] args) {
+        //testChunkSpeeds();
         initDisplay();
         initOpenGL();
         //initFog();
@@ -118,6 +120,31 @@ public class Voxels {
         initTextures();
         initSounds();
         gameLoop();
+    }
+
+    private static void testChunkSpeeds() {
+        LinkedList<Chunk> chunkArray = new LinkedList<>();
+        chunkManager = new ChunkManager();
+        ChunkMaker maker = new ChunkMaker(null, null, chunkManager, null, null);
+        long start = System.nanoTime();
+        for (int i = 0; i < 5000; i++) {
+            Chunk chunk = new Chunk(i, i, i);
+            //chunkArray.add(chunk);
+            chunkManager.getMap().put(new Pair(i, i, i).hashCode(), maker.toByte(chunk));
+        }
+        System.out.println("Putting chunks took: "+(System.nanoTime()-start)/1000000+" ms.");
+        
+        
+        HashMap<Integer, Chunk> hashMap = new HashMap<>();
+        start = System.nanoTime();
+        for (int i = 0; i < 5000; i++) {
+            Chunk chunk = chunkManager.getChunk(i, i, i);
+            //chunkArray.add(chunk); // 18500 ms with linked list
+            hashMap.put(new Pair(i,i,i).hashCode(), chunk); //17500 ms (no initial capacity)
+        }
+        System.out.println("Getting chunks took: "+(System.nanoTime()-start)/1000000+" ms.");
+        
+        System.exit(0);
     }
 
     private static void initDisplay() {
@@ -235,7 +262,7 @@ public class Voxels {
                 Display.update();
             }
         }
-        System.out.println("Chunks created in " + (System.nanoTime() - time) / 1000000000 + " seconds.");
+        System.out.println("Chunks created in " + (System.nanoTime() - time) / 1000000 + " ms.");
         //time = System.nanoTime();
         //chunkManager.createVBOs();
         //System.out.println("VBOs created in " + (System.nanoTime() - time) / 1000000000 + " seconds.");
@@ -265,7 +292,7 @@ public class Voxels {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             updateView();
             processInput(getDelta());
-            chunkManager.processWater();
+            //chunkManager.processWater();
             chunkManager.processBufferData();
             render();
 
@@ -387,9 +414,9 @@ public class Voxels {
                     chunkRenderDistance--;
                 }
             }
-            if (Keyboard.isKeyDown(Keyboard.KEY_V)) {
-                chunkManager.getChunkLoader().simulateWater();
-            }
+//            if (Keyboard.isKeyDown(Keyboard.KEY_V)) {
+//                chunkManager.getChunkLoader().simulateWater();
+//            }
             if (Keyboard.isKeyDown(Keyboard.KEY_B)) {
                 chunkManager.getChunkLoader().loadChunks();
             }

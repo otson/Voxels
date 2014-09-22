@@ -18,6 +18,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.jpountz.lz4.LZ4Factory;
+import net.jpountz.lz4.LZ4FastDecompressor;
+import net.jpountz.lz4.LZ4SafeDecompressor;
 import org.lwjgl.opengl.Display;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
@@ -25,6 +28,8 @@ import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
@@ -58,6 +63,10 @@ public class ChunkManager {
     private ChunkMaker updateThread;
 
     BlockingQueue<Pair> queue = new LinkedBlockingQueue<>();
+    LZ4Factory factory = LZ4Factory.fastestInstance();
+    
+    private ConcurrentHashMap<Integer, Integer> decompLengths;
+    
 
     private boolean atMax = false;
     private boolean inLoop;
@@ -69,6 +78,7 @@ public class ChunkManager {
     private int waterCounter;
 
     public ChunkManager() {
+        decompLengths = new ConcurrentHashMap<>();
         map = new ConcurrentHashMap<>(16, 0.9f, 1);
         handles = new ConcurrentHashMap<>(16, 0.9f, 1);
         blockBuffer = new ConcurrentHashMap<>(16, 0.9f, 1);
@@ -77,7 +87,7 @@ public class ChunkManager {
         chunkCreator = new ChunkCoordinateCreator(map);
         chunkLoader = new ActiveChunkLoader(this, activeChunkMap);
         chunkLoader.setPriority(Thread.NORM_PRIORITY);
-        updateThread = new ChunkMaker(map, this, dataToProcess, queue);
+        updateThread = new ChunkMaker(decompLengths, map, this, dataToProcess, queue);
         chunkRenderChecker = new ChunkRenderChecker(queue, map, this);
         chunkRenderChecker.setPriority(Thread.MAX_PRIORITY);
     }
@@ -126,7 +136,7 @@ public class ChunkManager {
 
                 // Start a new thread, make a new chunk
                 int threadId = getFreeThread();
-                threads[threadId] = new ChunkMaker(dataToProcess, newChunkX, newChunkY, newChunkZ, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE, map, this, queue);
+                threads[threadId] = new ChunkMaker(decompLengths,dataToProcess, newChunkX, newChunkY, newChunkZ, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE, map, this, queue);
                 threads[threadId].setPriority(Thread.MIN_PRIORITY);
                 threads[threadId].start();
 
@@ -189,11 +199,12 @@ public class ChunkManager {
             int zChunkId = Voxels.getPointerChunkZId(vector);
 
             Chunk chunk = getActiveChunk(xChunkId, yChunkId, zChunkId);
+
             if (chunk == null) {
                 System.out.println("Tried to modify a null chunk.");
                 return;
             } else if (type != Type.AIR) {
-                if (chunk.blocks[xInChunk][yInChunk][zInChunk].is(Type.AIR)) {
+                if (chunk.blocks[xInChunk][yInChunk][zInChunk] == Type.AIR) {
                     //chunk.blocks[xInChunk][yInChunk][zInChunk].setType(type);
                     chunk.setBlock(xInChunk, yInChunk, zInChunk, type);
                     updateThread.update(chunk);
@@ -203,7 +214,7 @@ public class ChunkManager {
                     break;
                 }
             } else if (type == Type.AIR) {
-                if (!chunk.blocks[xInChunk][yInChunk][zInChunk].is(Type.AIR)) {
+                if (chunk.blocks[xInChunk][yInChunk][zInChunk] != Type.AIR) {
                     //chunk.blocks[xInChunk][yInChunk][zInChunk].setType(type);
                     chunk.setBlock(xInChunk, yInChunk, zInChunk, type);
                     updateThread.update(chunk);
@@ -225,7 +236,7 @@ public class ChunkManager {
 
     public void createVBO(Chunk chunk) {
         long start = System.nanoTime();
-        ChunkMaker cm = new ChunkMaker(dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this, queue);
+        ChunkMaker cm = new ChunkMaker(decompLengths,dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this, queue);
         cm.setChunk(chunk);
         cm.updateAllBlocks();
         cm.drawChunkVBO();
@@ -241,7 +252,7 @@ public class ChunkManager {
         Iterator itr = c.iterator();
         while (itr.hasNext()) {
             Chunk chunk = (Chunk) itr.next();
-            ChunkMaker cm = new ChunkMaker(dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this, queue);
+            ChunkMaker cm = new ChunkMaker(decompLengths,dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this, queue);
             cm.setChunk(chunk);
             cm.updateAllBlocks();
             cm.drawChunkVBO();
@@ -315,7 +326,12 @@ public class ChunkManager {
     }
 
     public Chunk toChunk(byte[] bytes) {
-        long start = System.nanoTime();
+//        LZ4FastDecompressor decompressor = factory.fastDecompressor();
+//        //byte[] restored = new byte[decompressedLength];
+//        Chunk chunk = deserialize(decompressor.decompress(bytes, decompressedLength));
+//        return chunk;
+//        
+        //long start = System.nanoTime();
         byte[] temp;
         try {
             temp = LZFDecoder.decode(bytes);
@@ -477,9 +493,9 @@ public class ChunkManager {
         }
     }
 
-    public void processWater() {
-        waterCounter++;
-        if(waterCounter % 20 == 0)
-            chunkLoader.simulateWater();
-    }
+//    public void processWater() {
+//        waterCounter++;
+//        if(waterCounter % 20 == 0)
+//            chunkLoader.simulateWater();
+//    }
 }

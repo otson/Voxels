@@ -377,13 +377,13 @@ public class EulerCamera implements Camera {
             oldFallingSpeed = fallingSpeed;
             Chunk chunkUnderFeet = chunkManager.getActiveChunk(getCurrentChunkXId(),getCurrentChunkYId(),getCurrentChunkZId());//chunkManager.getChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
             if (chunkUnderFeet != null) {
-                if (yInChunk() >= Chunk.CHUNK_SIZE || yInChunk() < 0 || chunkUnderFeet.blocks[xInChunk()][yInChunk()][zInChunk()].is(Type.AIR)) {
+                if (yInChunk() >= Chunk.CHUNK_SIZE || yInChunk() < 0 || chunkUnderFeet.blocks[xInChunk()][yInChunk()][zInChunk()] == Type.AIR) {
                     y -= fallingSpeed;
                     fallingSpeed += fallingSpeedIncrease;
                 }
                 chunkUnderFeet = chunkManager.getActiveChunk(getCurrentChunkXId(),getCurrentChunkYId(),getCurrentChunkZId());//chunkManager.getChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
                 if (chunkUnderFeet != null) {
-                    if (yInChunk() < Chunk.CHUNK_SIZE && yInChunk() >= 0 && !chunkUnderFeet.blocks[xInChunk()][yInChunk()][zInChunk()].is(Type.AIR)) {
+                    if (yInChunk() < Chunk.CHUNK_SIZE && yInChunk() >= 0 && chunkUnderFeet.blocks[xInChunk()][yInChunk()][zInChunk()] != Type.AIR) {
                         y = (int) y + 1;
                         fallingSpeed = 0;
                     }
@@ -426,7 +426,7 @@ public class EulerCamera implements Camera {
 
             // allowed to move in X axis
             if (potentChunk != null) {
-                if (potentChunk.blocks[potentXInChunk][Voxels.yInChunk()][Voxels.zInChunk()].is(Type.AIR)) {
+                if (potentChunk.blocks[potentXInChunk][Voxels.yInChunk()][Voxels.zInChunk()] == Type.AIR) {
                     this.x -= dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw));
                 }
             }
@@ -437,7 +437,7 @@ public class EulerCamera implements Camera {
 
             // allowed to move in Z axis
             if (potentChunk != null) {
-                if (potentChunk.blocks[xInChunk()][Voxels.yInChunk()][potentZInChunk].is(Type.AIR)) {
+                if (potentChunk.blocks[xInChunk()][Voxels.yInChunk()][potentZInChunk] == Type.AIR) {
                     this.z += dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw));
                 }
             }

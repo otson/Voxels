@@ -40,53 +40,56 @@ public class Chunk implements Serializable {
     public final int zId;
     public final int yId;
 
-    public Block[][][] blocks;
-    public int[][] maxHeights;
+    //public Block[][][] blocks;
+    public short[][] maxHeights;
+    
+    public short[][][] blocks;
     
     private boolean modified = false;
 
-    private ArrayList<Water> waterArray;
+    //private ArrayList<Water> waterArray;
 
     public Chunk(int xId, int yId, int zId) {
+        blocks = new short[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
         this.xId = xId;
         this.zId = zId;
         this.yId = yId;
         xCoordinate = xId * CHUNK_SIZE;
         zCoordinate = zId * CHUNK_SIZE;
         yCoordinate = yId * CHUNK_SIZE;
-        waterArray = new ArrayList<>(64);
+        //waterArray = new ArrayList<>(64);
         initMaxHeights();
         setBlocks();
     }
 
     private void initMaxHeights() {
-        maxHeights = new int[CHUNK_SIZE][CHUNK_SIZE];
+        maxHeights = new short[CHUNK_SIZE][CHUNK_SIZE];
         for (int x = 0; x < CHUNK_SIZE; x++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
-                maxHeights[x][z] = Voxels.getNoise(x + xCoordinate, z + zCoordinate);
+                maxHeights[x][z] = (short) Voxels.getNoise(x + xCoordinate, z + zCoordinate);
             }
         }
     }
 
     private void setBlocks() {
-        blocks = new Block[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
+        //blocks = new Block[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
         for (int x = 0; x < blocks.length; x++) {
-            blocks[x] = new Block[CHUNK_SIZE][CHUNK_SIZE];
+            //blocks[x] = new Block[CHUNK_SIZE][CHUNK_SIZE];
             for (int y = 0; y < blocks[x].length; y++) {
-                blocks[x][y] = new Block[CHUNK_SIZE];
+                //blocks[x][y] = new Block[CHUNK_SIZE];
                 for (int z = 0; z < blocks[x][y].length; z++) {
 
                     // Make the terrain using 2d noise
                     if (y + Chunk.CHUNK_SIZE * yId <= maxHeights[x][z] && y + Chunk.CHUNK_SIZE * yId < VERTICAL_CHUNKS * CHUNK_SIZE - FORCED_AIR_LAYERS) {
                         if (y == 0 && yId == 1) {
-                            blocks[x][y][z] = new Block(Type.UNBREAKABLE);
+                            blocks[x][y][z] = Type.UNBREAKABLE;
                         } else if (y + Chunk.CHUNK_SIZE * yId <= maxHeights[x][z] - DIRT_LAYERS) {
-                            blocks[x][y][z] = new Block(Type.STONE);
+                            blocks[x][y][z] = Type.STONE;
                         } else {
-                            blocks[x][y][z] = new Block(Type.DIRT);
+                            blocks[x][y][z] = Type.DIRT;
                         }
                     } else {
-                        blocks[x][y][z] = new Block(Type.AIR);
+                        blocks[x][y][z] = Type.AIR;
                     }
 
                     // add 3d noise if enabled
@@ -96,13 +99,13 @@ public class Chunk implements Serializable {
                         if (y + Chunk.CHUNK_SIZE * yId > WORLD_HEIGHT * GROUND_SHARE) {
                             float noise1 = Voxels.get3DNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate + 10) / (float) (CHUNK_SIZE * VERTICAL_CHUNKS);
                             if (noise1 > 0.90f && y + Chunk.CHUNK_SIZE * yId < VERTICAL_CHUNKS * CHUNK_SIZE - FORCED_AIR_LAYERS) {
-                                blocks[x][y][z] = new Block(Type.CLOUD);
+                                blocks[x][y][z] = Type.CLOUD;
                             }
                             // modify the ground portion of the world (caves)
                         } else if (yId != 1 || y != 0) {
 
                             if (Voxels.getCaveNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate)) {
-                                blocks[x][y][z] = new Block(Type.AIR);
+                                blocks[x][y][z] = Type.AIR;
                             }
 
                         }
@@ -150,7 +153,7 @@ public class Chunk implements Serializable {
             LinkedList<BlockCoord> list = Voxels.getBlockBuffer().get(new Pair(xId, yId, zId).hashCode());
             while (!list.isEmpty()) {
                 BlockCoord bc = list.remove();
-                blocks[bc.x][bc.y][bc.z] = new Block(bc.Type);
+                blocks[bc.x][bc.y][bc.z] = bc.Type;
 
             }
         }
@@ -204,16 +207,16 @@ public class Chunk implements Serializable {
     }
     
     public void setBlock(int x, int y, int z, short type){
-        blocks[x][y][z].setType(type);
-        if(type == Type.WATER){
-            waterArray.add(new Water(x,y,z,10));
-            System.out.println("here");
-        }
+        blocks[x][y][z] = type;
+//        if(type == Type.WATER){
+//            waterArray.add(new Water(x,y,z,10));
+//            System.out.println("here");
+//        }
     }
 
-    public ArrayList<Water> getWaterArray() {
-        return waterArray;
-    }
-    
+//    public ArrayList<Water> getWaterArray() {
+//        return waterArray;
+//    }
+//    
 
 }

@@ -91,9 +91,9 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 11;
-    public static int inGameCreationDistance = 11;
-    public static int chunkRenderDistance = 10;
+    public static int chunkCreationDistance = 1;
+    public static int inGameCreationDistance = 8;
+    public static int chunkRenderDistance = 7;
     public static Texture atlas;
     public static Sound running;
     public static Sound jumping;
@@ -127,7 +127,7 @@ public class Voxels {
         chunkManager = new ChunkManager();
         ChunkMaker maker = new ChunkMaker(null, null, chunkManager, null, null);
         long start = System.nanoTime();
-        for (int i = 0; i < 5000; i++) {
+        for (int i = 0; i < 1000; i++) {
             Chunk chunk = new Chunk(i, i, i);
             //chunkArray.add(chunk);
             chunkManager.getMap().put(new Pair(i, i, i).hashCode(), maker.toByte(chunk));
@@ -137,7 +137,7 @@ public class Voxels {
         
         HashMap<Integer, Chunk> hashMap = new HashMap<>();
         start = System.nanoTime();
-        for (int i = 0; i < 5000; i++) {
+        for (int i = 0; i < 1000; i++) {
             Chunk chunk = chunkManager.getChunk(i, i, i);
             //chunkArray.add(chunk); // 18500 ms with linked list
             hashMap.put(new Pair(i,i,i).hashCode(), chunk); //17500 ms (no initial capacity)
@@ -232,26 +232,7 @@ public class Voxels {
     private static void gameLoop() {
         chunkManager = new ChunkManager();
 
-        //test
-//        ChunkMaker maker = new ChunkMaker(null,0,0,0,0,0,0,null,null,null);
-//        
-//        Chunk chunk = new Chunk(2,2,2);
-//        long start = System.nanoTime();
-//        for(int i = 0; i<3000; i++){
-//            chunkManager.getMap().put(new Pair(1+i,1,1).hashCode(), maker.toByte(chunk));
-//        }
-//        System.out.println("To put 3000: "+(System.nanoTime()-start)/1000000 +" ms.");
-//        start = System.nanoTime();
-//        
-//        ArrayList<Chunk> array = new ArrayList<>(); 
-//        for(int i = 0; i<3000; i++){
-//            Chunk temp = chunkManager.getChunk(i+1, 1, 1);   
-//            array.add(temp);
-//        }
-//        
-//        System.out.println("To read and store 3000: "+(System.nanoTime()-start)/1000000 +" ms.");
-//        
-//        System.exit(0);
+
         camera = InitCamera();
         chunkManager.startGeneration();
         long time = System.nanoTime();
@@ -266,10 +247,9 @@ public class Voxels {
         //time = System.nanoTime();
         //chunkManager.createVBOs();
         //System.out.println("VBOs created in " + (System.nanoTime() - time) / 1000000000 + " seconds.");
-        //chunkManager.getChunkLoader().loadChunks();
+        chunkManager.getChunkLoader().updateLocation();
+        chunkManager.getChunkLoader().loadChunks();
         chunkManager.getChunkLoader().start();
-        //chunkManager.stopGeneration();
-        //System.exit(0);
         chunkManager.startChunkRenderChecker();
         chunkCreationDistance = inGameCreationDistance;
         Thread thread = new Thread(

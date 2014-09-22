@@ -495,7 +495,7 @@ public class ChunkManager {
 
 //    public void processWater() {
 //        waterCounter++;
-//        if(waterCounter % 20 == 0)
+//        if(waterCounter % 6 == 0)
 //            chunkLoader.simulateWater();
 //    }
 }

@@ -74,7 +74,7 @@ public class ActiveChunkLoader extends Thread {
 
     }
 
-    private void updateLocation() {
+    public void updateLocation() {
         currentChunkX = Voxels.getCurrentChunkXId();
         currentChunkY = Voxels.getCurrentChunkYId();
         currentChunkZ = Voxels.getCurrentChunkZId();
@@ -82,12 +82,12 @@ public class ActiveChunkLoader extends Thread {
 
     public void loadChunks() {
         //int count = 0;
-        int loadDistance = 5;
+        int loadDistance = 4;
         //long start = System.nanoTime();
-        for (int y = -loadDistance; y <= loadDistance; y++) {
+        for (int y = 0; y < Chunk.VERTICAL_CHUNKS; y++) {
             for (int x = -loadDistance; x <= loadDistance; x++) {
                 for (int z = -loadDistance; z <= loadDistance; z++) {
-                    Chunk chunk = chunkManager.getChunk(currentChunkX + x, currentChunkY + y, currentChunkZ + z);
+                    Chunk chunk = chunkManager.getChunk(currentChunkX + x, y, currentChunkZ + z);
                     if (chunk != null) {
                         if (chunk.isModified() || !chunkMap.containsKey(new Pair(chunk.xId, chunk.yId, chunk.zId).hashCode())) {
                             chunk.setModified(false);
@@ -109,10 +109,10 @@ public class ActiveChunkLoader extends Thread {
     }
 
     private void clearEntries() {
-        int distance = 5;
+        int distance = 8;
         int count = 0;
         for (Chunk chunk : chunkMap.values()) {
-            if (chunk.xId > currentChunkX + distance || chunk.xId < currentChunkX - distance || chunk.zId > currentChunkZ + distance || chunk.zId < currentChunkZ - distance || chunk.yId > currentChunkY + distance || chunk.yId < currentChunkY - distance) {
+            if (chunk.xId > currentChunkX + distance || chunk.xId < currentChunkX - distance || chunk.zId > currentChunkZ + distance || chunk.zId < currentChunkZ - distance) {
                 chunkMap.remove(new Pair(chunk.xId, chunk.yId, chunk.zId).hashCode());
                 count++;
             }
@@ -172,17 +172,19 @@ public class ActiveChunkLoader extends Thread {
                 chunk.setBlock(water.x, water.y - 1, water.z, Type.WATER);
                 return null;
             } else {
-                if (chunk.blocks[water.x + 1][water.y][water.z] == Type.AIR) {
-                    chunk.setBlock(water.x + 1, water.y, water.z, Type.WATER);
-                }
-                if (chunk.blocks[water.x - 1][water.y][water.z] == Type.AIR) {
-                    chunk.setBlock(water.x - 1, water.y, water.z, Type.WATER);
-                }
-                if (chunk.blocks[water.x][water.y][water.z + 1] == Type.AIR) {
-                    chunk.setBlock(water.x, water.y, water.z + 1, Type.WATER);
-                }
-                if (chunk.blocks[water.x][water.y][water.z - 1] == Type.AIR) {
-                    chunk.setBlock(water.x, water.y, water.z - 1, Type.WATER);
+                if (chunk.blocks[water.x][water.y - 1][water.z] != Type.WATER) {
+                    if (chunk.blocks[water.x + 1][water.y][water.z] == Type.AIR) {
+                        chunk.setBlock(water.x + 1, water.y, water.z, Type.WATER);
+                    }
+                    if (chunk.blocks[water.x - 1][water.y][water.z] == Type.AIR) {
+                        chunk.setBlock(water.x - 1, water.y, water.z, Type.WATER);
+                    }
+                    if (chunk.blocks[water.x][water.y][water.z + 1] == Type.AIR) {
+                        chunk.setBlock(water.x, water.y, water.z + 1, Type.WATER);
+                    }
+                    if (chunk.blocks[water.x][water.y][water.z - 1] == Type.AIR) {
+                        chunk.setBlock(water.x, water.y, water.z - 1, Type.WATER);
+                    }
                 }
             }
         }

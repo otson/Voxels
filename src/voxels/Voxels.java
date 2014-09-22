@@ -28,6 +28,7 @@ import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import voxels.Camera.EulerCamera;
+import voxels.ChunkManager.AtlasManager;
 import voxels.ChunkManager.BlockCoord;
 import voxels.ChunkManager.Chunk;
 import static voxels.ChunkManager.Chunk.GROUND_SHARE;
@@ -60,8 +61,8 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 12;
-    public static final int THREE_DIM_SMOOTHNESS = 40;
+    public static final int TERRAIN_SMOOTHNESS = 15;
+    public static final int THREE_DIM_SMOOTHNESS = 50;
     /**
      * Set player's height. One block's height is 1.
      */
@@ -112,6 +113,9 @@ public class Voxels {
     private static long lastFrame = System.nanoTime();
 
     public static void main(String[] args) {
+//        System.out.println(AtlasManager.getBackXOff(Type.DIRT));
+//        System.out.println(AtlasManager.getBackYOff(Type.DIRT));
+//        System.exit(0);
         //testChunkSpeeds();
         initDisplay();
         initOpenGL();

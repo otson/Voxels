@@ -82,7 +82,7 @@ public class ActiveChunkLoader extends Thread {
 
     public void loadChunks() {
         //int count = 0;
-        int loadDistance = 4;
+        int loadDistance = 3;
         //long start = System.nanoTime();
         for (int y = 0; y < Chunk.VERTICAL_CHUNKS; y++) {
             for (int x = -loadDistance; x <= loadDistance; x++) {
@@ -109,7 +109,7 @@ public class ActiveChunkLoader extends Thread {
     }
 
     private void clearEntries() {
-        int distance = 8;
+        int distance = 6;
         int count = 0;
         for (Chunk chunk : chunkMap.values()) {
             if (chunk.xId > currentChunkX + distance || chunk.xId < currentChunkX - distance || chunk.zId > currentChunkZ + distance || chunk.zId < currentChunkZ - distance) {

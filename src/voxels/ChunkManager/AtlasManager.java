@@ -16,7 +16,7 @@ public class AtlasManager {
     }
 
     public static float getY(int type) {
-        return (type-type % 8) / 8f;
+        return (type-type % 8) / 64f;
     }
     
     public static float getFrontXOff(short type){

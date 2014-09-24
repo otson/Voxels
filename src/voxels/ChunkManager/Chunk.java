@@ -46,6 +46,7 @@ public class Chunk implements Serializable {
     public short[][][] blocks;
 
     private boolean modified = false;
+    private boolean empty = false;
 
     //private ArrayList<Water> waterArray;
     public Chunk(int xId, int yId, int zId) {
@@ -58,6 +59,7 @@ public class Chunk implements Serializable {
         yCoordinate = yId * CHUNK_SIZE;
         //waterArray = new ArrayList<>(64);
         initMaxHeights();
+        //if(!empty || (Chunk.CHUNK_SIZE * yId+Chunk.CHUNK_SIZE) > WORLD_HEIGHT * GROUND_SHARE)
         setBlocks();
     }
 
@@ -66,26 +68,15 @@ public class Chunk implements Serializable {
         for (int x = 0; x < CHUNK_SIZE; x++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
                 maxHeights[x][z] = (short) Voxels.getNoise(x + xCoordinate, z + zCoordinate);
-                //maxHeights[x][z] = 128;
+//                if(Chunk.CHUNK_SIZE*yId <= maxHeights[x][z])
+//                    empty = false;
             }
         }
     }
 
     private void setBlocks() {
-        int rowSamples = 8;
-        int inc = CHUNK_SIZE / rowSamples;
-        float[][][] noise;
-
-        if (Voxels.USE_3D_NOISE) {
-            noise = new float[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
-            interpolateNoise(noise, rowSamples, inc);
-        }
-
-        //blocks = new Block[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
         for (int x = 0; x < blocks.length; x++) {
-            //blocks[x] = new Block[CHUNK_SIZE][CHUNK_SIZE];
             for (int y = 0; y < blocks[x].length; y++) {
-                //blocks[x][y] = new Block[CHUNK_SIZE];
                 for (int z = 0; z < blocks[x][y].length; z++) {
 
                     // Make the terrain using 2d noise
@@ -107,88 +98,31 @@ public class Chunk implements Serializable {
 
                         //only add 3d noise to the upper part of the world (clouds)
                         if (y + Chunk.CHUNK_SIZE * yId > WORLD_HEIGHT * GROUND_SHARE) {
-                            //float noise1 = Voxels.get3DNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate + 10) / (float) (CHUNK_SIZE * VERTICAL_CHUNKS);
-                            if (noise[x][y][z] > 0.90f && y + Chunk.CHUNK_SIZE * yId < VERTICAL_CHUNKS * CHUNK_SIZE - FORCED_AIR_LAYERS) {
+                            float noise1 = Voxels.get3DNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate + 10) / (float) (CHUNK_SIZE * VERTICAL_CHUNKS);
+                            if (noise1 > 0.90f && y + Chunk.CHUNK_SIZE * yId < VERTICAL_CHUNKS * CHUNK_SIZE - FORCED_AIR_LAYERS) {
                                 blocks[x][y][z] = Type.CLOUD;
                             }
                             // modify the ground portion of the world (caves)
-                        } else if (yId != 1 || y != 0) {
+                        } else if (!empty && (yId != 1 || y != 0)) {
 
-                            //if (Voxels.getCaveNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate)) {
-                            if (noise[x][y][z] > 0.5f) {
+                            if (Voxels.getCaveNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate)) {
                                 blocks[x][y][z] = Type.AIR;
-                                //System.out.println("here!");
                             }
 
                         }
+                        // add trees
+                        if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 1) {
+                            if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate - 1, z + CHUNK_SIZE * zId) == 0) {
+                                createTree(x + CHUNK_SIZE * xId, y + yCoordinate, z + CHUNK_SIZE * zId, 7);
+                            }
+                        }
                     }
-                    // add trees
 
-//                    if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 1) {
-//                        if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate - 1, z + CHUNK_SIZE * zId) == 0) {
-//                            createTree(x + CHUNK_SIZE * xId, y + yCoordinate, z + CHUNK_SIZE * zId, 7);
-//                        }
-//                    }
                 }
             }
         }
 
         checkBuffer();
-    }
-
-    private void interpolateNoise(float[][][] noise, int rowSamples, int inc) {
-
-        for (int x = 0; x <= CHUNK_SIZE; x += inc) {
-            for (int y = 0; y <= CHUNK_SIZE; y += inc) {
-                for (int z = 0; z <= CHUNK_SIZE; z += inc) {
-                    
-                    int xx,yy,zz;
-                    if(x != 0)
-                         xx = x-1;
-                    else
-                        xx = x;
-                    if(y != 0)
-                         yy = y-1;
-                    else
-                        yy = y;
-                    if(z != 0)
-                         zz = z-1;
-                    else
-                        zz = z;
-                    noise[xx][yy][zz] = Voxels.get3DNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate + 10) / (float) (CHUNK_SIZE * VERTICAL_CHUNKS);
-                    //System.out.println("Real noise: "+xx+" "+yy+" "+zz);
-                }
-            }
-        }
-        for (int x = 0; x < CHUNK_SIZE; x += inc) {
-            for (int y = 0; y < CHUNK_SIZE; y += inc) {
-                for (int z = 0; z < CHUNK_SIZE; z++) {
-                    if (z != 0 && (z-1)%inc != 0) {
-                        
-                        noise[x][y][z] = (noise[x][y][Math.max(z % inc*inc-1,0)] + noise[x][y][(z % inc*inc + inc-1)]) / 2f;
-                        //System.out.println("interpolated value: "+noise[x][y][z]);
-                    }
-                }
-            }
-        }
-        for (int x = 0; x < CHUNK_SIZE; x += inc) {
-            for (int y = 0; y < CHUNK_SIZE; y++) {
-                for (int z = 0; z < CHUNK_SIZE; z++) {
-                    if (y !=0 && (y-1)% inc != 0) {
-                        noise[x][y][z] = (noise[x][Math.max(y % inc*inc,0)][z] + noise[x][y % inc*inc + inc][z]) / 2f;
-                    }
-                }
-            }
-        }
-        for (int x = 0; x < CHUNK_SIZE; x++) {
-            for (int y = 0; y < CHUNK_SIZE; y++) {
-                for (int z = 0; z < CHUNK_SIZE; z++) {
-                    if (x != 0 && (x-1)% inc != 0) {
-                        noise[x][y][z] = (noise[Math.max(x % inc*inc,0)][y][z] + noise[x % inc*inc+inc][y][z]) / 2f;
-                    }
-                }
-            }
-        }
     }
 
     private void createTree(int x, int y, int z, int height) {

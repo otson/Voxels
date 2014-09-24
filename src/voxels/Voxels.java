@@ -41,7 +41,6 @@ import voxels.ChunkManager.Location;
 import voxels.ChunkManager.Pair;
 import voxels.ChunkManager.Type;
 import voxels.Noise.FastNoise;
-import voxels.Noise.OpenSimplexNoise;
 import voxels.Noise.SimplexNoise;
 
 /**
@@ -62,7 +61,7 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 15;
+    public static final int TERRAIN_SMOOTHNESS = 17;
     public static final int THREE_DIM_SMOOTHNESS = 50;
     /**
      * Set player's height. One block's height is 1.
@@ -94,16 +93,14 @@ public class Voxels {
      */
     public static final int FIELD_OF_VIEW = 90;
     public static int chunkCreationDistance = 10;
-    public static int inGameCreationDistance = 10;
-    public static int chunkRenderDistance = 9;
+    public static int inGameCreationDistance = 8;
+    public static int chunkRenderDistance = 7;
     public static Texture atlas;
     public static Sound running;
     public static Sound jumping;
     public static Sound impact;
     public static final float WaterOffs = 0.28f;
     public static float START_TIME;
-
-    private OpenSimplexNoise openNoise = new OpenSimplexNoise();
 
     private static ChunkManager chunkManager;
 
@@ -124,38 +121,33 @@ public class Voxels {
         initOpenGL();
         //initFog();
         initLighting();
-        initTextures();
+        //initTextures();
         initSounds();
         gameLoop();
     }
 
     private static void testChunkSpeeds() {
-
         LinkedList<Chunk> chunkArray = new LinkedList<>();
         chunkManager = new ChunkManager();
         ChunkMaker maker = new ChunkMaker(null, null, chunkManager, null, null);
         long start = System.nanoTime();
-
-        for (int i = 0; i < 65536000; i++) {
-            int temp = get3DNoise(i / 10000f, i / 10000f, i / 10000f);
-        }
-        System.out.println("3D benchmark: " + (System.nanoTime() - start) / 1000000 + " ms.");
-        start = System.nanoTime();
-        for (int i = 0; i < 2000; i++) {
+        for (int i = 0; i < 1000; i++) {
             Chunk chunk = new Chunk(i, i, i);
+            //chunkArray.add(chunk);
             chunkManager.getMap().put(new Pair(i, i, i).hashCode(), maker.toByte(chunk));
         }
-        System.out.println("Putting chunks took: " + (System.nanoTime() - start) / 1000000 + " ms.");
-
+        System.out.println("Putting chunks took: "+(System.nanoTime()-start)/1000000+" ms.");
+        
+        
         HashMap<Integer, Chunk> hashMap = new HashMap<>();
         start = System.nanoTime();
-        for (int i = 0; i < 2000; i++) {
+        for (int i = 0; i < 1000; i++) {
             Chunk chunk = chunkManager.getChunk(i, i, i);
             //chunkArray.add(chunk); // 18500 ms with linked list
-            hashMap.put(new Pair(i, i, i).hashCode(), chunk); //17500 ms (no initial capacity)
+            hashMap.put(new Pair(i,i,i).hashCode(), chunk); //17500 ms (no initial capacity)
         }
-        System.out.println("Getting chunks took: " + (System.nanoTime() - start) / 1000000 + " ms.");
-
+        System.out.println("Getting chunks took: "+(System.nanoTime()-start)/1000000+" ms.");
+        
         System.exit(0);
     }
 
@@ -244,6 +236,7 @@ public class Voxels {
     private static void gameLoop() {
         chunkManager = new ChunkManager();
 
+
         camera = InitCamera();
         chunkManager.startGeneration();
         long time = System.nanoTime();
@@ -329,7 +322,7 @@ public class Voxels {
                         glEnableClientState(GL_VERTEX_ARRAY);
                         glEnableClientState(GL_NORMAL_ARRAY);
                         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-                        glDrawArrays(GL_TRIANGLES, 0, vertices);
+                        glDrawArrays(GL_QUADS, 0, vertices);
                         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
                         glDisableClientState(GL_NORMAL_ARRAY);
                         glDisableClientState(GL_VERTEX_ARRAY);
@@ -647,9 +640,8 @@ public class Voxels {
     }
 
     public static int get3DNoise(float x, float y, float z) {
-        //return (int) SimplexNoise.noise(x, y, z);
-        return (int) ((SimplexNoise.noise(x / (1f * THREE_DIM_SMOOTHNESS * 2f), y / (1f * THREE_DIM_SMOOTHNESS), z / (1f * THREE_DIM_SMOOTHNESS * 2f)) + 1) * 128 * (Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS / 256f));
-
+        int i = (int) ((SimplexNoise.noise(x / (1f * THREE_DIM_SMOOTHNESS * 2f), y / (1f * THREE_DIM_SMOOTHNESS), z / (1f * THREE_DIM_SMOOTHNESS * 2f)) + 1) * 128 * (Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS / 256f));
+        return i;
     }
 
     public static Texture loadTexture(String key) {

@@ -61,7 +61,7 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 317;
+    public static final int TERRAIN_SMOOTHNESS = 17;
     public static final int THREE_DIM_SMOOTHNESS = 50;
     /**
      * Set player's height. One block's height is 1.
@@ -78,7 +78,7 @@ public class Voxels {
     /**
      * Set if 3D simplex noise is used to generate terrain.
      */
-    public static final boolean USE_3D_NOISE = false;
+    public static final boolean USE_3D_NOISE = true;
 
     /**
      * Set air block percentage if 3D noise is in use.
@@ -92,9 +92,9 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 5;
-    public static int inGameCreationDistance = 8;
-    public static int chunkRenderDistance = 7;
+    public static int chunkCreationDistance = 11;
+    public static int inGameCreationDistance = 11;
+    public static int chunkRenderDistance = 10;
     public static Texture atlas;
     public static Sound running;
     public static Sound jumping;
@@ -110,6 +110,7 @@ public class Voxels {
     private static int fps = 0;
     private static long lastFPS = getTime();
     public static int count = 0;
+    private static int vertexCount;
     private static long lastFrame = System.nanoTime();
 
     public static void main(String[] args) {
@@ -298,7 +299,7 @@ public class Voxels {
     }
 
     private static void render() {
-
+        vertexCount = 0;
         for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
             for (int z = -chunkRenderDistance; z <= chunkRenderDistance; z++) {
                 for (int y = 0; y < Chunk.VERTICAL_CHUNKS; y++) {
@@ -309,6 +310,7 @@ public class Voxels {
                         int vboNormalHandle = handles.normalHandle;
                         int vboTexHandle = handles.texHandle;
                         int vertices = handles.vertices;
+                        vertexCount += vertices;
 
                         glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
                         glVertexPointer(3, GL_FLOAT, 0, 0L);
@@ -332,6 +334,7 @@ public class Voxels {
                 }
             }
         }
+        
         drawAimLine();
 
     }
@@ -673,7 +676,7 @@ public class Voxels {
 
     public static void updateFPS() {
         if (getTime() - lastFPS > 1000) {
-            Display.setTitle(TITLE + " - FPS: " + fps + " Chunk X: " + getCurrentChunkXId() + " Chunk Y: " + getCurrentChunkYId() + " Chunk Z: " + getCurrentChunkZId() + " Inside chunk: X: " + xInChunk() + " Y:" + yInChunk() + " Z: " + zInChunk());
+            Display.setTitle(TITLE + " - FPS: " + fps + " Chunk X: " + getCurrentChunkXId() + " Chunk Y: " + getCurrentChunkYId() + " Chunk Z: " + getCurrentChunkZId() + " Inside chunk: X: " + xInChunk() + " Y:" + yInChunk() + " Z: " + zInChunk()+ "Vertices rendered: "+vertexCount);
             //Display.setTitle(TITLE + " - FPS: " + fps + " Pitch: " + camera.pitch() + " Yaw: " + camera.yaw());
 
             fps = 0; //reset the FPS counter

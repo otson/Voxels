@@ -2294,13 +2294,38 @@ public class ChunkMaker extends Thread {
                     if (chunk.blocks[x][y][z] != Type.AIR) {
                         if (top[x][y][z] && !topReady[x][y][z]) {
                             int width = 0;
+                            int rows = 0;
                             short current = chunk.blocks[x][y][z];
                             topReady[x][y][z] = true;
                             while (x + width + 1 < Chunk.CHUNK_SIZE && top[x + width + 1][y][z] && chunk.blocks[x + width + 1][y][z] == current) {
                                 topReady[x + width + 1][y][z] = true;
                                 width++;
                             }
-                            vertexList.add(new Vertex(x, y, z, x, y, z, x + width, y, z, x + width, y, z, current, Side.TOP));
+                            boolean inLoop = true;
+                            int zInc = 0;
+                            //while (inLoop) {
+//                                zInc++;
+//                                boolean addRow = true;
+//                                if (z + zInc < Chunk.CHUNK_SIZE) {
+//                                    for (int i = 0; i < width; i++) {
+//                                        if (chunk.blocks[x + i][y][z + zInc] != current || !top[x + i][y][z + zInc]) {
+//                                            addRow = false;
+//                                            inLoop = false;
+//                                        }
+//                                    }
+//                                } else {
+//                                    addRow = false;
+//                                    inLoop = false;
+//                                }
+//                                if (addRow) {
+//                                    for (int i = 0; i < width; i++) {
+//                                        topReady[x + i][y][z + zInc] = true;
+//                                    }
+//                                    rows++;
+//                                }
+                            //}
+                            vertexList.add(new Vertex(x, y, z, x, y, z + rows, x + width, y, z + rows, x + width, y, z, current, Side.TOP));
+
                         }
                     }
                 }
@@ -2320,7 +2345,7 @@ public class ChunkMaker extends Thread {
                                 bottomReady[x + width + 1][y][z] = true;
                                 width++;
                             }
-                            vertexList.add(new Vertex(x+width, y, z, x, y, z, x, y, z, x+width, y, z, current, Side.BOTTOM));
+                            vertexList.add(new Vertex(x + width, y, z, x, y, z, x, y, z, x + width, y, z, current, Side.BOTTOM));
                         }
                     }
                 }
@@ -2561,15 +2586,16 @@ public class ChunkMaker extends Thread {
                 texArray[tArrayPos] = backYOff + tSize;
                 tArrayPos++;
 
-//                //2nd
-//                texArray[tArrayPos] = backXOff;
-//                tArrayPos++;
-//                texArray[tArrayPos] = backYOff;
-//                tArrayPos++;
-//                texArray[tArrayPos] = backXOff + tSize;
-//                tArrayPos++;
-//                texArray[tArrayPos] = backYOff + tSize;
-//                tArrayPos++;
+                //2nd
+                texArray[tArrayPos] = backXOff;
+                tArrayPos++;
+                texArray[tArrayPos] = backYOff;
+                tArrayPos++;
+                
+                texArray[tArrayPos] = backXOff + tSize;
+                tArrayPos++;
+                texArray[tArrayPos] = backYOff + tSize;
+                tArrayPos++;
                 // 1st
                 // upper left + -
                 normalArray[nArrayPos] = 0;
@@ -2882,7 +2908,13 @@ public class ChunkMaker extends Thread {
                 tArrayPos++;
                 texArray[tArrayPos] = bottomYOff;
                 tArrayPos++;
-
+                
+                texArray[tArrayPos] = bottomXOff + tSize;
+                tArrayPos++;
+                texArray[tArrayPos] = bottomYOff;
+                tArrayPos++;
+                
+                
                 texArray[tArrayPos] = bottomXOff + tSize;
                 tArrayPos++;
                 texArray[tArrayPos] = bottomYOff + tSize;
@@ -2899,16 +2931,12 @@ public class ChunkMaker extends Thread {
 //                texArray[tArrayPos] = bottomYOff;
 //                tArrayPos++;
 //
+                
 //                texArray[tArrayPos] = bottomXOff + tSize;
 //                tArrayPos++;
-//                texArray[tArrayPos] = bottomYOff;
+//                texArray[tArrayPos] = bottomYOff + tSize;
 //                tArrayPos++;
-                texArray[tArrayPos] = bottomXOff + tSize;
-                tArrayPos++;
-                texArray[tArrayPos] = bottomYOff + tSize;
-                tArrayPos++;
-                
-                
+
                 // upper right + +
                 normalArray[nArrayPos] = 0;
                 nArrayPos++;
@@ -2923,7 +2951,7 @@ public class ChunkMaker extends Thread {
                 vArrayPos++;
                 vertexArray[vArrayPos] = 1 + v.topRightZ + zOff;
                 vArrayPos++;
-                
+
                 // lower right - +
                 normalArray[nArrayPos] = 0;
                 nArrayPos++;
@@ -2939,8 +2967,6 @@ public class ChunkMaker extends Thread {
                 vertexArray[vArrayPos] = 1 + v.bottomRightZ + zOff;
                 vArrayPos++;
 
-                
-                
                 // lower left - -
                 normalArray[nArrayPos] = 0;
                 nArrayPos++;
@@ -2971,10 +2997,6 @@ public class ChunkMaker extends Thread {
                 vArrayPos++;
                 vertexArray[vArrayPos] = 0 + v.topLeftZ + zOff;
                 vArrayPos++;
-
-                
-
-                
 
             }
 

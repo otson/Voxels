@@ -276,9 +276,9 @@ public class ChunkManager {
                 Data data = dataToProcess.remove(0);
                 if (data != null) {
                     if (data.UPDATE) {
-                        glDeleteBuffers(data.normalHandle);
-                        glDeleteBuffers(data.texHandle);
-                        glDeleteBuffers(data.vertexHandle);
+//                        glDeleteBuffers(data.normalHandle);
+//                        glDeleteBuffers(data.texHandle);
+//                        glDeleteBuffers(data.vertexHandle);
                         createBuffers(data);
                     } else {
                         createBuffers(data);

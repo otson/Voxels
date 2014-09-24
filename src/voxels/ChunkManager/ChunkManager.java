@@ -24,11 +24,18 @@ import net.jpountz.lz4.LZ4SafeDecompressor;
 import org.lwjgl.opengl.Display;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
+import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
@@ -266,14 +273,16 @@ public class ChunkManager {
         if (dataToProcess != null) {
             while (dataToProcess.isEmpty() == false && count < 500000) {
                 count++;
-                Data data = dataToProcess.get(0);
+                Data data = dataToProcess.remove(0);
                 if (data != null) {
                     if (data.UPDATE) {
+//                        glDeleteBuffers(data.normalHandle);
+//                        glDeleteBuffers(data.texHandle);
+//                        glDeleteBuffers(data.vertexHandle);
                         createBuffers(data);
                     } else {
                         createBuffers(data);
                     }
-                    dataToProcess.remove(0);
                 }
             }
         }
@@ -289,15 +298,15 @@ public class ChunkManager {
 
     public void updateBuffers(Data data) {
         glBindBuffer(GL_ARRAY_BUFFER, data.vertexHandle);
-        glBufferData(GL_ARRAY_BUFFER, data.vertexData, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, data.vertexData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         glBindBuffer(GL_ARRAY_BUFFER, data.normalHandle);
-        glBufferData(GL_ARRAY_BUFFER, data.normalData, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, data.normalData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         glBindBuffer(GL_ARRAY_BUFFER, data.texHandle);
-        glBufferData(GL_ARRAY_BUFFER, data.texData, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, data.texData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
@@ -305,17 +314,17 @@ public class ChunkManager {
 
         int vboVertexHandle = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
-        glBufferData(GL_ARRAY_BUFFER, data.vertexData, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, data.vertexData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         int vboNormalHandle = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboNormalHandle);
-        glBufferData(GL_ARRAY_BUFFER, data.normalData, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, data.normalData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         int vboTexHandle = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboTexHandle);
-        glBufferData(GL_ARRAY_BUFFER, data.texData, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, data.texData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         handles.put(new Pair(data.chunkX, data.chunkY, data.chunkZ).hashCode(), new Handle(vboVertexHandle, vboNormalHandle, vboTexHandle, data.vertices));

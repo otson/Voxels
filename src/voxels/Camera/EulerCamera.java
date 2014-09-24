@@ -297,7 +297,7 @@ public class EulerCamera implements Camera {
         boolean moveSlower = Keyboard.isKeyDown(Keyboard.KEY_C);
         
         if (moveFaster) {
-            speed *= 6;
+            speed *= 10;
         }
         if (moveSlower) {
             speed /= 3;

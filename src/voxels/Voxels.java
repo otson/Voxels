@@ -122,7 +122,7 @@ public class Voxels {
         initOpenGL();
         //initFog();
         initLighting();
-        //initTextures();
+        initTextures();
         initSounds();
         gameLoop();
     }
@@ -324,7 +324,7 @@ public class Voxels {
                         glEnableClientState(GL_VERTEX_ARRAY);
                         glEnableClientState(GL_NORMAL_ARRAY);
                         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-                        glDrawArrays(GL_QUADS, 0, vertices);
+                        glDrawArrays(GL_TRIANGLES, 0, vertices);
                         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
                         glDisableClientState(GL_NORMAL_ARRAY);
                         glDisableClientState(GL_VERTEX_ARRAY);
@@ -334,7 +334,6 @@ public class Voxels {
                 }
             }
         }
-        
         drawAimLine();
 
     }

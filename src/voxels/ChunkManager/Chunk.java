@@ -46,7 +46,6 @@ public class Chunk implements Serializable {
     public short[][][] blocks;
 
     private boolean modified = false;
-    private boolean empty = false;
 
     //private ArrayList<Water> waterArray;
     public Chunk(int xId, int yId, int zId) {
@@ -59,7 +58,6 @@ public class Chunk implements Serializable {
         yCoordinate = yId * CHUNK_SIZE;
         //waterArray = new ArrayList<>(64);
         initMaxHeights();
-        //if(!empty || (Chunk.CHUNK_SIZE * yId+Chunk.CHUNK_SIZE) > WORLD_HEIGHT * GROUND_SHARE)
         setBlocks();
     }
 
@@ -68,15 +66,16 @@ public class Chunk implements Serializable {
         for (int x = 0; x < CHUNK_SIZE; x++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
                 maxHeights[x][z] = (short) Voxels.getNoise(x + xCoordinate, z + zCoordinate);
-//                if(Chunk.CHUNK_SIZE*yId <= maxHeights[x][z])
-//                    empty = false;
             }
         }
     }
 
     private void setBlocks() {
+        //blocks = new Block[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
         for (int x = 0; x < blocks.length; x++) {
+            //blocks[x] = new Block[CHUNK_SIZE][CHUNK_SIZE];
             for (int y = 0; y < blocks[x].length; y++) {
+                //blocks[x][y] = new Block[CHUNK_SIZE];
                 for (int z = 0; z < blocks[x][y].length; z++) {
 
                     // Make the terrain using 2d noise
@@ -103,21 +102,22 @@ public class Chunk implements Serializable {
                                 blocks[x][y][z] = Type.CLOUD;
                             }
                             // modify the ground portion of the world (caves)
-                        } else if (!empty && (yId != 1 || y != 0)) {
+                        }
+                        else if (yId != 1 || y != 0) {
 
                             if (Voxels.getCaveNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate)) {
                                 blocks[x][y][z] = Type.AIR;
                             }
 
                         }
-                        // add trees
-                        if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 1) {
-                            if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate - 1, z + CHUNK_SIZE * zId) == 0) {
-                                createTree(x + CHUNK_SIZE * xId, y + yCoordinate, z + CHUNK_SIZE * zId, 7);
-                            }
+                    }
+                    // add trees
+
+                    if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 1) {
+                        if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate - 1, z + CHUNK_SIZE * zId) == 0) {
+                            createTree(x+ CHUNK_SIZE * xId, y + yCoordinate, z+ CHUNK_SIZE * zId, 7);
                         }
                     }
-
                 }
             }
         }
@@ -216,4 +216,5 @@ public class Chunk implements Serializable {
 //    public ArrayList<Water> getWaterArray() {
 //        return waterArray;
 //    }
+    
 }

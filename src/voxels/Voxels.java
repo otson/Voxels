@@ -78,7 +78,7 @@ public class Voxels {
     /**
      * Set if 3D simplex noise is used to generate terrain.
      */
-    public static final boolean USE_3D_NOISE = true;
+    public static final boolean USE_3D_NOISE = false;
 
     /**
      * Set air block percentage if 3D noise is in use.
@@ -92,9 +92,9 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 6;
-    public static int inGameCreationDistance = 6;
-    public static int chunkRenderDistance = 10;
+    public static int chunkCreationDistance = 1;
+    public static int inGameCreationDistance = 1;
+    public static int chunkRenderDistance = 1;
     public static Texture atlas;
     public static Sound running;
     public static Sound jumping;
@@ -120,7 +120,7 @@ public class Voxels {
         //testChunkSpeeds();
         initDisplay();
         initOpenGL();
-        //initFog();
+        initFog();
         initLighting();
         initTextures();
         initSounds();
@@ -181,8 +181,8 @@ public class Voxels {
         //glFog(GL_FOG_COLOR, asFloatBuffer(new float[]{0f / 255f, 0f / 255f, 190f / 255f, 1.0f}));
 
         glFogi(GL_FOG_MODE, GL_LINEAR);
-        glFogf(GL_FOG_START, (float) (0.50 * Chunk.CHUNK_SIZE * Voxels.chunkRenderDistance));
-        glFogf(GL_FOG_END, Chunk.CHUNK_SIZE * Voxels.chunkRenderDistance);
+        glFogf(GL_FOG_START, (float) (0.1 * Chunk.CHUNK_SIZE * Voxels.chunkRenderDistance));
+        glFogf(GL_FOG_END, Chunk.CHUNK_SIZE * Voxels.chunkRenderDistance*2);
     }
 
     public static void initSounds() {

@@ -2311,10 +2311,12 @@ public class ChunkMaker extends Thread {
                                         top[x + i][y][z + rows] = false;
                                     }
                                     
+                                    
                                 }
                             }
+                            
                             vertexList.add(new Vertex(x, y, z, x, y, z + rows, x + width, y, z + rows, x + width, y, z, current, Side.TOP));
-
+                            
                         }
                     }
                 }

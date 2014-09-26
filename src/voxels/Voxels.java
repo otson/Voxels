@@ -1,5 +1,7 @@
 package voxels;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,6 +25,7 @@ import org.lwjgl.opengl.DisplayMode;
 import static org.lwjgl.opengl.GL11.*;
 
 import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL20.*;
 
 import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.opengl.Texture;
@@ -61,12 +64,12 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 20;
+    public static final int TERRAIN_SMOOTHNESS = 12;
     public static final int THREE_DIM_SMOOTHNESS = 50;
     /**
      * Set player's height. One block's height is 1.
      */
-    public static float PLAYER_HEIGHT = 2.0f;
+    public static float PLAYER_HEIGHT = 2.2f;
     /**
      * Set if night cycle is in use.
      */
@@ -112,6 +115,8 @@ public class Voxels {
     public static int count = 0;
     private static int vertexCount;
     private static long lastFrame = System.nanoTime();
+    
+    private static int shaderProgram;
 
     public static void main(String[] args) {
 //        System.out.println(AtlasManager.getBackXOff(Type.DIRT));
@@ -123,6 +128,7 @@ public class Voxels {
         initFog();
         initLighting();
         initTextures();
+        initShaders();
         initSounds();
         gameLoop();
     }
@@ -137,18 +143,17 @@ public class Voxels {
             //chunkArray.add(chunk);
             chunkManager.getMap().put(new Pair(i, i, i).hashCode(), maker.toByte(chunk));
         }
-        System.out.println("Putting chunks took: "+(System.nanoTime()-start)/1000000+" ms.");
-        
-        
+        System.out.println("Putting chunks took: " + (System.nanoTime() - start) / 1000000 + " ms.");
+
         HashMap<Integer, Chunk> hashMap = new HashMap<>();
         start = System.nanoTime();
         for (int i = 0; i < 1000; i++) {
             Chunk chunk = chunkManager.getChunk(i, i, i);
             //chunkArray.add(chunk); // 18500 ms with linked list
-            hashMap.put(new Pair(i,i,i).hashCode(), chunk); //17500 ms (no initial capacity)
+            hashMap.put(new Pair(i, i, i).hashCode(), chunk); //17500 ms (no initial capacity)
         }
-        System.out.println("Getting chunks took: "+(System.nanoTime()-start)/1000000+" ms.");
-        
+        System.out.println("Getting chunks took: " + (System.nanoTime() - start) / 1000000 + " ms.");
+
         System.exit(0);
     }
 
@@ -163,6 +168,71 @@ public class Voxels {
             Display.destroy();
             System.exit(1);
         }
+    }
+    
+    private static void initShaders(){
+        shaderProgram = glCreateProgram();
+        int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+        int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+        StringBuilder vertexShaderSource = new StringBuilder();
+        StringBuilder fragmentShaderSource = new StringBuilder();
+        BufferedReader reader = null;
+        
+        try {
+            reader = new BufferedReader(new FileReader("src/resources/shaders/shader.vs"));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                vertexShaderSource.append(line).append('\n');
+            }
+        } catch (IOException e) {
+            System.err.println("Vertex shader wasn't loaded properly.");
+            e.printStackTrace();
+            Display.destroy();
+            System.exit(1);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        
+        BufferedReader reader2 = null;
+        try {
+            reader2 = new BufferedReader(new FileReader("src/resources/shaders/shader.fs"));
+            String line;
+            while ((line = reader2.readLine()) != null) {
+                fragmentShaderSource.append(line).append('\n');
+            }
+        } catch (IOException e) {
+            System.err.println("Fragment shader wasn't loaded properly.");
+            Display.destroy();
+            System.exit(1);
+        } finally {
+            if (reader2 != null) {
+                try {
+                    reader2.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        glShaderSource(vertexShader, vertexShaderSource);
+        glCompileShader(vertexShader);
+        if (glGetShaderi(vertexShader, GL_COMPILE_STATUS) == GL_FALSE) {
+            System.err.println("Vertex shader wasn't able to be compiled correctly.");
+        }
+        glShaderSource(fragmentShader, fragmentShaderSource);
+        glCompileShader(fragmentShader);
+        if (glGetShaderi(fragmentShader, GL_COMPILE_STATUS) == GL_FALSE) {
+            System.err.println("Fragment shader wasn't able to be compiled correctly.");
+        }
+        glAttachShader(shaderProgram, vertexShader);
+        glAttachShader(shaderProgram, fragmentShader);
+        glLinkProgram(shaderProgram);
+        glValidateProgram(shaderProgram);
     }
 
     private static void initOpenGL() {
@@ -182,7 +252,7 @@ public class Voxels {
 
         glFogi(GL_FOG_MODE, GL_LINEAR);
         glFogf(GL_FOG_START, (float) (0.1 * Chunk.CHUNK_SIZE * Voxels.chunkRenderDistance));
-        glFogf(GL_FOG_END, Chunk.CHUNK_SIZE * Voxels.chunkRenderDistance*2);
+        glFogf(GL_FOG_END, Chunk.CHUNK_SIZE * Voxels.chunkRenderDistance * 2);
     }
 
     public static void initSounds() {
@@ -237,7 +307,6 @@ public class Voxels {
     private static void gameLoop() {
         chunkManager = new ChunkManager();
 
-
         camera = InitCamera();
         chunkManager.startGeneration();
         long time = System.nanoTime();
@@ -261,9 +330,11 @@ public class Voxels {
                 new Runnable() {
                     public void run() {
                         while (true) {
-                            chunkManager.checkChunkUpdates();
+                            for (int i = 0; i < ChunkManager.maxThreads; i++) {
+                                chunkManager.checkChunkUpdates();
+                            }
                             try {
-                                Thread.sleep(5);
+                                Thread.sleep(10);
                             } catch (InterruptedException ex) {
                                 Logger.getLogger(Voxels.class.getName()).log(Level.SEVERE, null, ex);
                             }
@@ -297,6 +368,7 @@ public class Voxels {
         camera.applyPerspectiveMatrix();
         camera.applyTranslations();
     }
+    
 
     private static void render() {
         vertexCount = 0;
@@ -334,7 +406,7 @@ public class Voxels {
                 }
             }
         }
-        
+
         drawAimLine();
 
     }
@@ -676,7 +748,7 @@ public class Voxels {
 
     public static void updateFPS() {
         if (getTime() - lastFPS > 1000) {
-            Display.setTitle(TITLE + " - FPS: " + fps + " Chunk X: " + getCurrentChunkXId() + " Chunk Y: " + getCurrentChunkYId() + " Chunk Z: " + getCurrentChunkZId() + " Inside chunk: X: " + xInChunk() + " Y:" + yInChunk() + " Z: " + zInChunk()+ "Vertices rendered: "+vertexCount);
+            Display.setTitle(TITLE + " - FPS: " + fps + " Chunk X: " + getCurrentChunkXId() + " Chunk Y: " + getCurrentChunkYId() + " Chunk Z: " + getCurrentChunkZId() + " Inside chunk: X: " + xInChunk() + " Y:" + yInChunk() + " Z: " + zInChunk() + "Vertices rendered: " + vertexCount);
             //Display.setTitle(TITLE + " - FPS: " + fps + " Pitch: " + camera.pitch() + " Yaw: " + camera.yaw());
 
             fps = 0; //reset the FPS counter

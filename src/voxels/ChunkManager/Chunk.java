@@ -17,7 +17,7 @@ public class Chunk implements Serializable {
     public static final int VERTICAL_CHUNKS = 8;
     public static final int WORLD_HEIGHT = CHUNK_SIZE * VERTICAL_CHUNKS;
     public static final int WATER_HEIGHT = -1;
-    public static final int FORCED_AIR_LAYERS = 5;
+    public static final int FORCED_AIR_LAYERS = 10;
     public static final float GROUND_SHARE = 0.9f;
     public static final int DIRT_LAYERS = 5;
 
@@ -213,7 +213,7 @@ public class Chunk implements Serializable {
 //        }
     }
 
-//    public ArrayList<Water> getWaterArray() {
-//        return waterArray;
-//    }
+    public ArrayList<Water> getWaterArray() {
+        return null;//waterArray;
+    }
 }

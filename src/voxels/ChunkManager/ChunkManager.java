@@ -502,9 +502,9 @@ public class ChunkManager {
         }
     }
 
-//    public void processWater() {
-//        waterCounter++;
-//        if(waterCounter % 6 == 0)
-//            chunkLoader.simulateWater();
-//    }
+    public void processWater() {
+        waterCounter++;
+        if(waterCounter % 6 == 0)
+            chunkLoader.simulateWater();
+    }
 }

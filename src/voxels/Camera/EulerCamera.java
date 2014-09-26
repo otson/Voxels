@@ -303,27 +303,27 @@ public class EulerCamera implements Camera {
             speed /= 3;
         }
 
-        if (inWater()) {
-            speed /= 3;
-
-            float lightAmbient[] = {0, 0, 10f, 1.0f};
-            float lightDiffuse[] = {0.1f, 0.1f, 1f, 1.0f};
-
-            glLightModel(GL_LIGHT_MODEL_AMBIENT, Voxels.asFloatBuffer(lightAmbient));
-            glLight(GL_LIGHT1, GL_DIFFUSE, Voxels.asFloatBuffer(lightDiffuse));
-
-            glDisable(GL_CULL_FACE);
-        } else {
-            float lightAmbient[] = {0.3f, 0.3f, 0.3f, 1.0f};
-            float lightDiffuse[] = {1f, 1f, 1f, 1.0f};
-
-            glLightModel(GL_LIGHT_MODEL_AMBIENT, Voxels.asFloatBuffer(lightAmbient));
-            glLight(GL_LIGHT1, GL_DIFFUSE, Voxels.asFloatBuffer(lightDiffuse));
-
-            glEnable(GL_CULL_FACE);
-            glCullFace(GL_BACK);
-
-        }
+//        if (inWater()) {
+//            speed /= 3;
+//
+//            float lightAmbient[] = {0, 0, 10f, 1.0f};
+//            float lightDiffuse[] = {0.1f, 0.1f, 1f, 1.0f};
+//
+//            glLightModel(GL_LIGHT_MODEL_AMBIENT, Voxels.asFloatBuffer(lightAmbient));
+//            glLight(GL_LIGHT1, GL_DIFFUSE, Voxels.asFloatBuffer(lightDiffuse));
+//
+//            glDisable(GL_CULL_FACE);
+//        } else {
+//            float lightAmbient[] = {0.3f, 0.3f, 0.3f, 1.0f};
+//            float lightDiffuse[] = {1f, 1f, 1f, 1.0f};
+//
+//            glLightModel(GL_LIGHT_MODEL_AMBIENT, Voxels.asFloatBuffer(lightAmbient));
+//            glLight(GL_LIGHT1, GL_DIFFUSE, Voxels.asFloatBuffer(lightDiffuse));
+//
+//            glEnable(GL_CULL_FACE);
+//            glCullFace(GL_BACK);
+//
+//        }
 
         if (keyUp && keyRight && !keyLeft && !keyDown) {
             moveFromLook(speed * delta * 0.003f, 0, -speed * delta * 0.003f);

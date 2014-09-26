@@ -45,6 +45,7 @@ import voxels.ChunkManager.Pair;
 import voxels.ChunkManager.Type;
 import voxels.Noise.FastNoise;
 import voxels.Noise.SimplexNoise;
+import voxels.Shaders.ShaderLoader;
 
 /**
  *
@@ -108,7 +109,7 @@ public class Voxels {
     private static ChunkManager chunkManager;
 
     private static EulerCamera camera;
-    private static float light0Position[] = {-2000.0f, 50000.0f, 8000.0f, 1.0f};
+    private static float light0Position[] = {-2000.0f, 2000.0f, 1000.0f, 1.0f};
 
     private static int fps = 0;
     private static long lastFPS = getTime();
@@ -125,10 +126,11 @@ public class Voxels {
         //testChunkSpeeds();
         initDisplay();
         initOpenGL();
-        initFog();
-        initLighting();
-        initTextures();
-        initShaders();
+        //initFog();
+        //initLighting();
+        //initTextures();
+        initShaders2();
+        initShaderLighting();
         initSounds();
         gameLoop();
     }
@@ -168,6 +170,10 @@ public class Voxels {
             Display.destroy();
             System.exit(1);
         }
+    }
+    
+    private static void initShaders2(){
+        shaderProgram = ShaderLoader.loadShaderPair("src/resources/shaders/vertex_phong_lighting.vs", "src/resources/shaders/vertex_phong_lighting.fs");
     }
     
     private static void initShaders(){
@@ -238,9 +244,9 @@ public class Voxels {
     private static void initOpenGL() {
         glMatrixMode(GL_PROJECTION);
         glMatrixMode(GL_MODELVIEW);
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
+        //glEnable(GL_DEPTH_TEST);
+        //glEnable(GL_CULL_FACE);
+        //glCullFace(GL_BACK);
         glLoadIdentity();
 
     }
@@ -292,6 +298,20 @@ public class Voxels {
         // Set background to sky blue
         glClearColor(0f / 255f, 0f / 255f, 190f / 255f, 1.0f);
         START_TIME = (System.nanoTime() / 1000000);
+    }
+    
+    private static void initShaderLighting(){
+        glShadeModel(GL_SMOOTH);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_LIGHTING);
+        glEnable(GL_LIGHT0);
+        glLightModel(GL_LIGHT_MODEL_AMBIENT, asFloatBuffer(new float[]{0.05f, 0.05f, 0.05f, 1f}));
+        glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glEnable(GL_COLOR_MATERIAL);
+        glColorMaterial(GL_FRONT, GL_DIFFUSE);
+        glColor3f(1f, 1f, 1f);
     }
 
     private static EulerCamera InitCamera() {
@@ -350,15 +370,18 @@ public class Voxels {
             processInput(getDelta());
             //chunkManager.processWater();
             chunkManager.processBufferData();
+            glUseProgram(shaderProgram);
             render();
-
+            glUseProgram(0);
             updateFPS();
             Display.update();
             Display.sync(60);
             //System.out.println("Chunks: "+chunkManager.getTotalChunks());
         }
+        glDeleteProgram(shaderProgram);
         Display.destroy();
         TinySound.shutdown();
+        
         System.exit(0);
     }
 
@@ -407,7 +430,7 @@ public class Voxels {
             }
         }
 
-        drawAimLine();
+        //drawAimLine();
 
     }
 
@@ -502,12 +525,12 @@ public class Voxels {
             }
             camera.processMouse();
             camera.processKeyboard(delta, 1.4f);
-            if (NIGHT_CYCLE) {
-                glClearColor(0f, (float) Math.max(0, (255 * Math.sin(timePassed() / 20000)) - 155) / 255f, (float) Math.max(25, (255 * Math.sin(timePassed() / 20000)) + 25) / 255f, 1.0f);
-                glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(new float[]{2500 + camera.x(), (float) (10000 * Math.sin(timePassed() / 20000)), (float) (10000 * Math.cos(timePassed() / 20000)), 1f}));
-            } else {
+//            if (NIGHT_CYCLE) {
+//                glClearColor(0f, (float) Math.max(0, (255 * Math.sin(timePassed() / 20000)) - 155) / 255f, (float) Math.max(25, (255 * Math.sin(timePassed() / 20000)) + 25) / 255f, 1.0f);
+//                glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(new float[]{2500 + camera.x(), (float) (10000 * Math.sin(timePassed() / 20000)), (float) (10000 * Math.cos(timePassed() / 20000)), 1f}));
+//            } else {
                 glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
-            }
+//            }
         }
     }
 

@@ -43,14 +43,14 @@ public class Chunk implements Serializable {
     //public Block[][][] blocks;
     public short[][] maxHeights;
 
-    public short[][][] blocks;
+    public byte[][][] blocks;
 
     private boolean modified = false;
     private boolean empty = false;
 
     //private ArrayList<Water> waterArray;
     public Chunk(int xId, int yId, int zId) {
-        blocks = new short[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
+        blocks = new byte[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
         this.xId = xId;
         this.zId = zId;
         this.yId = yId;
@@ -206,7 +206,7 @@ public class Chunk implements Serializable {
         this.modified = modified;
     }
 
-    public void setBlock(int x, int y, int z, short type) {
+    public void setBlock(int x, int y, int z, byte type) {
         blocks[x][y][z] = type;
 //        if(type == Type.WATER){
 //            waterArray.add(new Water(x,y,z,10));

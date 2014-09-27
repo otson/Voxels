@@ -123,12 +123,13 @@ public class Voxels {
 //        System.out.println(AtlasManager.getBackXOff(Type.DIRT));
 //        System.out.println(AtlasManager.getBackYOff(Type.DIRT));
 //        System.exit(0);
-        //testChunkSpeeds();
+        testChunkSpeeds();
         initDisplay();
         initOpenGL();
         //initFog();
         //initLighting();
         //initTextures();
+        
         initShaders2();
         initShaderLighting();
         initSounds();
@@ -136,27 +137,28 @@ public class Voxels {
     }
 
     private static void testChunkSpeeds() {
-        LinkedList<Chunk> chunkArray = new LinkedList<>();
+        
         chunkManager = new ChunkManager();
+        HashMap<Integer, Chunk> hashMap = new HashMap<>();
         ChunkMaker maker = new ChunkMaker(null, null, chunkManager, null, null);
         long start = System.nanoTime();
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 5000; i++) {
             Chunk chunk = new Chunk(i, i, i);
-            //chunkArray.add(chunk);
             chunkManager.getMap().put(new Pair(i, i, i).hashCode(), maker.toByte(chunk));
         }
         System.out.println("Putting chunks took: " + (System.nanoTime() - start) / 1000000 + " ms.");
 
-        HashMap<Integer, Chunk> hashMap = new HashMap<>();
+        
         start = System.nanoTime();
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 5000; i++) {
             Chunk chunk = chunkManager.getChunk(i, i, i);
-            //chunkArray.add(chunk); // 18500 ms with linked list
             hashMap.put(new Pair(i, i, i).hashCode(), chunk); //17500 ms (no initial capacity)
         }
         System.out.println("Getting chunks took: " + (System.nanoTime() - start) / 1000000 + " ms.");
-
-        System.exit(0);
+        while(true){
+            
+        }
+        //System.exit(0);
     }
 
     private static void initDisplay() {
@@ -301,6 +303,8 @@ public class Voxels {
     }
     
     private static void initShaderLighting(){
+      
+        glMaterialf(GL_FRONT, GL_SHININESS, 120);
         glShadeModel(GL_SMOOTH);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_LIGHTING);
@@ -311,7 +315,8 @@ public class Voxels {
         glCullFace(GL_BACK);
         glEnable(GL_COLOR_MATERIAL);
         glColorMaterial(GL_FRONT, GL_DIFFUSE);
-        glColor3f(1f, 1f, 1f);
+        //glColorMaterial(GL_FRONT, GL_SPECULAR);
+        
     }
 
     private static EulerCamera InitCamera() {
@@ -364,13 +369,16 @@ public class Voxels {
         );
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.start();
+     
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             updateView();
             processInput(getDelta());
             //chunkManager.processWater();
             chunkManager.processBufferData();
+            glColor3f(0.5f, 1f, 1f);
             glUseProgram(shaderProgram);
+            
             render();
             glUseProgram(0);
             updateFPS();
@@ -430,7 +438,7 @@ public class Voxels {
             }
         }
 
-        //drawAimLine();
+        drawAimLine();
 
     }
 
@@ -780,7 +788,7 @@ public class Voxels {
         fps++;
     }
 
-    public static void putToBuffer(short type, int x, int y, int z) {
+    public static void putToBuffer(byte type, int x, int y, int z) {
         int chunkXId = convertToChunkXId(x);
         int chunkYId = convertToChunkYId(y);
         int chunkZId = convertToChunkZId(z);

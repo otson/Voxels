@@ -188,7 +188,7 @@ public class ChunkManager {
         }
     }
 
-    public void castRay(Short type) {
+    public void castRay(byte type) {
         int maxDistance = 4;
         float increment = 0.25f;
         Vector3f vector;

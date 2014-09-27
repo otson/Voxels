@@ -12,12 +12,12 @@ package voxels.ChunkManager;
  */
 public class BlockCoord {
     
-    public short Type;
+    public byte Type;
     public int x;
     public int y;
     public int z;
 
-    public BlockCoord(short Type, int x, int y, int z) {
+    public BlockCoord(byte Type, int x, int y, int z) {
         this.Type = Type;
         this.x = x;
         this.y = y;

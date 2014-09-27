@@ -398,14 +398,6 @@ public class ChunkManager {
         return chunkLoader;
     }
 
-    public Chunk getMiddle() {
-        return chunkLoader.getMiddle();
-    }
-
-    public Chunk getBottom() {
-        return chunkLoader.getBottom();
-    }
-
     private boolean hasFreeThreads() {
         for (int i = 0; i < threads.length; i++) {
             if (threads[i] == null) {

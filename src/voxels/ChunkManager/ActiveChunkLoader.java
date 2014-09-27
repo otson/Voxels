@@ -19,9 +19,6 @@ import voxels.Voxels;
  */
 public class ActiveChunkLoader extends Thread {
 
-    private Chunk middle;
-    private Chunk bottom;
-
     boolean running;
     boolean refresh;
 
@@ -146,14 +143,6 @@ public class ActiveChunkLoader extends Thread {
             }
         }
         System.out.println("Simulated");
-    }
-
-    public Chunk getMiddle() {
-        return middle;
-    }
-
-    public Chunk getBottom() {
-        return bottom;
     }
 
     public boolean isRunning() {

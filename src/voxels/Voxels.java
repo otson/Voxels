@@ -116,7 +116,7 @@ public class Voxels {
     public static int count = 0;
     private static int vertexCount;
     private static long lastFrame = System.nanoTime();
-    
+
     private static int shaderProgram;
 
     public static void main(String[] args) {
@@ -127,17 +127,17 @@ public class Voxels {
         initDisplay();
         initOpenGL();
         //initFog();
-        //initLighting();
-        //initTextures();
-        
-        initShaders2();
-        initShaderLighting();
+        initLighting();
+        initTextures();
+
+//        initShaders2();
+//        initShaderLighting();
         initSounds();
         gameLoop();
     }
 
     private static void testChunkSpeeds() {
-        
+
         chunkManager = new ChunkManager();
         HashMap<Integer, Chunk> hashMap = new HashMap<>();
         ChunkMaker maker = new ChunkMaker(null, null, chunkManager, null, null);
@@ -148,15 +148,14 @@ public class Voxels {
         }
         System.out.println("Putting chunks took: " + (System.nanoTime() - start) / 1000000 + " ms.");
 
-        
         start = System.nanoTime();
         for (int i = 0; i < 5000; i++) {
             Chunk chunk = chunkManager.getChunk(i, i, i);
             hashMap.put(new Pair(i, i, i).hashCode(), chunk); //17500 ms (no initial capacity)
         }
         System.out.println("Getting chunks took: " + (System.nanoTime() - start) / 1000000 + " ms.");
-        while(true){
-            
+        while (true) {
+
         }
         //System.exit(0);
     }
@@ -164,7 +163,7 @@ public class Voxels {
     private static void initDisplay() {
         try {
             Display.setDisplayMode(new DisplayMode(1440, 900));
-            //Display.setVSyncEnabled(true);
+            Display.setVSyncEnabled(true);
             Display.setTitle("Voxels");
             Display.create();
         } catch (LWJGLException e) {
@@ -173,19 +172,19 @@ public class Voxels {
             System.exit(1);
         }
     }
-    
-    private static void initShaders2(){
+
+    private static void initShaders2() {
         shaderProgram = ShaderLoader.loadShaderPair("src/resources/shaders/vertex_phong_lighting.vs", "src/resources/shaders/vertex_phong_lighting.fs");
     }
-    
-    private static void initShaders(){
+
+    private static void initShaders() {
         shaderProgram = glCreateProgram();
         int vertexShader = glCreateShader(GL_VERTEX_SHADER);
         int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
         StringBuilder vertexShaderSource = new StringBuilder();
         StringBuilder fragmentShaderSource = new StringBuilder();
         BufferedReader reader = null;
-        
+
         try {
             reader = new BufferedReader(new FileReader("src/resources/shaders/shader.vs"));
             String line;
@@ -206,7 +205,7 @@ public class Voxels {
                 }
             }
         }
-        
+
         BufferedReader reader2 = null;
         try {
             reader2 = new BufferedReader(new FileReader("src/resources/shaders/shader.fs"));
@@ -246,9 +245,7 @@ public class Voxels {
     private static void initOpenGL() {
         glMatrixMode(GL_PROJECTION);
         glMatrixMode(GL_MODELVIEW);
-        //glEnable(GL_DEPTH_TEST);
-        //glEnable(GL_CULL_FACE);
-        //glCullFace(GL_BACK);
+
         glLoadIdentity();
 
     }
@@ -284,6 +281,10 @@ public class Voxels {
     }
 
     private static void initLighting() {
+
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
         glEnable(GL_LIGHTING);
         glEnable(GL_LIGHT0);
 
@@ -301,9 +302,9 @@ public class Voxels {
         glClearColor(0f / 255f, 0f / 255f, 190f / 255f, 1.0f);
         START_TIME = (System.nanoTime() / 1000000);
     }
-    
-    private static void initShaderLighting(){
-      
+
+    private static void initShaderLighting() {
+
         glMaterialf(GL_FRONT, GL_SHININESS, 120);
         glShadeModel(GL_SMOOTH);
         glEnable(GL_DEPTH_TEST);
@@ -316,7 +317,19 @@ public class Voxels {
         glEnable(GL_COLOR_MATERIAL);
         glColorMaterial(GL_FRONT, GL_DIFFUSE);
         //glColorMaterial(GL_FRONT, GL_SPECULAR);
-        
+//        glShadeModel(GL_SMOOTH);
+//        glEnable(GL_DEPTH_TEST);
+//        glEnable(GL_LIGHTING);
+//        glEnable(GL_LIGHT0);
+////        glLightModel(GL_LIGHT_MODEL_AMBIENT, BufferTools.asFlippedFloatBuffer(new float[]{0.05f, 0.05f, 0.05f, 1f}));
+////        glLight(GL_LIGHT0, GL_POSITION, BufferTools.asFlippedFloatBuffer(new float[]{0, 0, 0, 1}));
+//        glLightModel(GL_LIGHT_MODEL_AMBIENT, asFloatBuffer(new float[]{0.05f, 0.05f, 0.05f, 1f}));
+//        glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
+//        glEnable(GL_CULL_FACE);
+//        glCullFace(GL_BACK);
+//        glEnable(GL_COLOR_MATERIAL);
+//        glColorMaterial(GL_FRONT, GL_DIFFUSE);
+//        
     }
 
     private static EulerCamera InitCamera() {
@@ -369,7 +382,7 @@ public class Voxels {
         );
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.start();
-     
+
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             updateView();
@@ -377,19 +390,18 @@ public class Voxels {
             //chunkManager.processWater();
             chunkManager.processBufferData();
             //glColor3f(0.5f, 1f, 1f);
-            glUseProgram(shaderProgram);
-            
+            //glUseProgram(shaderProgram);
             render();
-            glUseProgram(0);
+            //glUseProgram(0);
             updateFPS();
             Display.update();
-            //Display.sync(60);
+            Display.sync(60);
             //System.out.println("Chunks: "+chunkManager.getTotalChunks());
         }
         glDeleteProgram(shaderProgram);
         Display.destroy();
         TinySound.shutdown();
-        
+
         System.exit(0);
     }
 
@@ -399,7 +411,6 @@ public class Voxels {
         camera.applyPerspectiveMatrix();
         camera.applyTranslations();
     }
-    
 
     private static void render() {
         vertexCount = 0;
@@ -537,7 +548,7 @@ public class Voxels {
 //                glClearColor(0f, (float) Math.max(0, (255 * Math.sin(timePassed() / 20000)) - 155) / 255f, (float) Math.max(25, (255 * Math.sin(timePassed() / 20000)) + 25) / 255f, 1.0f);
 //                glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(new float[]{2500 + camera.x(), (float) (10000 * Math.sin(timePassed() / 20000)), (float) (10000 * Math.cos(timePassed() / 20000)), 1f}));
 //            } else {
-                glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
+            glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
 //            }
         }
     }

@@ -12,6 +12,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import voxels.Voxels;
+import static voxels.Voxels.convertToChunkXId;
+import static voxels.Voxels.convertToChunkYId;
+import static voxels.Voxels.convertToChunkZId;
+import static voxels.Voxels.convertToXInChunk;
+import static voxels.Voxels.convertToYInChunk;
+import static voxels.Voxels.convertToZInChunk;
 
 /**
  *
@@ -79,7 +85,7 @@ public class ActiveChunkLoader extends Thread {
 
     public void loadChunks() {
         //int count = 0;
-        int loadDistance = Voxels.chunkRenderDistance;
+        int loadDistance = 5;//Voxels.chunkRenderDistance;
         //long start = System.nanoTime();
         for (int y = 0; y < Chunk.VERTICAL_CHUNKS; y++) {
             for (int x = -loadDistance; x <= loadDistance; x++) {
@@ -106,7 +112,7 @@ public class ActiveChunkLoader extends Thread {
     }
 
     private void clearEntries() {
-        int distance = Voxels.chunkRenderDistance+1;
+        int distance = 6;//Voxels.chunkRenderDistance+1;
         int count = 0;
         for (Chunk chunk : chunkMap.values()) {
             if (chunk.xId > currentChunkX + distance || chunk.xId < currentChunkX - distance || chunk.zId > currentChunkZ + distance || chunk.zId < currentChunkZ - distance) {
@@ -154,8 +160,10 @@ public class ActiveChunkLoader extends Thread {
     }
 
     private Water processWater(Water water, Chunk chunk) {
-        if (water.x > 0 && water.x < Chunk.CHUNK_SIZE - 1 && water.y > 0 && water.z > 0 && water.z < Chunk.CHUNK_SIZE - 1) {
+        //if (water.x > 0 && water.x < Chunk.CHUNK_SIZE - 1 && water.y > 0 && water.z > 0 && water.z < Chunk.CHUNK_SIZE - 1) {
             // water block falls down, no spreading
+            Chunk targetChunk = chunkManager.getActiveChunk(convertToChunkXId(water.x), convertToChunkYId(water.y-1), convertToChunkZId(water.z));
+            int x = Voxels.
             if (chunk.blocks[water.x][water.y - 1][water.z] == Type.AIR) {
                 chunk.setBlock(water.x, water.y - 1, water.z, Type.AIR);
                 chunk.setBlock(water.x, water.y - 1, water.z, Type.WATER);
@@ -177,7 +185,7 @@ public class ActiveChunkLoader extends Thread {
                     }
                 }
             }
-        } 
+        //} 
 //        else if (water.y == 0) {
 //            int y;
 //            Chunk chunkBelow;

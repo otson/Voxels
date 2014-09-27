@@ -123,7 +123,7 @@ public class Voxels {
 //        System.out.println(AtlasManager.getBackXOff(Type.DIRT));
 //        System.out.println(AtlasManager.getBackYOff(Type.DIRT));
 //        System.exit(0);
-        testChunkSpeeds();
+        //testChunkSpeeds();
         initDisplay();
         initOpenGL();
         //initFog();
@@ -164,7 +164,7 @@ public class Voxels {
     private static void initDisplay() {
         try {
             Display.setDisplayMode(new DisplayMode(1440, 900));
-            Display.setVSyncEnabled(true);
+            //Display.setVSyncEnabled(true);
             Display.setTitle("Voxels");
             Display.create();
         } catch (LWJGLException e) {
@@ -376,14 +376,14 @@ public class Voxels {
             processInput(getDelta());
             //chunkManager.processWater();
             chunkManager.processBufferData();
-            glColor3f(0.5f, 1f, 1f);
+            //glColor3f(0.5f, 1f, 1f);
             glUseProgram(shaderProgram);
             
             render();
             glUseProgram(0);
             updateFPS();
             Display.update();
-            Display.sync(60);
+            //Display.sync(60);
             //System.out.println("Chunks: "+chunkManager.getTotalChunks());
         }
         glDeleteProgram(shaderProgram);

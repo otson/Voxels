@@ -1,0 +1,15 @@
+Old with shorts (5000 chunks, putting also uncompressed in 2nd loop)
+
+Putting chunks took: 10177 ms.
+Getting chunks took: 2804 ms.
+
+After storing uncompressed: java.exe 611 000 kb
+
+
+Same with bytes
+
+Putting chunks took: 9700 ms.
+Getting chunks took: 1788 ms.
+
+After storing uncompressed: java.exe 401 000 kb
+

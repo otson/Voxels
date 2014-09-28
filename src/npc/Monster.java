@@ -13,9 +13,30 @@ import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import voxels.Camera.Camera;
+import voxels.ChunkManager.Chunk;
+import voxels.ChunkManager.ChunkManager;
+import voxels.ChunkManager.Type;
+import voxels.Voxels;
+import static voxels.Voxels.toXid;
+import static voxels.Voxels.toYid;
+import static voxels.Voxels.toZid;
 
 /**
  *
@@ -26,28 +47,35 @@ public class Monster {
     private float x;
     private float y;
     private float z;
-    private float movSpeed = 0.25f;
+    private float movSpeed = 0.10f;
     private static int staticId = 0;
     private int vertexHandle;
     private int colorHandle;
     private int id;
     private Camera camera;
+    private ChunkManager chunkManager;
 
-    Monster(float x, float y, float z, Camera camera) {
+    Monster(float x, float y, float z, Camera camera, ChunkManager chunkManager) {
         this.x = x;
         this.y = y;
         this.z = z;
+        this.chunkManager = chunkManager;
         id = staticId;
         staticId++;
-        movSpeed += (float) (movSpeed*2*Math.random());
+        movSpeed += (float) (movSpeed * 2 * Math.random());
         this.camera = camera;
     }
 
     public void act() {
+
+        Chunk chunk = chunkManager.getChunk(toXid((int) x), toYid((int) y), toZid((int) z));
+        if (chunk == null) {
+            System.out.println("null");
+        }
         float distX = camera.x() - x;
         float distY = camera.y() - y;
         float distZ = camera.z() - z;
-        
+
         if (distX < 0) {
             distX *= -1;
         }
@@ -57,29 +85,46 @@ public class Monster {
         if (distZ < 0) {
             distZ *= -1;
         }
-        float xCoef = distX/((distX+distY+distZ));
-        float yCoef = distY/((distX+distY+distZ));
-        float zCoef = distZ/((distX+distY+distZ));
-
+        float xCoef = distX / ((distX + distY + distZ));
+        float yCoef = distY / ((distX + distY + distZ));
+        float zCoef = distZ / ((distX + distY + distZ));
 
         if (camera.x() > x + movSpeed) {
-            x += movSpeed*xCoef;
+            moveX(movSpeed * xCoef);
         } else if (camera.x() < x - movSpeed) {
-            x -= movSpeed*xCoef;
+            moveX(-movSpeed * xCoef);
         }
 
         if (camera.y() > y + movSpeed) {
-            y += movSpeed*yCoef;
+            moveY(movSpeed * yCoef);
         } else if (camera.y() < y - movSpeed) {
-            y -= movSpeed*yCoef;
+            moveY(-movSpeed * yCoef);
         }
 
         if (camera.z() > z + movSpeed) {
-            z += movSpeed*zCoef;
+            moveZ(movSpeed * zCoef);
         } else if (camera.z() < z - movSpeed) {
-            z -= movSpeed*zCoef;
+            moveZ(-movSpeed * zCoef);
         }
         //System.out.println("Speed: "+(movSpeed*xCoef+movSpeed*yCoef+movSpeed*zCoef));
+    }
+
+    private void moveX(float amount) {
+        if (chunkManager.getActiveBlock((int) (x + amount), (int) y, (int) z) == Type.AIR) {
+            x += amount;
+        }
+    }
+
+    private void moveY(float amount) {
+        if (chunkManager.getActiveBlock((int) x, (int) (y + amount), (int) z) == Type.AIR) {
+            y += amount;
+        }
+    }
+
+    private void moveZ(float amount) {
+        if (chunkManager.getActiveBlock((int) x, (int) y, (int) (z + amount)) == Type.AIR) {
+            z += amount;
+        }
     }
 
     public int createRender() {
@@ -113,7 +158,7 @@ public class Monster {
         glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
         glBufferData(GL_ARRAY_BUFFER, vertexData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-        
+
         int vboColorHandle = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
         glBufferData(GL_ARRAY_BUFFER, colorData, GL_STATIC_DRAW);

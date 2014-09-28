@@ -84,7 +84,7 @@ public class Voxels {
     /**
      * Set if 3D simplex noise is used to generate terrain.
      */
-    public static final boolean USE_3D_NOISE = false;
+    public static final boolean USE_3D_NOISE = true;
 
     /**
      * Set air block percentage if 3D noise is in use.
@@ -195,11 +195,11 @@ public class Voxels {
         camera = InitCamera();
         npcManager = new npcHandler(chunkManager, camera);
         for (int i = 0; i < 1000; i++) {
-            npcManager.addNPC((float) (200f * Math.random() - 100f), (float) (150f * Math.random() + 100f), (float) (200f * Math.random() - 100f));
+            npcManager.addNPC((float) (200f * Math.random() - 100f), (float) (150f * Math.random() + 100f), (float) (200f * Math.random() - 100f), chunkManager);
         }
 //        npcManager.addNPC(-10, 170, 10);
 //        npcManager.addNPC(10, 140, -10);
-        npcManager.addNPC(20, 140, 0);
+        //npcManager.addNPC(20, 140, 0);
 //        npcManager.addNPC(40, 160, 0);
 //        npcManager.addNPC(10, 155, 10);
 //        npcManager.addNPC(0, 200, 0);

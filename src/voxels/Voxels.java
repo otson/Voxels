@@ -190,17 +190,19 @@ public class Voxels {
     }
     
     private static void initManagers(){
+        
         chunkManager = new ChunkManager();
-        npcManager = new npcHandler(chunkManager);
+        camera = InitCamera();
+        npcManager = new npcHandler(chunkManager, camera);
         npcManager.addNPC(10, 220, 10);
-        npcManager.addNPC(-10, 170, 10);
-        npcManager.addNPC(10, 140, -10);
-        npcManager.addNPC(20, 140, 0);
-        npcManager.addNPC(40, 160, 0);
-        npcManager.addNPC(10, 155, 10);
-        npcManager.addNPC(0, 200, 0);
-        npcManager.addNPC(-10, 180, 50);
-        npcManager.addNPC(-10, 190, -20);
+//        npcManager.addNPC(-10, 170, 10);
+//        npcManager.addNPC(10, 140, -10);
+//        npcManager.addNPC(20, 140, 0);
+//        npcManager.addNPC(40, 160, 0);
+//        npcManager.addNPC(10, 155, 10);
+//        npcManager.addNPC(0, 200, 0);
+//        npcManager.addNPC(-10, 180, 50);
+//        npcManager.addNPC(-10, 190, -20);
     }
 
     private static void initShaders2() {
@@ -375,7 +377,7 @@ public class Voxels {
     private static void gameLoop() {
         
 
-        camera = InitCamera();
+        
         chunkManager.startGeneration();
         long time = System.nanoTime();
 
@@ -417,12 +419,9 @@ public class Voxels {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             updateView();
             processInput(getDelta());
-            //chunkManager.processWater();
             chunkManager.processBufferData();
-            //glColor3f(0.5f, 1f, 1f);
-            //glUseProgram(shaderProgram);
+            npcManager.processMonsters();
             render();
-            //glUseProgram(0);
             updateFPS();
             Display.update();
             Display.sync(60);
@@ -478,12 +477,12 @@ public class Voxels {
                 }
             }
         }
-        glDisable(GL_CULL_FACE);
+        //glDisable(GL_CULL_FACE);
         for (Monster npc : npcManager.getMonsterList().values()) {
             //glLoadIdentity();
             glTranslatef(npc.getX(), npc.getY(), npc.getZ());
-            int vertices = 12;
-            System.out.println("handle: "+npc.getHandle());
+            int vertices = 24;
+            //System.out.println("handle: "+npc.getHandle());
             glBindBuffer(GL_ARRAY_BUFFER, npc.getHandle());
             glVertexPointer(3, GL_FLOAT, 0, 0L);
 
@@ -494,7 +493,7 @@ public class Voxels {
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             glTranslatef(-npc.getX(), -npc.getY(), -npc.getZ());
         }
-        glEnable(GL_CULL_FACE);
+        //glEnable(GL_CULL_FACE);
 
         drawAimLine();
 

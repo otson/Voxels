@@ -8,6 +8,7 @@ package npc;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import voxels.Camera.Camera;
 import voxels.ChunkManager.ChunkManager;
 
 /**
@@ -18,15 +19,17 @@ public class npcHandler {
     private HashMap<Integer, Monster> monsterList;
     private ChunkManager chunkManager;
     private HashMap<Integer, Integer> npcHandles;
+    private Camera camera;
 
-    public npcHandler(ChunkManager chunkManager) {
+    public npcHandler(ChunkManager chunkManager, Camera camera) {
         monsterList = new HashMap<>();
         npcHandles = new HashMap<>();
+        this.camera = camera;
         this.chunkManager = chunkManager;
     }
     
     public void addNPC(int x, int y, int z){
-        Monster monster = new Monster(x,y,z);
+        Monster monster = new Monster(x,y,z, camera);
         System.out.println("id: "+monster.getId());
         npcHandles.put(monster.getId(), monster.createRender());
         monsterList.put(monster.getId(), monster);
@@ -40,5 +43,11 @@ public class npcHandler {
         return npcHandles;
     }
     
+    public void processMonsters(){
+        for(Monster monster: monsterList.values()){
+            monster.act();
+            //monsterList.put(monster.getId(), monster);
+        }
+    }
     
 }

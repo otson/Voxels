@@ -12,7 +12,10 @@ import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import voxels.Camera.Camera;
 
 /**
  *
@@ -24,9 +27,11 @@ public class Monster {
     float x;
     float y;
     float z;
+    private float movSpeed = 0.08f;
     private static int staticId = 0;
     private int handle;
     private int id;
+    private Camera camera;
 
     public Monster() {
         x = 10;
@@ -37,21 +42,44 @@ public class Monster {
         
     }
 
-    Monster(int x, int y, int z) {
+    Monster(int x, int y, int z, Camera camera) {
         this.x = x;
         this.y = y;
         this.z = z;
         id = staticId;
         staticId++;
+        this.camera = camera;
+    }
+    
+    public void act(){
+        if(camera.x()>x+movSpeed)
+            x+=movSpeed;
+        else if(camera.x()<x-movSpeed)
+            x-=movSpeed;
+        
+        if(camera.y()>y+movSpeed)
+            y+=movSpeed;
+        else if(camera.y()<y-movSpeed)
+            y-=movSpeed;
+        
+        if(camera.z()>z+movSpeed)
+            z+=movSpeed;
+        else if(camera.z()<z-movSpeed)
+            z-=movSpeed;
     }
     
     public int createRender(){
-        final int amountOfVertices = 4;
+        final int amountOfVertices = 24;
         final int vertexSize = 3;
-        final int colorSize = 3;
 
         FloatBuffer vertexData = BufferUtils.createFloatBuffer(amountOfVertices * vertexSize);
-        vertexData.put(new float[]{0,0,0, 0,0,5, 5,0,5, 5,0,0});
+        vertexData.put(new float[]{0,1,0, 0,1,1, 1,1,1, 1,1,0, // top
+                                   0,0,0, 1,0,0, 1,0,1, 0,0,1, // bottom
+                                   0,1,0, 0,0,0, 0,0,1, 0,1,1, // left
+                                   1,1,0, 1,1,1, 1,0,1, 1,0,0, // right
+                                   0,1,1, 0,0,1, 1,0,1, 1,1,1, // front
+                                   0,1,0, 1,1,0, 1,0,0, 0,0,0  // back
+        });
         vertexData.flip();
         
         int vboVertexHandle = glGenBuffers();

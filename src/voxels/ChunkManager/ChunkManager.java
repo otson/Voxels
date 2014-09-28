@@ -536,8 +536,10 @@ public class ChunkManager {
         int yId = toYid(y);
         int zId = toZid(z);
         Chunk chunk = getActiveChunk(xId,yId,zId);
-        
-        return chunk.blocks[toX(x)][toY(y)][toZ(z)];
+        if(chunk != null)
+            return chunk.blocks[toX(x)][toY(y)][toZ(z)];
+        else
+            return -1;
     }
         
 }

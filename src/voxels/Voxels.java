@@ -16,6 +16,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import kuusisto.tinysound.Sound;
 import kuusisto.tinysound.TinySound;
+import npc.Monster;
+import npc.npcHandler;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -82,7 +84,7 @@ public class Voxels {
     /**
      * Set if 3D simplex noise is used to generate terrain.
      */
-    public static final boolean USE_3D_NOISE = true;
+    public static final boolean USE_3D_NOISE = false;
 
     /**
      * Set air block percentage if 3D noise is in use.
@@ -107,6 +109,7 @@ public class Voxels {
     public static float START_TIME;
 
     private static ChunkManager chunkManager;
+    private static npcHandler npcManager;
 
     private static EulerCamera camera;
     private static float light0Position[] = {-2000.0f, 2000.0f, 1000.0f, 1.0f};
@@ -129,16 +132,19 @@ public class Voxels {
         //initFog();
         initLighting();
         initTextures();
+        initRenders();
 
 //        initShaders2();
 //        initShaderLighting();
         initSounds();
+        initManagers();
         gameLoop();
     }
 
     private static void testChunkSpeeds() {
 
         chunkManager = new ChunkManager();
+        
         HashMap<Integer, Chunk> hashMap = new HashMap<>();
         ChunkMaker maker = new ChunkMaker(null, null, chunkManager, null, null);
         long start = System.nanoTime();
@@ -154,6 +160,16 @@ public class Voxels {
             hashMap.put(new Pair(i, i, i).hashCode(), chunk); //17500 ms (no initial capacity)
         }
         System.out.println("Getting chunks took: " + (System.nanoTime() - start) / 1000000 + " ms.");
+
+        start = System.nanoTime();
+        for (int i = 0; i < 5000; i++) {
+            Chunk chunk = hashMap.get(new Pair(i, i, i).hashCode());
+            if (chunk == null) {
+                System.out.println("null");
+            }
+            //hashMap.put(new Pair(i, i, i).hashCode(), chunk); //17500 ms (no initial capacity)
+        }
+        System.out.println("Getting chunks from uncompressed took: " + (System.nanoTime() - start) / 1000000 + " ms.");
         while (true) {
 
         }
@@ -171,6 +187,20 @@ public class Voxels {
             Display.destroy();
             System.exit(1);
         }
+    }
+    
+    private static void initManagers(){
+        chunkManager = new ChunkManager();
+        npcManager = new npcHandler(chunkManager);
+        npcManager.addNPC(10, 220, 10);
+        npcManager.addNPC(-10, 170, 10);
+        npcManager.addNPC(10, 140, -10);
+        npcManager.addNPC(20, 140, 0);
+        npcManager.addNPC(40, 160, 0);
+        npcManager.addNPC(10, 155, 10);
+        npcManager.addNPC(0, 200, 0);
+        npcManager.addNPC(-10, 180, 50);
+        npcManager.addNPC(-10, 190, -20);
     }
 
     private static void initShaders2() {
@@ -343,7 +373,7 @@ public class Voxels {
     }
 
     private static void gameLoop() {
-        chunkManager = new ChunkManager();
+        
 
         camera = InitCamera();
         chunkManager.startGeneration();
@@ -448,6 +478,23 @@ public class Voxels {
                 }
             }
         }
+        glDisable(GL_CULL_FACE);
+        for (Monster npc : npcManager.getMonsterList().values()) {
+            //glLoadIdentity();
+            glTranslatef(npc.getX(), npc.getY(), npc.getZ());
+            int vertices = 12;
+            System.out.println("handle: "+npc.getHandle());
+            glBindBuffer(GL_ARRAY_BUFFER, npc.getHandle());
+            glVertexPointer(3, GL_FLOAT, 0, 0L);
+
+            glEnableClientState(GL_VERTEX_ARRAY);
+            glDrawArrays(GL_QUADS, 0, vertices);
+            glDisableClientState(GL_VERTEX_ARRAY);
+
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            glTranslatef(-npc.getX(), -npc.getY(), -npc.getZ());
+        }
+        glEnable(GL_CULL_FACE);
 
         drawAimLine();
 
@@ -610,21 +657,21 @@ public class Voxels {
         return x / Chunk.CHUNK_SIZE;
     }
 
-    public final static int convertToChunkZId(int z) {
+    public final static int toZid(int z) {
         if (z < 0) {
             z -= Chunk.CHUNK_SIZE - 1;
         }
         return z / Chunk.CHUNK_SIZE;
     }
 
-    public final static int convertToChunkXId(int x) {
+    public final static int toXid(int x) {
         if (x < 0) {
             x -= Chunk.CHUNK_SIZE - 1;
         }
         return x / Chunk.CHUNK_SIZE;
     }
 
-    public final static int convertToChunkYId(int y) {
+    public final static int toYid(int y) {
         return y / Chunk.CHUNK_SIZE;
     }
 
@@ -690,18 +737,18 @@ public class Voxels {
         return z % Chunk.CHUNK_SIZE;
     }
 
-    public static int convertToXInChunk(int x) {
+    public static int toX(int x) {
         if (x <= 0) {
             x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE;
         }
         return x % Chunk.CHUNK_SIZE;
     }
 
-    public static int convertToYInChunk(int y) {
+    public static int toY(int y) {
         return y % Chunk.CHUNK_SIZE;
     }
 
-    public static int convertToZInChunk(int z) {
+    public static int toZ(int z) {
         if (z <= 0) {
             z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE;
         }
@@ -800,13 +847,13 @@ public class Voxels {
     }
 
     public static void putToBuffer(byte type, int x, int y, int z) {
-        int chunkXId = convertToChunkXId(x);
-        int chunkYId = convertToChunkYId(y);
-        int chunkZId = convertToChunkZId(z);
+        int chunkXId = toXid(x);
+        int chunkYId = toYid(y);
+        int chunkZId = toZid(z);
 
-        int xInChunk = convertToXInChunk(x);
-        int yInChunk = convertToYInChunk(y);
-        int zInChunk = convertToZInChunk(z);
+        int xInChunk = toX(x);
+        int yInChunk = toY(y);
+        int zInChunk = toZ(z);
 
         if (!chunkManager.getBlockBuffer().containsKey(new Pair(chunkXId, chunkYId, chunkZId).hashCode())) {
             LinkedList<BlockCoord> list = new LinkedList<>();
@@ -827,5 +874,9 @@ public class Voxels {
 
     public static Location getPlayerLocation() {
         return new Location(camera.x(), camera.y(), camera.z());
+    }
+
+    private static void initRenders() {
+
     }
 }

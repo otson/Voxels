@@ -32,8 +32,20 @@ import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
@@ -44,6 +56,12 @@ import org.lwjgl.util.vector.Vector3f;
 import voxels.Voxels;
 import static voxels.Voxels.getCurrentChunkXId;
 import static voxels.Voxels.getCurrentChunkZId;
+import static voxels.Voxels.toX;
+import static voxels.Voxels.toXid;
+import static voxels.Voxels.toY;
+import static voxels.Voxels.toYid;
+import static voxels.Voxels.toZ;
+import static voxels.Voxels.toZid;
 
 /**
  *
@@ -59,6 +77,7 @@ public class ChunkManager {
 
     private ConcurrentHashMap<Integer, byte[]> map;
     private ConcurrentHashMap<Integer, Handle> handles;
+    
     private ConcurrentHashMap<Integer, LinkedList<BlockCoord>> blockBuffer;
     private ConcurrentHashMap<Integer, Chunk> activeChunkMap;
 
@@ -100,7 +119,10 @@ public class ChunkManager {
     }
 
     public Chunk getChunk(int chunkX, int chunkY, int chunkZ) {
-        if (map.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
+        if(activeChunkMap.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())){
+            return activeChunkMap.get(new Pair(chunkX, chunkY, chunkZ).hashCode());
+        }
+        else if (map.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
             return toChunk(map.get(new Pair(chunkX, chunkY, chunkZ).hashCode()));
         } else {
             return null;
@@ -499,4 +521,14 @@ public class ChunkManager {
         if(waterCounter % 6 == 0)
             chunkLoader.simulateWater();
     }
+    
+    public short getBlock(int x, int y, int z){
+        int xId = toXid(x);
+        int yId = toYid(y);
+        int zId = toZid(z);
+        Chunk chunk = getChunk(xId,yId,zId);
+        
+        return chunk.blocks[toX(x)][toY(y)][toZ(z)];
+    }
+        
 }

@@ -421,7 +421,7 @@ public class EulerCamera implements Camera {
 
             int potentChunkXId = Voxels.getCurrentChunkXId((float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))));
             int potentXInChunk = Voxels.xInChunk((float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))));
-            Chunk potentChunk = chunkManager.getActiveChunk(potentChunkXId, Voxels.getCurrentChunkYId(), Voxels.getCurrentChunkZId());
+            Chunk potentChunk = chunkManager.getActiveChunk(potentChunkXId,getCurrentChunkYId(), Voxels.getCurrentChunkZId());
             
 
             // allowed to move in X axis

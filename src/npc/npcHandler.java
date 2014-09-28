@@ -28,7 +28,7 @@ public class npcHandler {
         this.chunkManager = chunkManager;
     }
     
-    public void addNPC(int x, int y, int z){
+    public void addNPC(float x, float y, float z){
         Monster monster = new Monster(x,y,z, camera);
         System.out.println("id: "+monster.getId());
         npcHandles.put(monster.getId(), monster.createRender());

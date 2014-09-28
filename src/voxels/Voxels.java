@@ -144,7 +144,7 @@ public class Voxels {
     private static void testChunkSpeeds() {
 
         chunkManager = new ChunkManager();
-        
+
         HashMap<Integer, Chunk> hashMap = new HashMap<>();
         ChunkMaker maker = new ChunkMaker(null, null, chunkManager, null, null);
         long start = System.nanoTime();
@@ -188,16 +188,18 @@ public class Voxels {
             System.exit(1);
         }
     }
-    
-    private static void initManagers(){
-        
+
+    private static void initManagers() {
+
         chunkManager = new ChunkManager();
         camera = InitCamera();
         npcManager = new npcHandler(chunkManager, camera);
-        npcManager.addNPC(10, 220, 10);
+        for (int i = 0; i < 1000; i++) {
+            npcManager.addNPC((float) (200f * Math.random() - 100f), (float) (150f * Math.random() + 100f), (float) (200f * Math.random() - 100f));
+        }
 //        npcManager.addNPC(-10, 170, 10);
 //        npcManager.addNPC(10, 140, -10);
-//        npcManager.addNPC(20, 140, 0);
+        npcManager.addNPC(20, 140, 0);
 //        npcManager.addNPC(40, 160, 0);
 //        npcManager.addNPC(10, 155, 10);
 //        npcManager.addNPC(0, 200, 0);
@@ -375,9 +377,7 @@ public class Voxels {
     }
 
     private static void gameLoop() {
-        
 
-        
         chunkManager.startGeneration();
         long time = System.nanoTime();
 
@@ -483,11 +483,16 @@ public class Voxels {
             glTranslatef(npc.getX(), npc.getY(), npc.getZ());
             int vertices = 24;
             //System.out.println("handle: "+npc.getHandle());
-            glBindBuffer(GL_ARRAY_BUFFER, npc.getHandle());
+            
+            glBindBuffer(GL_ARRAY_BUFFER, npc.getVertexHandle());
             glVertexPointer(3, GL_FLOAT, 0, 0L);
+            glBindBuffer(GL_ARRAY_BUFFER, npc.getColorHandle());
+            glColorPointer(3, GL_FLOAT, 0, 0L);
 
             glEnableClientState(GL_VERTEX_ARRAY);
+            glEnableClientState(GL_COLOR_ARRAY);
             glDrawArrays(GL_QUADS, 0, vertices);
+            glDisableClientState(GL_COLOR_ARRAY);
             glDisableClientState(GL_VERTEX_ARRAY);
 
             glBindBuffer(GL_ARRAY_BUFFER, 0);

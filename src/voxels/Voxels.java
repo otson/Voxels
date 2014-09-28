@@ -194,7 +194,7 @@ public class Voxels {
         chunkManager = new ChunkManager();
         camera = InitCamera();
         npcManager = new npcHandler(chunkManager, camera);
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 800; i++) {
             npcManager.addNPC((float) (200f * Math.random() - 100f), (float) (150f * Math.random() + 100f), (float) (200f * Math.random() - 100f), chunkManager);
         }
 //        npcManager.addNPC(-10, 170, 10);

@@ -44,6 +44,8 @@ import static voxels.Voxels.toZid;
  */
 public class Monster {
 
+    private static float fallingSpeed = 0.013f;
+
     private float x;
     private float y;
     private float z;
@@ -52,6 +54,7 @@ public class Monster {
     private int vertexHandle;
     private int colorHandle;
     private int id;
+    private float currentFallingSpeed = 0;
     private Camera camera;
     private ChunkManager chunkManager;
 
@@ -88,42 +91,74 @@ public class Monster {
         float xCoef = distX / ((distX + distY + distZ));
         float yCoef = distY / ((distX + distY + distZ));
         float zCoef = distZ / ((distX + distY + distZ));
+        boolean moved = false;
 
-        if (camera.x() > x + movSpeed) {
-            moveX(movSpeed * xCoef);
-        } else if (camera.x() < x - movSpeed) {
-            moveX(-movSpeed * xCoef);
+        if (moveY(-currentFallingSpeed)) {
+            currentFallingSpeed += fallingSpeed;
+        } else {
+            currentFallingSpeed = 0;
         }
 
-        if (camera.y() > y + movSpeed) {
-            moveY(movSpeed * yCoef);
-        } else if (camera.y() < y - movSpeed) {
-            moveY(-movSpeed * yCoef);
+        if (camera.x() > x + movSpeed) {
+            if (!moveX(movSpeed * xCoef)) {
+                jump();
+                moved = true;
+            }
+        } else if (camera.x() < x - movSpeed) {
+            if (!moveX(-movSpeed * xCoef)) {
+                jump();
+                moved = true;
+            }
         }
 
         if (camera.z() > z + movSpeed) {
-            moveZ(movSpeed * zCoef);
+            if (!moveZ(movSpeed * zCoef)) {
+                jump();
+                moved = true;
+            }
         } else if (camera.z() < z - movSpeed) {
-            moveZ(-movSpeed * zCoef);
+            if (!moveZ(-movSpeed * zCoef)) {
+                jump();
+                moved = true;
+            }
         }
+        
         //System.out.println("Speed: "+(movSpeed*xCoef+movSpeed*yCoef+movSpeed*zCoef));
     }
 
-    private void moveX(float amount) {
+    private void jump() {
+        if (currentFallingSpeed >= 0) {
+            if(Math.random() > 0.99)
+                currentFallingSpeed = -0.8f;
+            else
+                currentFallingSpeed = -0.4f;
+        }
+    }
+
+    private boolean moveX(float amount) {
         if (chunkManager.getActiveBlock((int) (x + amount), (int) y, (int) z) == Type.AIR) {
             x += amount;
+            return true;
+        } else {
+            return false;
         }
     }
 
-    private void moveY(float amount) {
+    private boolean moveY(float amount) {
         if (chunkManager.getActiveBlock((int) x, (int) (y + amount), (int) z) == Type.AIR) {
             y += amount;
+            return true;
+        } else {
+            return false;
         }
     }
 
-    private void moveZ(float amount) {
+    private boolean moveZ(float amount) {
         if (chunkManager.getActiveBlock((int) x, (int) y, (int) (z + amount)) == Type.AIR) {
             z += amount;
+            return true;
+        } else {
+            return false;
         }
     }
 

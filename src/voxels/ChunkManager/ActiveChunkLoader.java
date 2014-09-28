@@ -86,7 +86,7 @@ public class ActiveChunkLoader extends Thread {
 
     public void loadChunks() {
         //int count = 0;
-        int loadDistance = Voxels.chunkRenderDistance;
+        int loadDistance = 6;//Voxels.chunkRenderDistance;
         //long start = System.nanoTime();
         for (int y = 0; y < Chunk.VERTICAL_CHUNKS; y++) {
             for (int x = -loadDistance; x <= loadDistance; x++) {
@@ -113,7 +113,7 @@ public class ActiveChunkLoader extends Thread {
     }
 
     private void clearEntries() {
-        int distance = Voxels.chunkRenderDistance+1;
+        int distance = 7;//Voxels.chunkRenderDistance+1;
         int count = 0;
         for (Chunk chunk : chunkMap.values()) {
             if (chunk.xId > currentChunkX + distance || chunk.xId < currentChunkX - distance || chunk.zId > currentChunkZ + distance || chunk.zId < currentChunkZ - distance) {

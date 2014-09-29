@@ -75,6 +75,7 @@ public class EulerCamera implements Camera {
 
     private boolean flying = false;
     private boolean moving = false;
+    private boolean zoomed = false;
 
     private ChunkManager chunkManager;
 
@@ -201,8 +202,15 @@ public class EulerCamera implements Camera {
     public void processMouse() {
         final float MAX_LOOK_UP = 90;
         final float MAX_LOOK_DOWN = -90;
+
         float mouseDX = Mouse.getDX() * 0.16f;
         float mouseDY = Mouse.getDY() * 0.16f;
+        
+        if(zoomed){
+            mouseDX*=0.25f;
+            mouseDY*=0.25f;
+        }
+        
         if (yaw + mouseDX >= 360) {
             yaw = yaw + mouseDX - 360;
         } else if (yaw + mouseDX < 0) {
@@ -295,6 +303,7 @@ public class EulerCamera implements Camera {
         boolean flyDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
         boolean moveFaster = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
         boolean moveSlower = Keyboard.isKeyDown(Keyboard.KEY_C);
+        zoomed = Keyboard.isKeyDown(Keyboard.KEY_Z);
         
         if (moveFaster) {
             speed *= 9;
@@ -490,6 +499,13 @@ public class EulerCamera implements Camera {
      * will be returned it its previous value after execution.
      */
     public void applyPerspectiveMatrix() {
+        glPushAttrib(GL_TRANSFORM_BIT);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        GLU.gluPerspective(fov, aspectRatio, zNear, zFar);
+        glPopAttrib();
+    }
+    public void applyPerspectiveMatrix(int fov) {
         glPushAttrib(GL_TRANSFORM_BIT);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
@@ -772,6 +788,10 @@ public class EulerCamera implements Camera {
         if (flying) {
             fallingSpeed = 0;
         }
+    }
+
+    public boolean isZoomed() {
+        return zoomed;
     }
 
 }

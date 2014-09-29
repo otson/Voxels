@@ -9,6 +9,8 @@ package npc;
 import java.util.ArrayList;
 import java.util.HashMap;
 import voxels.Camera.Camera;
+import voxels.ChunkManager.Chunk;
+import voxels.Voxels.*;
 import voxels.ChunkManager.ChunkManager;
 
 /**
@@ -20,6 +22,7 @@ public class npcHandler {
     private ChunkManager chunkManager;
     private HashMap<Integer, Integer> npcHandles;
     private Camera camera;
+    private int maxDistance = Chunk.CHUNK_SIZE*8;
 
     public npcHandler(ChunkManager chunkManager, Camera camera) {
         monsterList = new HashMap<>();
@@ -45,6 +48,7 @@ public class npcHandler {
     
     public void processMonsters(){
         for(Monster monster: monsterList.values()){
+            if(monster.getDistance() <= maxDistance*maxDistance)
             monster.act();
             //monsterList.put(monster.getId(), monster);
         }

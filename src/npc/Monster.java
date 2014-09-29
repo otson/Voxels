@@ -228,4 +228,11 @@ public class Monster {
         return colorHandle;
     }
 
+    public float getDistance() {
+        float xDist = x-camera.x();
+        float zDist = z-camera.z();
+        
+        return xDist*xDist+zDist*zDist;
+    }
+
 }

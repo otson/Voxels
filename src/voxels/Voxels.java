@@ -437,7 +437,10 @@ public class Voxels {
     private static void updateView() {
         glLoadIdentity();
         glViewport(0, 0, Display.getWidth(), Display.getHeight());
-        camera.applyPerspectiveMatrix();
+        if(camera.isZoomed())
+            camera.applyPerspectiveMatrix(15);
+        else
+            camera.applyPerspectiveMatrix();
         camera.applyTranslations();
     }
 
@@ -566,9 +569,6 @@ public class Voxels {
                     chunkRenderDistance--;
                 }
             }
-//            if (Keyboard.isKeyDown(Keyboard.KEY_V)) {
-//                chunkManager.getChunkLoader().simulateWater();
-//            }
             if (Keyboard.isKeyDown(Keyboard.KEY_B)) {
                 chunkManager.getChunkLoader().loadChunks();
             }
@@ -602,6 +602,13 @@ public class Voxels {
             glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
 //            }
         }
+    }
+    
+    private static void updateView(int fov) {
+        glLoadIdentity();
+        glViewport(0, 0, Display.getWidth(), Display.getHeight());
+        camera.applyPerspectiveMatrix(fov);
+        camera.applyTranslations();
     }
 
     public static FloatBuffer asFloatBuffer(float[] values) {

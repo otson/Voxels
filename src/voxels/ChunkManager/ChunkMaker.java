@@ -119,6 +119,7 @@ public class ChunkMaker extends Thread {
         if (!map.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
             chunk = new Chunk(chunkX, chunkY, chunkZ);
             map.put(new Pair(chunkX, chunkY, chunkZ).hashCode(), toByte(chunk));
+            //chunkManager.getChunkLoader().getChunkMap().put(new Pair(chunkX, chunkY, chunkZ).hashCode(), chunk);
             //chunkManager.putUncompressed(chunk);
             try {
                 queue.offer(new Pair(chunkX, chunkY, chunkZ), 1, TimeUnit.DAYS);
@@ -139,8 +140,9 @@ public class ChunkMaker extends Thread {
             this.yOff = chunk.yId * Chunk.CHUNK_SIZE;
             updateAllBlocks();
             drawChunkVBO();
-            chunk.setModified(true);
-            map.put(new Pair(this.chunk.xId, this.chunk.yId, this.chunk.zId).hashCode(), toByte(this.chunk));
+            chunk.setUpdateActive(true);
+            chunk.setUpdatePacked(true);
+            //map.put(new Pair(this.chunk.xId, this.chunk.yId, this.chunk.zId).hashCode(), toByte(this.chunk));
             Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.yId, this.chunk.zId);
             dataToProcess.add(new Data(this.chunk.xId, this.chunk.yId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
         }
@@ -1142,12 +1144,24 @@ public class ChunkMaker extends Thread {
     }
 
     private void getAdjacentChunks() {
-        rightChunk = chunkManager.getChunk(chunk.xId + 1, chunk.yId, chunk.zId);
-        leftChunk = chunkManager.getChunk(chunk.xId - 1, chunk.yId, chunk.zId);
-        backChunk = chunkManager.getChunk(chunk.xId, chunk.yId, chunk.zId - 1);
-        frontChunk = chunkManager.getChunk(chunk.xId, chunk.yId, chunk.zId + 1);
-        topChunk = chunkManager.getChunk(chunk.xId, chunk.yId + 1, chunk.zId);
-        bottomChunk = chunkManager.getChunk(chunk.xId, chunk.yId - 1, chunk.zId);
+        rightChunk = chunkManager.getActiveChunk(chunk.xId + 1, chunk.yId, chunk.zId);
+        if(rightChunk == null)
+            rightChunk = chunkManager.getChunk(chunk.xId + 1, chunk.yId, chunk.zId);
+        leftChunk = chunkManager.getActiveChunk(chunk.xId - 1, chunk.yId, chunk.zId);
+        if(leftChunk == null)
+            leftChunk = chunkManager.getChunk(chunk.xId - 1, chunk.yId, chunk.zId);
+        backChunk = chunkManager.getActiveChunk(chunk.xId, chunk.yId, chunk.zId - 1);
+        if(backChunk == null)
+            backChunk = chunkManager.getChunk(chunk.xId, chunk.yId, chunk.zId - 1);
+        frontChunk = chunkManager.getActiveChunk(chunk.xId, chunk.yId, chunk.zId + 1);
+        if(frontChunk == null)
+            frontChunk = chunkManager.getChunk(chunk.xId, chunk.yId, chunk.zId + 1);
+        topChunk = chunkManager.getActiveChunk(chunk.xId, chunk.yId + 1, chunk.zId);
+        if(topChunk == null)
+            topChunk = chunkManager.getChunk(chunk.xId, chunk.yId + 1, chunk.zId);
+        bottomChunk = chunkManager.getActiveChunk(chunk.xId, chunk.yId - 1, chunk.zId);
+        if(topChunk == null)
+            bottomChunk = chunkManager.getChunk(chunk.xId, chunk.yId - 1, chunk.zId);
     }
 
     private void updateMiddle() {

@@ -541,5 +541,18 @@ public class ChunkManager {
         else
             return -1;
     }
-        
+
+    public ConcurrentHashMap<Integer, Handle> getHandles() {
+        return handles;
+    }
+
+    public ArrayList<Data> getDataToProcess() {
+        return dataToProcess;
+    }
+
+    public BlockingQueue<Pair> getQueue() {
+        return queue;
+    }
+       
+    
 }

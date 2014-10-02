@@ -45,10 +45,11 @@ public class Chunk implements Serializable {
 
     public byte[][][] blocks;
 
-    private boolean modified = false;
+    private boolean updateActive = false;
+    private boolean updatePacked = false;
     private boolean empty = false;
 
-    private ArrayList<Water> waterArray;
+    //private ArrayList<Water> waterArray;
     public Chunk(int xId, int yId, int zId) {
         blocks = new byte[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
         this.xId = xId;
@@ -57,7 +58,7 @@ public class Chunk implements Serializable {
         xCoordinate = xId * CHUNK_SIZE;
         zCoordinate = zId * CHUNK_SIZE;
         yCoordinate = yId * CHUNK_SIZE;
-        waterArray = new ArrayList<>(64);
+        //waterArray = new ArrayList<>(64);
         initMaxHeights();
         //if(!empty || (Chunk.CHUNK_SIZE * yId+Chunk.CHUNK_SIZE) > WORLD_HEIGHT * GROUND_SHARE)
         setBlocks();
@@ -198,22 +199,32 @@ public class Chunk implements Serializable {
         this.vboColorHandle = vboColorHandle;
     }
 
-    public boolean isModified() {
-        return modified;
+    public boolean isUpdateActive() {
+        return updateActive;
     }
 
-    public void setModified(boolean modified) {
-        this.modified = modified;
+    public boolean isUpdatePacked() {
+        return updatePacked;
+    }
+
+    public void setUpdatePacked(boolean updatePacked) {
+        this.updatePacked = updatePacked;
+    }
+    
+
+    public void setUpdateActive(boolean updateActive) {
+        this.updateActive = updateActive;
     }
 
     public void setBlock(int x, int y, int z, byte type) {
         blocks[x][y][z] = type;
-        if(type == Type.WATER){
-            waterArray.add(new Water(x,y,z,10));
-        }
+        
+//        if(type == Type.WATER){
+//            waterArray.add(new Water(x,y,z,10));
+//        }
     }
 
     public ArrayList<Water> getWaterArray() {
-        return waterArray;
+        return null;//waterArray;
     }
 }

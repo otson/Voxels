@@ -30,6 +30,7 @@ public class ActiveChunkLoader extends Thread {
     boolean refresh;
 
     private ConcurrentHashMap<Integer, Chunk> chunkMap;
+    private ChunkMaker chunkMaker;
 
     ChunkManager chunkManager;
     int currentChunkX;
@@ -39,6 +40,7 @@ public class ActiveChunkLoader extends Thread {
     public ActiveChunkLoader(ChunkManager chunkManager, ConcurrentHashMap<Integer, Chunk> chunkMap) {
         this.chunkManager = chunkManager;
         this.chunkMap = chunkMap;
+        chunkMaker = new ChunkMaker(null,chunkManager.getMap(),chunkManager, chunkManager.getDataToProcess(),chunkManager.getQueue());
     }
 
     @Override
@@ -93,8 +95,8 @@ public class ActiveChunkLoader extends Thread {
                 for (int z = -loadDistance; z <= loadDistance; z++) {
                     Chunk chunk = chunkManager.getChunk(currentChunkX + x, y, currentChunkZ + z);
                     if (chunk != null) {
-                        if (chunk.isModified() || !chunkMap.containsKey(new Pair(chunk.xId, chunk.yId, chunk.zId).hashCode())) {
-                            chunk.setModified(false);
+                        if (chunk.isUpdateActive() || !chunkMap.containsKey(new Pair(chunk.xId, chunk.yId, chunk.zId).hashCode())) {
+                            chunk.setUpdateActive(false);
                             chunkMap.put(new Pair(chunk.xId, chunk.yId, chunk.zId).hashCode(), chunk);
                         }
                     } else {
@@ -117,6 +119,11 @@ public class ActiveChunkLoader extends Thread {
         int count = 0;
         for (Chunk chunk : chunkMap.values()) {
             if (chunk.xId > currentChunkX + distance || chunk.xId < currentChunkX - distance || chunk.zId > currentChunkZ + distance || chunk.zId < currentChunkZ - distance) {
+                if(chunk.isUpdatePacked()){
+                    chunk.setUpdatePacked(false);
+                    chunkMaker.setChunk(chunk);
+                    chunkManager.getMap().put(new Pair(chunk.xId,chunk.yId,chunk.zId).hashCode(), chunkMaker.toByte(chunk));
+                } 
                 chunkMap.remove(new Pair(chunk.xId, chunk.yId, chunk.zId).hashCode());
                 count++;
             }
@@ -246,5 +253,10 @@ public class ActiveChunkLoader extends Thread {
         return true;
 
     }
+
+    public ConcurrentHashMap<Integer, Chunk> getChunkMap() {
+        return chunkMap;
+    }
+    
 
 }

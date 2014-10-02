@@ -124,7 +124,8 @@ public class ChunkManager {
         }
         else if (map.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
             return toChunk(map.get(new Pair(chunkX, chunkY, chunkZ).hashCode()));
-        } else {
+        } 
+        else {
             return null;
         }
     }

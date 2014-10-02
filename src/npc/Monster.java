@@ -71,9 +71,10 @@ public class Monster {
 
     public void act() {
 
-        Chunk chunk = chunkManager.getChunk(toXid((int) x), toYid((int) y), toZid((int) z));
+        Chunk chunk = chunkManager.getActiveChunk(toXid((int) x), toYid((int) y), toZid((int) z));
         if (chunk == null) {
             System.out.println("null");
+            return;
         }
         float distX = camera.x() - x;
         float distY = camera.y() - y;

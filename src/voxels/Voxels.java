@@ -99,8 +99,8 @@ public class Voxels {
      */
     public static final int FIELD_OF_VIEW = 90;
     public static int chunkCreationDistance = 4;
-    public static int inGameCreationDistance = 11;
-    public static int chunkRenderDistance = 10;
+    public static int inGameCreationDistance = 8;
+    public static int chunkRenderDistance = 7;
     public static Texture atlas;
     public static Sound running;
     public static Sound jumping;
@@ -419,8 +419,9 @@ public class Voxels {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             updateView();
             processInput(getDelta());
+            chunkManager.processWater();
             chunkManager.processBufferData();
-            npcManager.processMonsters();
+            //npcManager.processMonsters();
             render();
             updateFPS();
             Display.update();

@@ -16,14 +16,20 @@ public class Water implements Serializable{
     public int x;
     public int y;
     public int z;
+    public int xw;
+    public int yw;
+    public int zw;
 
     private int level;
     private boolean fresh;
 
-    public Water(int x, int y, int z, int level) {
+    public Water(int x, int y, int z, int xw, int yw, int zw, int level) {
         this.x = x;
         this.y = y;
         this.z = z;
+        this.xw = xw;
+        this.yw = yw;
+        this.zw = zw;
         this.level = level;
         fresh = true;
     }

@@ -77,7 +77,7 @@ public class ChunkManager {
 
     private ConcurrentHashMap<Integer, byte[]> map;
     private ConcurrentHashMap<Integer, Handle> handles;
-    
+
     private ConcurrentHashMap<Integer, LinkedList<BlockCoord>> blockBuffer;
     private ConcurrentHashMap<Integer, Chunk> activeChunkMap;
 
@@ -90,9 +90,8 @@ public class ChunkManager {
 
     BlockingQueue<Pair> queue = new LinkedBlockingQueue<>();
     LZ4Factory factory = LZ4Factory.fastestInstance();
-    
+
     private ConcurrentHashMap<Integer, Integer> decompLengths;
-    
 
     private boolean atMax = false;
     private boolean inLoop;
@@ -119,13 +118,11 @@ public class ChunkManager {
     }
 
     public Chunk getChunk(int chunkX, int chunkY, int chunkZ) {
-        if(activeChunkMap.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())){
+        if (activeChunkMap.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
             return activeChunkMap.get(new Pair(chunkX, chunkY, chunkZ).hashCode());
-        }
-        else if (map.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
+        } else if (map.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
             return toChunk(map.get(new Pair(chunkX, chunkY, chunkZ).hashCode()));
-        } 
-        else {
+        } else {
             return null;
         }
     }
@@ -166,7 +163,7 @@ public class ChunkManager {
 
                 // Start a new thread, make a new chunk
                 int threadId = getFreeThread();
-                threads[threadId] = new ChunkMaker(decompLengths,dataToProcess, newChunkX, newChunkY, newChunkZ, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE, map, this, queue);
+                threads[threadId] = new ChunkMaker(decompLengths, dataToProcess, newChunkX, newChunkY, newChunkZ, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE, map, this, queue);
                 threads[threadId].setPriority(Thread.MIN_PRIORITY);
                 threads[threadId].start();
 
@@ -266,7 +263,7 @@ public class ChunkManager {
 
     public void createVBO(Chunk chunk) {
         long start = System.nanoTime();
-        ChunkMaker cm = new ChunkMaker(decompLengths,dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this, queue);
+        ChunkMaker cm = new ChunkMaker(decompLengths, dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this, queue);
         cm.setChunk(chunk);
         cm.updateAllBlocks();
         cm.drawChunkVBO();
@@ -282,7 +279,7 @@ public class ChunkManager {
         Iterator itr = c.iterator();
         while (itr.hasNext()) {
             Chunk chunk = (Chunk) itr.next();
-            ChunkMaker cm = new ChunkMaker(decompLengths,dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this, queue);
+            ChunkMaker cm = new ChunkMaker(decompLengths, dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this, queue);
             cm.setChunk(chunk);
             cm.updateAllBlocks();
             cm.drawChunkVBO();
@@ -519,28 +516,42 @@ public class ChunkManager {
 
     public void processWater() {
         waterCounter++;
-        if(waterCounter % 6 == 0)
+        if (waterCounter % 6 == 0) {
             chunkLoader.simulateWater();
+        }
     }
-    
-    public short getBlock(int x, int y, int z){
+
+    public short getBlock(int x, int y, int z) {
         int xId = toXid(x);
         int yId = toYid(y);
         int zId = toZid(z);
-        Chunk chunk = getChunk(xId,yId,zId);
-        
+        Chunk chunk = getChunk(xId, yId, zId);
+
         return chunk.blocks[toX(x)][toY(y)][toZ(z)];
     }
-    
-    public short getActiveBlock(int x, int y, int z){
+
+    public short getActiveBlock(int x, int y, int z) {
         int xId = toXid(x);
         int yId = toYid(y);
         int zId = toZid(z);
-        Chunk chunk = getActiveChunk(xId,yId,zId);
-        if(chunk != null)
+        Chunk chunk = getActiveChunk(xId, yId, zId);
+        if (chunk != null) {
             return chunk.blocks[toX(x)][toY(y)][toZ(z)];
-        else
+        } else {
             return -1;
+        }
+    }
+
+    public void setActiveBlock(int x, int y, int z, byte type) {
+        int xId = toXid(x);
+        int yId = toYid(y);
+        int zId = toZid(z);
+        Chunk chunk = getActiveChunk(xId, yId, zId);
+        if (chunk != null) {
+            chunk.setBlock(toX(x), toY(y), toZ(z), type);
+        } else {
+            System.out.println("Failed to in setActiveBlock");
+        }
     }
 
     public ConcurrentHashMap<Integer, Handle> getHandles() {
@@ -554,6 +565,5 @@ public class ChunkManager {
     public BlockingQueue<Pair> getQueue() {
         return queue;
     }
-       
-    
+
 }

@@ -136,7 +136,7 @@ public class Chunk implements Serializable {
         int height = (int) (4 + Math.random() * 12);
         boolean bigTree = false;
         if(Math.random() > 0.995f){
-            width*=2;
+            width*=3;
             height*=5;
             bigTree = true;
             
@@ -158,7 +158,7 @@ public class Chunk implements Serializable {
         for (int xx = -width / 2 + x; xx <= width / 2 + x; xx++) {
             for (int zz = -width / 2 + z; zz <= width / 2 + z; zz++) {
                 for (int yy = y + 1 + height / 3; yy < y + 1 + height / 3 + height; yy++) {
-                    if (Math.random() < 0.60f) {
+                    if (Math.random() < 0.75f) {
                         Voxels.putToBuffer(Type.LEAVES, xx, yy, zz);
                     }
                 }

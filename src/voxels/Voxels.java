@@ -103,8 +103,8 @@ public class Voxels {
      */
     public static final int FIELD_OF_VIEW = 90;
     public static int chunkCreationDistance = 4;
-    public static int inGameCreationDistance = 8;
-    public static int chunkRenderDistance = 7;
+    public static int inGameCreationDistance = 11;
+    public static int chunkRenderDistance = 10;
     public static Texture atlas;
     public static Sound running;
     public static Sound jumping;

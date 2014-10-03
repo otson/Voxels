@@ -442,10 +442,11 @@ public class Voxels {
     private static void updateView() {
         glLoadIdentity();
         glViewport(0, 0, Display.getWidth(), Display.getHeight());
-        if(camera.isZoomed())
+        if (camera.isZoomed()) {
             camera.applyPerspectiveMatrix(15);
-        else
+        } else {
             camera.applyPerspectiveMatrix();
+        }
         camera.applyTranslations();
     }
 
@@ -491,7 +492,7 @@ public class Voxels {
             glTranslatef(npc.getX(), npc.getY(), npc.getZ());
             int vertices = 24;
             //System.out.println("handle: "+npc.getHandle());
-            
+
             glBindBuffer(GL_ARRAY_BUFFER, npc.getVertexHandle());
             glVertexPointer(3, GL_FLOAT, 0, 0L);
             glBindBuffer(GL_ARRAY_BUFFER, npc.getColorHandle());
@@ -608,7 +609,7 @@ public class Voxels {
 //            }
         }
     }
-    
+
     private static void updateView(int fov) {
         glLoadIdentity();
         glViewport(0, 0, Display.getWidth(), Display.getHeight());
@@ -804,18 +805,21 @@ public class Voxels {
     }
 
     public static int getTreeNoise(float x, float y, float z) {
-        int noise = (int) (FastNoise.noise(x + 1000, z + 1000, 1));
-        if (noise == 10 || noise == 50) {
-            if (getCaveNoise(x, y, z) == false) {
-                return 0;
-            } else {
+        if (FastNoise.noise(x / 100f, z / 100f,3) > 128f) {
+            int noise = (int) (FastNoise.noise(x + 1000, z + 1000, 7));
+            if (noise == 10 || noise == 50) {
+                if (getCaveNoise(x, y, z) == false) {
+                    return 0;
+                } else {
+                    return 1;
+                }
+            } else if (noise == 31) {
                 return 1;
+            } else {
+                return -1;
             }
-        } else if (noise == 31) {
-            return 1;
-        } else {
-            return -1;
         }
+        return -1;
 
     }
 

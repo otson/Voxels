@@ -131,39 +131,42 @@ public class Chunk implements Serializable {
         //();
     }
 
-    private static void createTree(int x, int y, int z) {
-        int width = (int) (3 + Math.random() * 3);
-        int height = (int) (4 + Math.random() * 12);
+    private void createTree(int x, int y, int z) {
+        int width = (int) (4 + Math.random() * 5);
+        int height = (int) (5 + Math.random() * 12);
         boolean bigTree = false;
-        if(Math.random() > 0.995f){
-            width*=3;
-            height*=5;
+        if (Math.random() > 0.995f) {
+            width *= 3;
+            height *= 5;
             bigTree = true;
-            
+
         }
         // trunk
         for (int i = 0; i < height; i++) {
             Voxels.putToBuffer(Type.WOOD, x, y + i, z);
-            if(bigTree){
-                Voxels.putToBuffer(Type.WOOD, x+1, y + i, z+1);
-                Voxels.putToBuffer(Type.WOOD, x+1, y + i, z);
-                Voxels.putToBuffer(Type.WOOD, x+1, y + i, z-1);
-                Voxels.putToBuffer(Type.WOOD, x, y + i, z+1);
-                Voxels.putToBuffer(Type.WOOD, x, y + i, z-1);
-                Voxels.putToBuffer(Type.WOOD, x-1, y + i, z+1);
-                Voxels.putToBuffer(Type.WOOD, x-1, y + i, z);
-                Voxels.putToBuffer(Type.WOOD, x-1, y + i, z-1);
+            if (bigTree) {
+                Voxels.putToBuffer(Type.WOOD, x + 1, y + i, z + 1);
+                Voxels.putToBuffer(Type.WOOD, x + 1, y + i, z);
+                Voxels.putToBuffer(Type.WOOD, x + 1, y + i, z - 1);
+                Voxels.putToBuffer(Type.WOOD, x, y + i, z + 1);
+                Voxels.putToBuffer(Type.WOOD, x, y + i, z - 1);
+                Voxels.putToBuffer(Type.WOOD, x - 1, y + i, z + 1);
+                Voxels.putToBuffer(Type.WOOD, x - 1, y + i, z);
+                Voxels.putToBuffer(Type.WOOD, x - 1, y + i, z - 1);
             }
         }
-        for (int xx = -width / 2 + x; xx <= width / 2 + x; xx++) {
+        int startingWidth = width;
+        for (int yy = y + 1 + height / 3; yy < y + 1 + height / 3 + height; yy++) {
             for (int zz = -width / 2 + z; zz <= width / 2 + z; zz++) {
-                for (int yy = y + 1 + height / 3; yy < y + 1 + height / 3 + height; yy++) {
-                    if (Math.random() < 0.75f) {
+                for (int xx = -width / 2 + x; xx <= width / 2 + x; xx++) {
+                    if (Math.random() < 0.65f) {
                         Voxels.putToBuffer(Type.LEAVES, xx, yy, zz);
                     }
-                }
 
+                }
             }
+            width = startingWidth - (int)(startingWidth * (((yy-height/2f-y)/ (float)(height+2))));
+            System.out.println("sw: "+startingWidth+" wi: "+width);
         }
 
     }
@@ -180,6 +183,7 @@ public class Chunk implements Serializable {
                 i.remove();
                 setUpdateActive(true);
                 setUpdatePacked(true);
+
                 blocks[bc.x][bc.y][bc.z] = bc.Type;
 
             }

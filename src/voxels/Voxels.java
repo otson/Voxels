@@ -198,17 +198,9 @@ public class Voxels {
         chunkManager = new ChunkManager();
         camera = InitCamera();
         npcManager = new npcHandler(chunkManager, camera);
-        for (int i = 0; i < 800; i++) {
-            npcManager.addNPC((float) (200f * Math.random() - 100f), (float) (150f * Math.random() + 100f), (float) (200f * Math.random() - 100f), chunkManager);
+        for (int i = 0; i < 100; i++) {
+            npcManager.addNPC((float) (500f * Math.random() - 250f), (float) (150f * Math.random() + 100f), (float) (500f * Math.random() - 250f), chunkManager);
         }
-//        npcManager.addNPC(-10, 170, 10);
-//        npcManager.addNPC(10, 140, -10);
-        //npcManager.addNPC(20, 140, 0);
-//        npcManager.addNPC(40, 160, 0);
-//        npcManager.addNPC(10, 155, 10);
-//        npcManager.addNPC(0, 200, 0);
-//        npcManager.addNPC(-10, 180, 50);
-//        npcManager.addNPC(-10, 190, -20);
     }
 
     private static void initShaders2() {
@@ -425,7 +417,7 @@ public class Voxels {
             processInput(getDelta());
             //chunkManager.processWater();
             chunkManager.processBufferData();
-            //npcManager.processMonsters();
+            npcManager.processMonsters();
             render();
             updateFPS();
             Display.update();

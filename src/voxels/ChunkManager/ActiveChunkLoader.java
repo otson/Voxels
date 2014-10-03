@@ -47,9 +47,10 @@ public class ActiveChunkLoader extends Thread {
     public void run() {
         int count = 0;
         running = true;
-
+        long totalTime = 0;
         while (running) {
-
+            long time = System.currentTimeMillis();
+            
             if (refresh || hasMoved()) {
                 //System.out.println("Moved to a new chunk.");
                 count++;
@@ -60,6 +61,11 @@ public class ActiveChunkLoader extends Thread {
                 } catch (InterruptedException ex) {
                     Logger.getLogger(ActiveChunkLoader.class.getName()).log(Level.SEVERE, null, ex);
                 }
+            }
+            totalTime +=System.currentTimeMillis()-time;
+            if(totalTime > 1000){
+                refresh = true;
+                totalTime = 0;
             }
         }
     }
@@ -105,9 +111,7 @@ public class ActiveChunkLoader extends Thread {
         for(Chunk chunk : chunkMap.values()){
             if(chunk.checkBuffer()){
                 if(chunkManager.getHandle(chunk.xId, chunk.yId, chunk.zId) != null){
-                    chunkManager.createVBO(chunk);
-                    
-                }
+                    chunkManager.createVBO(chunk);                }
             }
         }
         clearEntries();

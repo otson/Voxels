@@ -8,10 +8,14 @@ import java.io.OutputStream;
 import static java.lang.Math.PI;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import kuusisto.tinysound.Sound;
@@ -67,7 +71,7 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 12;
+    public static final int TERRAIN_SMOOTHNESS = 25;
     public static final int THREE_DIM_SMOOTHNESS = 50;
     /**
      * Set player's height. One block's height is 1.
@@ -419,7 +423,7 @@ public class Voxels {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             updateView();
             processInput(getDelta());
-            chunkManager.processWater();
+            //chunkManager.processWater();
             chunkManager.processBufferData();
             //npcManager.processMonsters();
             render();
@@ -725,7 +729,7 @@ public class Voxels {
         float noise1 = get3DNoise(x, y, z) / (float) (Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS);
         float noise2 = get3DNoise(x + 10000, y + 10000, z + 10000) / (float) (Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS);
 
-        return noise1 > Chunk.noiseOneMin && noise2 < Chunk.noiseTwoMax;
+        return noise1 > Chunk.noiseOneMin && noise1 < Chunk.noiseOneMax && noise2 > Chunk.noiseTwoMin && noise2 < Chunk.noiseTwoMax;
     }
 
     public final static int yInChunk(float add) {
@@ -800,8 +804,8 @@ public class Voxels {
     }
 
     public static int getTreeNoise(float x, float y, float z) {
-        int noise = (int) (FastNoise.noise(x + 1000, z + 1000, 7));
-        if (noise == 30) {
+        int noise = (int) (FastNoise.noise(x + 1000, z + 1000, 1));
+        if (noise == 10 || noise == 50) {
             if (getCaveNoise(x, y, z) == false) {
                 return 0;
             } else {
@@ -868,19 +872,19 @@ public class Voxels {
         int zInChunk = toZ(z);
 
         if (!chunkManager.getBlockBuffer().containsKey(new Pair(chunkXId, chunkYId, chunkZId).hashCode())) {
-            LinkedList<BlockCoord> list = new LinkedList<>();
-            list.add(new BlockCoord(type, xInChunk, yInChunk, zInChunk));
-            chunkManager.getBlockBuffer().put(new Pair(chunkXId, chunkYId, chunkZId).hashCode(), list);
+            BlockingQueue<BlockCoord> queue = new LinkedBlockingQueue<>();
+            queue.offer(new BlockCoord(type, xInChunk, yInChunk, zInChunk));
+            chunkManager.getBlockBuffer().put(new Pair(chunkXId, chunkYId, chunkZId).hashCode(), queue);
         } else {
-            LinkedList<BlockCoord> list = chunkManager.getBlockBuffer().get(new Pair(chunkXId, chunkYId, chunkZId).hashCode());
-            list.add(new BlockCoord(type, xInChunk, yInChunk, zInChunk));
-            chunkManager.getBlockBuffer().put(new Pair(chunkXId, chunkYId, chunkZId).hashCode(), list);
+            BlockingQueue queue = chunkManager.getBlockBuffer().get(new Pair(chunkXId, chunkYId, chunkZId).hashCode());
+            queue.offer(new BlockCoord(type, xInChunk, yInChunk, zInChunk));
+            chunkManager.getBlockBuffer().put(new Pair(chunkXId, chunkYId, chunkZId).hashCode(), queue);
         }
 
         //System.out.println("Buffer size: "+chunkManager.getBlockBuffer().size());
     }
 
-    public static ConcurrentHashMap<Integer, LinkedList<BlockCoord>> getBlockBuffer() {
+    public static ConcurrentHashMap<Integer, BlockingQueue> getBlockBuffer() {
         return chunkManager.getBlockBuffer();
     }
 

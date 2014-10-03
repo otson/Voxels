@@ -2,7 +2,11 @@ package voxels.ChunkManager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
 import voxels.Voxels;
 
 /**
@@ -13,7 +17,7 @@ public class Chunk implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static final int CHUNK_SIZE = 32; 
+    public static final int CHUNK_SIZE = 32;
     public static final int VERTICAL_CHUNKS = 8;
     public static final int WORLD_HEIGHT = CHUNK_SIZE * VERTICAL_CHUNKS;
     public static final int WATER_HEIGHT = -1;
@@ -22,10 +26,10 @@ public class Chunk implements Serializable {
     public static final int DIRT_LAYERS = 5;
 
     //3d noise min and max values
-    public static final float noiseOneMin = 0.7f;
-    private static final float noiseOneMax = 1f;
-    private static final float noiseTwoMin = 0f;
-    public static final float noiseTwoMax = 0.7f;
+    public static final float noiseOneMin = 0.40f;
+    public static final float noiseOneMax = 0.55f;
+    public static final float noiseTwoMin = 0.40f;
+    public static final float noiseTwoMax = 0.55f;
 
     private int vboVertexHandle;
     private int vboNormalHandle;
@@ -50,6 +54,7 @@ public class Chunk implements Serializable {
     private boolean empty = false;
 
     private ArrayList<Water> waterArray;
+
     public Chunk(int xId, int yId, int zId) {
         blocks = new byte[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
         this.xId = xId;
@@ -114,7 +119,7 @@ public class Chunk implements Serializable {
                         // add trees
                         if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 1) {
                             if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate - 1, z + CHUNK_SIZE * zId) == 0) {
-                                createTree(x + CHUNK_SIZE * xId, y + yCoordinate, z + CHUNK_SIZE * zId, 7);
+                                createTree(x + CHUNK_SIZE * xId, y + yCoordinate, z + CHUNK_SIZE * zId, 10);
                             }
                         }
                     }
@@ -123,40 +128,42 @@ public class Chunk implements Serializable {
             }
         }
 
-        checkBuffer();
+        //();
     }
 
-    private void createTree(int x, int y, int z, int height) {
-
+    private static void createTree(int x, int y, int z, int height) {
+        int width = 4;
         // trunk
         for (int i = 0; i < height; i++) {
             Voxels.putToBuffer(Type.WOOD, x, y + i, z);
         }
-        Voxels.putToBuffer(Type.LEAVES, x + 1, y + height / 2 + 1, z);
-        Voxels.putToBuffer(Type.LEAVES, x + 2, y + height / 2 + 1, z);
-        Voxels.putToBuffer(Type.LEAVES, x + 3, y + height / 2 + 1, z);
-        Voxels.putToBuffer(Type.LEAVES, x - 1, y + height / 2 + 1, z);
-        Voxels.putToBuffer(Type.LEAVES, x - 2, y + height / 2 + 1, z);
-        Voxels.putToBuffer(Type.LEAVES, x - 3, y + height / 2 + 1, z);
+        for (int xx = -width / 2 + x; xx <= width / 2 + x; xx++) {
+            for (int zz = -width / 2 + z; zz <= width / 2 + z; zz++) {
+                for (int yy = y + 4; yy < y + 4 + height; yy++) {
+                    if(Math.random() < 0.75f)
+                    Voxels.putToBuffer(Type.LEAVES, xx, yy, zz);
+                }
 
-        Voxels.putToBuffer(Type.LEAVES, x, y + height / 2 + 1, z + 1);
-        Voxels.putToBuffer(Type.LEAVES, x, y + height / 2 + 1, z + 2);
-        Voxels.putToBuffer(Type.LEAVES, x, y + height / 2 + 1, z + 3);
-        Voxels.putToBuffer(Type.LEAVES, x, y + height / 2 + 1, z - 1);
-        Voxels.putToBuffer(Type.LEAVES, x, y + height / 2 + 1, z - 2);
-        Voxels.putToBuffer(Type.LEAVES, x, y + height / 2 + 1, z - 3);
+            }
+        }
 
     }
 
-    public void checkBuffer() {
+    public boolean checkBuffer() {
+        boolean updated = false;
         if (Voxels.getBlockBuffer().containsKey(new Pair(xId, yId, zId).hashCode())) {
-            LinkedList<BlockCoord> list = Voxels.getBlockBuffer().get(new Pair(xId, yId, zId).hashCode());
-            while (!list.isEmpty()) {
-                BlockCoord bc = list.remove();
+            
+            BlockingQueue queue = Voxels.getBlockBuffer().get(new Pair(xId, yId, zId).hashCode());
+            Iterator i = queue.iterator();
+            while (i.hasNext()) {
+                updated = true;
+                BlockCoord bc = (BlockCoord)i.next();
+                i.remove();
                 blocks[bc.x][bc.y][bc.z] = bc.Type;
 
             }
         }
+        return updated;
     }
 
     public int getVboVertexHandle() {
@@ -210,7 +217,6 @@ public class Chunk implements Serializable {
     public void setUpdatePacked(boolean updatePacked) {
         this.updatePacked = updatePacked;
     }
-    
 
     public void setUpdateActive(boolean updateActive) {
         this.updateActive = updateActive;
@@ -218,9 +224,9 @@ public class Chunk implements Serializable {
 
     public void setBlock(int x, int y, int z, byte type) {
         blocks[x][y][z] = type;
-        
-        if(type == Type.WATER){
-            waterArray.add(new Water(x,y,z, x+xId*Chunk.CHUNK_SIZE,y+yId*Chunk.CHUNK_SIZE,z+zId*Chunk.CHUNK_SIZE,10));
+
+        if (type == Type.WATER) {
+            waterArray.add(new Water(x, y, z, x + xId * Chunk.CHUNK_SIZE, y + yId * Chunk.CHUNK_SIZE, z + zId * Chunk.CHUNK_SIZE, 10));
         }
     }
 

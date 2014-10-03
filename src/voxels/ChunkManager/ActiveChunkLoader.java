@@ -106,6 +106,14 @@ public class ActiveChunkLoader extends Thread {
                 }
             }
         }
+        for(Chunk chunk : chunkMap.values()){
+            if(chunk.checkBuffer()){
+                //System.out.println("chunk x: "+chunk.xId+" y: "+chunk.yId+" z: "+chunk.zId);
+                if(chunkManager.getHandle(chunk.xId, chunk.yId, chunk.zId) != null)
+                    chunkManager.createVBO(chunk);
+            }
+        }
+
         //updateLocation();
         clearEntries();
         //System.out.println("count: " + count);
@@ -157,11 +165,8 @@ public class ActiveChunkLoader extends Thread {
                 }
             }
         }
-        System.out.println("Chunks to update: " + toUpdate.size());
-        for (Coordinates c : toUpdate.values()) {
-            //System.out.println("x: "+c.x+" y: "+c.y+" z: "+c.z);
-            //chunkManager.updateChunk(chunkManager.getActiveChunk(c.x, c.y, c.z), 0, 0, 0);
-        }
+        
+        
         //System.out.println("Simulated");
     }
 

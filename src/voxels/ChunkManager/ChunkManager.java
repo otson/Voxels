@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,8 +39,10 @@ import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
@@ -78,7 +81,7 @@ public class ChunkManager {
     private ConcurrentHashMap<Integer, byte[]> map;
     private ConcurrentHashMap<Integer, Handle> handles;
 
-    private ConcurrentHashMap<Integer, LinkedList<BlockCoord>> blockBuffer;
+    private ConcurrentHashMap<Integer, BlockingQueue> blockBuffer;
     private ConcurrentHashMap<Integer, Chunk> activeChunkMap;
 
     private ArrayList<Data> dataToProcess;
@@ -236,7 +239,7 @@ public class ChunkManager {
                     chunk.setBlock(xInChunk, yInChunk, zInChunk, type);
                     updateThread.update(chunk);
                     checkAdjacentChunks(chunk, xInChunk, yInChunk, zInChunk);
-                    processBufferData();
+                    //();
                     chunkLoader.refresh();
                     break;
                 }
@@ -246,7 +249,7 @@ public class ChunkManager {
                     chunk.setBlock(xInChunk, yInChunk, zInChunk, type);
                     updateThread.update(chunk);
                     checkAdjacentChunks(chunk, xInChunk, yInChunk, zInChunk);
-                    processBufferData();
+                    //processBufferData();
                     chunkLoader.refresh();
                     break;
                 }
@@ -257,7 +260,7 @@ public class ChunkManager {
     public void updateChunk(Chunk chunk, int x, int y, int z) {
         updateThread.update(chunk);
         checkAdjacentChunks(chunk, x, y, z);
-        processBufferData();
+        //();
         chunkLoader.refresh();
     }
 
@@ -285,7 +288,7 @@ public class ChunkManager {
             cm.drawChunkVBO();
             cm.addDataToProcess();
         }
-        processBufferData();
+        //();
     }
 
     public void processBufferData() {
@@ -296,9 +299,9 @@ public class ChunkManager {
                 Data data = dataToProcess.remove(0);
                 if (data != null) {
                     if (data.UPDATE) {
-//                        glDeleteBuffers(data.normalHandle);
-//                        glDeleteBuffers(data.texHandle);
-//                        glDeleteBuffers(data.vertexHandle);
+                        glDeleteBuffers(data.normalHandle);
+                        glDeleteBuffers(data.texHandle);
+                        glDeleteBuffers(data.vertexHandle);
                         createBuffers(data);
                     } else {
                         createBuffers(data);
@@ -497,7 +500,7 @@ public class ChunkManager {
         return chunkRenderChecker;
     }
 
-    public ConcurrentHashMap<Integer, LinkedList<BlockCoord>> getBlockBuffer() {
+    public ConcurrentHashMap<Integer, BlockingQueue> getBlockBuffer() {
         return blockBuffer;
     }
 

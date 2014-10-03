@@ -159,6 +159,8 @@ public class Chunk implements Serializable {
                 updated = true;
                 BlockCoord bc = (BlockCoord)i.next();
                 i.remove();
+                setUpdateActive(true);
+                setUpdatePacked(true);
                 blocks[bc.x][bc.y][bc.z] = bc.Type;
 
             }

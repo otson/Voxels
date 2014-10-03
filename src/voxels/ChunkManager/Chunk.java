@@ -131,7 +131,7 @@ public class Chunk implements Serializable {
         //();
     }
 
-    private void createTree(int x, int y, int z) {
+    private static void createTree(int x, int y, int z) {
         int width = (int) (4 + Math.random() * 5);
         int height = (int) (5 + Math.random() * 12);
         boolean bigTree = false;
@@ -141,6 +141,8 @@ public class Chunk implements Serializable {
             bigTree = true;
 
         }
+        if(y+height >= WORLD_HEIGHT)
+            height = WORLD_HEIGHT-1-y;
         // trunk
         for (int i = 0; i < height; i++) {
             Voxels.putToBuffer(Type.WOOD, x, y + i, z);
@@ -165,8 +167,7 @@ public class Chunk implements Serializable {
 
                 }
             }
-            width = startingWidth - (int)(startingWidth * (((yy-height/2f-y)/ (float)(height+2))));
-            System.out.println("sw: "+startingWidth+" wi: "+width);
+            width = startingWidth - (int)(startingWidth * (((yy-height/2f-y)/ (float)(height-2))));
         }
 
     }

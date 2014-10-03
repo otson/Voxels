@@ -134,9 +134,26 @@ public class Chunk implements Serializable {
     private static void createTree(int x, int y, int z) {
         int width = (int) (3 + Math.random() * 3);
         int height = (int) (4 + Math.random() * 12);
+        boolean bigTree = false;
+        if(Math.random() > 0.995f){
+            width*=2;
+            height*=5;
+            bigTree = true;
+            
+        }
         // trunk
         for (int i = 0; i < height; i++) {
             Voxels.putToBuffer(Type.WOOD, x, y + i, z);
+            if(bigTree){
+                Voxels.putToBuffer(Type.WOOD, x+1, y + i, z+1);
+                Voxels.putToBuffer(Type.WOOD, x+1, y + i, z);
+                Voxels.putToBuffer(Type.WOOD, x+1, y + i, z-1);
+                Voxels.putToBuffer(Type.WOOD, x, y + i, z+1);
+                Voxels.putToBuffer(Type.WOOD, x, y + i, z-1);
+                Voxels.putToBuffer(Type.WOOD, x-1, y + i, z+1);
+                Voxels.putToBuffer(Type.WOOD, x-1, y + i, z);
+                Voxels.putToBuffer(Type.WOOD, x-1, y + i, z-1);
+            }
         }
         for (int xx = -width / 2 + x; xx <= width / 2 + x; xx++) {
             for (int zz = -width / 2 + z; zz <= width / 2 + z; zz++) {

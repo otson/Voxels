@@ -805,9 +805,9 @@ public class Voxels {
     }
 
     public static int getTreeNoise(float x, float y, float z) {
-        if (FastNoise.noise(x / 100f, z / 100f,3) > 128f) {
-            int noise = (int) (FastNoise.noise(x + 1000, z + 1000, 7));
-            if (noise == 10 || noise == 50) {
+        if (FastNoise.noise(x / 100f, z / 100f,3) > 100f) {
+            int noise = (int) (FastNoise.noise(x + 1000, z + 1000, 3 ));
+            if (noise == 10 || noise == 50 ) {
                 if (getCaveNoise(x, y, z) == false) {
                     return 0;
                 } else {

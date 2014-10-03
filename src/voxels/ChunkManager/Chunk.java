@@ -119,7 +119,7 @@ public class Chunk implements Serializable {
                         // add trees
                         if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 1) {
                             if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate - 1, z + CHUNK_SIZE * zId) == 0) {
-                                createTree(x + CHUNK_SIZE * xId, y + yCoordinate, z + CHUNK_SIZE * zId, 10);
+                                createTree(x + CHUNK_SIZE * xId, y + yCoordinate, z + CHUNK_SIZE * zId);
                             }
                         }
                     }
@@ -131,17 +131,19 @@ public class Chunk implements Serializable {
         //();
     }
 
-    private static void createTree(int x, int y, int z, int height) {
-        int width = 4;
+    private static void createTree(int x, int y, int z) {
+        int width = (int) (3 + Math.random() * 3);
+        int height = (int) (4 + Math.random() * 12);
         // trunk
         for (int i = 0; i < height; i++) {
             Voxels.putToBuffer(Type.WOOD, x, y + i, z);
         }
         for (int xx = -width / 2 + x; xx <= width / 2 + x; xx++) {
             for (int zz = -width / 2 + z; zz <= width / 2 + z; zz++) {
-                for (int yy = y + 4; yy < y + 4 + height; yy++) {
-                    if(Math.random() < 0.75f)
-                    Voxels.putToBuffer(Type.LEAVES, xx, yy, zz);
+                for (int yy = y + 1 + height / 3; yy < y + 1 + height / 3 + height; yy++) {
+                    if (Math.random() < 0.60f) {
+                        Voxels.putToBuffer(Type.LEAVES, xx, yy, zz);
+                    }
                 }
 
             }
@@ -152,12 +154,12 @@ public class Chunk implements Serializable {
     public boolean checkBuffer() {
         boolean updated = false;
         if (Voxels.getBlockBuffer().containsKey(new Pair(xId, yId, zId).hashCode())) {
-            
+
             BlockingQueue queue = Voxels.getBlockBuffer().get(new Pair(xId, yId, zId).hashCode());
             Iterator i = queue.iterator();
             while (i.hasNext()) {
                 updated = true;
-                BlockCoord bc = (BlockCoord)i.next();
+                BlockCoord bc = (BlockCoord) i.next();
                 i.remove();
                 setUpdateActive(true);
                 setUpdatePacked(true);

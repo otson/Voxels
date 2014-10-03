@@ -87,9 +87,8 @@ public class ActiveChunkLoader extends Thread {
     }
 
     public void loadChunks() {
-        //int count = 0;
+
         int loadDistance = Voxels.chunkRenderDistance;
-        //long start = System.nanoTime();
         for (int y = 0; y < Chunk.VERTICAL_CHUNKS; y++) {
             for (int x = -loadDistance; x <= loadDistance; x++) {
                 for (int z = -loadDistance; z <= loadDistance; z++) {
@@ -99,34 +98,23 @@ public class ActiveChunkLoader extends Thread {
                             chunk.setUpdateActive(false);
                             chunkMap.put(new Pair(chunk.xId, chunk.yId, chunk.zId).hashCode(), chunk);
                         }
-                    } else {
-                        //System.out.println("null chunk at x: " + (currentChunkX + x) + " y: " + y + " z: " + (currentChunkZ + z));
                     }
-
                 }
             }
         }
         for(Chunk chunk : chunkMap.values()){
             if(chunk.checkBuffer()){
-                //System.out.println("chunk x: "+chunk.xId+" y: "+chunk.yId+" z: "+chunk.zId);
                 if(chunkManager.getHandle(chunk.xId, chunk.yId, chunk.zId) != null){
                     chunkManager.createVBO(chunk);
                     
                 }
             }
         }
-
-        //updateLocation();
         clearEntries();
-        //System.out.println("count: " + count);
-        //System.out.println("Loading chunks took: " + (System.nanoTime() - start) / 1000000 + " ms.");
-        //System.out.println("Size: " + chunkMap.size());
-
     }
 
     private void clearEntries() {
         int distance = Voxels.chunkRenderDistance + 1;
-        int count = 0;
         for (Chunk chunk : chunkMap.values()) {
             if (chunk.xId > currentChunkX + distance || chunk.xId < currentChunkX - distance || chunk.zId > currentChunkZ + distance || chunk.zId < currentChunkZ - distance) {
                 if (chunk.isUpdatePacked()) {
@@ -135,19 +123,11 @@ public class ActiveChunkLoader extends Thread {
                     chunkManager.getMap().put(new Pair(chunk.xId, chunk.yId, chunk.zId).hashCode(), chunkMaker.toByte(chunk));
                 }
                 chunkMap.remove(new Pair(chunk.xId, chunk.yId, chunk.zId).hashCode());
-                count++;
             }
-        }
-        if (count != 0) {
-            //System.out.println("Removed entries: " + count);
-            //System.out.println("Updated size: "+chunkMap.size());
         }
     }
 
     public void simulateWater() {
-        int x = 1;
-        int y = 1;
-        int z = 1;
         HashMap<Integer, Coordinates> toUpdate = new HashMap<>();
         for (Chunk chunk : chunkMap.values()) {
             if (!chunk.getWaterArray().isEmpty()) {
@@ -167,9 +147,6 @@ public class ActiveChunkLoader extends Thread {
                 }
             }
         }
-        
-        
-        //System.out.println("Simulated");
     }
 
     public boolean isRunning() {

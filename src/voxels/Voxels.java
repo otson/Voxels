@@ -102,9 +102,9 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 4;
-    public static int inGameCreationDistance = 11;
-    public static int chunkRenderDistance = 10;
+    public static int chunkCreationDistance = 6;
+    public static int inGameCreationDistance = 9;
+    public static int chunkRenderDistance = 8;
     public static Texture atlas;
     public static Sound running;
     public static Sound jumping;
@@ -800,6 +800,7 @@ public class Voxels {
 
     public static int getTreeNoise(float x, float y, float z) {
         if (FastNoise.noise(x / 100f, z / 100f,3) > 100f) {
+            
             int noise = (int) (FastNoise.noise(x + 1000, z + 1000, 3 ));
             if (noise == 10 || noise == 50 ) {
                 if (getCaveNoise(x, y, z) == false) {

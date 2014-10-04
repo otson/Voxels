@@ -417,7 +417,7 @@ public class Voxels {
             processInput(getDelta());
             //chunkManager.processWater();
             chunkManager.processBufferData();
-            npcManager.processMonsters();
+            //npcManager.processMonsters();
             render();
             updateFPS();
             Display.update();
@@ -433,6 +433,7 @@ public class Voxels {
 
     private static void updateView() {
         glLoadIdentity();
+        //glTranslatef(0,-0.2f,0);
         glViewport(0, 0, Display.getWidth(), Display.getHeight());
         if (camera.isZoomed()) {
             camera.applyPerspectiveMatrix(15);
@@ -440,6 +441,7 @@ public class Voxels {
             camera.applyPerspectiveMatrix();
         }
         camera.applyTranslations();
+        
     }
 
     private static void render() {

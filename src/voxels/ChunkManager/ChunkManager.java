@@ -524,7 +524,7 @@ public class ChunkManager {
         }
     }
 
-    public short getBlock(int x, int y, int z) {
+    public byte getBlock(int x, int y, int z) {
         int xId = toXid(x);
         int yId = toYid(y);
         int zId = toZid(z);
@@ -533,7 +533,7 @@ public class ChunkManager {
         return chunk.blocks[toX(x)][toY(y)][toZ(z)];
     }
 
-    public short getActiveBlock(int x, int y, int z) {
+    public byte getActiveBlock(int x, int y, int z) {
         int xId = toXid(x);
         int yId = toYid(y);
         int zId = toZid(z);

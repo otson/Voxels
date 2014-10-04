@@ -433,7 +433,7 @@ public class Voxels {
 
     private static void updateView() {
         glLoadIdentity();
-        //glTranslatef(0,+0.005f,0);
+        
         glViewport(0, 0, Display.getWidth(), Display.getHeight());
         if (camera.isZoomed()) {
             camera.applyPerspectiveMatrix(15);
@@ -503,7 +503,7 @@ public class Voxels {
         }
         //glEnable(GL_CULL_FACE);
 
-        drawAimLine();
+        //drawAimLine();
 
     }
 

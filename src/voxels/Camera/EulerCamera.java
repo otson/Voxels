@@ -560,7 +560,7 @@ public class EulerCamera implements Camera {
         glRotatef(pitch, 1, 0, 0);
         glRotatef(yaw, 0, 1, 0);
         glRotatef(roll, 0, 0, 1);
-        glTranslatef(-x, -y, -z);
+        glTranslatef(-x, -y+0.25f, -z);
         glPopAttrib();
     }
 

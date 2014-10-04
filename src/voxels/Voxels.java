@@ -433,7 +433,7 @@ public class Voxels {
 
     private static void updateView() {
         glLoadIdentity();
-        //glTranslatef(0,-0.2f,0);
+        //glTranslatef(0,+0.005f,0);
         glViewport(0, 0, Display.getWidth(), Display.getHeight());
         if (camera.isZoomed()) {
             camera.applyPerspectiveMatrix(15);
@@ -587,7 +587,7 @@ public class Voxels {
             while (Mouse.next()) {
                 if (Mouse.getEventButtonState()) {
                     if (Mouse.getEventButton() == 0) {
-                        chunkManager.castRay(Type.WATER);
+                        chunkManager.castRay(Type.STONE);
                     } else if (Mouse.getEventButton() == 1) {
                         chunkManager.castRay(Type.AIR);
                     }

@@ -40,8 +40,11 @@ import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
@@ -56,6 +59,7 @@ import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import org.lwjgl.util.vector.Vector3f;
+import voxels.Camera.Camera;
 import voxels.Voxels;
 import static voxels.Voxels.getCurrentChunkXId;
 import static voxels.Voxels.getCurrentChunkZId;
@@ -90,6 +94,7 @@ public class ChunkManager {
     private ActiveChunkLoader chunkLoader;
     private ChunkMaker[] threads = new ChunkMaker[maxThreads];
     private ChunkMaker updateThread;
+    private Camera camera;
 
     BlockingQueue<Pair> queue = new LinkedBlockingQueue<>();
     LZ4Factory factory = LZ4Factory.fastestInstance();
@@ -568,5 +573,10 @@ public class ChunkManager {
     public BlockingQueue<Pair> getQueue() {
         return queue;
     }
+
+    public void setCamera(Camera camera) {
+        this.camera = camera;
+    }
+    
 
 }

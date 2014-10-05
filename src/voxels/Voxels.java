@@ -76,11 +76,11 @@ public class Voxels {
     /**
      * Set player's height. One block's height is 1.
      */
-    public static float PLAYER_HEIGHT = 2.2f;
+    public static float PLAYER_HEIGHT = 1.8f;
     /**
      * Set if night cycle is in use.
      */
-    public static final boolean NIGHT_CYCLE = false;
+    public static final boolean NIGHT_CYCLE = true;
     /**
      * Set if terrain generation uses a seed.
      */
@@ -197,8 +197,9 @@ public class Voxels {
 
         chunkManager = new ChunkManager();
         camera = InitCamera();
+        chunkManager.setCamera(camera);
         npcManager = new npcHandler(chunkManager, camera);
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 500; i++) {
             npcManager.addNPC((float) (500f * Math.random() - 250f), (float) (150f * Math.random() + 100f), (float) (500f * Math.random() - 250f), chunkManager);
         }
     }
@@ -417,7 +418,7 @@ public class Voxels {
             processInput(getDelta());
             //chunkManager.processWater();
             chunkManager.processBufferData();
-            //npcManager.processMonsters();
+           // npcManager.processMonsters();
             render();
             updateFPS();
             Display.update();
@@ -577,11 +578,11 @@ public class Voxels {
         if (Keyboard.isKeyDown(Keyboard.KEY_U)) {
             glTranslatef(0, -200, 0);
         }
-        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            PLAYER_HEIGHT = 1.0f;
-        } else {
-            PLAYER_HEIGHT = 2.0f;
-        }
+//        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+//            PLAYER_HEIGHT = 1.0f;
+//        } else {
+//            PLAYER_HEIGHT = 2.0f;
+//        }
 
         if (Mouse.isGrabbed()) {
             while (Mouse.next()) {
@@ -670,14 +671,14 @@ public class Voxels {
 
     public final static int toZid(int z) {
         if (z < 0) {
-            z -= Chunk.CHUNK_SIZE - 1;
+            z -= Chunk.CHUNK_SIZE ;
         }
         return z / Chunk.CHUNK_SIZE;
     }
 
     public final static int toXid(int x) {
         if (x < 0) {
-            x -= Chunk.CHUNK_SIZE - 1;
+            x -= Chunk.CHUNK_SIZE ;
         }
         return x / Chunk.CHUNK_SIZE;
     }
@@ -749,8 +750,8 @@ public class Voxels {
     }
 
     public static int toX(int x) {
-        if (x <= 0) {
-            x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE;
+        if (x < 0) {
+            x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE-1;
         }
         return x % Chunk.CHUNK_SIZE;
     }
@@ -760,8 +761,8 @@ public class Voxels {
     }
 
     public static int toZ(int z) {
-        if (z <= 0) {
-            z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE;
+        if (z < 0) {
+            z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE-1;
         }
         return z % Chunk.CHUNK_SIZE;
     }

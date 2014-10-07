@@ -35,14 +35,32 @@ import static org.lwjgl.opengl.ARBDepthClamp.GL_DEPTH_CLAMP;
 import static org.lwjgl.opengl.GL11.*;
 import org.lwjgl.opengl.GLContext;
 import org.lwjgl.util.glu.GLU;
+import org.lwjgl.util.vector.Vector3f;
 import voxels.ChunkManager.Chunk;
 import voxels.ChunkManager.ChunkManager;
 import voxels.ChunkManager.Type;
 import voxels.Voxels;
-import static voxels.Voxels.impact;
+import static voxels.Voxels.getChunkX;
+import static voxels.Voxels.getChunkX;
+import static voxels.Voxels.getChunkX;
+import static voxels.Voxels.getChunkX;
+import static voxels.Voxels.getChunkX;
+import static voxels.Voxels.getChunkY;
+import static voxels.Voxels.getChunkY;
+import static voxels.Voxels.getChunkY;
+import static voxels.Voxels.getChunkZ;
 import static voxels.Voxels.getCurrentChunkXId;
 import static voxels.Voxels.getCurrentChunkYId;
+import static voxels.Voxels.getCurrentChunkYId;
+import static voxels.Voxels.getCurrentChunkYId;
 import static voxels.Voxels.getCurrentChunkZId;
+import static voxels.Voxels.getX;
+import static voxels.Voxels.getX;
+import static voxels.Voxels.getY;
+import static voxels.Voxels.getZ;
+import static voxels.Voxels.getZ;
+import static voxels.Voxels.getZ;
+import static voxels.Voxels.impact;
 import static voxels.Voxels.jumping;
 import static voxels.Voxels.running;
 import static voxels.Voxels.xInChunk;
@@ -118,7 +136,7 @@ public class EulerCamera implements Camera {
         }
         this.aspectRatio = aspectRatio;
         this.zNear = 0.3f;
-        this.zFar = Chunk.CHUNK_SIZE*Voxels.chunkRenderDistance;
+        this.zFar = Chunk.CHUNK_SIZE * Voxels.chunkRenderDistance;
     }
 
     /**
@@ -206,12 +224,12 @@ public class EulerCamera implements Camera {
 
         float mouseDX = Mouse.getDX() * 0.16f;
         float mouseDY = Mouse.getDY() * 0.16f;
-        
-        if(zoomed){
-            mouseDX*=0.25f;
-            mouseDY*=0.25f;
+
+        if (zoomed) {
+            mouseDX *= 0.25f;
+            mouseDY *= 0.25f;
         }
-        
+
         if (yaw + mouseDX >= 360) {
             yaw = yaw + mouseDX - 360;
         } else if (yaw + mouseDX < 0) {
@@ -305,7 +323,7 @@ public class EulerCamera implements Camera {
         boolean moveFaster = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
         boolean moveSlower = Keyboard.isKeyDown(Keyboard.KEY_C);
         zoomed = Keyboard.isKeyDown(Keyboard.KEY_Z);
-        
+
         if (moveFaster) {
             speed *= 9;
         }
@@ -334,7 +352,6 @@ public class EulerCamera implements Camera {
 //            glCullFace(GL_BACK);
 //
 //        }
-
         if (keyUp && keyRight && !keyLeft && !keyDown) {
             moveFromLook(speed * delta * 0.003f, 0, -speed * delta * 0.003f);
         }
@@ -361,10 +378,10 @@ public class EulerCamera implements Camera {
         }
 
         if (flyUp && !flyDown) {
-            timeSinceJump = System.currentTimeMillis()-timeSinceJump;
+            timeSinceJump = System.currentTimeMillis() - timeSinceJump;
             if (flying) {
                 y += speed * delta * 0.003f;
-            } else if (fallingSpeed == 0 &&(timeSinceJump >100 || timeSinceJump <0)) {
+            } else if (fallingSpeed == 0 && (timeSinceJump > 100 || timeSinceJump < 0)) {
                 timeSinceJump = System.currentTimeMillis();
                 fallingSpeed = -16 * 0.0125f;
                 if (moveFaster) {
@@ -406,22 +423,24 @@ public class EulerCamera implements Camera {
 //            }
 //            if(chunkManager.getActiveBlock((int)x, (int)y, (int)z) == -1)
 //                setPosition(x, Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS, z);
-            Chunk chunkUnderFeet = chunkManager.getActiveChunk(getCurrentChunkXId(),getCurrentChunkYId(),getCurrentChunkZId());//chunkManager.getChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
+            Chunk chunkUnderFeet = chunkManager.getActiveChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());//chunkManager.getChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
             if (chunkUnderFeet != null) {
                 if (yInChunk() >= Chunk.CHUNK_SIZE || yInChunk() < 0 || chunkUnderFeet.blocks[xInChunk()][yInChunk()][zInChunk()] == Type.AIR) {
                     y -= fallingSpeed;
                     fallingSpeed += fallingSpeedIncrease;
                 }
                 float adj = 0;
-                if(fallingSpeed <0)
+                if (fallingSpeed < 0) {
                     adj = 2;
-                chunkUnderFeet = chunkManager.getActiveChunk(getCurrentChunkXId(),getCurrentChunkYId(+adj),getCurrentChunkZId());//chunkManager.getChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
+                }
+                chunkUnderFeet = chunkManager.getActiveChunk(getCurrentChunkXId(), getCurrentChunkYId(+adj), getCurrentChunkZId());//chunkManager.getChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
                 if (chunkUnderFeet != null) {
                     if (chunkUnderFeet.blocks[xInChunk()][yInChunk(+adj)][zInChunk()] != Type.AIR) {
-                        if(fallingSpeed-fallingSpeedIncrease > 0)
+                        if (fallingSpeed - fallingSpeedIncrease > 0) {
                             y = (int) y + 1;
-                        else
+                        } else {
                             y = (int) y;
+                        }
                         fallingSpeed = 0;
                     }
                 }
@@ -456,39 +475,57 @@ public class EulerCamera implements Camera {
     public void moveFromLook(float dx, float dy, float dz) {
         if (!flying) {
 
-            int potentChunkXId = Voxels.getCurrentChunkXId((float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))));
-            int potentXInChunk = Voxels.xInChunk((float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))));
-            Chunk potentChunk = chunkManager.getActiveChunk(potentChunkXId,getCurrentChunkYId(), Voxels.getCurrentChunkZId());
-            Chunk potentChunk2;
-            if(getCurrentChunkYId() != getCurrentChunkYId(1))
-                potentChunk2 = chunkManager.getActiveChunk(potentChunkXId,getCurrentChunkYId(1), Voxels.getCurrentChunkZId());
-            else
-                potentChunk2 = potentChunk;
+            System.out.println("Checking block: x: " + (x - (float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw)))) + " y: " + y + " z: " + (z + (float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw)))) + "camera x: " + x + " y: " + y + " z: " + z);
+            System.out.println("In chunk: x: " + Voxels.getX(x) + " y: " + Voxels.getY(y) + " z: " + getZ(z));
+            System.out.println("Should be same as camera coordinates. x: " + (getChunkX(x) * Chunk.CHUNK_SIZE + getX(x)) + " y: " + (getChunkY(y) * Chunk.CHUNK_SIZE + getY(y)) + "z: " + (getChunkZ(z) * Chunk.CHUNK_SIZE + getZ(z)));
+            byte upperBlock = chunkManager.getActiveBlock(new Vector3f(x - (float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))), y - 1, z));
+            byte lowerBlock = chunkManager.getActiveBlock(new Vector3f(x - (float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))), y - 2, z));
 
-            // allowed to move in X axis
-            if (potentChunk != null && potentChunk2 != null) {
-                if (potentChunk.blocks[potentXInChunk][Voxels.yInChunk()][Voxels.zInChunk()] == Type.AIR && potentChunk2.blocks[potentXInChunk][Voxels.yInChunk(1)][Voxels.zInChunk()] == Type.AIR) {
-                    this.x -= dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw));
-                }
+            if (upperBlock == Type.AIR && lowerBlock == Type.AIR) {
+                this.x -= dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw));
             }
 
-            int potentZInChunk = Voxels.zInChunk((float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw))));
-            int potentChunkZId = Voxels.getCurrentChunkZId((float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw))));
-            potentChunk = chunkManager.getActiveChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), potentChunkZId);
-            
-            if(getCurrentChunkYId() != getCurrentChunkYId(1))
-                potentChunk2 = chunkManager.getActiveChunk(potentChunkXId,getCurrentChunkYId(1), Voxels.getCurrentChunkZId());
-            else
-                potentChunk2 = potentChunk;
-            
-            
-            // allowed to move in Z axis
-            if (potentChunk != null && potentChunk2 != null) {
-                if (potentChunk.blocks[xInChunk()][Voxels.yInChunk()][potentZInChunk] == Type.AIR && potentChunk2.blocks[xInChunk()][Voxels.yInChunk(1)][potentZInChunk] == Type.AIR) {
-                    this.z += dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw));
-                }
+            upperBlock = chunkManager.getActiveBlock(new Vector3f(x, y - 1, z + (float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw)))));
+            lowerBlock = chunkManager.getActiveBlock(new Vector3f(x, y - 2, z + (float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw)))));
+
+            if (upperBlock == Type.AIR && lowerBlock == Type.AIR) {
+                this.z += dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw));
             }
 
+//            int potentChunkXId = Voxels.getCurrentChunkXId((float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))));
+//            int potentXInChunk = Voxels.xInChunk((float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))));
+//            Chunk potentChunk = chunkManager.getActiveChunk(potentChunkXId, getCurrentChunkYId(), Voxels.getCurrentChunkZId());
+//            Chunk potentChunk2;
+//            if (getCurrentChunkYId() != getCurrentChunkYId(1)) {
+//                potentChunk2 = chunkManager.getActiveChunk(potentChunkXId, getCurrentChunkYId(1), Voxels.getCurrentChunkZId());
+//            } else {
+//                potentChunk2 = potentChunk;
+//            }
+//
+//            // allowed to move in X axis
+//            if (potentChunk != null && potentChunk2 != null) {
+//                if (potentChunk.blocks[potentXInChunk][Voxels.yInChunk()][Voxels.zInChunk()] == Type.AIR && potentChunk2.blocks[potentXInChunk][Voxels.yInChunk(1)][Voxels.zInChunk()] == Type.AIR) {
+//                    this.x -= dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw));
+//                }
+//            }
+//
+//            int potentZInChunk = Voxels.zInChunk((float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw))));
+//            int potentChunkZId = Voxels.getCurrentChunkZId((float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw))));
+//            potentChunk = chunkManager.getActiveChunk(Voxels.getCurrentChunkXId(), Voxels.getCurrentChunkYId(), potentChunkZId);
+//
+//            if (getCurrentChunkYId() != getCurrentChunkYId(1)) {
+//                potentChunk2 = chunkManager.getActiveChunk(potentChunkXId, getCurrentChunkYId(1), Voxels.getCurrentChunkZId());
+//            } else {
+//                potentChunk2 = potentChunk;
+//            }
+//
+//            // allowed to move in Z axis
+//            if (potentChunk != null && potentChunk2 != null) {
+//                if (potentChunk.blocks[xInChunk()][Voxels.yInChunk()][potentZInChunk] == Type.AIR && potentChunk2.blocks[xInChunk()][Voxels.yInChunk(1)][potentZInChunk] == Type.AIR) {
+//                    this.z += dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw));
+//                }
+//            }
+//
         } else {
             this.x -= dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw));
             this.y += dy * (float) sin(toRadians(pitch - 90)) + dz * sin(toRadians(pitch));
@@ -543,6 +580,7 @@ public class EulerCamera implements Camera {
         GLU.gluPerspective(fov, aspectRatio, zNear, zFar);
         glPopAttrib();
     }
+
     public void applyPerspectiveMatrix(int fov) {
         glPushAttrib(GL_TRANSFORM_BIT);
         glMatrixMode(GL_PROJECTION);
@@ -560,7 +598,7 @@ public class EulerCamera implements Camera {
         glRotatef(pitch, 1, 0, 0);
         glRotatef(yaw, 0, 1, 0);
         glRotatef(roll, 0, 0, 1);
-        glTranslatef(-x, -y+0.25f, -z);
+        glTranslatef(-x, -y + 0.25f, -z);
         glPopAttrib();
     }
 

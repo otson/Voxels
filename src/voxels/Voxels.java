@@ -672,10 +672,10 @@ public class Voxels {
      */
 
     public final static int getX() {
-        return GetX(camera.x());
+        return getX(camera.x());
     }
 
-    public final static int GetX(float x) {
+    public final static int getX(float x) {
         int value = (x >= 0) ? (int) x : (int) (x - 1);
         if (x < 0) {
             value = Chunk.CHUNK_SIZE - (-value) % Chunk.CHUNK_SIZE;
@@ -683,11 +683,11 @@ public class Voxels {
         return value % Chunk.CHUNK_SIZE;
     }
 
-    public final static int GetY() {
-        return GetY(camera.y());
+    public final static int getY() {
+        return getY(camera.y());
     }
 
-    public final static int GetY(float y) {
+    public final static int getY(float y) {
         int value = (y >= 0) ? (int) y : (int) (y - 1);
         if (y < 0) {
             value = Chunk.CHUNK_SIZE - (-value) % Chunk.CHUNK_SIZE;

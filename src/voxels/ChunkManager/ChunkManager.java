@@ -45,6 +45,10 @@ import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
@@ -52,6 +56,14 @@ import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
@@ -72,8 +84,7 @@ import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import org.lwjgl.util.vector.Vector3f;
 import voxels.Voxels;
-import static voxels.Voxels.GetX;
-import static voxels.Voxels.GetY;
+import static voxels.Voxels.getChunkX;
 import static voxels.Voxels.getChunkX;
 import static voxels.Voxels.getChunkX;
 import static voxels.Voxels.getChunkX;
@@ -83,12 +94,17 @@ import static voxels.Voxels.getChunkY;
 import static voxels.Voxels.getChunkY;
 import static voxels.Voxels.getChunkY;
 import static voxels.Voxels.getChunkY;
+import static voxels.Voxels.getChunkY;
+import static voxels.Voxels.getChunkZ;
 import static voxels.Voxels.getChunkZ;
 import static voxels.Voxels.getChunkZ;
 import static voxels.Voxels.getChunkZ;
 import static voxels.Voxels.getCurrentChunkXId;
 import static voxels.Voxels.getCurrentChunkZId;
 import static voxels.Voxels.getX;
+import static voxels.Voxels.getX;
+import static voxels.Voxels.getY;
+import static voxels.Voxels.getZ;
 import static voxels.Voxels.getZ;
 import static voxels.Voxels.toX;
 import static voxels.Voxels.toXid;
@@ -610,7 +626,7 @@ public class ChunkManager {
     public byte getActiveBlock(Vector3f v) {
         Chunk chunk = getActiveChunk(getChunkX(v.x), getChunkY(v.y), getChunkZ(v.z));
         if (chunk != null) {
-            return chunk.blocks[GetX(v.x)][GetY(v.y)][getZ(v.z)];
+            return chunk.blocks[getX(v.x)][getY(v.y)][getZ(v.z)];
         } else {
             return -1;
         }
@@ -619,9 +635,9 @@ public class ChunkManager {
     public void setActiveBlock(Vector3f v, byte type) {
         Chunk chunk = getActiveChunk(getChunkX(v.x), getChunkY(v.y), getChunkZ(v.z));
         if (chunk != null) {
-            chunk.blocks[GetX(v.x)][GetY(v.y)][getZ(v.z)] = type;
+            chunk.blocks[getX(v.x)][getY(v.y)][getZ(v.z)] = type;
             updateThread.update(chunk);
-            checkAdjacentChunks(chunk, GetX(v.x), GetY(v.y), getZ(v.z));
+            checkAdjacentChunks(chunk, getX(v.x), getY(v.y), getZ(v.z));
             //processBufferData();
             chunkLoader.refresh();
         }

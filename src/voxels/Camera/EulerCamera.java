@@ -403,52 +403,50 @@ public class EulerCamera implements Camera {
             if (oldFallingSpeed > fallingSpeedIncrease * 2 && fallingSpeed == 0) {
                 impact.play();
             }
-            oldFallingSpeed = fallingSpeed;
-//            float heightAdj = 0;
-//            byte targetBlock2;
-//            if(fallingSpeed >=0)
-//                heightAdj = 2;
-//            byte targetBlock = chunkManager.getActiveBlock((int)x, (int)(y-fallingSpeed-heightAdj), (int)z);
-//            if(fallingSpeed < 0)
-//                targetBlock2 = targetBlock;
-//            else
-//                targetBlock2 = chunkManager.getActiveBlock((int)x, (int)(y-fallingSpeed-1), (int)z);
-//            if(targetBlock == Type.AIR && targetBlock2 == Type.AIR){
-//                y-=fallingSpeed;
-//                fallingSpeed +=fallingSpeedIncrease;
-//            }
-//            else{
-//                fallingSpeed = 0;
-//                y = (int) y;
-//            }
-//            if(chunkManager.getActiveBlock((int)x, (int)y, (int)z) == -1)
-//                setPosition(x, Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS, z);
-            Chunk chunkUnderFeet = chunkManager.getActiveChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());//chunkManager.getChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
-            if (chunkUnderFeet != null) {
-                if (yInChunk() >= Chunk.CHUNK_SIZE || yInChunk() < 0 || chunkUnderFeet.blocks[xInChunk()][yInChunk()][zInChunk()] == Type.AIR) {
-                    y -= fallingSpeed;
-                    fallingSpeed += fallingSpeedIncrease;
-                }
-                float adj = 0;
-                if (fallingSpeed < 0) {
-                    adj = 2;
-                }
-                chunkUnderFeet = chunkManager.getActiveChunk(getCurrentChunkXId(), getCurrentChunkYId(+adj), getCurrentChunkZId());//chunkManager.getChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
-                if (chunkUnderFeet != null) {
-                    if (chunkUnderFeet.blocks[xInChunk()][yInChunk(+adj)][zInChunk()] != Type.AIR) {
-                        if (fallingSpeed - fallingSpeedIncrease > 0) {
-                            y = (int) y + 1;
-                        } else {
-                            y = (int) y;
-                        }
-                        fallingSpeed = 0;
-                    }
-                }
+            fallingSpeed +=fallingSpeedIncrease;
+            float hAdj;
+            if(fallingSpeed < 0) // going up
+                hAdj = 0;
+            else
+                hAdj = Voxels.PLAYER_HEIGHT;
+            
+            byte block = chunkManager.getActiveBlock(new Vector3f(x,y-fallingSpeed-hAdj,z));
+            if(block == Type.AIR){
+                y-=fallingSpeed;
+                
             }
-            if (chunkUnderFeet == null) {
-                setPosition(0.5f, Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS, 0.5f);
-                System.out.println("Player tried to enter a chunk that does not exist. \n Position reset to (0, " + Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS + ", 0)");
+            else{
+                y = (int)y;
+                oldFallingSpeed = fallingSpeed;
+                fallingSpeed = 0;
             }
+            
+//            Chunk chunkUnderFeet = chunkManager.getActiveChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());//chunkManager.getChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
+//            if (chunkUnderFeet != null) {
+//                if (yInChunk() >= Chunk.CHUNK_SIZE || yInChunk() < 0 || chunkUnderFeet.blocks[xInChunk()][yInChunk()][zInChunk()] == Type.AIR) {
+//                    y -= fallingSpeed;
+//                    fallingSpeed += fallingSpeedIncrease;
+//                }
+//                float adj = 0;
+//                if (fallingSpeed < 0) {
+//                    adj = 2;
+//                }
+//                chunkUnderFeet = chunkManager.getActiveChunk(getCurrentChunkXId(), getCurrentChunkYId(+adj), getCurrentChunkZId());//chunkManager.getChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
+//                if (chunkUnderFeet != null) {
+//                    if (chunkUnderFeet.blocks[xInChunk()][yInChunk(+adj)][zInChunk()] != Type.AIR) {
+//                        if (fallingSpeed - fallingSpeedIncrease > 0) {
+//                            y = (int) y + 1;
+//                        } else {
+//                            y = (int) y;
+//                        }
+//                        fallingSpeed = 0;
+//                    }
+//                }
+//            }
+//            if (chunkUnderFeet == null) {
+//                setPosition(0.5f, Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS, 0.5f);
+//                System.out.println("Player tried to enter a chunk that does not exist. \n Position reset to (0, " + Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS + ", 0)");
+//            }
             if (Keyboard.isKeyDown(Keyboard.KEY_W) || Keyboard.isKeyDown(Keyboard.KEY_A) || Keyboard.isKeyDown(Keyboard.KEY_S) || (Keyboard.isKeyDown(Keyboard.KEY_D))) {
                 if (!flying && fallingSpeed == 0 && System.nanoTime() - runningPrevious > 520000000) {
                     running.play();
@@ -475,9 +473,6 @@ public class EulerCamera implements Camera {
     public void moveFromLook(float dx, float dy, float dz) {
         if (!flying) {
 
-            System.out.println("Checking block: x: " + (x - (float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw)))) + " y: " + y + " z: " + (z + (float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw)))) + "camera x: " + x + " y: " + y + " z: " + z);
-            System.out.println("In chunk: x: " + Voxels.getX(x) + " y: " + Voxels.getY(y) + " z: " + getZ(z));
-            System.out.println("Should be same as camera coordinates. x: " + (getChunkX(x) * Chunk.CHUNK_SIZE + getX(x)) + " y: " + (getChunkY(y) * Chunk.CHUNK_SIZE + getY(y)) + "z: " + (getChunkZ(z) * Chunk.CHUNK_SIZE + getZ(z)));
             byte upperBlock = chunkManager.getActiveBlock(new Vector3f(x - (float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))), y - 1, z));
             byte lowerBlock = chunkManager.getActiveBlock(new Vector3f(x - (float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))), y - 2, z));
 

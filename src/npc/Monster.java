@@ -20,6 +20,7 @@ import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
@@ -29,6 +30,8 @@ import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import org.lwjgl.util.vector.Vector3f;
 import voxels.Camera.Camera;
 import voxels.ChunkManager.Chunk;
 import voxels.ChunkManager.ChunkManager;
@@ -137,7 +140,7 @@ public class Monster {
     }
 
     private boolean moveX(float amount) {
-        if (chunkManager.getActiveBlock((int) (x + amount), (int) y, (int) z) == Type.AIR) {
+        if (chunkManager.getActiveBlock(new Vector3f((int) (x + amount), (int) y, (int) z)) == Type.AIR) {
             x += amount;
             return true;
         } else {
@@ -146,7 +149,7 @@ public class Monster {
     }
 
     private boolean moveY(float amount) {
-        if (chunkManager.getActiveBlock((int) x, (int) (y + amount), (int) z) == Type.AIR) {
+        if (chunkManager.getActiveBlock(new Vector3f((int) x, (int) (y + amount), (int) z)) == Type.AIR) {
             y += amount;
             return true;
         } else {
@@ -155,7 +158,7 @@ public class Monster {
     }
 
     private boolean moveZ(float amount) {
-        if (chunkManager.getActiveBlock((int) x, (int) y, (int) (z + amount)) == Type.AIR) {
+        if (chunkManager.getActiveBlock(new Vector3f((int) x, (int) y, (int) (z + amount))) == Type.AIR) {
             z += amount;
             return true;
         } else {

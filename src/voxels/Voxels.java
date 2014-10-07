@@ -666,25 +666,104 @@ public class Voxels {
         }
         return x / Chunk.CHUNK_SIZE;
     }
+    /*
+     Methods to convert float coordinate values to
+     coordinates inside a chunk (0 - Chunksize-1)
+     */
 
-    public final static int toZid(float z) {
-        int zz = (int) Math.floor(z);
-        if (zz < 0) {
-            zz -= Chunk.CHUNK_SIZE - 1;
-        }
-        return zz / Chunk.CHUNK_SIZE;
+    public final static int getX() {
+        return GetX(camera.x());
     }
 
-    public final static int toXid(float x) {
-        int xx = (int) Math.floor(x);
-        if (xx < 0) {
-            xx -= Chunk.CHUNK_SIZE - 1;
+    public final static int GetX(float x) {
+        int value = (x >= 0) ? (int) x : (int) (x - 1);
+        if (x < 0) {
+            value = Chunk.CHUNK_SIZE - (-value) % Chunk.CHUNK_SIZE;
         }
-        return xx / Chunk.CHUNK_SIZE;
+        return value % Chunk.CHUNK_SIZE;
     }
 
-    public final static int toYid(float y) {
-        return ((int) y) / Chunk.CHUNK_SIZE;
+    public final static int GetY() {
+        return GetY(camera.y());
+    }
+
+    public final static int GetY(float y) {
+        int value = (y >= 0) ? (int) y : (int) (y - 1);
+        if (y < 0) {
+            value = Chunk.CHUNK_SIZE - (-value) % Chunk.CHUNK_SIZE;
+        }
+        return value % Chunk.CHUNK_SIZE;
+    }
+
+    public final static int getZ() {
+        return getZ(camera.z());
+    }
+
+    public final static int getZ(float z) {
+        int value = (z >= 0) ? (int) z : (int) (z - 1);
+        if (z < 0) {
+            value = Chunk.CHUNK_SIZE - (-value) % Chunk.CHUNK_SIZE;
+        }
+        return value % Chunk.CHUNK_SIZE;
+    }
+
+    /*
+     Methods to convert float coordinate values to
+     Chunk ID coordinates
+     */
+    public final static int getChunkX() {
+        return getChunkX(camera.x());
+    }
+
+    public final static int getChunkX(float x) {
+        int value = (x >= 0) ? (int) x : (int) (x-1);
+        if (x < 0) {
+            value -= Chunk.CHUNK_SIZE - 1;
+            
+        }
+        return value / Chunk.CHUNK_SIZE;
+    }
+
+    public final static int getChunkY() {
+        return getChunkY(camera.y());
+    }
+
+    public final static int getChunkY(float y) {
+        int value = (y >= 0) ? (int) y : (int) (y-1);
+        if (y < 0) {
+            value -= Chunk.CHUNK_SIZE - 1;
+        }
+        return value / Chunk.CHUNK_SIZE;
+    }
+
+    public final static int getChunkZ() {
+        return getChunkZ(camera.z());
+    }
+
+    public final static int getChunkZ(float z) {
+        int value = (z >= 0) ? (int) z : (int) (z-1);
+        if (z < 0) {
+            value -= Chunk.CHUNK_SIZE - 1;
+        }
+        return value / Chunk.CHUNK_SIZE;
+    }
+
+    public final static int toZid(int z) {
+        if (z < 0) {
+            z -= Chunk.CHUNK_SIZE - 1;
+        }
+        return z / Chunk.CHUNK_SIZE;
+    }
+
+    public final static int toXid(int x) {
+        if (x < 0) {
+            x -= Chunk.CHUNK_SIZE - 1;
+        }
+        return x / Chunk.CHUNK_SIZE;
+    }
+
+    public final static int toYid(int y) {
+        return y / Chunk.CHUNK_SIZE;
     }
 
     public final static int getCurrentChunkZId(float add) {
@@ -749,24 +828,22 @@ public class Voxels {
         return z % Chunk.CHUNK_SIZE;
     }
 
-    public static int toX(float x) {
-        int xx = (int) Math.floor(x);
-        if (xx <= 0) {
-            xx = Chunk.CHUNK_SIZE + xx % Chunk.CHUNK_SIZE;
+    public static int toX(int x) {
+        if (x <= 0) {
+            x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE;
         }
-        return xx % Chunk.CHUNK_SIZE;
+        return x % Chunk.CHUNK_SIZE;
     }
 
-    public static int toY(float y) {
-        return ((int) y) % Chunk.CHUNK_SIZE;
+    public static int toY(int y) {
+        return y % Chunk.CHUNK_SIZE;
     }
 
-    public static int toZ(float z) {
-        int zz = (int) Math.floor(z);
-        if (zz <= 0) {
-            zz = Chunk.CHUNK_SIZE + zz % Chunk.CHUNK_SIZE;
+    public static int toZ(int z) {
+        if (z <= 0) {
+            z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE;
         }
-        return zz % Chunk.CHUNK_SIZE;
+        return z % Chunk.CHUNK_SIZE;
     }
 
     public final static int yInChunkPointer(Vector3f direction) {

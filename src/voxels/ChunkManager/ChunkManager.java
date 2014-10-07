@@ -40,8 +40,23 @@ import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
@@ -57,8 +72,24 @@ import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import org.lwjgl.util.vector.Vector3f;
 import voxels.Voxels;
+import static voxels.Voxels.GetX;
+import static voxels.Voxels.GetY;
+import static voxels.Voxels.getChunkX;
+import static voxels.Voxels.getChunkX;
+import static voxels.Voxels.getChunkX;
+import static voxels.Voxels.getChunkX;
+import static voxels.Voxels.getChunkX;
+import static voxels.Voxels.getChunkY;
+import static voxels.Voxels.getChunkY;
+import static voxels.Voxels.getChunkY;
+import static voxels.Voxels.getChunkY;
+import static voxels.Voxels.getChunkZ;
+import static voxels.Voxels.getChunkZ;
+import static voxels.Voxels.getChunkZ;
 import static voxels.Voxels.getCurrentChunkXId;
 import static voxels.Voxels.getCurrentChunkZId;
+import static voxels.Voxels.getX;
+import static voxels.Voxels.getZ;
 import static voxels.Voxels.toX;
 import static voxels.Voxels.toXid;
 import static voxels.Voxels.toY;
@@ -221,28 +252,26 @@ public class ChunkManager {
             } else {
                 vector = Voxels.getDirectionVector(f);
             }
-            
+
             byte block = getActiveBlock(vector);
-            if(block == -1){
-                System.out.println("null");
+
+            if (block == -1) {
                 return;
-            }
-            else{
-                if(type != Type.AIR){
-                    if(block == Type.AIR){
+            } else {
+                if (type == Type.AIR) {
+                    if (block != Type.UNBREAKABLE && block != Type.AIR) {
                         setActiveBlock(vector, type);
                         return;
                     }
                 }
-                else if(type == Type.AIR){
-                    if(block != Type.UNBREAKABLE && block != Type.AIR){
+                if (type != Type.AIR) {
+                    if (block == Type.AIR) {
                         setActiveBlock(vector, type);
-                        System.out.println("set to air");
                         return;
                     }
                 }
             }
-            
+
 //            int xInChunk = Voxels.xInChunkPointer(vector);
 //            int yInChunk = Voxels.yInChunkPointer(vector);
 //            int zInChunk = Voxels.zInChunkPointer(vector);
@@ -539,12 +568,12 @@ public class ChunkManager {
         }
     }
 
-    public void processWater() {
-        waterCounter++;
-        if (waterCounter % 6 == 0) {
-            chunkLoader.simulateWater();
-        }
-    }
+//    public void processWater() {
+//        waterCounter++;
+//        if (waterCounter % 6 == 0) {
+//            chunkLoader.simulateWater();
+//        }
+//    }
 
     public byte getBlock(int x, int y, int z) {
         int xId = toXid(x);
@@ -555,40 +584,48 @@ public class ChunkManager {
         return chunk.blocks[toX(x)][toY(y)][toZ(z)];
     }
 
-    public byte getActiveBlock(float x, float y, float z) {
-        int xId = toXid(x);
-        int yId = toYid(y);
-        int zId = toZid(z);
-        Chunk chunk = getActiveChunk(xId, yId, zId);
-        if (chunk != null) {
-            return chunk.blocks[toX(x)][toY(y)][toZ(z)];
-        } else {
-            return -1;
-        }
-    }
-
-    public void setActiveBlock(float x, float y, float z, byte type) {
+//    public byte getActiveBlock(int x, int y, int z) {
+//        int xId = toXid(x);
+//        int yId = toYid(y);
+//        int zId = toZid(z);
+//        Chunk chunk = getActiveChunk(xId, yId, zId);
+//        if (chunk != null) {
+//            return chunk.blocks[toX(x)][toY(y)][toZ(z)];
+//        } else {
+//            return -1;
+//        }
+//    }
+    public void setActiveBlock(int x, int y, int z, byte type) {
         int xId = toXid(x);
         int yId = toYid(y);
         int zId = toZid(z);
         Chunk chunk = getActiveChunk(xId, yId, zId);
         if (chunk != null) {
             chunk.setBlock(toX(x), toY(y), toZ(z), type);
-            updateThread.update(chunk);
-                    checkAdjacentChunks(chunk, toX(x), toY(y), toZ(z));
-                    processBufferData();
-                    chunkLoader.refresh();
         } else {
             System.out.println("Failed to in setActiveBlock");
         }
     }
-    
-    public byte getActiveBlock(Vector3f v){
-        return getActiveBlock(v.x,v.y,v.z);
+
+    public byte getActiveBlock(Vector3f v) {
+        Chunk chunk = getActiveChunk(getChunkX(v.x), getChunkY(v.y), getChunkZ(v.z));
+        if (chunk != null) {
+            return chunk.blocks[GetX(v.x)][GetY(v.y)][getZ(v.z)];
+        } else {
+            return -1;
+        }
     }
-    
-    public void setActiveBlock(Vector3f v, byte type){
-        setActiveBlock(v.x,v.y,v.z, type);
+
+    public void setActiveBlock(Vector3f v, byte type) {
+        Chunk chunk = getActiveChunk(getChunkX(v.x), getChunkY(v.y), getChunkZ(v.z));
+        if (chunk != null) {
+            chunk.blocks[GetX(v.x)][GetY(v.y)][getZ(v.z)] = type;
+            updateThread.update(chunk);
+            checkAdjacentChunks(chunk, GetX(v.x), GetY(v.y), getZ(v.z));
+            //processBufferData();
+            chunkLoader.refresh();
+        }
+
     }
 
     public ConcurrentHashMap<Integer, Handle> getHandles() {

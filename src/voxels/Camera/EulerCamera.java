@@ -95,6 +95,7 @@ public class EulerCamera implements Camera {
     private boolean moving = false;
     private boolean zoomed = false;
     private long timeSinceJump = -1;
+    private float minDistance = 0.1f;
 
     private ChunkManager chunkManager;
 
@@ -411,7 +412,7 @@ public class EulerCamera implements Camera {
                 hAdj = Voxels.PLAYER_HEIGHT;
             
             byte block = chunkManager.getActiveBlock(new Vector3f(x,y-fallingSpeed-hAdj,z));
-            if(block == Type.AIR){
+            if(block == Type.AIR || block == -1){
                 y-=fallingSpeed;
                 
             }
@@ -476,16 +477,17 @@ public class EulerCamera implements Camera {
             byte upperBlock = chunkManager.getActiveBlock(new Vector3f(x - (float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))), y - 1, z));
             byte lowerBlock = chunkManager.getActiveBlock(new Vector3f(x - (float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))), y - 2, z));
 
-            if (upperBlock == Type.AIR && lowerBlock == Type.AIR) {
+            if ((upperBlock == Type.AIR || upperBlock == -1) && (lowerBlock == Type.AIR || lowerBlock == -1)) {
                 this.x -= dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw));
             }
-
+           
             upperBlock = chunkManager.getActiveBlock(new Vector3f(x, y - 1, z + (float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw)))));
             lowerBlock = chunkManager.getActiveBlock(new Vector3f(x, y - 2, z + (float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw)))));
 
-            if (upperBlock == Type.AIR && lowerBlock == Type.AIR) {
+            if ((upperBlock == Type.AIR || upperBlock == -1) && (lowerBlock == Type.AIR || lowerBlock == -1)) {
                 this.z += dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw));
             }
+
 
 //            int potentChunkXId = Voxels.getCurrentChunkXId((float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))));
 //            int potentXInChunk = Voxels.xInChunk((float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))));

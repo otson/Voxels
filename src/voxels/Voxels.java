@@ -76,11 +76,11 @@ public class Voxels {
     /**
      * Set player's height. One block's height is 1.
      */
-    public static float PLAYER_HEIGHT = 1.8f;
+    public static float PLAYER_HEIGHT = 2.2f;
     /**
      * Set if night cycle is in use.
      */
-    public static final boolean NIGHT_CYCLE = true;
+    public static final boolean NIGHT_CYCLE = false;
     /**
      * Set if terrain generation uses a seed.
      */
@@ -197,9 +197,8 @@ public class Voxels {
 
         chunkManager = new ChunkManager();
         camera = InitCamera();
-        chunkManager.setCamera(camera);
         npcManager = new npcHandler(chunkManager, camera);
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 100; i++) {
             npcManager.addNPC((float) (500f * Math.random() - 250f), (float) (150f * Math.random() + 100f), (float) (500f * Math.random() - 250f), chunkManager);
         }
     }
@@ -418,7 +417,7 @@ public class Voxels {
             processInput(getDelta());
             //chunkManager.processWater();
             chunkManager.processBufferData();
-           // npcManager.processMonsters();
+            //npcManager.processMonsters();
             render();
             updateFPS();
             Display.update();
@@ -434,7 +433,7 @@ public class Voxels {
 
     private static void updateView() {
         glLoadIdentity();
-        
+
         glViewport(0, 0, Display.getWidth(), Display.getHeight());
         if (camera.isZoomed()) {
             camera.applyPerspectiveMatrix(15);
@@ -442,7 +441,7 @@ public class Voxels {
             camera.applyPerspectiveMatrix();
         }
         camera.applyTranslations();
-        
+
     }
 
     private static void render() {
@@ -505,7 +504,6 @@ public class Voxels {
         //glEnable(GL_CULL_FACE);
 
         //drawAimLine();
-
     }
 
     private static void drawAimLine() {
@@ -578,11 +576,11 @@ public class Voxels {
         if (Keyboard.isKeyDown(Keyboard.KEY_U)) {
             glTranslatef(0, -200, 0);
         }
-//        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-//            PLAYER_HEIGHT = 1.0f;
-//        } else {
-//            PLAYER_HEIGHT = 2.0f;
-//        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            PLAYER_HEIGHT = 1.0f;
+        } else {
+            PLAYER_HEIGHT = 2.0f;
+        }
 
         if (Mouse.isGrabbed()) {
             while (Mouse.next()) {
@@ -669,22 +667,24 @@ public class Voxels {
         return x / Chunk.CHUNK_SIZE;
     }
 
-    public final static int toZid(int z) {
-        if (z < 0) {
-            z -= Chunk.CHUNK_SIZE ;
+    public final static int toZid(float z) {
+        int zz = (int) Math.floor(z);
+        if (zz < 0) {
+            zz -= Chunk.CHUNK_SIZE - 1;
         }
-        return z / Chunk.CHUNK_SIZE;
+        return zz / Chunk.CHUNK_SIZE;
     }
 
-    public final static int toXid(int x) {
-        if (x < 0) {
-            x -= Chunk.CHUNK_SIZE ;
+    public final static int toXid(float x) {
+        int xx = (int) Math.floor(x);
+        if (xx < 0) {
+            xx -= Chunk.CHUNK_SIZE - 1;
         }
-        return x / Chunk.CHUNK_SIZE;
+        return xx / Chunk.CHUNK_SIZE;
     }
 
-    public final static int toYid(int y) {
-        return y / Chunk.CHUNK_SIZE;
+    public final static int toYid(float y) {
+        return ((int) y) / Chunk.CHUNK_SIZE;
     }
 
     public final static int getCurrentChunkZId(float add) {
@@ -749,22 +749,24 @@ public class Voxels {
         return z % Chunk.CHUNK_SIZE;
     }
 
-    public static int toX(int x) {
-        if (x < 0) {
-            x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE-1;
+    public static int toX(float x) {
+        int xx = (int) Math.floor(x);
+        if (xx <= 0) {
+            xx = Chunk.CHUNK_SIZE + xx % Chunk.CHUNK_SIZE;
         }
-        return x % Chunk.CHUNK_SIZE;
+        return xx % Chunk.CHUNK_SIZE;
     }
 
-    public static int toY(int y) {
-        return y % Chunk.CHUNK_SIZE;
+    public static int toY(float y) {
+        return ((int) y) % Chunk.CHUNK_SIZE;
     }
 
-    public static int toZ(int z) {
-        if (z < 0) {
-            z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE-1;
+    public static int toZ(float z) {
+        int zz = (int) Math.floor(z);
+        if (zz <= 0) {
+            zz = Chunk.CHUNK_SIZE + zz % Chunk.CHUNK_SIZE;
         }
-        return z % Chunk.CHUNK_SIZE;
+        return zz % Chunk.CHUNK_SIZE;
     }
 
     public final static int yInChunkPointer(Vector3f direction) {
@@ -800,10 +802,10 @@ public class Voxels {
     }
 
     public static int getTreeNoise(float x, float y, float z) {
-        if (FastNoise.noise(x / 100f, z / 100f,3) > 100f) {
-            
-            int noise = (int) (FastNoise.noise(x + 1000, z + 1000, 3 ));
-            if (noise == 10 || noise == 50 ) {
+        if (FastNoise.noise(x / 100f, z / 100f, 3) > 100f) {
+
+            int noise = (int) (FastNoise.noise(x + 1000, z + 1000, 3));
+            if (noise == 10 || noise == 50) {
                 if (getCaveNoise(x, y, z) == false) {
                     return 0;
                 } else {

@@ -139,6 +139,7 @@ public class Voxels {
     private static int vertexCount;
     private static long lastFrame = System.nanoTime();
     private static BlockRenders blockRenders;
+    private static boolean isDebug = true;
 
     private static int shaderProgram;
 
@@ -531,7 +532,7 @@ public class Voxels {
         //glDisable(GL_CULL_FACE);
         int npcCount = 0;
         for (Monster npc : npcManager.getMonsterList().values()) {
-            vertexCount+=24;
+            vertexCount += 24;
             npcCount++;
             //glLoadIdentity();
             glTranslatef(npc.getX(), npc.getY(), npc.getZ());
@@ -560,7 +561,7 @@ public class Voxels {
         int activeItems = 0;
         for (ItemLocation item : itemHandler.getDroppedBlocks()) {
             activeItems++;
-            vertexCount+=24;
+            vertexCount += 24;
             glTranslatef(item.x * 2, item.y * 2, item.z * 2);
             glRotatef(item.rotY, 0, 1, 0);
             int vertices = 24;
@@ -595,37 +596,39 @@ public class Voxels {
     }
 
     private static void renderDebugText() {
-        DecimalFormat df = new DecimalFormat();
-        df.setMaximumFractionDigits(0);
-        int width = 1440;
-        int height = 900;
-        glLoadIdentity();
-        glDisable(GL_LIGHTING);
-        glDisable(GL_LIGHT0);
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrtho(0, 1440, 900, 0, -1, 1);
-        glMatrixMode(GL_MODELVIEW);
-        glDisable(GL_TEXTURE_2D);
-        font.drawString(5, 5, "Player world coordinates: " + df.format(camera.x()) + " " + df.format(camera.y()) + " " + df.format(camera.z()));
-        font.drawString(5, 25, "Player chunk coordinates: " + getChunkX() + " " + getChunkY() + " " + getChunkZ());
-        font.drawString(5, 45, "Player in-chunk coordiantes: " + getX() + " " + getY() + " " + getZ());
-        font.drawString(5, 65, "Player rotation: " + df.format(camera.pitch()) + " " + df.format(camera.roll()) + " " + df.format(camera.yaw()));
-        font.drawString(5, 85, "Active chunks (total chunks): " + debugInfo.chunksLoaded+ " "+ debugInfo.chunkTotal);
-        font.drawString(5, 105, "Vertices: " +debugInfo.verticesDrawn);
-        font.drawString(5, 125, "NPCs: " +debugInfo.activeNPCs);
-        font.drawString(5, 145, "Items: " +debugInfo.activeItems);
-        font.drawString(5, 165, "Draw distance (chunks): " +chunkRenderDistance);
-        font.drawString(5, 185, "Frames per Second: " +debugInfo.fps);
-        glEnable(GL_TEXTURE_2D);
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrtho(camera.x(), camera.x() + 1440, camera.y() + 900, camera.y(), -1, 1);
-        glMatrixMode(GL_MODELVIEW);
-        glEnable(GL_LIGHTING);
-        glEnable(GL_LIGHT0);
-        glLoadIdentity();
-        atlas.bind();
+        if (isDebug) {
+            DecimalFormat df = new DecimalFormat();
+            df.setMaximumFractionDigits(0);
+            int width = 1440;
+            int height = 900;
+            glLoadIdentity();
+            glDisable(GL_LIGHTING);
+            glDisable(GL_LIGHT0);
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            glOrtho(0, 1440, 900, 0, -1, 1);
+            glMatrixMode(GL_MODELVIEW);
+            glDisable(GL_TEXTURE_2D);
+            font.drawString(5, 5, "Player world coordinates: " + df.format(camera.x()) + " " + df.format(camera.y()) + " " + df.format(camera.z()));
+            font.drawString(5, 25, "Player chunk coordinates: " + getChunkX() + " " + getChunkY() + " " + getChunkZ());
+            font.drawString(5, 45, "Player in-chunk coordiantes: " + getX() + " " + getY() + " " + getZ());
+            font.drawString(5, 65, "Player rotation: " + df.format(camera.pitch()) + " " + df.format(camera.roll()) + " " + df.format(camera.yaw()));
+            font.drawString(5, 85, "Active chunks (total chunks): " + debugInfo.chunksLoaded + " " + debugInfo.chunkTotal);
+            font.drawString(5, 105, "Vertices: " + debugInfo.verticesDrawn);
+            font.drawString(5, 125, "NPCs: " + debugInfo.activeNPCs);
+            font.drawString(5, 145, "Items: " + debugInfo.activeItems);
+            font.drawString(5, 165, "Draw distance (chunks): " + chunkRenderDistance);
+            font.drawString(5, 185, "Frames per Second: " + debugInfo.fps);
+            glEnable(GL_TEXTURE_2D);
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            glOrtho(camera.x(), camera.x() + 1440, camera.y() + 900, camera.y(), -1, 1);
+            glMatrixMode(GL_MODELVIEW);
+            glEnable(GL_LIGHTING);
+            glEnable(GL_LIGHT0);
+            glLoadIdentity();
+            atlas.bind();
+        }
 
     }
 
@@ -694,22 +697,19 @@ public class Voxels {
             if (Keyboard.isKeyDown(Keyboard.KEY_B)) {
                 chunkManager.getChunkLoader().loadChunks();
             }
-
-        }
-        if (Keyboard.isKeyDown(Keyboard.KEY_M)) {
-            npcManager.toggle();
-        }
-        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            PLAYER_HEIGHT = 1.0f;
-        } else {
-            PLAYER_HEIGHT = 2.0f;
+            if (Keyboard.isKeyDown(Keyboard.KEY_M)) {
+                npcManager.toggle();
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_F5)) {
+                isDebug = !isDebug;
+            }
         }
 
         if (Mouse.isGrabbed()) {
             while (Mouse.next()) {
                 if (Mouse.getEventButtonState()) {
                     if (Mouse.getEventButton() == 0) {
-                        chunkManager.castRay(Type.STONE);
+                        chunkManager.castRay(Type.DIRT);
                     } else if (Mouse.getEventButton() == 1) {
                         chunkManager.castRay(Type.AIR);
                     }
@@ -913,7 +913,7 @@ public class Voxels {
             x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE;
         }
         return x % Chunk.CHUNK_SIZE;
-        
+
     }
 
     public final static int zInChunk() {
@@ -1067,7 +1067,7 @@ public class Voxels {
             lastFPS += 1000; //add one second
         }
         fps++;
-        
+
     }
 
     public static void putToBuffer(byte type, int x, int y, int z) {

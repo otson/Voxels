@@ -84,13 +84,13 @@ public class BlockRenders {
         float bottomYOff = AtlasManager.getBottomYOff(type);
 
         float t = 1f / 8f;
-
-        vertexData.put(new float[]{0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, // top
-            0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, // bottom
-            0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, // left
-            1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, // right
-            0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, // front
-            0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0 // back
+ 
+       vertexData.put(new float[]{-0.5f, 0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, -0.5f, // top
+            -0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, // bottom
+            -0.5f, 0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, 0.5f, -0.5f, 0.5f, 0.5f, // left
+            0.5f, 0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f, -0.5f, 0.5f, 0.5f, -0.5f, -0.5f, // right
+            -0.5f, 0.5f, 0.5f, -0.5f, -0.5f, 0.5f, 0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f, // front
+            -0.5f, 0.5f, -0.5f, 0.5f, 0.5f, -0.5f, 0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f // back
     });
         vertexData.flip();
 

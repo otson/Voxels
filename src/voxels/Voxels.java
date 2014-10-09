@@ -1,5 +1,6 @@
 package voxels;
 
+import Items.ItemHandler;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -113,11 +114,13 @@ public class Voxels {
     public static Sound jumping;
     public static Sound impact;
     public static Sound runOnStone;
+    public static Sound removeBlock;
     public static final float WaterOffs = 0.28f;
     public static float START_TIME;
 
     private static ChunkManager chunkManager;
     private static npcHandler npcManager;
+    private static ItemHandler itemHandler;
 
     private static EulerCamera camera;
     private static float light0Position[] = {-2000.0f, 2000.0f, 1000.0f, 1.0f};
@@ -153,8 +156,6 @@ public class Voxels {
     private static void testChunkSpeeds() {
 
         chunkManager = new ChunkManager();
-        
-        
 
         HashMap<Integer, Chunk> hashMap = new HashMap<>();
         ChunkMaker maker = new ChunkMaker(null, null, chunkManager, null, null);
@@ -203,7 +204,9 @@ public class Voxels {
     private static void initManagers() {
 
         chunkManager = new ChunkManager();
+        
         camera = InitCamera();
+        itemHandler = new ItemHandler(chunkManager);
         npcManager = new npcHandler(chunkManager, camera);
         for (int i = 0; i < 100; i++) {
             npcManager.addNPC((float) (500f * Math.random() - 250f), (float) (150f * Math.random() + 100f), (float) (500f * Math.random() - 250f), chunkManager);
@@ -305,6 +308,7 @@ public class Voxels {
         jumping = TinySound.loadSound(Voxels.class.getClassLoader().getResource("resources/sounds/jump.wav"));
         impact = TinySound.loadSound(Voxels.class.getClassLoader().getResource("resources/sounds/impact.wav"));
         runOnStone = TinySound.loadSound(Voxels.class.getClassLoader().getResource("resources/sounds/walkOnStone.wav"));
+        removeBlock = TinySound.loadSound(Voxels.class.getClassLoader().getResource("resources/sounds/removeBlock.wav"));
 
     }
 
@@ -427,6 +431,7 @@ public class Voxels {
             //chunkManager.processWater();
             chunkManager.processBufferData();
             npcManager.processMonsters();
+            itemHandler.processItemPhysics();
             render();
             updateFPS();
             Display.update();
@@ -511,12 +516,13 @@ public class Voxels {
             glTranslatef(-npc.getX(), -npc.getY(), -npc.getZ());
         }
         glScalef(0.5f, 0.5f, 0.5f);
-        for (ItemLocation item : chunkManager.getDroppedBlocks()) {
-            glTranslatef(item.x*2, item.y*2, item.z*2);
+        for (ItemLocation item : itemHandler.getDroppedBlocks()) {
+            glTranslatef(item.x * 2, item.y * 2, item.z * 2);
+            glRotatef(item.rotY, 0, 1, 0);
             int vertices = 24;
-            
+
             Handle handles = blockRenders.getHandle(item.type);
-            
+
             glBindBuffer(GL_ARRAY_BUFFER, handles.vertexHandle);
             glVertexPointer(3, GL_FLOAT, 0, 0L);
             glBindBuffer(GL_ARRAY_BUFFER, handles.normalHandle);
@@ -533,8 +539,9 @@ public class Voxels {
             glDisableClientState(GL_VERTEX_ARRAY);
 
             glBindBuffer(GL_ARRAY_BUFFER, 0);
-            glTranslatef(-item.x*2, -item.y*2, -item.z*2);
-        
+            glRotatef(-item.rotY, 0, 1, 0);
+            glTranslatef(-item.x * 2, -item.y * 2, -item.z * 2);
+
         }
     }
 
@@ -748,10 +755,10 @@ public class Voxels {
     }
 
     public final static int getChunkX(float x) {
-        int value = (x >= 0) ? (int) x : (int) (x-1);
+        int value = (x >= 0) ? (int) x : (int) (x - 1);
         if (x < 0) {
             value -= Chunk.CHUNK_SIZE - 1;
-            
+
         }
         return value / Chunk.CHUNK_SIZE;
     }
@@ -761,7 +768,7 @@ public class Voxels {
     }
 
     public final static int getChunkY(float y) {
-        int value = (y >= 0) ? (int) y : (int) (y-1);
+        int value = (y >= 0) ? (int) y : (int) (y - 1);
         if (y < 0) {
             value -= Chunk.CHUNK_SIZE - 1;
         }
@@ -773,7 +780,7 @@ public class Voxels {
     }
 
     public final static int getChunkZ(float z) {
-        int value = (z >= 0) ? (int) z : (int) (z-1);
+        int value = (z >= 0) ? (int) z : (int) (z - 1);
         if (z < 0) {
             value -= Chunk.CHUNK_SIZE - 1;
         }

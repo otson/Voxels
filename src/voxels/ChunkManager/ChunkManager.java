@@ -1,5 +1,6 @@
 package voxels.ChunkManager;
 
+import Items.ItemHandler;
 import com.ning.compress.lzf.LZFDecoder;
 import com.ning.compress.lzf.LZFException;
 import de.ruedigermoeller.serialization.FSTObjectInput;
@@ -27,24 +28,43 @@ import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
-
+import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
 
+import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
 
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import org.lwjgl.util.vector.Vector3f;
 import voxels.Voxels;
-
+import static voxels.Voxels.getChunkX;
 import static voxels.Voxels.getChunkX;
 
+import static voxels.Voxels.getChunkX;
 import static voxels.Voxels.getChunkY;
+import static voxels.Voxels.getChunkY;
+
+import static voxels.Voxels.getChunkY;
+import static voxels.Voxels.getChunkZ;
+import static voxels.Voxels.getChunkZ;
 import static voxels.Voxels.getChunkZ;
 import static voxels.Voxels.getCurrentChunkXId;
 import static voxels.Voxels.getCurrentChunkZId;
 import static voxels.Voxels.getX;
+import static voxels.Voxels.getX;
+import static voxels.Voxels.getX;
+import static voxels.Voxels.getY;
+import static voxels.Voxels.getY;
 import static voxels.Voxels.getY;
 import static voxels.Voxels.getZ;
+import static voxels.Voxels.getZ;
+import static voxels.Voxels.getZ;
+import static voxels.Voxels.removeBlock;
 import static voxels.Voxels.toX;
 import static voxels.Voxels.toXid;
 import static voxels.Voxels.toY;
@@ -78,7 +98,6 @@ public class ChunkManager {
     private ChunkMaker updateThread;
 
     private BlockingQueue<Pair> queue = new LinkedBlockingQueue<>();
-    private BlockingQueue<ItemLocation> droppedBlocks = new LinkedBlockingQueue<>();
 
     private ConcurrentHashMap<Integer, Integer> decompLengths;
 
@@ -90,6 +109,7 @@ public class ChunkManager {
 
     private boolean wait = false;
     private int waterCounter;
+    private ItemHandler itemHandler;
 
     public ChunkManager() {
         decompLengths = new ConcurrentHashMap<>();
@@ -218,6 +238,7 @@ public class ChunkManager {
                 if (type == Type.AIR) {
                     if (block != Type.UNBREAKABLE && block != Type.AIR) {
                         setActiveBlock(vector, type);
+                        removeBlock.play();
                         toDropped(vector, block);
                         return;
                     }
@@ -229,40 +250,6 @@ public class ChunkManager {
                     }
                 }
             }
-
-//            int xInChunk = Voxels.xInChunkPointer(vector);
-//            int yInChunk = Voxels.yInChunkPointer(vector);
-//            int zInChunk = Voxels.zInChunkPointer(vector);
-//            int xChunkId = Voxels.getPointerChunkXId(vector);
-//            int yChunkId = Voxels.getPointerChunkYId(vector);
-//            int zChunkId = Voxels.getPointerChunkZId(vector);
-//
-//            Chunk chunk = getActiveChunk(xChunkId, yChunkId, zChunkId);
-//
-//            if (chunk == null) {
-//                System.out.println("Tried to modify a null chunk.");
-//                return;
-//            } else if (type != Type.AIR) {
-//                if (chunk.blocks[xInChunk][yInChunk][zInChunk] == Type.AIR) {
-//                    //chunk.blocks[xInChunk][yInChunk][zInChunk].setType(type);
-//                    chunk.setBlock(xInChunk, yInChunk, zInChunk, type);
-//                    updateThread.update(chunk);
-//                    checkAdjacentChunks(chunk, xInChunk, yInChunk, zInChunk);
-//                    //();
-//                    chunkLoader.refresh();
-//                    break;
-//                }
-//            } else if (type == Type.AIR) {
-//                if (chunk.blocks[xInChunk][yInChunk][zInChunk] != Type.AIR) {
-//                    //chunk.blocks[xInChunk][yInChunk][zInChunk].setType(type);
-//                    chunk.setBlock(xInChunk, yInChunk, zInChunk, type);
-//                    updateThread.update(chunk);
-//                    checkAdjacentChunks(chunk, xInChunk, yInChunk, zInChunk);
-//                    //processBufferData();
-//                    chunkLoader.refresh();
-//                    break;
-//                }
-//            }
         }
     }
 
@@ -599,11 +586,11 @@ public class ChunkManager {
     }
     
     public void toDropped(Vector3f coords, byte type){
-        droppedBlocks.offer(new ItemLocation(coords.x, coords.y, coords.z, type));
+        itemHandler.getDroppedBlocks().offer(new ItemLocation(coords.x, coords.y, coords.z, type));
     }
 
-    public BlockingQueue<ItemLocation> getDroppedBlocks() {
-        return droppedBlocks;
+    public void setItemHandler(ItemHandler itemHandler) {
+        this.itemHandler = itemHandler;
     }
     
 

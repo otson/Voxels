@@ -20,6 +20,7 @@ public class ItemLocation {
     private float fallingSpeed;
     private float xSpeed;
     private float zSpeed;
+    private float rSpeed;
 
     private static float fallSpeedInc = 0.013f;
 

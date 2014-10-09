@@ -410,7 +410,7 @@ public class EulerCamera implements Camera {
             float hAdj;
             if (fallingSpeed < 0) // going up
             {
-                hAdj = 0;
+                hAdj = 0.2f;
             } else {
                 hAdj = Voxels.PLAYER_HEIGHT;
             }

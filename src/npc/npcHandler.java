@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package npc;
 
 import java.util.ArrayList;
@@ -18,11 +17,13 @@ import voxels.ChunkManager.ChunkManager;
  * @author otso
  */
 public class npcHandler {
+
     private HashMap<Integer, Monster> monsterList;
     private ChunkManager chunkManager;
     private HashMap<Integer, Integer> npcHandles;
     private Camera camera;
-    private int maxDistance = Chunk.CHUNK_SIZE*8;
+    private int maxDistance = Chunk.CHUNK_SIZE * 8;
+    private boolean stopped = false;
 
     public npcHandler(ChunkManager chunkManager, Camera camera) {
         monsterList = new HashMap<>();
@@ -30,9 +31,9 @@ public class npcHandler {
         this.camera = camera;
         this.chunkManager = chunkManager;
     }
-    
-    public void addNPC(float x, float y, float z, ChunkManager chunkManager){
-        Monster monster = new Monster(x,y,z, camera, chunkManager);
+
+    public void addNPC(float x, float y, float z, ChunkManager chunkManager) {
+        Monster monster = new Monster(x, y, z, camera, chunkManager);
         //System.out.println("id: "+monster.getId());
         npcHandles.put(monster.getId(), monster.createRender());
         monsterList.put(monster.getId(), monster);
@@ -45,13 +46,20 @@ public class npcHandler {
     public HashMap<Integer, Integer> getNpcHandles() {
         return npcHandles;
     }
-    
-    public void processMonsters(){
-        for(Monster monster: monsterList.values()){
-            if(monster.getDistance() <= maxDistance*maxDistance)
-            monster.act();
-            //monsterList.put(monster.getId(), monster);
+
+    public void processMonsters() {
+        if (!stopped) {
+            for (Monster monster : monsterList.values()) {
+                if (monster.getDistance() <= maxDistance * maxDistance) {
+                    monster.act();
+                }
+                //monsterList.put(monster.getId(), monster);
+            }
         }
     }
-    
+
+    public void toggle() {
+        stopped = !stopped;
+    }
+
 }

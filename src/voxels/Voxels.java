@@ -1,6 +1,7 @@
 package voxels;
 
 import Items.ItemHandler;
+import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -8,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import static java.lang.Math.PI;
 import java.nio.FloatBuffer;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,7 +37,13 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 
+import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.Vector3f;
+import org.newdawn.slick.Color;
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.TrueTypeFont;
+import org.newdawn.slick.UnicodeFont;
+import org.newdawn.slick.font.effects.ColorEffect;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import voxels.Camera.EulerCamera;
@@ -134,23 +142,40 @@ public class Voxels {
 
     private static int shaderProgram;
 
+    static UnicodeFont font;
+
     public static void main(String[] args) {
-//        System.out.println(AtlasManager.getBackXOff(Type.DIRT));
-//        System.out.println(AtlasManager.getBackYOff(Type.DIRT));
-//        System.exit(0);
         //testChunkSpeeds();
         initDisplay();
         initOpenGL();
         //initFog();
         initLighting();
+        initFont();
         initTextures();
         initRenders();
 
-//        initShaders2();
-//        initShaderLighting();
         initSounds();
         initManagers();
         gameLoop();
+    }
+
+    private static void initFont() {
+        Font awtFont = new Font("Arial", Font.PLAIN, 12); //name, style (PLAIN, BOLD, or ITALIC), size
+
+        font = new UnicodeFont(awtFont.deriveFont(0, 16));
+
+        font.addAsciiGlyphs();
+        ColorEffect e = new ColorEffect();
+
+        e.setColor(java.awt.Color.white);
+
+        font.getEffects()
+                .add(e);
+        try {
+            font.loadGlyphs();
+        } catch (SlickException e1) {
+            e1.printStackTrace();
+        }
     }
 
     private static void testChunkSpeeds() {
@@ -204,7 +229,7 @@ public class Voxels {
     private static void initManagers() {
 
         chunkManager = new ChunkManager();
-        
+
         camera = InitCamera();
         itemHandler = new ItemHandler(chunkManager);
         npcManager = new npcHandler(chunkManager, camera);
@@ -304,7 +329,9 @@ public class Voxels {
 
         TinySound.init();
 
-        running = TinySound.loadSound(Voxels.class.getClassLoader().getResource("resources/sounds/walk2.wav"));
+        running
+                = TinySound.loadSound(Voxels.class
+                        .getClassLoader().getResource("resources/sounds/walk2.wav"));
         jumping = TinySound.loadSound(Voxels.class.getClassLoader().getResource("resources/sounds/jump.wav"));
         impact = TinySound.loadSound(Voxels.class.getClassLoader().getResource("resources/sounds/impact.wav"));
         runOnStone = TinySound.loadSound(Voxels.class.getClassLoader().getResource("resources/sounds/walkOnStone.wav"));
@@ -414,8 +441,10 @@ public class Voxels {
                             }
                             try {
                                 Thread.sleep(10);
+
                             } catch (InterruptedException ex) {
-                                Logger.getLogger(Voxels.class.getName()).log(Level.SEVERE, null, ex);
+                                Logger.getLogger(Voxels.class
+                                        .getName()).log(Level.SEVERE, null, ex);
                             }
                         }
                     }
@@ -426,13 +455,16 @@ public class Voxels {
 
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
             updateView();
             processInput(getDelta());
             //chunkManager.processWater();
             chunkManager.processBufferData();
             npcManager.processMonsters();
             itemHandler.processItemPhysics();
+
             render();
+            renderDebugText();
             updateFPS();
             Display.update();
             Display.sync(60);
@@ -459,13 +491,15 @@ public class Voxels {
     }
 
     private static void render() {
+
         vertexCount = 0;
+        int activeChunks = 0;
         for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
             for (int z = -chunkRenderDistance; z <= chunkRenderDistance; z++) {
                 for (int y = 0; y < Chunk.VERTICAL_CHUNKS; y++) {
                     Handle handles = chunkManager.getHandle(getCurrentChunkXId() + x, y, getCurrentChunkZId() + z);
                     if (handles != null) {
-
+                        activeChunks++;
                         int vboVertexHandle = handles.vertexHandle;
                         int vboNormalHandle = handles.normalHandle;
                         int vboTexHandle = handles.texHandle;
@@ -495,7 +529,10 @@ public class Voxels {
             }
         }
         //glDisable(GL_CULL_FACE);
+        int npcCount = 0;
         for (Monster npc : npcManager.getMonsterList().values()) {
+            vertexCount+=24;
+            npcCount++;
             //glLoadIdentity();
             glTranslatef(npc.getX(), npc.getY(), npc.getZ());
             int vertices = 24;
@@ -520,7 +557,10 @@ public class Voxels {
             glTranslatef(-npc.getX(), -npc.getY(), -npc.getZ());
         }
         glScalef(0.5f, 0.5f, 0.5f);
+        int activeItems = 0;
         for (ItemLocation item : itemHandler.getDroppedBlocks()) {
+            activeItems++;
+            vertexCount+=24;
             glTranslatef(item.x * 2, item.y * 2, item.z * 2);
             glRotatef(item.rotY, 0, 1, 0);
             int vertices = 24;
@@ -547,13 +587,53 @@ public class Voxels {
             glTranslatef(-item.x * 2, -item.y * 2, -item.z * 2);
 
         }
+        debugInfo.activeItems = activeItems;
+        debugInfo.verticesDrawn = vertexCount;
+        debugInfo.activeNPCs = npcCount;
+        debugInfo.chunksLoaded = activeChunks;
+        debugInfo.chunkTotal = chunkManager.getHandles().size();
+    }
+
+    private static void renderDebugText() {
+        DecimalFormat df = new DecimalFormat();
+        df.setMaximumFractionDigits(0);
+        int width = 1440;
+        int height = 900;
+        glLoadIdentity();
+        glDisable(GL_LIGHTING);
+        glDisable(GL_LIGHT0);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0, 1440, 900, 0, -1, 1);
+        glMatrixMode(GL_MODELVIEW);
+        glDisable(GL_TEXTURE_2D);
+        font.drawString(5, 5, "Player world coordinates: " + df.format(camera.x()) + " " + df.format(camera.y()) + " " + df.format(camera.z()));
+        font.drawString(5, 25, "Player chunk coordinates: " + getChunkX() + " " + getChunkY() + " " + getChunkZ());
+        font.drawString(5, 45, "Player in-chunk coordiantes: " + getX() + " " + getY() + " " + getZ());
+        font.drawString(5, 65, "Player rotation: " + df.format(camera.pitch()) + " " + df.format(camera.roll()) + " " + df.format(camera.yaw()));
+        font.drawString(5, 85, "Active chunks (total chunks): " + debugInfo.chunksLoaded+ " "+ debugInfo.chunkTotal);
+        font.drawString(5, 105, "Vertices: " +debugInfo.verticesDrawn);
+        font.drawString(5, 125, "NPCs: " +debugInfo.activeNPCs);
+        font.drawString(5, 145, "Items: " +debugInfo.activeItems);
+        font.drawString(5, 165, "Draw distance (chunks): " +chunkRenderDistance);
+        font.drawString(5, 185, "Frames per Second: " +debugInfo.fps);
+        glEnable(GL_TEXTURE_2D);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(camera.x(), camera.x() + 1440, camera.y() + 900, camera.y(), -1, 1);
+        glMatrixMode(GL_MODELVIEW);
+        glEnable(GL_LIGHTING);
+        glEnable(GL_LIGHT0);
+        glLoadIdentity();
+        atlas.bind();
+
     }
 
     private static void drawAimLine() {
         glDisable(GL_TEXTURE_2D);
         Vector3f direction = getDirectionVector(1f);
         glColor3f(1f, 0, 0);
-        glPointSize(25);
+        glPointSize(1);
         glBegin(GL_POINTS);
         glVertex3f(direction.x, direction.y, direction.z);
         glEnd();
@@ -601,11 +681,11 @@ public class Voxels {
             if (Keyboard.isKeyDown(Keyboard.KEY_B)) {
                 chunkManager.getChunkLoader().loadChunks();
             }
-            if (Keyboard.isKeyDown(Keyboard.KEY_ADD)) {
+            if (Keyboard.isKeyDown(Keyboard.KEY_F9)) {
                 chunkCreationDistance++;
                 chunkRenderDistance++;
             }
-            if (Keyboard.isKeyDown(Keyboard.KEY_MINUS)) {
+            if (Keyboard.isKeyDown(Keyboard.KEY_F8)) {
                 if (chunkCreationDistance > 2 && chunkRenderDistance > 1) {
                     chunkCreationDistance--;
                     chunkRenderDistance--;
@@ -616,8 +696,8 @@ public class Voxels {
             }
 
         }
-        if (Keyboard.isKeyDown(Keyboard.KEY_U)) {
-            glTranslatef(0, -200, 0);
+        if (Keyboard.isKeyDown(Keyboard.KEY_M)) {
+            npcManager.toggle();
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             PLAYER_HEIGHT = 1.0f;
@@ -833,6 +913,7 @@ public class Voxels {
             x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE;
         }
         return x % Chunk.CHUNK_SIZE;
+        
     }
 
     public final static int zInChunk() {
@@ -946,8 +1027,11 @@ public class Voxels {
         return i;
     }
 
-    public static Texture loadTexture(String key) {
-        InputStream resourceAsStream = Voxels.class.getClassLoader().getResourceAsStream("resources/textures/" + key + ".png");
+    public static Texture
+            loadTexture(String key) {
+        InputStream resourceAsStream = Voxels.class
+                .getClassLoader().getResourceAsStream("resources/textures/" + key + ".png");
+
         try {
             return TextureLoader.getTexture("png", resourceAsStream);
 
@@ -955,6 +1039,7 @@ public class Voxels {
             Logger.getLogger(Voxels.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
+
         return null;
     }
 
@@ -975,13 +1060,14 @@ public class Voxels {
 
     public static void updateFPS() {
         if (getTime() - lastFPS > 1000) {
-            Display.setTitle(TITLE + " - FPS: " + fps + " Chunk X: " + getCurrentChunkXId() + " Chunk Y: " + getCurrentChunkYId() + " Chunk Z: " + getCurrentChunkZId() + " Inside chunk: X: " + xInChunk() + " Y:" + yInChunk() + " Z: " + zInChunk() + "Vertices rendered: " + vertexCount);
+            Display.setTitle(TITLE);
             //Display.setTitle(TITLE + " - FPS: " + fps + " Pitch: " + camera.pitch() + " Yaw: " + camera.yaw());
-
+            debugInfo.fps = fps;
             fps = 0; //reset the FPS counter
             lastFPS += 1000; //add one second
         }
         fps++;
+        
     }
 
     public static void putToBuffer(byte type, int x, int y, int z) {

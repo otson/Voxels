@@ -27,84 +27,23 @@ import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
+
 import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
+
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
+
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import org.lwjgl.util.vector.Vector3f;
 import voxels.Voxels;
+
 import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
+
 import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getChunkZ;
 import static voxels.Voxels.getChunkZ;
 import static voxels.Voxels.getCurrentChunkXId;
 import static voxels.Voxels.getCurrentChunkZId;
 import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
 import static voxels.Voxels.getY;
-import static voxels.Voxels.getZ;
 import static voxels.Voxels.getZ;
 import static voxels.Voxels.toX;
 import static voxels.Voxels.toXid;
@@ -138,8 +77,8 @@ public class ChunkManager {
     private ChunkMaker[] threads = new ChunkMaker[maxThreads];
     private ChunkMaker updateThread;
 
-    BlockingQueue<Pair> queue = new LinkedBlockingQueue<>();
-    LZ4Factory factory = LZ4Factory.fastestInstance();
+    private BlockingQueue<Pair> queue = new LinkedBlockingQueue<>();
+    private BlockingQueue<ItemLocation> droppedBlocks = new LinkedBlockingQueue<>();
 
     private ConcurrentHashMap<Integer, Integer> decompLengths;
 
@@ -279,6 +218,7 @@ public class ChunkManager {
                 if (type == Type.AIR) {
                     if (block != Type.UNBREAKABLE && block != Type.AIR) {
                         setActiveBlock(vector, type);
+                        toDropped(vector, block);
                         return;
                     }
                 }
@@ -657,5 +597,14 @@ public class ChunkManager {
     public BlockingQueue<Pair> getQueue() {
         return queue;
     }
+    
+    public void toDropped(Vector3f coords, byte type){
+        droppedBlocks.offer(new ItemLocation(coords.x, coords.y, coords.z, type));
+    }
+
+    public BlockingQueue<ItemLocation> getDroppedBlocks() {
+        return droppedBlocks;
+    }
+    
 
 }

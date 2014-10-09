@@ -2712,7 +2712,7 @@ public class ChunkMaker extends Thread {
 
                 texArray[tArrayPos] = backXOff;
                 tArrayPos++;
-                texArray[tArrayPos] = backYOff;
+                texArray[tArrayPos] = backYOff+tSize;
                 tArrayPos++;
                 
                 texArray[tArrayPos] = backXOff + tSize;
@@ -2720,9 +2720,9 @@ public class ChunkMaker extends Thread {
                 texArray[tArrayPos] = backYOff + tSize;
                 tArrayPos++;
 
-                texArray[tArrayPos] = backXOff;
+                texArray[tArrayPos] = backXOff + tSize;
                 tArrayPos++;
-                texArray[tArrayPos] = backYOff + tSize;
+                texArray[tArrayPos] = backYOff;
                 tArrayPos++;
 
                 //2nd

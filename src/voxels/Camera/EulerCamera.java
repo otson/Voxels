@@ -438,7 +438,7 @@ public class EulerCamera implements Camera {
             if (Keyboard.isKeyDown(Keyboard.KEY_W) || Keyboard.isKeyDown(Keyboard.KEY_A) || Keyboard.isKeyDown(Keyboard.KEY_S) || (Keyboard.isKeyDown(Keyboard.KEY_D))) {
                 if (!flying && fallingSpeed == 0) {
                     if (underFeet == Type.DIRT) {
-                        if (System.currentTimeMillis() - runningPrevious > 15832) {
+                        if (System.currentTimeMillis() - runningPrevious > 4581) {
                             runningPrevious = System.currentTimeMillis();
                             running.play();
                         }

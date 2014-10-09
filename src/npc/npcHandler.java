@@ -33,7 +33,7 @@ public class npcHandler {
     
     public void addNPC(float x, float y, float z, ChunkManager chunkManager){
         Monster monster = new Monster(x,y,z, camera, chunkManager);
-        System.out.println("id: "+monster.getId());
+        //System.out.println("id: "+monster.getId());
         npcHandles.put(monster.getId(), monster.createRender());
         monsterList.put(monster.getId(), monster);
     }

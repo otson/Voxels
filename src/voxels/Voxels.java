@@ -10,6 +10,7 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
@@ -39,6 +40,7 @@ import org.newdawn.slick.opengl.TextureLoader;
 import voxels.Camera.EulerCamera;
 import voxels.ChunkManager.AtlasManager;
 import voxels.ChunkManager.BlockCoord;
+import voxels.ChunkManager.BlockRenders;
 import voxels.ChunkManager.Chunk;
 import static voxels.ChunkManager.Chunk.GROUND_SHARE;
 import static voxels.ChunkManager.Chunk.WORLD_HEIGHT;
@@ -46,6 +48,7 @@ import voxels.ChunkManager.ChunkMaker;
 import voxels.ChunkManager.ChunkManager;
 import voxels.ChunkManager.Coordinates;
 import voxels.ChunkManager.Handle;
+import voxels.ChunkManager.ItemLocation;
 import voxels.ChunkManager.Location;
 import voxels.ChunkManager.Pair;
 import voxels.ChunkManager.Type;
@@ -102,7 +105,7 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 6;
+    public static int chunkCreationDistance = 2;
     public static int inGameCreationDistance = 9;
     public static int chunkRenderDistance = 8;
     public static Texture atlas;
@@ -124,6 +127,7 @@ public class Voxels {
     public static int count = 0;
     private static int vertexCount;
     private static long lastFrame = System.nanoTime();
+    private static BlockRenders blockRenders;
 
     private static int shaderProgram;
 
@@ -149,6 +153,8 @@ public class Voxels {
     private static void testChunkSpeeds() {
 
         chunkManager = new ChunkManager();
+        
+        
 
         HashMap<Integer, Chunk> hashMap = new HashMap<>();
         ChunkMaker maker = new ChunkMaker(null, null, chunkManager, null, null);
@@ -377,6 +383,7 @@ public class Voxels {
     private static void gameLoop() {
 
         chunkManager.startGeneration();
+        blockRenders = new BlockRenders();
         long time = System.nanoTime();
 
         while (chunkManager.isAtMax() == false) {
@@ -419,7 +426,7 @@ public class Voxels {
             processInput(getDelta());
             //chunkManager.processWater();
             chunkManager.processBufferData();
-            //npcManager.processMonsters();
+            npcManager.processMonsters();
             render();
             updateFPS();
             Display.update();
@@ -503,9 +510,32 @@ public class Voxels {
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             glTranslatef(-npc.getX(), -npc.getY(), -npc.getZ());
         }
-        //glEnable(GL_CULL_FACE);
+        glScalef(0.5f, 0.5f, 0.5f);
+        for (ItemLocation item : chunkManager.getDroppedBlocks()) {
+            glTranslatef(item.x*2, item.y*2, item.z*2);
+            int vertices = 24;
+            
+            Handle handles = blockRenders.getHandle(item.type);
+            
+            glBindBuffer(GL_ARRAY_BUFFER, handles.vertexHandle);
+            glVertexPointer(3, GL_FLOAT, 0, 0L);
+            glBindBuffer(GL_ARRAY_BUFFER, handles.normalHandle);
+            glNormalPointer(GL_FLOAT, 0, 0L);
+            glBindBuffer(GL_ARRAY_BUFFER, handles.texHandle);
+            glTexCoordPointer(2, GL_FLOAT, 0, 0L);
 
-        //drawAimLine();
+            glEnableClientState(GL_VERTEX_ARRAY);
+            glEnableClientState(GL_NORMAL_ARRAY);
+            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+            glDrawArrays(GL_QUADS, 0, vertices);
+            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+            glDisableClientState(GL_NORMAL_ARRAY);
+            glDisableClientState(GL_VERTEX_ARRAY);
+
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            glTranslatef(-item.x*2, -item.y*2, -item.z*2);
+        
+        }
     }
 
     private static void drawAimLine() {

@@ -109,6 +109,7 @@ public class Voxels {
     public static Sound running;
     public static Sound jumping;
     public static Sound impact;
+    public static Sound runOnStone;
     public static final float WaterOffs = 0.28f;
     public static float START_TIME;
 
@@ -294,9 +295,10 @@ public class Voxels {
 
         TinySound.init();
 
-        running = TinySound.loadSound(Voxels.class.getClassLoader().getResource("resources/sounds/runningHardSurface.wav"));
+        running = TinySound.loadSound(Voxels.class.getClassLoader().getResource("resources/sounds/longGrass.wav"));
         jumping = TinySound.loadSound(Voxels.class.getClassLoader().getResource("resources/sounds/jump.wav"));
         impact = TinySound.loadSound(Voxels.class.getClassLoader().getResource("resources/sounds/impact.wav"));
+        runOnStone = TinySound.loadSound(Voxels.class.getClassLoader().getResource("resources/sounds/walkOnStone.wav"));
 
     }
 

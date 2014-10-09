@@ -170,9 +170,11 @@ public class ChunkManager {
     public Chunk getChunk(int chunkX, int chunkY, int chunkZ) {
         if (activeChunkMap.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
             return activeChunkMap.get(new Pair(chunkX, chunkY, chunkZ).hashCode());
-        } else if (map.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
+        } 
+        else if (map.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
             return toChunk(map.get(new Pair(chunkX, chunkY, chunkZ).hashCode()));
-        } else {
+        } 
+        else {
             return null;
         }
     }

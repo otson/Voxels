@@ -62,6 +62,7 @@ import static voxels.Voxels.getZ;
 import static voxels.Voxels.getZ;
 import static voxels.Voxels.impact;
 import static voxels.Voxels.jumping;
+import static voxels.Voxels.runOnStone;
 import static voxels.Voxels.running;
 import static voxels.Voxels.xInChunk;
 import static voxels.Voxels.yInChunk;
@@ -96,6 +97,7 @@ public class EulerCamera implements Camera {
     private boolean zoomed = false;
     private long timeSinceJump = -1;
     private float minDistance = 0.1f;
+    private byte prevBlock = -1;
 
     private ChunkManager chunkManager;
 
@@ -388,9 +390,9 @@ public class EulerCamera implements Camera {
                 if (moveFaster) {
                     fallingSpeed *= 2.5f;
                 }
-                running.stop();
-                jumping.stop();
-                jumping.play();
+                //running.stop();
+                //jumping.stop();
+                //jumping.play();
             }
         }
 
@@ -401,64 +403,65 @@ public class EulerCamera implements Camera {
         }
 
         if (flying == false) {
-            if (oldFallingSpeed > fallingSpeedIncrease * 2 && fallingSpeed == 0) {
-                impact.play();
-            }
-            fallingSpeed +=fallingSpeedIncrease;
+//            if (oldFallingSpeed > fallingSpeedIncrease * 2 && fallingSpeed == 0) {
+//                impact.play();
+//            }
+
             float hAdj;
-            if(fallingSpeed < 0) // going up
+            if (fallingSpeed < 0) // going up
+            {
                 hAdj = 0;
-            else
+            } else {
                 hAdj = Voxels.PLAYER_HEIGHT;
-            
-            byte block = chunkManager.getActiveBlock(new Vector3f(x,y-fallingSpeed-hAdj,z));
-            if(block == Type.AIR || block == -1){
-                y-=fallingSpeed;
-                
             }
-            else{
-                y = (int)y;
+
+            byte block = chunkManager.getActiveBlock(new Vector3f(x, y - fallingSpeed - fallingSpeedIncrease - hAdj, z));
+            if (block == Type.AIR || block == -1) {
+                fallingSpeed += fallingSpeedIncrease;
+                y -= fallingSpeed;
+
+            } else {
+                y = (int) y;
                 oldFallingSpeed = fallingSpeed;
                 fallingSpeed = 0;
             }
-            
-//            Chunk chunkUnderFeet = chunkManager.getActiveChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());//chunkManager.getChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
-//            if (chunkUnderFeet != null) {
-//                if (yInChunk() >= Chunk.CHUNK_SIZE || yInChunk() < 0 || chunkUnderFeet.blocks[xInChunk()][yInChunk()][zInChunk()] == Type.AIR) {
-//                    y -= fallingSpeed;
-//                    fallingSpeed += fallingSpeedIncrease;
-//                }
-//                float adj = 0;
-//                if (fallingSpeed < 0) {
-//                    adj = 2;
-//                }
-//                chunkUnderFeet = chunkManager.getActiveChunk(getCurrentChunkXId(), getCurrentChunkYId(+adj), getCurrentChunkZId());//chunkManager.getChunk(getCurrentChunkXId(), getCurrentChunkYId(), getCurrentChunkZId());
-//                if (chunkUnderFeet != null) {
-//                    if (chunkUnderFeet.blocks[xInChunk()][yInChunk(+adj)][zInChunk()] != Type.AIR) {
-//                        if (fallingSpeed - fallingSpeedIncrease > 0) {
-//                            y = (int) y + 1;
-//                        } else {
-//                            y = (int) y;
-//                        }
-//                        fallingSpeed = 0;
-//                    }
-//                }
-//            }
-//            if (chunkUnderFeet == null) {
-//                setPosition(0.5f, Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS, 0.5f);
-//                System.out.println("Player tried to enter a chunk that does not exist. \n Position reset to (0, " + Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS + ", 0)");
-//            }
+            byte underFeet = chunkManager.getActiveBlock(new Vector3f(x, y - Voxels.PLAYER_HEIGHT - 1, z));
+            if(underFeet != Type.DIRT){
+                running.stop();
+            }
+            if(underFeet != Type.STONE){
+                runOnStone.stop();
+            }
+            if(prevBlock != underFeet){
+                runningPrevious = 0;
+            }
             if (Keyboard.isKeyDown(Keyboard.KEY_W) || Keyboard.isKeyDown(Keyboard.KEY_A) || Keyboard.isKeyDown(Keyboard.KEY_S) || (Keyboard.isKeyDown(Keyboard.KEY_D))) {
-                if (!flying && fallingSpeed == 0 && System.nanoTime() - runningPrevious > 520000000) {
-                    running.play();
-                    runningPrevious = System.nanoTime();
+                if (!flying && fallingSpeed == 0) {
+                    if (underFeet == Type.DIRT) {
+                        if (System.currentTimeMillis() - runningPrevious > 15832) {
+                            runningPrevious = System.currentTimeMillis();
+                            running.play();
+                        }
+                    }
+                    else if (underFeet == Type.STONE) {
+                        if (System.currentTimeMillis() - runningPrevious > 1874) {
+                            runningPrevious = System.currentTimeMillis();
+                            runOnStone.play();
+                        }
+                    }
+                } else {
+                    runningPrevious = 0;
+                    running.stop();
+                    runOnStone.stop();
                 }
 
             }
             if (!keyUp && !keyDown && !keyLeft && !keyRight) {
                 running.stop();
+                runOnStone.stop();
                 runningPrevious = 0;
             }
+            prevBlock = underFeet;
         }
     }
 
@@ -480,14 +483,13 @@ public class EulerCamera implements Camera {
             if ((upperBlock == Type.AIR || upperBlock == -1) && (lowerBlock == Type.AIR || lowerBlock == -1)) {
                 this.x -= dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw));
             }
-           
+
             upperBlock = chunkManager.getActiveBlock(new Vector3f(x, y - 1, z + (float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw)))));
             lowerBlock = chunkManager.getActiveBlock(new Vector3f(x, y - 2, z + (float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw)))));
 
             if ((upperBlock == Type.AIR || upperBlock == -1) && (lowerBlock == Type.AIR || lowerBlock == -1)) {
                 this.z += dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw));
             }
-
 
 //            int potentChunkXId = Voxels.getCurrentChunkXId((float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))));
 //            int potentXInChunk = Voxels.xInChunk((float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))));

@@ -18,8 +18,10 @@ public class ItemLocation {
     public float rotY;
 
     private float fallingSpeed;
+    private float xSpeed;
+    private float zSpeed;
 
-    private static float fallSpeedInc = 0.016f;
+    private static float fallSpeedInc = 0.013f;
 
     public ItemLocation(float x, float y, float z, byte type) {
         this.type = type;
@@ -27,7 +29,9 @@ public class ItemLocation {
         this.y = y;
         this.z = z;
         rotY = 0;
-        fallingSpeed = 0;
+        fallingSpeed = (float) (-0.15f-Math.random()*0.05f);
+        xSpeed = (float) (0.02f-0.04f*Math.random());
+        zSpeed = (float) (0.02f-0.04f*Math.random());
     }
 
     public void rotate() {
@@ -38,6 +42,24 @@ public class ItemLocation {
         y -= fallingSpeed;
         fallingSpeed += fallSpeedInc;
     }
+
+    public float getxSpeed() {
+        return xSpeed;
+    }
+
+    public void setxSpeed(float xSpeed) {
+        this.xSpeed = xSpeed;
+    }
+
+    public float getzSpeed() {
+        return zSpeed;
+    }
+
+    public void setzSpeed(float zSpeed) {
+        this.zSpeed = zSpeed;
+    }
+    
+    
 
     public float getFallingSpeed() {
         return fallingSpeed;

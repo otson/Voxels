@@ -304,7 +304,7 @@ public class Voxels {
 
         TinySound.init();
 
-        running = TinySound.loadSound(Voxels.class.getClassLoader().getResource("resources/sounds/longGrass.wav"));
+        running = TinySound.loadSound(Voxels.class.getClassLoader().getResource("resources/sounds/walk2.wav"));
         jumping = TinySound.loadSound(Voxels.class.getClassLoader().getResource("resources/sounds/jump.wav"));
         impact = TinySound.loadSound(Voxels.class.getClassLoader().getResource("resources/sounds/impact.wav"));
         runOnStone = TinySound.loadSound(Voxels.class.getClassLoader().getResource("resources/sounds/walkOnStone.wav"));

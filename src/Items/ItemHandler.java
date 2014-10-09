@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package Items;
 
 import java.util.concurrent.BlockingQueue;
@@ -18,24 +17,48 @@ import voxels.ChunkManager.Type;
  * @author otso
  */
 public class ItemHandler {
-    
+
     private BlockingQueue<ItemLocation> droppedBlocks = new LinkedBlockingQueue<>();
     private ChunkManager chunkManager;
-    
-    public ItemHandler(ChunkManager chunkManager){
+
+    public ItemHandler(ChunkManager chunkManager) {
         this.chunkManager = chunkManager;
         this.chunkManager.setItemHandler(this);
     }
-    
-    public void processItemPhysics(){
-        for(ItemLocation item : droppedBlocks){
-            byte block = chunkManager.getActiveBlock(new Vector3f(item.x, item.y-item.getFallingSpeed()-0.5f, item.z));
-            if(block == Type.AIR){
-                item.fall();
+
+    public void processItemPhysics() {
+        for (ItemLocation item : droppedBlocks) {
+            float adj = -0.5f;
+            if (item.getFallingSpeed() > 0) {
+                adj *= -1;
             }
-            else{
-                item.y = (int)item.y+0.5f;
+
+            byte block = chunkManager.getActiveBlock(new Vector3f(item.x, item.y - item.getFallingSpeed() - adj, item.z));
+            if (block == Type.AIR || block == -1) {
+                item.fall();
+            } else {
+                item.y = (int) item.y + 0.2501f;
                 item.setFallingSpeed(0);
+                item.setxSpeed(0);
+                item.setzSpeed(0);
+            }
+            if (item.getxSpeed() != 0) {
+                block = chunkManager.getActiveBlock(new Vector3f(item.x + item.getxSpeed(), item.y - adj, item.z));
+                if (block == Type.AIR || block == -1) {
+                    item.x += item.getxSpeed();
+                } else {
+                    item.setxSpeed(0);
+                    item.setzSpeed(0);
+                }
+            }
+            if (item.getxSpeed() != 0) {
+                block = chunkManager.getActiveBlock(new Vector3f(item.x, item.y - 0.5f, item.z + item.getzSpeed()));
+                if (block == Type.AIR || block == -1) {
+                    item.x += item.getxSpeed();
+                } else {
+                    item.setxSpeed(0);
+                    item.setzSpeed(0);
+                }
             }
             item.rotate();
         }
@@ -44,5 +67,5 @@ public class ItemHandler {
     public BlockingQueue<ItemLocation> getDroppedBlocks() {
         return droppedBlocks;
     }
-    
+
 }

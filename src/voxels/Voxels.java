@@ -503,13 +503,17 @@ public class Voxels {
 
             glBindBuffer(GL_ARRAY_BUFFER, npc.getVertexHandle());
             glVertexPointer(3, GL_FLOAT, 0, 0L);
+            glBindBuffer(GL_ARRAY_BUFFER, npc.getNormalHandle());
+            glNormalPointer(GL_FLOAT, 0, 0L);
             glBindBuffer(GL_ARRAY_BUFFER, npc.getColorHandle());
             glColorPointer(3, GL_FLOAT, 0, 0L);
 
             glEnableClientState(GL_VERTEX_ARRAY);
+            glEnableClientState(GL_NORMAL_ARRAY);
             glEnableClientState(GL_COLOR_ARRAY);
             glDrawArrays(GL_QUADS, 0, vertices);
             glDisableClientState(GL_COLOR_ARRAY);
+            glDisableClientState(GL_NORMAL_ARRAY);
             glDisableClientState(GL_VERTEX_ARRAY);
 
             glBindBuffer(GL_ARRAY_BUFFER, 0);

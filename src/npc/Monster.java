@@ -56,6 +56,7 @@ public class Monster {
     private static int staticId = 0;
     private int vertexHandle;
     private int colorHandle;
+    private int normalHandle;
     private int id;
     private float currentFallingSpeed = 0;
     private Camera camera;
@@ -180,9 +181,21 @@ public class Monster {
             0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0 // back
     });
         vertexData.flip();
+        FloatBuffer normalData = BufferUtils.createFloatBuffer(amountOfVertices * vertexSize);
+        normalData.put(new float[]{0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, // top
+       
+             0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, // bottom
+            -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, // left
+            1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, // right
+            0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, // front
+            0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1 // back
+    });
+        normalData.flip();
+        
         float r = (float) Math.random();
         float g = (float) Math.random();
         float b = (float) Math.random();
+        
         FloatBuffer colorData = BufferUtils.createFloatBuffer(amountOfVertices * vertexSize);
         colorData.put(new float[]{r, g, b, r, g, b, r, g, b, r, g, b, // top
             r, g, b, r, g, b, r, g, b, r, g, b, // bottom
@@ -197,6 +210,11 @@ public class Monster {
         glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
         glBufferData(GL_ARRAY_BUFFER, vertexData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+        
+        int vboNormalHandle = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, vboNormalHandle);
+        glBufferData(GL_ARRAY_BUFFER, normalData, GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         int vboColorHandle = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
@@ -205,6 +223,7 @@ public class Monster {
 
         vertexHandle = vboVertexHandle;
         colorHandle = vboColorHandle;
+        normalHandle = vboNormalHandle;
         return vboVertexHandle;
     }
 
@@ -239,4 +258,8 @@ public class Monster {
         return xDist*xDist+zDist*zDist;
     }
 
+    public int getNormalHandle() {
+        return normalHandle;
+    }
+    
 }

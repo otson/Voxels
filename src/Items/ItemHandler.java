@@ -28,7 +28,7 @@ public class ItemHandler {
 
     public void processItemPhysics() {
         for (ItemLocation item : droppedBlocks) {
-            float adj = -0.5f;
+            float adj = -0.25f;
             if (item.getFallingSpeed() > 0) {
                 adj *= -1;
             }

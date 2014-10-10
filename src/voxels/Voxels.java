@@ -604,11 +604,11 @@ public class Voxels {
             glTranslatef(-item.x * 2, -item.y * 2, -item.z * 2);
 
         }
-        debugInfo.activeItems = activeItems;
-        debugInfo.verticesDrawn = vertexCount;
-        debugInfo.activeNPCs = npcCount;
-        debugInfo.chunksLoaded = activeChunks;
-        debugInfo.chunkTotal = chunkManager.getHandles().size();
+        DebugInfo.activeItems = activeItems;
+        DebugInfo.verticesDrawn = vertexCount;
+        DebugInfo.activeNPCs = npcCount;
+        DebugInfo.chunksLoaded = activeChunks;
+        DebugInfo.chunkTotal = chunkManager.getHandles().size();
     }
 
     private static void renderDebugText() {
@@ -627,12 +627,13 @@ public class Voxels {
             font.drawString(5, 25, "Player chunk coordinates: " + getChunkX() + " " + getChunkY() + " " + getChunkZ());
             font.drawString(5, 45, "Player in-chunk coordinates: " + getX() + " " + getY() + " " + getZ());
             font.drawString(5, 65, "Player rotation: " + df.format(camera.pitch()) + " " + df.format(camera.roll()) + " " + df.format(camera.yaw()));
-            font.drawString(5, 85, "Active chunks (total chunks): " + debugInfo.chunksLoaded + " (" + debugInfo.chunkTotal + ")");
-            font.drawString(5, 105, "Vertices: " + debugInfo.verticesDrawn);
-            font.drawString(5, 125, "NPCs: " + debugInfo.activeNPCs);
-            font.drawString(5, 145, "Items: " + debugInfo.activeItems);
+            font.drawString(5, 85, "Active chunks (total chunks): " + DebugInfo.chunksLoaded + " (" + DebugInfo.chunkTotal + ")");
+            font.drawString(5, 105, "Vertices: " + DebugInfo.verticesDrawn);
+            font.drawString(5, 125, "NPCs: " + DebugInfo.activeNPCs);
+            font.drawString(5, 145, "Items: " + DebugInfo.activeItems);
             font.drawString(5, 165, "Draw distance (chunks): " + chunkRenderDistance);
-            font.drawString(5, 185, "Frames per Second: " + debugInfo.fps);
+            font.drawString(5, 185, "Frames per Second: " + DebugInfo.fps);
+            //font.drawString(5, 205, "GPU memory: " + (DebugInfo.get_video_card_used_memory()/1024)+" MB / "+(DebugInfo.get_video_card_total_memory()/1024)+" MB");
             glEnable(GL_TEXTURE_2D);
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
@@ -1073,7 +1074,7 @@ public class Voxels {
         if (getTime() - lastFPS > 1000) {
             Display.setTitle(TITLE);
             //Display.setTitle(TITLE + " - FPS: " + fps + " Pitch: " + camera.pitch() + " Yaw: " + camera.yaw());
-            debugInfo.fps = fps;
+            DebugInfo.fps = fps;
             fps = 0; //reset the FPS counter
             lastFPS += 1000; //add one second
         }

@@ -252,7 +252,7 @@ public class ChunkManager {
     }
 
     public void bigRemove() {
-        int size = 20;
+        int size = 40;
         int maxDistance = 50;
         float increment = 0.25f;
         ConcurrentHashMap<Integer, Coordinates> chunksToUpdate = new ConcurrentHashMap<>();
@@ -260,7 +260,7 @@ public class ChunkManager {
         for (float f = 0f; f < maxDistance; f += increment) {
             Vector3f vector = Voxels.getDirectionVector(f);
             byte block = getActiveBlock(vector);
-
+            int removeAmount = 0;
             if (block != Type.AIR && block != -1) {
                 found = true;
                 for (int i = -size / 2; i < size / 2; i++) {
@@ -269,22 +269,43 @@ public class ChunkManager {
                             Vector3f temp = new Vector3f(vector.x + j, vector.y + i, vector.z + w);
                             block = getActiveBlock(temp);
                             if (block != Type.AIR && block != -1) {
+                                removeAmount++;
+                            }
+                        }
+                    }
+                }
+                int maxDropped = 1000;
+                int interval = removeAmount/maxDropped;
+                int timeSinceDrop = 0;
+                for (int i = -size / 2; i < size / 2; i++) {
+                    for (int j = -size / 2; j < size / 2; j++) {
+                        for (int w = -size / 2; w < size / 2; w++) {
+                            Vector3f temp = new Vector3f(vector.x + j, vector.y + i, vector.z + w);
+                            block = getActiveBlock(temp);
+                            if (block != Type.AIR && block != -1) {
                                 setActiveBlockNoUpdate(temp, Type.AIR);
-                                toDropped(temp, block);
+                                if(timeSinceDrop >= interval){
+                                    toDropped(temp, block);
+                                    timeSinceDrop = 0;
+                                }
+                                else{
+                                    timeSinceDrop++;
+                                }
                                 int chunkX = getChunkX(temp.x);
                                 int chunkY = getChunkY(temp.y);
                                 int chunkZ = getChunkZ(temp.z);
-                                chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ).hashCode(), new Coordinates(chunkX,chunkY,chunkZ));
+                                chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ).hashCode(), new Coordinates(chunkX, chunkY, chunkZ));
                             }
                         }
                     }
                 }
             }
-            if(found)
+            if (found) {
                 break;
+            }
         }
-        for(Coordinates coord : chunksToUpdate.values()){
-            updateChunk(getActiveChunk(coord.x, coord.y, coord.z),0,0,0);
+        for (Coordinates coord : chunksToUpdate.values()) {
+            updateChunk(getActiveChunk(coord.x, coord.y, coord.z), 0, 0, 0);
         }
     }
 
@@ -593,6 +614,14 @@ public class ChunkManager {
             return -1;
         }
     }
+    
+    public byte getActiveBlock(float x, float y, float z) {
+        return getActiveBlock(new Vector3f(x,y,z));
+    }
+    
+    public void setActiveBlock(float x, float y, float z, byte type) {
+        setActiveBlock(new Vector3f(x,y,z), type);
+    }
 
     public void setActiveBlock(Vector3f v, byte type) {
         Chunk chunk = getActiveChunk(getChunkX(v.x), getChunkY(v.y), getChunkZ(v.z));
@@ -605,6 +634,7 @@ public class ChunkManager {
         }
 
     }
+
     public void setActiveBlockNoUpdate(Vector3f v, byte type) {
         Chunk chunk = getActiveChunk(getChunkX(v.x), getChunkY(v.y), getChunkZ(v.z));
         if (chunk != null) {

@@ -21,7 +21,7 @@ public class ItemHandler {
     private BlockingQueue<ItemLocation> droppedBlocks = new LinkedBlockingQueue<>();
     private ChunkManager chunkManager;
     
-    private static int MAX_SIZE = 2000;
+    private static int MAX_SIZE = 1000;
     
     public ItemHandler(ChunkManager chunkManager) {
         this.chunkManager = chunkManager;
@@ -39,7 +39,7 @@ public class ItemHandler {
             if (block == Type.AIR || block == -1) {
                 item.fall();
             } else {
-                item.y = (int) item.y + 0.2501f;
+                item.y = (int) item.y + (float)(0.2501+Math.random()*0.001f);
                 item.setFallingSpeed(0);
                 item.setxSpeed(0);
                 item.setzSpeed(0);
@@ -56,7 +56,7 @@ public class ItemHandler {
             if (item.getxSpeed() != 0) {
                 block = chunkManager.getActiveBlock(new Vector3f(item.x, item.y - 0.5f, item.z + item.getzSpeed()));
                 if (block == Type.AIR || block == -1) {
-                    item.x += item.getxSpeed();
+                    item.z += item.getzSpeed();
                 } else {
                     item.setxSpeed(0);
                     item.setzSpeed(0);

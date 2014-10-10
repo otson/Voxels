@@ -8,17 +8,19 @@ package voxels.ChunkManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import voxels.Voxels;
-import static voxels.Voxels.toXid;
-import static voxels.Voxels.toYid;
-import static voxels.Voxels.toZid;
 import static voxels.Voxels.toX;
+import static voxels.Voxels.toXid;
 import static voxels.Voxels.toY;
+import static voxels.Voxels.toYid;
 import static voxels.Voxels.toZ;
+import static voxels.Voxels.toZid;
 
 /**
  *
@@ -30,6 +32,7 @@ public class ActiveChunkLoader extends Thread {
     boolean refresh;
 
     private ConcurrentHashMap<Integer, Chunk> chunkMap;
+    
     private ChunkMaker chunkMaker;
 
     ChunkManager chunkManager;
@@ -131,27 +134,27 @@ public class ActiveChunkLoader extends Thread {
         }
     }
 
-//    public void simulateWater() {
-//        HashMap<Integer, Coordinates> toUpdate = new HashMap<>();
-//        for (Chunk chunk : chunkMap.values()) {
-//            if (!chunk.getWaterArray().isEmpty()) {
-//                ArrayList<Water> array = chunk.getWaterArray();
-//                int size = array.size();
-//                for (int i = 0; i < size; i++) {
-//                    Water water = array.get(i);
-//                    {
-//                        boolean isActive = processWater(water);
-//                        if (isActive) {
-//                            chunkManager.setActiveBlock(water.xw, water.yw, water.zw, Type.AIR);
-//                            array.remove(i);
-//                            size--;
-//                        }
-//                        toUpdate.put(new Pair(chunk.xId, chunk.yId, chunk.zId).hashCode(), new Coordinates(chunk.xId, chunk.yId, chunk.zId));
-//                    }
-//                }
-//            }
-//        }
-//    }
+    public void simulateWater() {
+        HashMap<Integer, Coordinates> toUpdate = new HashMap<>();
+        for (Chunk chunk : chunkMap.values()) {
+            if (!chunk.getWaterArray().isEmpty()) {
+                ArrayList<Water> array = chunk.getWaterArray();
+                int size = array.size();
+                for (int i = 0; i < size; i++) {
+                    Water water = array.get(i);
+                    {
+                        boolean isActive = processWater(water);
+                        if (isActive) {
+                            chunkManager.setActiveBlock(water.xw, water.yw, water.zw, Type.AIR);
+                            array.remove(i);
+                            size--;
+                        }
+                        toUpdate.put(new Pair(chunk.xId, chunk.yId, chunk.zId).hashCode(), new Coordinates(chunk.xId, chunk.yId, chunk.zId));
+                    }
+                }
+            }
+        }
+    }
 
     public boolean isRunning() {
         return running;
@@ -161,46 +164,46 @@ public class ActiveChunkLoader extends Thread {
         refresh = true;
     }
 
-//    private boolean processWater(Water water) {
-//        // remove from active if block below is also water, no spreading
-//        if (chunkManager.getActiveBlock(water.xw, water.yw - 1, water.zw) == Type.WATER) {
-//            return true;
-//        }
-//
-//        // return true if water spread, else false
-//        if (chunkManager.getActiveBlock(water.xw, water.yw - 1, water.zw) == Type.AIR) {
-//            chunkManager.setActiveBlock(water.xw, water.yw - 1, water.zw, Type.WATER);
-//            return true;
-//        } else {
-//            int dir = (int) (4 * Math.random());
-//            switch (dir) {
-//                case 1:
-//                    if (chunkManager.getActiveBlock(water.xw + 1, water.yw, water.zw) == Type.AIR) {
-//                        chunkManager.setActiveBlock(water.xw + 1, water.yw, water.zw, Type.WATER);
-//                        return true;
-//                    }
-//                case 2:
-//                    if (chunkManager.getActiveBlock(water.xw - 1, water.yw, water.zw) == Type.AIR) {
-//                        chunkManager.setActiveBlock(water.xw - 1, water.yw, water.zw, Type.WATER);
-//                        return true;
-//                    }
-//                case 3:
-//                    if (chunkManager.getActiveBlock(water.xw, water.yw, water.zw + 1) == Type.AIR) {
-//                        chunkManager.setActiveBlock(water.xw, water.yw, water.zw + 1, Type.WATER);
-//                        return true;
-//                    }
-//                case 4:
-//                    if (chunkManager.getActiveBlock(water.xw, water.yw, water.zw - 1) == Type.AIR) {
-//                        chunkManager.setActiveBlock(water.xw, water.yw, water.zw - 1, Type.WATER);
-//                        return true;
-//                    }
-//            }
-//            return false;
-//        }
-//    }
+    private boolean processWater(Water water) {
+        // remove from active if block below is also water, no spreading
+        if (chunkManager.getActiveBlock(water.xw, water.yw - 1, water.zw) == Type.WATER) {
+            return true;
+        }
+
+        // return true if water spread, else false
+        if (chunkManager.getActiveBlock(water.xw, water.yw - 1, water.zw) == Type.AIR) {
+            chunkManager.setActiveBlock(water.xw, water.yw - 1, water.zw, Type.WATER);
+            return true;
+        } else {
+            int dir = (int) (4 * Math.random());
+            switch (dir) {
+                case 1:
+                    if (chunkManager.getActiveBlock(water.xw + 1, water.yw, water.zw) == Type.AIR) {
+                        chunkManager.setActiveBlock(water.xw + 1, water.yw, water.zw, Type.WATER);
+                        return true;
+                    }
+                case 2:
+                    if (chunkManager.getActiveBlock(water.xw - 1, water.yw, water.zw) == Type.AIR) {
+                        chunkManager.setActiveBlock(water.xw - 1, water.yw, water.zw, Type.WATER);
+                        return true;
+                    }
+                case 3:
+                    if (chunkManager.getActiveBlock(water.xw, water.yw, water.zw + 1) == Type.AIR) {
+                        chunkManager.setActiveBlock(water.xw, water.yw, water.zw + 1, Type.WATER);
+                        return true;
+                    }
+                case 4:
+                    if (chunkManager.getActiveBlock(water.xw, water.yw, water.zw - 1) == Type.AIR) {
+                        chunkManager.setActiveBlock(water.xw, water.yw, water.zw - 1, Type.WATER);
+                        return true;
+                    }
+            }
+            return false;
+        }
+    }
 
     public ConcurrentHashMap<Integer, Chunk> getChunkMap() {
         return chunkMap;
     }
-
+    
 }

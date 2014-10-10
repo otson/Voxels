@@ -20,7 +20,9 @@ public class ItemHandler {
 
     private BlockingQueue<ItemLocation> droppedBlocks = new LinkedBlockingQueue<>();
     private ChunkManager chunkManager;
-
+    
+    private static int MAX_SIZE = 2000;
+    
     public ItemHandler(ChunkManager chunkManager) {
         this.chunkManager = chunkManager;
         this.chunkManager.setItemHandler(this);
@@ -61,6 +63,14 @@ public class ItemHandler {
                 }
             }
             item.rotate();
+        }
+    }
+    
+    public void put(ItemLocation item){
+        droppedBlocks.offer(item);
+        
+        while(droppedBlocks.size() > MAX_SIZE){
+            droppedBlocks.remove();
         }
     }
 

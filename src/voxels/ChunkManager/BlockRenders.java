@@ -132,7 +132,6 @@ public class BlockRenders {
     }
     
     public Handle getHandle(byte type){
-        System.out.println("type: "+type);
         if(type == Type.DIRT)
             return dirt;
         if(type == Type.STONE)
@@ -144,7 +143,7 @@ public class BlockRenders {
         if(type == Type.WOOD)
             return wood;
         else{
-            System.out.println("Returning null...");
+            System.out.println("No handle for block: "+type);
             return null;
         }
     }

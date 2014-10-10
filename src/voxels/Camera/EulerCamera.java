@@ -425,7 +425,7 @@ public class EulerCamera implements Camera {
                 oldFallingSpeed = fallingSpeed;
                 fallingSpeed = 0;
             }
-            byte underFeet = chunkManager.getActiveBlock(new Vector3f(x, y - Voxels.PLAYER_HEIGHT - 1, z));
+            byte underFeet = chunkManager.getActiveBlock(new Vector3f(x, y - Voxels.PLAYER_HEIGHT, z));
             if(underFeet != Type.DIRT){
                 running.stop();
             }

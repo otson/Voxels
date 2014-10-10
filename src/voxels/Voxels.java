@@ -1,7 +1,9 @@
 package voxels;
 
 import Items.ItemHandler;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -117,6 +119,8 @@ public class Voxels {
     public static int chunkCreationDistance = 2;
     public static int inGameCreationDistance = 9;
     public static int chunkRenderDistance = 8;
+    public static final int DISPLAY_WIDTH = 1920;
+    public static final int DISPLAY_HEIGHT = 1200;
     public static Texture atlas;
     public static Sound running;
     public static Sound jumping;
@@ -161,7 +165,7 @@ public class Voxels {
     }
 
     private static void initFont() {
-        Font awtFont = new Font("Arial", Font.PLAIN, 12); //name, style (PLAIN, BOLD, or ITALIC), size
+        Font awtFont = new Font("Calibri", Font.PLAIN, 14); //name, style (PLAIN, BOLD, or ITALIC), size
 
         font = new UnicodeFont(awtFont.deriveFont(0, 16));
 
@@ -216,7 +220,19 @@ public class Voxels {
 
     private static void initDisplay() {
         try {
-            Display.setDisplayMode(new DisplayMode(1440, 900));
+            DisplayMode displayMode = null;
+            DisplayMode[] modes = Display.getAvailableDisplayModes();
+
+            for (int i = 0; i < modes.length; i++) {
+                if (modes[i].getWidth() == DISPLAY_WIDTH
+                        && modes[i].getHeight() == DISPLAY_HEIGHT
+                        && modes[i].isFullscreenCapable()) {
+                    displayMode = modes[i];
+                }
+            }
+
+            Display.setDisplayMode(displayMode);
+            Display.setFullscreen(true);
             Display.setVSyncEnabled(true);
             Display.setTitle("Voxels");
             Display.create();
@@ -599,21 +615,19 @@ public class Voxels {
         if (isDebug) {
             DecimalFormat df = new DecimalFormat();
             df.setMaximumFractionDigits(0);
-            int width = 1440;
-            int height = 900;
             glLoadIdentity();
             glDisable(GL_LIGHTING);
             glDisable(GL_LIGHT0);
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
-            glOrtho(0, 1440, 900, 0, -1, 1);
+            glOrtho(0, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0, -1, 1);
             glMatrixMode(GL_MODELVIEW);
             glDisable(GL_TEXTURE_2D);
             font.drawString(5, 5, "Player world coordinates: " + df.format(camera.x()) + " " + df.format(camera.y()) + " " + df.format(camera.z()));
             font.drawString(5, 25, "Player chunk coordinates: " + getChunkX() + " " + getChunkY() + " " + getChunkZ());
-            font.drawString(5, 45, "Player in-chunk coordiantes: " + getX() + " " + getY() + " " + getZ());
+            font.drawString(5, 45, "Player in-chunk coordinates: " + getX() + " " + getY() + " " + getZ());
             font.drawString(5, 65, "Player rotation: " + df.format(camera.pitch()) + " " + df.format(camera.roll()) + " " + df.format(camera.yaw()));
-            font.drawString(5, 85, "Active chunks (total chunks): " + debugInfo.chunksLoaded + " " + debugInfo.chunkTotal);
+            font.drawString(5, 85, "Active chunks (total chunks): " + debugInfo.chunksLoaded + " (" + debugInfo.chunkTotal + ")");
             font.drawString(5, 105, "Vertices: " + debugInfo.verticesDrawn);
             font.drawString(5, 125, "NPCs: " + debugInfo.activeNPCs);
             font.drawString(5, 145, "Items: " + debugInfo.activeItems);
@@ -622,7 +636,7 @@ public class Voxels {
             glEnable(GL_TEXTURE_2D);
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
-            glOrtho(camera.x(), camera.x() + 1440, camera.y() + 900, camera.y(), -1, 1);
+            glOrtho(camera.x(), camera.x() + DISPLAY_WIDTH, camera.y() + DISPLAY_HEIGHT, camera.y(), -1, 1);
             glMatrixMode(GL_MODELVIEW);
             glEnable(GL_LIGHTING);
             glEnable(GL_LIGHT0);
@@ -671,11 +685,8 @@ public class Voxels {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             }
 
-            if (Keyboard.isKeyDown(Keyboard.KEY_G)) {
-                chunkManager.startGeneration();
-            }
             if (Keyboard.isKeyDown(Keyboard.KEY_X)) {
-                chunkManager.stopGeneration();
+                chunkManager.bigRemove();
             }
 
             if (Keyboard.isKeyDown(Keyboard.KEY_F)) {

@@ -283,7 +283,7 @@ public class ChunkManager {
     }
 
     public void bigRemove() {
-        int size = 16;
+        int size = 12;
         int maxDistance = 50;
         float increment = 0.25f;
         ConcurrentHashMap<Integer, Coordinates> chunksToUpdate = new ConcurrentHashMap<>();

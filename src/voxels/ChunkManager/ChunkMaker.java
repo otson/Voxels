@@ -144,8 +144,8 @@ public class ChunkMaker extends Thread {
             chunk.setUpdatePacked(true);
             //map.put(new Pair(this.chunk.xId, this.chunk.yId, this.chunk.zId).hashCode(), toByte(this.chunk));
             Handle handle = chunkManager.getHandle(this.chunk.xId, this.chunk.yId, this.chunk.zId);
-
             dataToProcess.add(new Data(this.chunk.xId, this.chunk.yId, this.chunk.zId, this.chunk.getVertices(), vertexData, normalData, texData, handle.vertexHandle, handle.normalHandle, handle.texHandle, true));
+
         }
     }
 
@@ -1135,7 +1135,6 @@ public class ChunkMaker extends Thread {
         updateBackSide();
 
         //chunk.checkBuffer();
-
         rightChunk = null;
         leftChunk = null;
         backChunk = null;
@@ -1146,23 +1145,29 @@ public class ChunkMaker extends Thread {
 
     private void getAdjacentChunks() {
         rightChunk = chunkManager.getActiveChunk(chunk.xId + 1, chunk.yId, chunk.zId);
-        if(rightChunk == null)
+        if (rightChunk == null) {
             rightChunk = chunkManager.getChunk(chunk.xId + 1, chunk.yId, chunk.zId);
+        }
         leftChunk = chunkManager.getActiveChunk(chunk.xId - 1, chunk.yId, chunk.zId);
-        if(leftChunk == null)
+        if (leftChunk == null) {
             leftChunk = chunkManager.getChunk(chunk.xId - 1, chunk.yId, chunk.zId);
+        }
         backChunk = chunkManager.getActiveChunk(chunk.xId, chunk.yId, chunk.zId - 1);
-        if(backChunk == null)
+        if (backChunk == null) {
             backChunk = chunkManager.getChunk(chunk.xId, chunk.yId, chunk.zId - 1);
+        }
         frontChunk = chunkManager.getActiveChunk(chunk.xId, chunk.yId, chunk.zId + 1);
-        if(frontChunk == null)
+        if (frontChunk == null) {
             frontChunk = chunkManager.getChunk(chunk.xId, chunk.yId, chunk.zId + 1);
+        }
         topChunk = chunkManager.getActiveChunk(chunk.xId, chunk.yId + 1, chunk.zId);
-        if(topChunk == null)
+        if (topChunk == null) {
             topChunk = chunkManager.getChunk(chunk.xId, chunk.yId + 1, chunk.zId);
+        }
         bottomChunk = chunkManager.getActiveChunk(chunk.xId, chunk.yId - 1, chunk.zId);
-        if(topChunk == null)
+        if (topChunk == null) {
             bottomChunk = chunkManager.getChunk(chunk.xId, chunk.yId - 1, chunk.zId);
+        }
     }
 
     private void updateMiddle() {
@@ -2290,7 +2295,7 @@ public class ChunkMaker extends Thread {
         vertexList = new ArrayList<>();
 
         // top
-        for (int y = 0; y< Chunk.CHUNK_SIZE; y++) {
+        for (int y = 0; y < Chunk.CHUNK_SIZE; y++) {
             for (int z = 0; z < Chunk.CHUNK_SIZE; z++) {
                 for (int x = 0; x < Chunk.CHUNK_SIZE; x++) {
                     if (chunk.blocks[x][y][z] != Type.AIR) {
@@ -2325,13 +2330,12 @@ public class ChunkMaker extends Thread {
                                         //topReady[x + i][y][z + rows] = true;
                                         top[x + i][y][z + rows] = false;
                                     }
-                                    
-                                    
+
                                 }
                             }
-                            
+
                             vertexList.add(new Vertex(x, y, z, x, y, z + rows, x + width, y, z + rows, x + width, y, z, current, Side.TOP));
-                            
+
                         }
                     }
                 }
@@ -2370,14 +2374,14 @@ public class ChunkMaker extends Thread {
                                 }
                                 if (addRow) {
                                     rows++;
-                                    for (int i = 0; i <= width; i++) { 
+                                    for (int i = 0; i <= width; i++) {
                                         bottom[x + i][y][z + rows] = false;
                                     }
-                                    
+
                                 }
                             }
-                            
-                            vertexList.add(new Vertex(x + width, y, z, x, y, z, x, y, z+rows, x + width, y, z+rows, current, Side.BOTTOM));
+
+                            vertexList.add(new Vertex(x + width, y, z, x, y, z, x, y, z + rows, x + width, y, z + rows, current, Side.BOTTOM));
                         }
                     }
                 }
@@ -2404,7 +2408,7 @@ public class ChunkMaker extends Thread {
                                 boolean addRow = true;
                                 if (y + yInc < Chunk.CHUNK_SIZE) {
                                     for (int i = 0; i <= width; i++) {
-                                        if (chunk.blocks[x][y+yInc][z+i] != current || !right[x][y+yInc][z+i]) {
+                                        if (chunk.blocks[x][y + yInc][z + i] != current || !right[x][y + yInc][z + i]) {
                                             addRow = false;
                                             inLoop = false;
                                         }
@@ -2415,13 +2419,13 @@ public class ChunkMaker extends Thread {
                                 }
                                 if (addRow) {
                                     rows++;
-                                    for (int i = 0; i <= width; i++) {  
-                                        right[x][y+rows][z+i] = false;     
+                                    for (int i = 0; i <= width; i++) {
+                                        right[x][y + rows][z + i] = false;
                                     }
-                                    
+
                                 }
                             }
-                            vertexList.add(new Vertex(x, y+rows, z, x, y, z, x, y, z + width, x, y+rows, z + width, current, Side.RIGHT));
+                            vertexList.add(new Vertex(x, y + rows, z, x, y, z, x, y, z + width, x, y + rows, z + width, current, Side.RIGHT));
                         }
                     }
                 }
@@ -2438,10 +2442,10 @@ public class ChunkMaker extends Thread {
                             short current = chunk.blocks[x][y][z];
                             left[x][y][z] = false;
                             while (z + width + 1 < Chunk.CHUNK_SIZE && left[x][y][z + width + 1] && chunk.blocks[x][y][z + width + 1] == current) {
-                                left[x][y][z + width+1] = false;
+                                left[x][y][z + width + 1] = false;
                                 width++;
                             }
-                            
+
                             boolean inLoop = true;
                             int yInc = 0;
                             while (inLoop) {
@@ -2449,7 +2453,7 @@ public class ChunkMaker extends Thread {
                                 boolean addRow = true;
                                 if (y + yInc < Chunk.CHUNK_SIZE) {
                                     for (int i = 0; i <= width; i++) {
-                                        if (chunk.blocks[x][y+yInc][z+i] != current || !left[x][y+yInc][z+i]) {
+                                        if (chunk.blocks[x][y + yInc][z + i] != current || !left[x][y + yInc][z + i]) {
                                             addRow = false;
                                             inLoop = false;
                                         }
@@ -2460,13 +2464,13 @@ public class ChunkMaker extends Thread {
                                 }
                                 if (addRow) {
                                     rows++;
-                                    for (int i = 0; i <= width; i++) {  
-                                        left[x][y+rows][z+i] = false;     
+                                    for (int i = 0; i <= width; i++) {
+                                        left[x][y + rows][z + i] = false;
                                     }
-                                    
+
                                 }
                             }
-                            vertexList.add(new Vertex(x, y+rows, z + width, x, y, z + width, x, y, z, x, y+rows, z, current, Side.LEFT));
+                            vertexList.add(new Vertex(x, y + rows, z + width, x, y, z + width, x, y, z, x, y + rows, z, current, Side.LEFT));
                         }
                     }
                 }
@@ -2486,7 +2490,7 @@ public class ChunkMaker extends Thread {
                                 front[x + width + 1][y][z] = false;
                                 width++;
                             }
-                            
+
                             boolean inLoop = true;
                             int yInc = 0;
                             while (inLoop) {
@@ -2494,7 +2498,7 @@ public class ChunkMaker extends Thread {
                                 boolean addRow = true;
                                 if (y + yInc < Chunk.CHUNK_SIZE) {
                                     for (int i = 0; i <= width; i++) {
-                                        if (chunk.blocks[x+i][y+yInc][z] != current || !front[x+i][y+yInc][z]) {
+                                        if (chunk.blocks[x + i][y + yInc][z] != current || !front[x + i][y + yInc][z]) {
                                             addRow = false;
                                             inLoop = false;
                                         }
@@ -2505,13 +2509,13 @@ public class ChunkMaker extends Thread {
                                 }
                                 if (addRow) {
                                     rows++;
-                                    for (int i = 0; i <= width; i++) {  
-                                        front[x+i][y+rows][z] = false;     
+                                    for (int i = 0; i <= width; i++) {
+                                        front[x + i][y + rows][z] = false;
                                     }
-                                    
+
                                 }
                             }
-                            vertexList.add(new Vertex(x, y+rows, z, x, y, z, x + width, y, z, x + width, y+rows, z, current, Side.FRONT));
+                            vertexList.add(new Vertex(x, y + rows, z, x, y, z, x + width, y, z, x + width, y + rows, z, current, Side.FRONT));
                         }
                     }
                 }
@@ -2538,7 +2542,7 @@ public class ChunkMaker extends Thread {
                                 boolean addRow = true;
                                 if (y + yInc < Chunk.CHUNK_SIZE) {
                                     for (int i = 0; i <= width; i++) {
-                                        if (chunk.blocks[x+i][y+yInc][z] != current || !back[x+i][y+yInc][z]) {
+                                        if (chunk.blocks[x + i][y + yInc][z] != current || !back[x + i][y + yInc][z]) {
                                             addRow = false;
                                             inLoop = false;
                                         }
@@ -2549,13 +2553,13 @@ public class ChunkMaker extends Thread {
                                 }
                                 if (addRow) {
                                     rows++;
-                                    for (int i = 0; i <= width; i++) {  
-                                        back[x+i][y+rows][z] = false;     
+                                    for (int i = 0; i <= width; i++) {
+                                        back[x + i][y + rows][z] = false;
                                     }
-                                    
+
                                 }
                             }
-                            vertexList.add(new Vertex(x + width, y+rows, z, x + width, y, z, x, y, z, x, y+rows, z, current, Side.BACK));
+                            vertexList.add(new Vertex(x + width, y + rows, z, x + width, y, z, x, y, z, x, y + rows, z, current, Side.BACK));
                         }
                     }
                 }
@@ -2712,9 +2716,9 @@ public class ChunkMaker extends Thread {
 
                 texArray[tArrayPos] = backXOff;
                 tArrayPos++;
-                texArray[tArrayPos] = backYOff+tSize;
+                texArray[tArrayPos] = backYOff + tSize;
                 tArrayPos++;
-                
+
                 texArray[tArrayPos] = backXOff + tSize;
                 tArrayPos++;
                 texArray[tArrayPos] = backYOff + tSize;
@@ -2730,8 +2734,7 @@ public class ChunkMaker extends Thread {
                 tArrayPos++;
                 texArray[tArrayPos] = backYOff;
                 tArrayPos++;
-                
-                
+
                 // 1st
                 // upper left + -
                 normalArray[nArrayPos] = 0;
@@ -3044,13 +3047,12 @@ public class ChunkMaker extends Thread {
                 tArrayPos++;
                 texArray[tArrayPos] = bottomYOff;
                 tArrayPos++;
-                
+
                 texArray[tArrayPos] = bottomXOff + tSize;
                 tArrayPos++;
                 texArray[tArrayPos] = bottomYOff;
                 tArrayPos++;
-                
-                
+
                 texArray[tArrayPos] = bottomXOff + tSize;
                 tArrayPos++;
                 texArray[tArrayPos] = bottomYOff + tSize;
@@ -3067,12 +3069,11 @@ public class ChunkMaker extends Thread {
 //                texArray[tArrayPos] = bottomYOff;
 //                tArrayPos++;
 //
-                
+
 //                texArray[tArrayPos] = bottomXOff + tSize;
 //                tArrayPos++;
 //                texArray[tArrayPos] = bottomYOff + tSize;
 //                tArrayPos++;
-
                 // upper right + +
                 normalArray[nArrayPos] = 0;
                 nArrayPos++;

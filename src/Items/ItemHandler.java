@@ -21,7 +21,7 @@ public class ItemHandler {
     private BlockingQueue<ItemLocation> droppedBlocks = new LinkedBlockingQueue<>();
     private ChunkManager chunkManager;
     
-    private static int MAX_SIZE = 1000;
+    private static int MAX_SIZE = 5000;
     
     public ItemHandler(ChunkManager chunkManager) {
         this.chunkManager = chunkManager;

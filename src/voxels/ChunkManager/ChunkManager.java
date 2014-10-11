@@ -283,7 +283,7 @@ public class ChunkManager {
     }
 
     public void bigRemove() {
-        int size = 40;
+        int size = 16;
         int maxDistance = 50;
         float increment = 0.25f;
         ConcurrentHashMap<Integer, Coordinates> chunksToUpdate = new ConcurrentHashMap<>();
@@ -292,7 +292,7 @@ public class ChunkManager {
             Vector3f vector = Voxels.getDirectionVector(f);
             byte block = getActiveBlock(vector);
             int removeAmount = 0;
-            if (block != Type.AIR && block != -1) {
+            if (block != Type.AIR && block != -1 && block != Type.UNBREAKABLE) {
                 found = true;
                 for (int i = -size / 2; i < size / 2; i++) {
                     for (int j = -size / 2; j < size / 2; j++) {
@@ -313,7 +313,7 @@ public class ChunkManager {
                         for (int w = -size / 2; w < size / 2; w++) {
                             Vector3f temp = new Vector3f(vector.x + j, vector.y + i, vector.z + w);
                             block = getActiveBlock(temp);
-                            if (block != Type.AIR && block != -1) {
+                            if (block != Type.AIR && block != -1 && block != Type.UNBREAKABLE) {
                                 setActiveBlockNoUpdate(temp, Type.AIR);
                                 if (timeSinceDrop >= interval) {
                                     toDropped(temp, block);
@@ -357,8 +357,13 @@ public class ChunkManager {
             }
         }
         for (Coordinates coord : chunksToUpdate.values()) {
-            updateChunk(getActiveChunk(coord.x, coord.y, coord.z), 1, 1, 1);
+            updateChunk(getActiveChunk(coord.x, coord.y, coord.z));
         }
+    }
+    
+    public void updateChunk(Chunk chunk) {
+        updateThread.update(chunk);
+        chunkLoader.refresh();
     }
 
     public void updateChunk(Chunk chunk, int x, int y, int z) {

@@ -63,6 +63,7 @@ import voxels.ChunkManager.ItemLocation;
 import voxels.ChunkManager.Location;
 import voxels.ChunkManager.Pair;
 import voxels.ChunkManager.Type;
+import voxels.ChunkManager.WaterHandler;
 import voxels.Noise.FastNoise;
 import voxels.Noise.SimplexNoise;
 import voxels.Shaders.ShaderLoader;
@@ -133,6 +134,7 @@ public class Voxels {
     private static ChunkManager chunkManager;
     private static npcHandler npcManager;
     private static ItemHandler itemHandler;
+    private static WaterHandler waterHandler;
 
     private static EulerCamera camera;
     private static float light0Position[] = {-2000.0f, 2000.0f, 1000.0f, 1.0f};
@@ -246,7 +248,7 @@ public class Voxels {
     private static void initManagers() {
 
         chunkManager = new ChunkManager();
-
+        waterHandler = new WaterHandler(chunkManager);
         camera = InitCamera();
         itemHandler = new ItemHandler(chunkManager);
         npcManager = new npcHandler(chunkManager, camera);
@@ -475,7 +477,9 @@ public class Voxels {
 
             updateView();
             processInput(getDelta());
-            //chunkManager.processWater();
+            if (fps % 10 == 0) {
+                waterHandler.simulateWaters();
+            }
             chunkManager.processBufferData();
             npcManager.processMonsters();
             itemHandler.processItemPhysics();
@@ -721,7 +725,7 @@ public class Voxels {
             while (Mouse.next()) {
                 if (Mouse.getEventButtonState()) {
                     if (Mouse.getEventButton() == 0) {
-                        chunkManager.castRay(Type.DIRT);
+                        chunkManager.castRay(Type.WATER);
                     } else if (Mouse.getEventButton() == 1) {
                         chunkManager.castRay(Type.AIR);
                     }
@@ -1080,6 +1084,18 @@ public class Voxels {
         }
         fps++;
 
+    }
+
+    public static int toWorldX(float x) {
+        return Chunk.CHUNK_SIZE * getChunkX(x) - getX(x);
+    }
+
+    public static int toWorldY(float y) {
+        return Chunk.CHUNK_SIZE * getChunkY(y) - getY(y);
+    }
+
+    public static int toWorldZ(float z) {
+        return Chunk.CHUNK_SIZE * getChunkZ(z) - getZ(z);
     }
 
     public static void putToBuffer(byte type, int x, int y, int z) {

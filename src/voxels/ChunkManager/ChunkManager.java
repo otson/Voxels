@@ -30,12 +30,21 @@ import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
 
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 
@@ -44,12 +53,21 @@ import org.lwjgl.util.vector.Vector3f;
 import voxels.Voxels;
 import static voxels.Voxels.getChunkX;
 import static voxels.Voxels.getChunkX;
+import static voxels.Voxels.getChunkX;
+import static voxels.Voxels.getChunkX;
+import static voxels.Voxels.getChunkX;
 
 import static voxels.Voxels.getChunkX;
 import static voxels.Voxels.getChunkY;
 import static voxels.Voxels.getChunkY;
+import static voxels.Voxels.getChunkY;
+import static voxels.Voxels.getChunkY;
+import static voxels.Voxels.getChunkY;
 
 import static voxels.Voxels.getChunkY;
+import static voxels.Voxels.getChunkZ;
+import static voxels.Voxels.getChunkZ;
+import static voxels.Voxels.getChunkZ;
 import static voxels.Voxels.getChunkZ;
 import static voxels.Voxels.getChunkZ;
 import static voxels.Voxels.getChunkZ;
@@ -58,13 +76,25 @@ import static voxels.Voxels.getCurrentChunkZId;
 import static voxels.Voxels.getX;
 import static voxels.Voxels.getX;
 import static voxels.Voxels.getX;
+import static voxels.Voxels.getX;
+import static voxels.Voxels.getX;
+import static voxels.Voxels.getX;
 import static voxels.Voxels.getY;
 import static voxels.Voxels.getY;
 import static voxels.Voxels.getY;
+import static voxels.Voxels.getY;
+import static voxels.Voxels.getY;
+import static voxels.Voxels.getY;
+import static voxels.Voxels.getZ;
+import static voxels.Voxels.getZ;
+import static voxels.Voxels.getZ;
 import static voxels.Voxels.getZ;
 import static voxels.Voxels.getZ;
 import static voxels.Voxels.getZ;
 import static voxels.Voxels.removeBlock;
+import static voxels.Voxels.toWorldX;
+import static voxels.Voxels.toWorldY;
+import static voxels.Voxels.toWorldZ;
 import static voxels.Voxels.toX;
 import static voxels.Voxels.toXid;
 import static voxels.Voxels.toY;
@@ -110,6 +140,7 @@ public class ChunkManager {
     private boolean wait = false;
     private int waterCounter;
     private ItemHandler itemHandler;
+    private WaterHandler waterHandler;
 
     public ChunkManager() {
         decompLengths = new ConcurrentHashMap<>();
@@ -627,6 +658,8 @@ public class ChunkManager {
         Chunk chunk = getActiveChunk(getChunkX(v.x), getChunkY(v.y), getChunkZ(v.z));
         if (chunk != null) {
             chunk.blocks[getX(v.x)][getY(v.y)][getZ(v.z)] = type;
+            if(type == Type.WATER)
+                waterHandler.add(new Water(toWorldX(v.x),toWorldY(v.y),toWorldZ(v.z),0,0,0,0));
             updateThread.update(chunk);
             checkAdjacentChunks(chunk, getX(v.x), getY(v.y), getZ(v.z));
             //processBufferData();
@@ -639,6 +672,8 @@ public class ChunkManager {
         Chunk chunk = getActiveChunk(getChunkX(v.x), getChunkY(v.y), getChunkZ(v.z));
         if (chunk != null) {
             chunk.blocks[getX(v.x)][getY(v.y)][getZ(v.z)] = type;
+            if(type == Type.WATER)
+                waterHandler.add(new Water(toWorldX(v.x),toWorldY(v.y),toWorldZ(v.z),0,0,0,0));
         }
     }
 
@@ -661,5 +696,10 @@ public class ChunkManager {
     public void setItemHandler(ItemHandler itemHandler) {
         this.itemHandler = itemHandler;
     }
+
+    public void setWaterHandler(WaterHandler waterHandler) {
+        this.waterHandler = waterHandler;
+    }
+    
 
 }

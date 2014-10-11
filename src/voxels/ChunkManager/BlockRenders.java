@@ -24,6 +24,7 @@ public class BlockRenders {
     private Handle leaves;
     private Handle cloud;
     private Handle wood;
+    private Handle water;
 
     private static int vertexSize = 3;
     private static int normalSize = 3;
@@ -44,6 +45,7 @@ public class BlockRenders {
         leaves = createVBO(Type.LEAVES);
         cloud = createVBO(Type.CLOUD);
         wood = createVBO(Type.WOOD);
+        water = createVBO(Type.WATER);
         
         System.out.println("init done");
         if(cloud == null)
@@ -142,6 +144,8 @@ public class BlockRenders {
             return cloud;
         if(type == Type.WOOD)
             return wood;
+        if(type == Type.WATER)
+            return water;
         else{
             System.out.println("No handle for block: "+type);
             return null;

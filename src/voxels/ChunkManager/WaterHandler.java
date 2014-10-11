@@ -24,7 +24,9 @@ public class WaterHandler {
     private ChunkManager chunkManager;
 
     public WaterHandler(ChunkManager chunkManager) {
+        waters = new LinkedBlockingQueue<>();
         this.chunkManager = chunkManager;
+        this.chunkManager.setWaterHandler(this);
     }
 
     public void add(Water water) {
@@ -35,17 +37,18 @@ public class WaterHandler {
         for (Water water : waters) {
             byte block = chunkManager.getActiveBlock(water.x, water.y - 1, water.z);
             if (block == Type.AIR) {
-                chunkManager.setActiveBlockNoUpdate(new Vector3f(water.x, water.y, water.z), Type.AIR);
+                System.out.println("Is air under");
+                chunkManager.setActiveBlock(new Vector3f(water.x, water.y, water.z), Type.AIR);
                 int chunkX = getChunkX(water.x);
                 int chunkY = getChunkY(water.y);
                 int chunkZ = getChunkZ(water.z);
-                chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ).hashCode(), new Coordinates(chunkX, chunkY, chunkZ));
+                //chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ).hashCode(), new Coordinates(chunkX, chunkY, chunkZ));
                 water.y--;
             }
 
         }
-        for (Coordinates coord : chunksToUpdate.values()) {
-            chunkManager.updateChunk(chunkManager.getActiveChunk(coord.x, coord.y, coord.z), 0, 0, 0);
-        }
+//        for (Coordinates coord : chunksToUpdate.values()) {
+//            chunkManager.updateChunk(chunkManager.getActiveChunk(coord.x, coord.y, coord.z), 0, 0, 0);
+//        }
     }
 }

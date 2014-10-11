@@ -194,24 +194,24 @@ public class Chunk implements Serializable {
         boolean backBranch = Math.random() > 0.75f;
 
         if (leftBranch) {
-            Voxels.putToBuffer(Type.CACTUS, x - 1, y + height / 2 + 1, z);
+            Voxels.putToBuffer(Type.CACTUS, x - 1, y + height / 2, z);
+            Voxels.putToBuffer(Type.CACTUS, x - 2, y + height / 2, z);
             Voxels.putToBuffer(Type.CACTUS, x - 2, y + height / 2 + 1, z);
-            Voxels.putToBuffer(Type.CACTUS, x - 2, y + height / 2 + 1 + 1, z);
         }
         if (rightBranch) {
-            Voxels.putToBuffer(Type.CACTUS, x + 1, y + height / 2 + 1, z);
+            Voxels.putToBuffer(Type.CACTUS, x + 1, y + height / 2, z);
+            Voxels.putToBuffer(Type.CACTUS, x + 2, y + height / 2, z);
             Voxels.putToBuffer(Type.CACTUS, x + 2, y + height / 2 + 1, z);
-            Voxels.putToBuffer(Type.CACTUS, x + 2, y + height / 2 + 1 + 1, z);
         }
         if (frontBranch) {
-            Voxels.putToBuffer(Type.CACTUS, x, y + height / 2 + 1, z + 1);
+            Voxels.putToBuffer(Type.CACTUS, x, y + height / 2, z + 1);
+            Voxels.putToBuffer(Type.CACTUS, x, y + height / 2, z + 2);
             Voxels.putToBuffer(Type.CACTUS, x, y + height / 2 + 1, z + 2);
-            Voxels.putToBuffer(Type.CACTUS, x, y + height / 2 + 1 + 1, z + 2);
         }
         if (backBranch) {
-            Voxels.putToBuffer(Type.CACTUS, x, y + height / 2 + 1, z - 1);
+            Voxels.putToBuffer(Type.CACTUS, x, y + height / 2, z - 1);
+            Voxels.putToBuffer(Type.CACTUS, x, y + height / 2, z - 2);
             Voxels.putToBuffer(Type.CACTUS, x, y + height / 2 + 1, z - 2);
-            Voxels.putToBuffer(Type.CACTUS, x, y + height / 2 + 1 + 1, z - 2);
         }
 
     }

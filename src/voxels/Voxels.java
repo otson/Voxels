@@ -1134,7 +1134,7 @@ public class Voxels {
     }
 
     public static byte getTypeNoise(int x, int z) {
-        if(SimplexNoise.noise(x/1000f, z/1000f) < 0.2f)
+        if(SimplexNoise.noise(x/1000f, z/1000f) < 0.15f)
             return Type.SAND;
         else
             return Type.DIRT;

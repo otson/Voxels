@@ -27,6 +27,7 @@ public class BlockRenders {
     private Handle water;
     private Handle sand;
     private Handle cactus;
+    private Handle rocksand;
 
     private static int vertexSize = 3;
     private static int normalSize = 3;
@@ -50,6 +51,7 @@ public class BlockRenders {
         water = createVBO(Type.WATER);
         sand = createVBO(Type.SAND);
         cactus = createVBO(Type.CACTUS);
+        rocksand = createVBO(Type.ROCKSAND);
     }
 
     private Handle createVBO(byte type) {
@@ -150,6 +152,8 @@ public class BlockRenders {
             return sand;
         if(type == Type.CACTUS)
             return cactus;
+        if(type == Type.ROCKSAND)
+            return rocksand;
         else{
             System.out.println("No handle for block: "+type);
             return null;

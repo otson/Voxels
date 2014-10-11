@@ -31,8 +31,8 @@ public class ItemLocation {
         this.z = z;
         rotY = 0;
         fallingSpeed = (float) (-0.20f-Math.random()*0.06f);
-        xSpeed = (float) (0.03f-0.06f*Math.random());
-        zSpeed = (float) (0.03f-0.06f*Math.random());
+        xSpeed = (float) (0.05f-0.1f*Math.random());
+        zSpeed = (float) (0.05f-0.1f*Math.random());
     }
 
     public void rotate() {

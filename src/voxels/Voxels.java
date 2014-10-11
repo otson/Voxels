@@ -1134,7 +1134,7 @@ public class Voxels {
     }
 
     public static byte getTypeNoise(int x, int z) {
-        double noise = FastNoise.noise(x/1000f, z/1000f,7)/255f;
+        double noise = FastNoise.noise(x/1000f+1000, z/1000f,7)/255f;
         if(noise < 0.35f)
             return Type.SAND;
         if(noise < 0.40f)

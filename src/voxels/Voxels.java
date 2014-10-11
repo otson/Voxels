@@ -1,5 +1,6 @@
 package voxels;
 
+import Items.DebugInfo;
 import Items.ItemHandler;
 import java.awt.Dimension;
 import java.awt.Font;

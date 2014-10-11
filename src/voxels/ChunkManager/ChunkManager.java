@@ -306,7 +306,7 @@ public class ChunkManager {
                     }
                 }
                 int maxDropped = 1000;
-                int interval = removeAmount/maxDropped;
+                int interval = removeAmount / maxDropped;
                 int timeSinceDrop = 0;
                 for (int i = -size / 2; i < size / 2; i++) {
                     for (int j = -size / 2; j < size / 2; j++) {
@@ -315,17 +315,38 @@ public class ChunkManager {
                             block = getActiveBlock(temp);
                             if (block != Type.AIR && block != -1) {
                                 setActiveBlockNoUpdate(temp, Type.AIR);
-                                if(timeSinceDrop >= interval){
+                                if (timeSinceDrop >= interval) {
                                     toDropped(temp, block);
                                     timeSinceDrop = 0;
-                                }
-                                else{
+                                } else {
                                     timeSinceDrop++;
                                 }
                                 int chunkX = getChunkX(temp.x);
                                 int chunkY = getChunkY(temp.y);
                                 int chunkZ = getChunkZ(temp.z);
+                                int xInChunk = getX(temp.x);
+                                int yInChunk = getY(temp.y);
+                                int zInChunk = getZ(temp.z);
                                 chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ).hashCode(), new Coordinates(chunkX, chunkY, chunkZ));
+                                if (xInChunk == 0) {
+                                    chunksToUpdate.putIfAbsent(new Pair(chunkX-1, chunkY, chunkZ).hashCode(), new Coordinates(chunkX-1, chunkY, chunkZ));
+                                }
+                                if (xInChunk == Chunk.CHUNK_SIZE-1) {
+                                    chunksToUpdate.putIfAbsent(new Pair(chunkX+1, chunkY, chunkZ).hashCode(), new Coordinates(chunkX+1, chunkY, chunkZ));
+                                }
+                                if (yInChunk == 0) {
+                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY-1, chunkZ).hashCode(), new Coordinates(chunkX, chunkY-1, chunkZ));
+                                }
+                                if (yInChunk == Chunk.CHUNK_SIZE-1) {
+                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY+1, chunkZ).hashCode(), new Coordinates(chunkX, chunkY+1, chunkZ));
+                                }
+                                if (zInChunk == 0) {
+                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ-1).hashCode(), new Coordinates(chunkX, chunkY, chunkZ-1));
+                                }
+                                if (zInChunk == Chunk.CHUNK_SIZE-1) {
+                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ+1).hashCode(), new Coordinates(chunkX, chunkY, chunkZ+1));
+                                }
+
                             }
                         }
                     }
@@ -336,7 +357,7 @@ public class ChunkManager {
             }
         }
         for (Coordinates coord : chunksToUpdate.values()) {
-            updateChunk(getActiveChunk(coord.x, coord.y, coord.z), 0, 0, 0);
+            updateChunk(getActiveChunk(coord.x, coord.y, coord.z), 1, 1, 1);
         }
     }
 
@@ -645,21 +666,22 @@ public class ChunkManager {
             return -1;
         }
     }
-    
+
     public byte getActiveBlock(float x, float y, float z) {
-        return getActiveBlock(new Vector3f(x,y,z));
+        return getActiveBlock(new Vector3f(x, y, z));
     }
-    
+
     public void setActiveBlock(float x, float y, float z, byte type) {
-        setActiveBlock(new Vector3f(x,y,z), type);
+        setActiveBlock(new Vector3f(x, y, z), type);
     }
 
     public void setActiveBlock(Vector3f v, byte type) {
         Chunk chunk = getActiveChunk(getChunkX(v.x), getChunkY(v.y), getChunkZ(v.z));
         if (chunk != null) {
             chunk.blocks[getX(v.x)][getY(v.y)][getZ(v.z)] = type;
-            if(type == Type.WATER)
-                waterHandler.add(new Water(toWorldX(v.x),toWorldY(v.y),toWorldZ(v.z),0,0,0,0));
+            if (type == Type.WATER) {
+                waterHandler.add(new Water(toWorldX(v.x), toWorldY(v.y), toWorldZ(v.z), 0, 0, 0, 0));
+            }
             updateThread.update(chunk);
             checkAdjacentChunks(chunk, getX(v.x), getY(v.y), getZ(v.z));
             //processBufferData();
@@ -672,8 +694,9 @@ public class ChunkManager {
         Chunk chunk = getActiveChunk(getChunkX(v.x), getChunkY(v.y), getChunkZ(v.z));
         if (chunk != null) {
             chunk.blocks[getX(v.x)][getY(v.y)][getZ(v.z)] = type;
-            if(type == Type.WATER)
-                waterHandler.add(new Water(toWorldX(v.x),toWorldY(v.y),toWorldZ(v.z),0,0,0,0));
+            if (type == Type.WATER) {
+                waterHandler.add(new Water(toWorldX(v.x), toWorldY(v.y), toWorldZ(v.z), 0, 0, 0, 0));
+            }
         }
     }
 
@@ -700,6 +723,5 @@ public class ChunkManager {
     public void setWaterHandler(WaterHandler waterHandler) {
         this.waterHandler = waterHandler;
     }
-    
 
 }

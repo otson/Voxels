@@ -32,7 +32,8 @@ import static voxels.Voxels.getChunkZ;
  */
 public class WaterHandler {
 
-    private LinkedBlockingQueue<Water> waters;
+    private ConcurrentHashMap<Integer, Water> waters;
+    private ConcurrentHashMap<Integer, Water> newWaters;
     private ConcurrentHashMap<Integer, Coordinates> chunksToUpdate = new ConcurrentHashMap<>();
     private ChunkManager chunkManager;
 
@@ -41,21 +42,47 @@ public class WaterHandler {
     public int vertices = 0;
 
     public WaterHandler(ChunkManager chunkManager) {
-        waters = new LinkedBlockingQueue<>();
+        waters = new ConcurrentHashMap<>();
+        newWaters = new ConcurrentHashMap<>();
         this.chunkManager = chunkManager;
         this.chunkManager.setWaterHandler(this);
     }
 
     public void add(Water water) {
-        waters.offer(water);
+        int hash = new Pair(water.x,water.y,water.z).hashCode();
+        if(!waters.containsKey(hash)){
+            waters.put(hash, water);
+        }
+        else{
+            waters.get(hash).setLevel(water.getLevel());
+        }
     }
 
     public void simulateWaters() {
-        for (Water water : waters) {
+        waters.putAll(newWaters);
+        newWaters.clear();
+        for (Water water : waters.values()) {
             byte block = chunkManager.getActiveBlock(water.x, water.y - 1, water.z);
             if (block == Type.AIR) {
                 chunkManager.setActiveBlock(new Vector3f(water.x, water.y, water.z), Type.AIR);
                 water.y--;
+            } else if (water.getLevel() > 1) {
+                byte rBlock = chunkManager.getActiveBlock(water.x + 1, water.y, water.z);
+                byte lBlock = chunkManager.getActiveBlock(water.x - 1, water.y, water.z);
+                byte fBlock = chunkManager.getActiveBlock(water.x, water.y, water.z + 1);
+                byte bBlock = chunkManager.getActiveBlock(water.x, water.y, water.z - 1);
+                if (rBlock == Type.AIR) {
+                    water.decreaseLevel();
+                    chunkManager.setActiveBlock(new Vector3f(water.x+1, water.y, water.z), Type.WATER1);
+                }
+                else if(rBlock < 0){
+                    int wLevel = -rBlock;
+                    if(wLevel + 1 < water.getLevel()){
+                        water.decreaseLevel();
+                        chunkManager.setActiveBlock(new Vector3f(water.x+1, water.y, water.z), (byte) (rBlock-1));
+                    }
+                }
+
             }
 
         }
@@ -68,17 +95,17 @@ public class WaterHandler {
         final int vertexSize = 3;
         FloatBuffer vertexData = BufferUtils.createFloatBuffer(vertices * vertexSize);
         FloatBuffer normalData = BufferUtils.createFloatBuffer(vertices * vertexSize);
-        for (Water water : waters) {
+        for (Water water : waters.values()) {
             int x = water.x;
             int y = water.y;
             int z = water.z;
-
-            vertexData.put(new float[]{0 + x, 1 + y, 0 + z, 0 + x, 1 + y, 1 + z, 1 + x, 1 + y, 1 + z, 1 + x, 1 + y, 0 + z, // top
+            float h = (water.getLevel()/10f);
+            vertexData.put(new float[]{0 + x, h + y, 0 + z, 0 + x, h + y, 1 + z, 1 + x, h + y, 1 + z, 1 + x, h + y, 0 + z, // top
                 0 + x, 0 + y, 0 + z, 1 + x, 0 + y, 0 + z, 1 + x, 0 + y, 1 + z, 0 + x, 0 + y, 1 + z, // bottom
-                0 + x, 1 + y, 0 + z, 0 + x, 0 + y, 0 + z, 0 + x, 0 + y, 1 + z, 0 + x, 1 + y, 1 + z, // left
-                1 + x, 1 + y, 0 + z, 1 + x, 1 + y, 1 + z, 1 + x, 0 + y, 1 + z, 1 + x, 0 + y, 0 + z, // right
-                0 + x, 1 + y, 1 + z, 0 + x, 0 + y, 1 + z, 1 + x, 0 + y, 1 + z, 1 + x, 1 + y, 1 + z, // front
-                0 + x, 1 + y, 0 + z, 1 + x, 1 + y, 0 + z, 1 + x, 0 + y, 0 + z, 0 + x, 0 + y, 0 + z // back
+                0 + x, h + y, 0 + z, 0 + x, 0 + y, 0 + z, 0 + x, 0 + y, 1 + z, 0 + x, h + y, 1 + z, // left
+                1 + x, h + y, 0 + z, 1 + x, h + y, 1 + z, 1 + x, 0 + y, 1 + z, 1 + x, 0 + y, 0 + z, // right
+                0 + x, h + y, 1 + z, 0 + x, 0 + y, 1 + z, 1 + x, 0 + y, 1 + z, 1 + x, h + y, 1 + z, // front
+                0 + x, h + y, 0 + z, 1 + x, h + y, 0 + z, 1 + x, 0 + y, 0 + z, 0 + x, 0 + y, 0 + z // back
         });
 
             normalData.put(new float[]{0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, // top
@@ -92,12 +119,12 @@ public class WaterHandler {
         }
         vertexData.flip();
         normalData.flip();
-        
+
         vertexHandle = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vertexHandle);
         glBufferData(GL_ARRAY_BUFFER, vertexData, GL_STREAM_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-        
+
         normalHandle = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, normalHandle);
         glBufferData(GL_ARRAY_BUFFER, normalData, GL_STREAM_DRAW);

@@ -87,7 +87,7 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 25;
+    public static final int TERRAIN_SMOOTHNESS = 250;
     public static final int THREE_DIM_SMOOTHNESS = 50;
     /**
      * Set player's height. One block's height is 1.
@@ -163,7 +163,6 @@ public class Voxels {
         initFont();
         initTextures();
         initRenders();
-
         initSounds();
         initManagers();
         gameLoop();
@@ -480,14 +479,14 @@ public class Voxels {
 
             updateView();
             processInput(getDelta());
-            //if (fps % 10 == 0) {
-            waterHandler.simulateWaters();
-            //}
+            if (fps % 10 == 0) {
+                waterHandler.simulateWaters();
+            }
             chunkManager.processBufferData();
             //npcManager.processMonsters();
             itemHandler.processItemPhysics();
             render();
-            renderDebugText();
+            //renderDebugText();
             updateFPS();
             Display.update();
             Display.sync(60);
@@ -1103,15 +1102,15 @@ public class Voxels {
     }
 
     public static int toWorldX(float x) {
-        return (x >= 0) ? (int) x : (int) (x - 1);
+        return (x >= 0) ? (int) x : (int) (x );
     }
 
     public static int toWorldY(float y) {
-        return (y >= 0) ? (int) y : (int) (y - 1);
+        return (y >= 0) ? (int) y : (int) (y );
     }
 
     public static int toWorldZ(float z) {
-        return (z >= 0) ? (int) z : (int) (z - 1);
+        return (z >= 0) ? (int) z : (int) (z );
     }
 
     public static void putToBuffer(byte type, int x, int y, int z) {

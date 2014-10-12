@@ -24,7 +24,7 @@ public class Water implements Serializable{
         this.x = x;
         this.y = y;
         this.z = z;
-        this.level = level;
+        this.level = -level;
         fresh = true;
     }
 
@@ -36,8 +36,8 @@ public class Water implements Serializable{
         this.level = level;
     }
 
-    public void decreaseLevel(int decrease) {
-        this.level -= decrease;
+    public void decreaseLevel() {
+        this.level--;
     }
 
     public void increaseLevel(int increase) {

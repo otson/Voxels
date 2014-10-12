@@ -268,19 +268,16 @@ public class ChunkManager {
                     if (block != Type.UNBREAKABLE && block != Type.AIR) {
                         setActiveBlock(vector, type);
                         removeBlock.play();
-                        if(block > 0)
+                        if (block > 0) {
                             toDropped(vector, block);
+                        }
                         return;
                     }
                 }
                 if (type != Type.AIR) {
                     if (block == Type.AIR) {
-                            setActiveBlock(vector, type);
-                        if(type < 0){
-                            waterHandler.add(new Water(toWorldX(vector.x),toWorldY(vector.y),toWorldZ(vector.z), type));
-                            System.out.println("New water: "+vector.x+ "  "+vector.y+" "+vector.z);
-                            System.out.println("New water int: "+toWorldX(vector.x)+ "  "+toWorldY(vector.y)+" "+toWorldZ(vector.z));
-                        }
+                        setActiveBlock(vector, type);
+
                         return;
                     }
                 }
@@ -335,22 +332,22 @@ public class ChunkManager {
                                 int zInChunk = getZ(temp.z);
                                 chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ).hashCode(), new Coordinates(chunkX, chunkY, chunkZ));
                                 if (xInChunk == 0) {
-                                    chunksToUpdate.putIfAbsent(new Pair(chunkX-1, chunkY, chunkZ).hashCode(), new Coordinates(chunkX-1, chunkY, chunkZ));
+                                    chunksToUpdate.putIfAbsent(new Pair(chunkX - 1, chunkY, chunkZ).hashCode(), new Coordinates(chunkX - 1, chunkY, chunkZ));
                                 }
-                                if (xInChunk == Chunk.CHUNK_SIZE-1) {
-                                    chunksToUpdate.putIfAbsent(new Pair(chunkX+1, chunkY, chunkZ).hashCode(), new Coordinates(chunkX+1, chunkY, chunkZ));
+                                if (xInChunk == Chunk.CHUNK_SIZE - 1) {
+                                    chunksToUpdate.putIfAbsent(new Pair(chunkX + 1, chunkY, chunkZ).hashCode(), new Coordinates(chunkX + 1, chunkY, chunkZ));
                                 }
                                 if (yInChunk == 0) {
-                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY-1, chunkZ).hashCode(), new Coordinates(chunkX, chunkY-1, chunkZ));
+                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY - 1, chunkZ).hashCode(), new Coordinates(chunkX, chunkY - 1, chunkZ));
                                 }
-                                if (yInChunk == Chunk.CHUNK_SIZE-1) {
-                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY+1, chunkZ).hashCode(), new Coordinates(chunkX, chunkY+1, chunkZ));
+                                if (yInChunk == Chunk.CHUNK_SIZE - 1) {
+                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY + 1, chunkZ).hashCode(), new Coordinates(chunkX, chunkY + 1, chunkZ));
                                 }
                                 if (zInChunk == 0) {
-                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ-1).hashCode(), new Coordinates(chunkX, chunkY, chunkZ-1));
+                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ - 1).hashCode(), new Coordinates(chunkX, chunkY, chunkZ - 1));
                                 }
-                                if (zInChunk == Chunk.CHUNK_SIZE-1) {
-                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ+1).hashCode(), new Coordinates(chunkX, chunkY, chunkZ+1));
+                                if (zInChunk == Chunk.CHUNK_SIZE - 1) {
+                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ + 1).hashCode(), new Coordinates(chunkX, chunkY, chunkZ + 1));
                                 }
 
                             }
@@ -366,7 +363,7 @@ public class ChunkManager {
             updateChunk(getActiveChunk(coord.x, coord.y, coord.z));
         }
     }
-    
+
     public void updateChunk(Chunk chunk) {
         updateThread.update(chunk);
         chunkLoader.refresh();
@@ -690,10 +687,14 @@ public class ChunkManager {
         Chunk chunk = getActiveChunk(getChunkX(v.x), getChunkY(v.y), getChunkZ(v.z));
         if (chunk != null) {
             chunk.blocks[getX(v.x)][getY(v.y)][getZ(v.z)] = type;
-            updateThread.update(chunk);
-            checkAdjacentChunks(chunk, getX(v.x), getY(v.y), getZ(v.z));
-            //processBufferData();
-            chunkLoader.refresh();
+            if (type < 0) {
+                waterHandler.add(new Water(toWorldX(v.x), toWorldY(v.y), toWorldZ(v.z), type));
+            } else {
+                updateThread.update(chunk);
+                checkAdjacentChunks(chunk, getX(v.x), getY(v.y), getZ(v.z));
+                //processBufferData();
+                chunkLoader.refresh();
+            }
         }
 
     }

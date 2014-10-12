@@ -274,7 +274,10 @@ public class ChunkManager {
                 }
                 if (type != Type.AIR) {
                     if (block == Type.AIR) {
-                        setActiveBlock(vector, type);
+                        if(type > 0)
+                            setActiveBlock(vector, type);
+                        else
+                            waterHandler.add(new Water(toWorldX(vector.x),toWorldY(vector.y),toWorldZ(vector.z), type));
                         return;
                     }
                 }
@@ -684,9 +687,6 @@ public class ChunkManager {
         Chunk chunk = getActiveChunk(getChunkX(v.x), getChunkY(v.y), getChunkZ(v.z));
         if (chunk != null) {
             chunk.blocks[getX(v.x)][getY(v.y)][getZ(v.z)] = type;
-            if (type == Type.WATER) {
-                waterHandler.add(new Water(toWorldX(v.x), toWorldY(v.y), toWorldZ(v.z), 0, 0, 0, 0));
-            }
             updateThread.update(chunk);
             checkAdjacentChunks(chunk, getX(v.x), getY(v.y), getZ(v.z));
             //processBufferData();
@@ -699,9 +699,6 @@ public class ChunkManager {
         Chunk chunk = getActiveChunk(getChunkX(v.x), getChunkY(v.y), getChunkZ(v.z));
         if (chunk != null) {
             chunk.blocks[getX(v.x)][getY(v.y)][getZ(v.z)] = type;
-            if (type == Type.WATER) {
-                waterHandler.add(new Water(toWorldX(v.x), toWorldY(v.y), toWorldZ(v.z), 0, 0, 0, 0));
-            }
         }
     }
 

@@ -6,7 +6,7 @@ package voxels.ChunkManager;
  */
 public final class Type {
 
-
+    public static final byte AIR = 0;
     public static final byte WATER = 1;
     public static final byte WOOD = 2;
     public static final byte LEAVES = 3;
@@ -20,16 +20,16 @@ public final class Type {
     public static final byte ROCKSAND = 11;
     public static final byte SNOW = 12;
     
-    public static final byte WATER1 = 111;
-    public static final byte WATER2 = 112;
-    public static final byte WATER3 = 113;
-    public static final byte WATER4 = 114;
-    public static final byte WATER5 = 115;
-    public static final byte WATER6 = 116;
-    public static final byte WATER7 = 117;
-    public static final byte WATER8 = 118;
-    public static final byte WATER9 = 119;
-    public static final byte WATER10 = 120;
+    public static final byte WATER1 = -1;
+    public static final byte WATER2 = -2;
+    public static final byte WATER3 = -3;
+    public static final byte WATER4 = -4;
+    public static final byte WATER5 = -5;
+    public static final byte WATER6 = -6;
+    public static final byte WATER7 = -7;
+    public static final byte WATER8 = -8;
+    public static final byte WATER9 = -9;
+    public static final byte WATER10 = -10;
     
-    public static final byte AIR = 127;
+    
 }

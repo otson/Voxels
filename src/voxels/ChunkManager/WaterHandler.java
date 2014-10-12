@@ -34,6 +34,7 @@ public class WaterHandler {
     }
 
     public void simulateWaters() {
+        chunksToUpdate = new ConcurrentHashMap<>();
         for (Water water : waters) {
             byte block = chunkManager.getActiveBlock(water.x, water.y - 1, water.z);
             if (block == Type.AIR) {
@@ -42,13 +43,14 @@ public class WaterHandler {
                 int chunkX = getChunkX(water.x);
                 int chunkY = getChunkY(water.y);
                 int chunkZ = getChunkZ(water.z);
-                //chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ).hashCode(), new Coordinates(chunkX, chunkY, chunkZ));
+                chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ).hashCode(), new Coordinates(chunkX, chunkY, chunkZ));
                 water.y--;
             }
 
         }
-//        for (Coordinates coord : chunksToUpdate.values()) {
-//            chunkManager.updateChunk(chunkManager.getActiveChunk(coord.x, coord.y, coord.z), 0, 0, 0);
-//        }
+        for (Coordinates coord : chunksToUpdate.values()) {
+            chunkManager.updateChunk(chunkManager.getActiveChunk(coord.x, coord.y, coord.z), 0, 0, 0);
+            System.out.println("Updated chunk");
+        }
     }
 }

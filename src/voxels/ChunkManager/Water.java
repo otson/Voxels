@@ -39,6 +39,10 @@ public class Water implements Serializable{
     public void decreaseLevel() {
         this.level--;
     }
+    
+    public void decreaseLevel(int i) {
+        this.level-=i;
+    }
 
     public void increaseLevel(int increase) {
         this.level += increase;

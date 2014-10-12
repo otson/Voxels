@@ -479,9 +479,9 @@ public class Voxels {
 
             updateView();
             processInput(getDelta());
-            if (fps % 10 == 0) {
+            //if (fps % 10 == 0) {
                 waterHandler.simulateWaters();
-            }
+            //}
             chunkManager.processBufferData();
             //npcManager.processMonsters();
             itemHandler.processItemPhysics();
@@ -737,15 +737,17 @@ public class Voxels {
         }
 
         if (Mouse.isGrabbed()) {
-            while (Mouse.next()) {
-                if (Mouse.getEventButtonState()) {
-                    if (Mouse.getEventButton() == 0) {
-                        chunkManager.castRay(Type.WATER10);
-                    } else if (Mouse.getEventButton() == 1) {
-                        chunkManager.castRay(Type.AIR);
-                    }
-                }
-            }
+            if(Mouse.isButtonDown(0))
+                chunkManager.castRay(Type.WATER10);
+//            while (Mouse.next()) {
+//                if (Mouse.getEventButtonState()) {
+//                    if (Mouse.getEventButton() == 0) {
+//                        chunkManager.castRay(Type.WATER10);
+//                    } else if (Mouse.getEventButton() == 1) {
+//                        chunkManager.castRay(Type.AIR);
+//                    }
+//                }
+//            }
             camera.processMouse();
             camera.processKeyboard(delta, 1.4f);
 //            if (NIGHT_CYCLE) {

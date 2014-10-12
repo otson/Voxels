@@ -113,35 +113,35 @@ public class ChunkManager {
      * equal to the number of cores in the system CPU.
      */
     public static int maxThreads = Runtime.getRuntime().availableProcessors() - 4;
-
+    
     private ConcurrentHashMap<Integer, byte[]> map;
     private ConcurrentHashMap<Integer, Handle> handles;
-
+    
     private ConcurrentHashMap<Integer, BlockingQueue> blockBuffer;
     private ConcurrentHashMap<Integer, Chunk> activeChunkMap;
-
+    
     private ArrayList<Data> dataToProcess;
     private ChunkCoordinateCreator chunkCreator;
     private ChunkRenderChecker chunkRenderChecker;
     private ActiveChunkLoader chunkLoader;
     private ChunkMaker[] threads = new ChunkMaker[maxThreads];
     private ChunkMaker updateThread;
-
+    
     private BlockingQueue<Pair> queue = new LinkedBlockingQueue<>();
-
+    
     private ConcurrentHashMap<Integer, Integer> decompLengths;
-
+    
     private boolean atMax = false;
     private boolean inLoop;
     private boolean initialLoad = true;
     private boolean generate = false;
     private int lastMessage = -1;
-
+    
     private boolean wait = false;
     private int waterCounter;
     private ItemHandler itemHandler;
     private WaterHandler waterHandler;
-
+    
     public ChunkManager() {
         decompLengths = new ConcurrentHashMap<>();
         map = new ConcurrentHashMap<>(16, 0.9f, 1);
@@ -156,7 +156,7 @@ public class ChunkManager {
         chunkRenderChecker = new ChunkRenderChecker(queue, map, this);
         chunkRenderChecker.setPriority(Thread.MAX_PRIORITY);
     }
-
+    
     public Chunk getChunk(int chunkX, int chunkY, int chunkZ) {
         if (activeChunkMap.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
             return activeChunkMap.get(new Pair(chunkX, chunkY, chunkZ).hashCode());
@@ -166,7 +166,7 @@ public class ChunkManager {
             return null;
         }
     }
-
+    
     public Handle getHandle(int x, int y, int z) {
         if (handles.containsKey(new Pair(x, y, z).hashCode())) {
             return handles.get(new Pair(x, y, z).hashCode());
@@ -174,11 +174,11 @@ public class ChunkManager {
             return null;
         }
     }
-
+    
     public boolean isChunk(int chunkX, int chunkY, int chunkZ) {
         return map.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode());
     }
-
+    
     public void checkChunkUpdates() {
 
         // if generating and there are free threads to use
@@ -189,14 +189,14 @@ public class ChunkManager {
             chunkCreator.setCurrentChunkX(getCurrentChunkXId());
             chunkCreator.setCurrentChunkZ(getCurrentChunkZId());
             Coordinates coordinates = chunkCreator.getXYZ();
-
+            
             if (coordinates != null) {
-
+                
                 atMax = false;
                 int x = coordinates.x;
                 int y = coordinates.y;
                 int z = coordinates.z;
-
+                
                 int newChunkX = coordinates.x;
                 int newChunkY = coordinates.y;
                 int newChunkZ = coordinates.z;
@@ -206,7 +206,7 @@ public class ChunkManager {
                 threads[threadId] = new ChunkMaker(decompLengths, dataToProcess, newChunkX, newChunkY, newChunkZ, x * Chunk.CHUNK_SIZE, y * Chunk.CHUNK_SIZE, z * Chunk.CHUNK_SIZE, map, this, queue);
                 threads[threadId].setPriority(Thread.MIN_PRIORITY);
                 threads[threadId].start();
-
+                
             } else {
                 // Reached chunk creation distance.
                 atMax = true;
@@ -218,7 +218,7 @@ public class ChunkManager {
                 }
                 initialLoad = false;
             }
-
+            
         }
         // Check if there are threads that are completed
         if (inLoop) {
@@ -235,10 +235,10 @@ public class ChunkManager {
                     inLoop = false;
                 }
             }
-
+            
             if (initialLoad) {
                 if (map.size() > lastMessage) {
-
+                    
                     lastMessage = map.size();
                     String string = "Chunks created: " + (int) ((float) map.size() / (float) ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1) * Chunk.VERTICAL_CHUNKS) * 100) + " % (" + map.size() + "/" + ((Voxels.chunkCreationDistance * 2 + 1) * (Voxels.chunkCreationDistance * 2 + 1) * Chunk.VERTICAL_CHUNKS) + ")";
                     System.out.println(string);
@@ -247,7 +247,7 @@ public class ChunkManager {
             }
         }
     }
-
+    
     public void castRay(byte type) {
         int maxDistance = 5;
         float increment = 0.25f;
@@ -258,15 +258,16 @@ public class ChunkManager {
             } else {
                 vector = Voxels.getDirectionVector(f);
             }
-
+            
             byte block = getActiveBlock(vector);
-
+            
             if (block == -1) {
                 return;
             } else {
                 if (type == Type.AIR) {
                     if (block != Type.UNBREAKABLE && block != Type.AIR) {
                         setActiveBlock(vector, type);
+                        
                         removeBlock.play();
                         if (block > 0) {
                             toDropped(vector, block);
@@ -277,14 +278,17 @@ public class ChunkManager {
                 if (type != Type.AIR) {
                     if (block == Type.AIR) {
                         setActiveBlock(vector, type);
-
+                        if (type < 0) {
+                            waterHandler.add(new Water(toWorldX(vector.x), toWorldY(vector.y), toWorldZ(vector.z), type));
+                        }
+                        
                         return;
                     }
                 }
             }
         }
     }
-
+    
     public void bigRemove() {
         int size = 12;
         int maxDistance = 50;
@@ -349,7 +353,7 @@ public class ChunkManager {
                                 if (zInChunk == Chunk.CHUNK_SIZE - 1) {
                                     chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ + 1).hashCode(), new Coordinates(chunkX, chunkY, chunkZ + 1));
                                 }
-
+                                
                             }
                         }
                     }
@@ -363,18 +367,18 @@ public class ChunkManager {
             updateChunk(getActiveChunk(coord.x, coord.y, coord.z));
         }
     }
-
+    
     public void updateChunk(Chunk chunk) {
         updateThread.update(chunk);
         chunkLoader.refresh();
     }
-
+    
     public void updateChunk(Chunk chunk, int x, int y, int z) {
         updateThread.update(chunk);
         checkAdjacentChunks(chunk, x, y, z);
         chunkLoader.refresh();
     }
-
+    
     public void createVBO(Chunk chunk) {
         long start = System.nanoTime();
         ChunkMaker cm = new ChunkMaker(decompLengths, dataToProcess, chunk.xId, chunk.yId, chunk.zId, chunk.xCoordinate, chunk.yCoordinate, chunk.zCoordinate, map, this, queue);
@@ -385,9 +389,9 @@ public class ChunkManager {
         //System.out.println("CreateVBO took: " + (System.nanoTime() - start) / 1000000 + " ms.");
 
     }
-
+    
     public void createVBOs() {
-
+        
         Collection c = activeChunkMap.values();
         System.out.println("Values in activeChunkMap: " + activeChunkMap.size());
         Iterator itr = c.iterator();
@@ -401,7 +405,7 @@ public class ChunkManager {
         }
         //();
     }
-
+    
     public void processBufferData() {
         int count = 0;
         if (dataToProcess != null) {
@@ -421,53 +425,53 @@ public class ChunkManager {
             }
         }
     }
-
+    
     public void stopGeneration() {
         generate = false;
     }
-
+    
     public void startGeneration() {
         generate = true;
     }
-
+    
     public void updateBuffers(Data data) {
         glBindBuffer(GL_ARRAY_BUFFER, data.vertexHandle);
         glBufferData(GL_ARRAY_BUFFER, data.vertexData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+        
         glBindBuffer(GL_ARRAY_BUFFER, data.normalHandle);
         glBufferData(GL_ARRAY_BUFFER, data.normalData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+        
         glBindBuffer(GL_ARRAY_BUFFER, data.texHandle);
         glBufferData(GL_ARRAY_BUFFER, data.texData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
-
+    
     public void createBuffers(Data data) {
-
+        
         int vboVertexHandle = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
         glBufferData(GL_ARRAY_BUFFER, data.vertexData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+        
         int vboNormalHandle = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboNormalHandle);
         glBufferData(GL_ARRAY_BUFFER, data.normalData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+        
         int vboTexHandle = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboTexHandle);
         glBufferData(GL_ARRAY_BUFFER, data.texData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+        
         handles.put(new Pair(data.chunkX, data.chunkY, data.chunkZ).hashCode(), new Handle(vboVertexHandle, vboNormalHandle, vboTexHandle, data.vertices));
     }
-
+    
     public boolean isAtMax() {
         return atMax;
     }
-
+    
     public Chunk toChunk(byte[] bytes) {
 //        LZ4FastDecompressor decompressor = factory.fastDecompressor();
 //        //byte[] restored = new byte[decompressedLength];
@@ -480,18 +484,18 @@ public class ChunkManager {
             temp = LZFDecoder.decode(bytes);
             //System.out.println("Decoding: " + (System.nanoTime() - start) / 1000000 + " ms.");
             return deserialize(temp);
-
+            
         } catch (LZFException ex) {
             Logger.getLogger(ChunkManager.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
-
+    
     public static Chunk deserialize(byte[] data) {
         try {
             return (Chunk) new FSTObjectInput(new ByteArrayInputStream(data)).readObject();
-
+            
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(ChunkManager.class
                     .getName()).log(Level.SEVERE, null, ex);
@@ -523,25 +527,25 @@ public class ChunkManager {
 //        }
         return null;
     }
-
+    
     public int chunkAmount() {
         return map.size();
     }
-
+    
     public ActiveChunkLoader getChunkLoader() {
         return chunkLoader;
     }
-
+    
     private boolean hasFreeThreads() {
         for (int i = 0; i < threads.length; i++) {
             if (threads[i] == null) {
                 return true;
             }
         }
-
+        
         return false;
     }
-
+    
     private int getFreeThread() {
         for (int i = 0; i < threads.length; i++) {
             if (threads[i] == null) {
@@ -552,27 +556,27 @@ public class ChunkManager {
         System.out.println("Wrong");
         return -1;
     }
-
+    
     private boolean allThreadsFinished() {
-
+        
         for (int i = 0; i < threads.length; i++) {
             if (threads[i] != null) {
                 return false;
             }
         }
-
+        
         return true;
-
+        
     }
-
+    
     public void setWait(boolean wait) {
         this.wait = wait;
     }
-
+    
     public void putUncompressed(Chunk chunk) {
         chunkLoader.put(chunk);
     }
-
+    
     private void checkAdjacentChunks(Chunk chunk, int x, int y, int z) {
         /**
          *
@@ -598,27 +602,27 @@ public class ChunkManager {
             updateThread.update(getActiveChunk(chunk.xId, chunk.yId, chunk.zId - 1));
         }
     }
-
+    
     public int getTotalChunks() {
         return map.size();
     }
-
+    
     public void startChunkRenderChecker() {
         chunkRenderChecker.start();
     }
-
+    
     public ChunkRenderChecker getChunkRenderChecker() {
         return chunkRenderChecker;
     }
-
+    
     public ConcurrentHashMap<Integer, BlockingQueue> getBlockBuffer() {
         return blockBuffer;
     }
-
+    
     public ConcurrentHashMap<Integer, byte[]> getMap() {
         return map;
     }
-
+    
     public Chunk getActiveChunk(int currentChunkXId, int currentChunkYId, int currentChunkZId) {
         Chunk chunk = activeChunkMap.get(new Pair(currentChunkXId, currentChunkYId, currentChunkZId).hashCode());
         if (chunk == null) {
@@ -639,7 +643,7 @@ public class ChunkManager {
         int yId = toYid(y);
         int zId = toZid(z);
         Chunk chunk = getChunk(xId, yId, zId);
-
+        
         return chunk.blocks[toX(x)][toY(y)][toZ(z)];
     }
 
@@ -665,7 +669,7 @@ public class ChunkManager {
             System.out.println("Failed to in setActiveBlock");
         }
     }
-
+    
     public byte getActiveBlock(Vector3f v) {
         Chunk chunk = getActiveChunk(getChunkX(v.x), getChunkY(v.y), getChunkZ(v.z));
         if (chunk != null) {
@@ -674,60 +678,58 @@ public class ChunkManager {
             return -1;
         }
     }
-
+    
     public byte getActiveBlock(float x, float y, float z) {
         return getActiveBlock(new Vector3f(x, y, z));
     }
-
+    
     public void setActiveBlock(float x, float y, float z, byte type) {
         setActiveBlock(new Vector3f(x, y, z), type);
     }
-
+    
     public void setActiveBlock(Vector3f v, byte type) {
         Chunk chunk = getActiveChunk(getChunkX(v.x), getChunkY(v.y), getChunkZ(v.z));
         if (chunk != null) {
             chunk.blocks[getX(v.x)][getY(v.y)][getZ(v.z)] = type;
-            if (type < 0) {
-                waterHandler.add(new Water(toWorldX(v.x), toWorldY(v.y), toWorldZ(v.z), type));
-            } else {
+            if (type >= 0) {
                 updateThread.update(chunk);
                 checkAdjacentChunks(chunk, getX(v.x), getY(v.y), getZ(v.z));
                 //processBufferData();
                 chunkLoader.refresh();
             }
         }
-
+        
     }
-
+    
     public void setActiveBlockNoUpdate(Vector3f v, byte type) {
         Chunk chunk = getActiveChunk(getChunkX(v.x), getChunkY(v.y), getChunkZ(v.z));
         if (chunk != null) {
             chunk.blocks[getX(v.x)][getY(v.y)][getZ(v.z)] = type;
         }
     }
-
+    
     public ConcurrentHashMap<Integer, Handle> getHandles() {
         return handles;
     }
-
+    
     public ArrayList<Data> getDataToProcess() {
         return dataToProcess;
     }
-
+    
     public BlockingQueue<Pair> getQueue() {
         return queue;
     }
-
+    
     public void toDropped(Vector3f coords, byte type) {
         itemHandler.put(new ItemLocation(coords.x, coords.y, coords.z, type));
     }
-
+    
     public void setItemHandler(ItemHandler itemHandler) {
         this.itemHandler = itemHandler;
     }
-
+    
     public void setWaterHandler(WaterHandler waterHandler) {
         this.waterHandler = waterHandler;
     }
-
+    
 }

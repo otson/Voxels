@@ -255,9 +255,9 @@ public class Voxels {
         camera = InitCamera();
         itemHandler = new ItemHandler(chunkManager);
         npcManager = new npcHandler(chunkManager, camera);
-        for (int i = 0; i < 100; i++) {
-            npcManager.addNPC((float) (500f * Math.random() - 250f), (float) (150f * Math.random() + 100f), (float) (500f * Math.random() - 250f), chunkManager);
-        }
+//        for (int i = 0; i < 100; i++) {
+//            npcManager.addNPC((float) (500f * Math.random() - 250f), (float) (150f * Math.random() + 100f), (float) (500f * Math.random() - 250f), chunkManager);
+//        }
     }
 
     private static void initShaders2() {
@@ -481,14 +481,12 @@ public class Voxels {
             updateView();
             processInput(getDelta());
             //if (fps % 10 == 0) {
-                //waterHandler.simulateWaters();
+            waterHandler.simulateWaters();
             //}
             chunkManager.processBufferData();
-            npcManager.processMonsters();
+            //npcManager.processMonsters();
             itemHandler.processItemPhysics();
-            glUseProgram(shaderProgram);
             render();
-            glUseProgram(0);
             renderDebugText();
             updateFPS();
             Display.update();
@@ -612,6 +610,20 @@ public class Voxels {
             glTranslatef(-item.x * 2, -item.y * 2, -item.z * 2);
 
         }
+        glScalef(2f,2f,2f);
+        // render water
+        glBindBuffer(GL_ARRAY_BUFFER, waterHandler.vertexHandle);
+        glVertexPointer(3, GL_FLOAT, 0, 0L);
+        glBindBuffer(GL_ARRAY_BUFFER, waterHandler.normalHandle);
+        glNormalPointer(GL_FLOAT, 0, 0L);
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_NORMAL_ARRAY);
+        glDrawArrays(GL_QUADS, 0, waterHandler.vertices);
+        glDisableClientState(GL_NORMAL_ARRAY);
+        glDisableClientState(GL_VERTEX_ARRAY);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        // set variables for debug info
         DebugInfo.activeItems = activeItems;
         DebugInfo.verticesDrawn = vertexCount;
         DebugInfo.activeNPCs = npcCount;
@@ -1137,17 +1149,19 @@ public class Voxels {
     }
 
     public static byte getTypeNoise(int x, int z) {
-        double noise = FastNoise.noise(x/1000f+1000, z/1000f,7)/255f;
-        if(noise < 0.35f)
+        double noise = FastNoise.noise(x / 1000f + 1000, z / 1000f, 7) / 255f;
+        if (noise < 0.35f) {
             return Type.SAND;
-        if(noise < 0.40f)
+        }
+        if (noise < 0.40f) {
             return Type.ROCKSAND;
-//        if(noise > 0.65f)
-//            return Type.SNOW;
-//        if(noise > 0.60f)
-//            return Type.ROCKSAND; 
-        else
+        } //        if(noise > 0.65f)
+        //            return Type.SNOW;
+        //        if(noise > 0.60f)
+        //            return Type.ROCKSAND; 
+        else {
             return Type.DIRT;
+        }
     }
 
 }

@@ -268,16 +268,19 @@ public class ChunkManager {
                     if (block != Type.UNBREAKABLE && block != Type.AIR) {
                         setActiveBlock(vector, type);
                         removeBlock.play();
-                        toDropped(vector, block);
+                        if(block > 0)
+                            toDropped(vector, block);
                         return;
                     }
                 }
                 if (type != Type.AIR) {
                     if (block == Type.AIR) {
-                        if(type > 0)
                             setActiveBlock(vector, type);
-                        else
+                        if(type < 0){
                             waterHandler.add(new Water(toWorldX(vector.x),toWorldY(vector.y),toWorldZ(vector.z), type));
+                            System.out.println("New water: "+vector.x+ "  "+vector.y+" "+vector.z);
+                            System.out.println("New water int: "+toWorldX(vector.x)+ "  "+toWorldY(vector.y)+" "+toWorldZ(vector.z));
+                        }
                         return;
                     }
                 }

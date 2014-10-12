@@ -49,11 +49,10 @@ public class WaterHandler {
     }
 
     public void add(Water water) {
-        int hash = new Pair(water.x,water.y,water.z).hashCode();
-        if(!waters.containsKey(hash)){
+        int hash = new Pair(water.x, water.y, water.z).hashCode();
+        if (!waters.containsKey(hash)) {
             waters.put(hash, water);
-        }
-        else{
+        } else {
             waters.get(hash).setLevel(water.getLevel());
         }
     }
@@ -62,27 +61,84 @@ public class WaterHandler {
         waters.putAll(newWaters);
         newWaters.clear();
         for (Water water : waters.values()) {
+            boolean active = false;
             byte block = chunkManager.getActiveBlock(water.x, water.y - 1, water.z);
             if (block == Type.AIR) {
                 chunkManager.setActiveBlock(new Vector3f(water.x, water.y, water.z), Type.AIR);
-                water.y--;
-            } else if (water.getLevel() > 1) {
+                chunkManager.setActiveBlock(new Vector3f(water.x, water.y-1, water.z), (byte) -water.getLevel());
+                waters.remove(new Pair(water.x,water.y, water.z).hashCode());
+            }
+            else if (block < 0) {
+                int wLevel = -block;
+                if(wLevel != 10){
+                    chunkManager.setActiveBlock(new Vector3f(water.x, water.y-1, water.z), (byte) (block - 1));
+                    water.decreaseLevel();
+                    active = true;
+                    if(water.getLevel() == 0){
+                        chunkManager.setActiveBlock(new Vector3f(water.x, water.y, water.z), Type.AIR);
+                        waters.remove(new Pair(water.x,water.y, water.z).hashCode());
+                    }
+                }
+            }
+            else if (water.getLevel() > 1) {
                 byte rBlock = chunkManager.getActiveBlock(water.x + 1, water.y, water.z);
                 byte lBlock = chunkManager.getActiveBlock(water.x - 1, water.y, water.z);
                 byte fBlock = chunkManager.getActiveBlock(water.x, water.y, water.z + 1);
                 byte bBlock = chunkManager.getActiveBlock(water.x, water.y, water.z - 1);
                 if (rBlock == Type.AIR) {
                     water.decreaseLevel();
-                    chunkManager.setActiveBlock(new Vector3f(water.x+1, water.y, water.z), Type.WATER1);
-                }
-                else if(rBlock < 0){
+                    active = true;
+                    chunkManager.setActiveBlock(new Vector3f(water.x + 1, water.y, water.z), Type.WATER1);
+                } else if (rBlock < 0) {
                     int wLevel = -rBlock;
-                    if(wLevel + 1 < water.getLevel()){
+                    if (wLevel + 1 < water.getLevel()) {
                         water.decreaseLevel();
-                        chunkManager.setActiveBlock(new Vector3f(water.x+1, water.y, water.z), (byte) (rBlock-1));
+                        active = true;
+                        chunkManager.setActiveBlock(new Vector3f(water.x + 1, water.y, water.z), (byte) (rBlock - 1));
                     }
                 }
-
+                if (water.getLevel() > 1) {
+                    if (lBlock == Type.AIR) {
+                        water.decreaseLevel();
+                        active = true;
+                        chunkManager.setActiveBlock(new Vector3f(water.x - 1, water.y, water.z), Type.WATER1);
+                    } else if (lBlock < 0) {
+                        int wLevel = -lBlock;
+                        if (wLevel + 1 < water.getLevel()) {
+                            water.decreaseLevel();
+                            active = true;
+                            chunkManager.setActiveBlock(new Vector3f(water.x - 1, water.y, water.z), (byte) (lBlock - 1));
+                        }
+                    }
+                }
+                if (water.getLevel() > 1) {
+                    if (fBlock == Type.AIR) {
+                        water.decreaseLevel();
+                        active = true;
+                        chunkManager.setActiveBlock(new Vector3f(water.x, water.y, water.z+1), Type.WATER1);
+                    } else if (fBlock < 0) {
+                        int wLevel = -fBlock;
+                        if (wLevel + 1 < water.getLevel()) {
+                            water.decreaseLevel();
+                            active = true;
+                            chunkManager.setActiveBlock(new Vector3f(water.x, water.y, water.z+1), (byte) (fBlock - 1));
+                        }
+                    }
+                }
+                if (water.getLevel() > 1) {
+                    if (bBlock == Type.AIR) {
+                        water.decreaseLevel();
+                        active = true;
+                        chunkManager.setActiveBlock(new Vector3f(water.x, water.y, water.z-1), Type.WATER1);
+                    } else if (bBlock < 0) {
+                        int wLevel = -bBlock;
+                        if (wLevel + 1 < water.getLevel()) {
+                            water.decreaseLevel();
+                            active = true;
+                            chunkManager.setActiveBlock(new Vector3f(water.x, water.y, water.z-1), (byte) (bBlock - 1));
+                        }
+                    }
+                }
             }
 
         }
@@ -99,7 +155,7 @@ public class WaterHandler {
             int x = water.x;
             int y = water.y;
             int z = water.z;
-            float h = (water.getLevel()/10f);
+            float h = (water.getLevel() / 10f);
             vertexData.put(new float[]{0 + x, h + y, 0 + z, 0 + x, h + y, 1 + z, 1 + x, h + y, 1 + z, 1 + x, h + y, 0 + z, // top
                 0 + x, 0 + y, 0 + z, 1 + x, 0 + y, 0 + z, 1 + x, 0 + y, 1 + z, 0 + x, 0 + y, 1 + z, // bottom
                 0 + x, h + y, 0 + z, 0 + x, 0 + y, 0 + z, 0 + x, 0 + y, 1 + z, 0 + x, h + y, 1 + z, // left

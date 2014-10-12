@@ -121,8 +121,8 @@ public class Voxels {
     public static int chunkCreationDistance = 2;
     public static int inGameCreationDistance = 9;
     public static int chunkRenderDistance = 8;
-    public static final int DISPLAY_WIDTH = 1920;
-    public static final int DISPLAY_HEIGHT = 1200;
+    public static final int DISPLAY_WIDTH = 1280;
+    public static final int DISPLAY_HEIGHT = 800;
     public static Texture atlas;
     public static Sound running;
     public static Sound jumping;
@@ -158,6 +158,8 @@ public class Voxels {
         initOpenGL();
         //initFog();
         initLighting();
+//        initShaders();
+//        initShaderLighting();
         initFont();
         initTextures();
         initRenders();
@@ -224,17 +226,17 @@ public class Voxels {
     private static void initDisplay() {
         try {
             DisplayMode displayMode = null;
-            DisplayMode[] modes = Display.getAvailableDisplayModes();
+//            DisplayMode[] modes = Display.getAvailableDisplayModes();
+//
+//            for (int i = 0; i < modes.length; i++) {
+//                if (modes[i].getWidth() == DISPLAY_WIDTH
+//                        && modes[i].getHeight() == DISPLAY_HEIGHT
+//                        && modes[i].isFullscreenCapable()) {
+//                    displayMode = modes[i];
+//                }
+//            }
 
-            for (int i = 0; i < modes.length; i++) {
-                if (modes[i].getWidth() == DISPLAY_WIDTH
-                        && modes[i].getHeight() == DISPLAY_HEIGHT
-                        && modes[i].isFullscreenCapable()) {
-                    displayMode = modes[i];
-                }
-            }
-
-            Display.setDisplayMode(displayMode);
+            Display.setDisplayMode(new DisplayMode(DISPLAY_WIDTH, DISPLAY_HEIGHT));
             Display.setFullscreen(true);
             Display.setVSyncEnabled(true);
             Display.setTitle("Voxels");
@@ -478,14 +480,15 @@ public class Voxels {
 
             updateView();
             processInput(getDelta());
-            if (fps % 10 == 0) {
-                waterHandler.simulateWaters();
-            }
+            //if (fps % 10 == 0) {
+                //waterHandler.simulateWaters();
+            //}
             chunkManager.processBufferData();
             npcManager.processMonsters();
             itemHandler.processItemPhysics();
-
+            glUseProgram(shaderProgram);
             render();
+            glUseProgram(0);
             renderDebugText();
             updateFPS();
             Display.update();
@@ -1011,9 +1014,9 @@ public class Voxels {
     public static int getNoise(float x, float z) {
         int noise;
         if (USE_SEED) {
-            noise = (int) ((FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS) + SEED, z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS) + SEED, 5)) * (Chunk.CHUNK_SIZE / 256f)) - 1;
+            noise = (int) ((FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS) + 1000000, z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS) + 1000000, 5)) * (Chunk.CHUNK_SIZE / 255f)) - 1;
         } else {
-            noise = (int) (FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), 5) * ((float) (Chunk.VERTICAL_CHUNKS * Chunk.CHUNK_SIZE) / 256f)) - 1;
+            noise = (int) (FastNoise.noise(x / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), z / (1f * TERRAIN_SMOOTHNESS * TERRAIN_SMOOTHNESS), 5) * ((float) (Chunk.VERTICAL_CHUNKS * Chunk.CHUNK_SIZE) / 255f)) - 1;
         }
         noise *= GROUND_SHARE;
         return noise;
@@ -1088,15 +1091,15 @@ public class Voxels {
     }
 
     public static int toWorldX(float x) {
-        return Chunk.CHUNK_SIZE * getChunkX(x) - getX(x);
+        return (x >= 0) ? (int) x : (int) (x - 1);
     }
 
     public static int toWorldY(float y) {
-        return Chunk.CHUNK_SIZE * getChunkY(y) - getY(y);
+        return (y >= 0) ? (int) y : (int) (y - 1);
     }
 
     public static int toWorldZ(float z) {
-        return Chunk.CHUNK_SIZE * getChunkZ(z) - getZ(z);
+        return (z >= 0) ? (int) z : (int) (z - 1);
     }
 
     public static void putToBuffer(byte type, int x, int y, int z) {
@@ -1139,6 +1142,10 @@ public class Voxels {
             return Type.SAND;
         if(noise < 0.40f)
             return Type.ROCKSAND;
+//        if(noise > 0.65f)
+//            return Type.SNOW;
+//        if(noise > 0.60f)
+//            return Type.ROCKSAND; 
         else
             return Type.DIRT;
     }

@@ -20,8 +20,8 @@ public class Chunk implements Serializable {
     public static final int CHUNK_SIZE = 32;
     public static final int VERTICAL_CHUNKS = 8;
     public static final int WORLD_HEIGHT = CHUNK_SIZE * VERTICAL_CHUNKS;
-    public static final int WATER_HEIGHT = 100;
-    public static final int SHORE_HEIGHT = 102;
+    public static final int WATER_HEIGHT = 85;
+    public static final int SHORE_HEIGHT = WATER_HEIGHT+2;
     public static final int FORCED_AIR_LAYERS = 10;
     public static final float GROUND_SHARE = 0.9f;
     public static final int DIRT_LAYERS = 5;
@@ -115,7 +115,7 @@ public class Chunk implements Serializable {
                             }
 
                         }
-                        if (y + yCoordinate >= WATER_HEIGHT && y + yCoordinate <= SHORE_HEIGHT) {
+                        if (y + yCoordinate >= WATER_HEIGHT && y + yCoordinate <= SHORE_HEIGHT || y + yCoordinate < WATER_HEIGHT && y + yCoordinate == maxHeights[x][z]) {
                             if (blocks[x][y][z] != Type.AIR) {
                                 blocks[x][y][z] = Type.SHORE;
                             }

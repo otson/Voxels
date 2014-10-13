@@ -87,7 +87,7 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 25;
+    public static final int TERRAIN_SMOOTHNESS = 18;
     public static final int THREE_DIM_SMOOTHNESS = 50;
     /**
      * Set player's height. One block's height is 1.
@@ -389,7 +389,7 @@ public class Voxels {
         glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
 
         // Set background to sky blue
-        glClearColor(0f / 255f, 0f / 255f, 130f / 255f, 1.0f);
+        glClearColor(0f / 255f, 0f / 255f, 150f / 255f, 1.0f);
         START_TIME = (System.nanoTime() / 1000000);
     }
 

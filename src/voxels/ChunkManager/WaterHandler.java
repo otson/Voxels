@@ -171,7 +171,7 @@ public class WaterHandler {
 
         }
         for (Water water : waters.values()) {
-            if (water.getLevel() == 0) {
+            if (water.getLevel() <= 0) {
                 waters.remove(new Pair(water.x, water.y, water.z).hashCode());
                 System.out.println("removed");
             } else {

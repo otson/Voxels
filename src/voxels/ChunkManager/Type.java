@@ -18,7 +18,7 @@ public final class Type {
     public static final byte SAND = 9;
     public static final byte CACTUS = 10;
     public static final byte ROCKSAND = 11;
-    public static final byte SNOW = 12;
+    public static final byte SHORE = 12;
     
     public static final byte WATER1 = -1;
     public static final byte WATER2 = -2;

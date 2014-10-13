@@ -389,7 +389,7 @@ public class Voxels {
         glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
 
         // Set background to sky blue
-        glClearColor(0f / 255f, 0f / 255f, 190f / 255f, 1.0f);
+        glClearColor(0f / 255f, 0f / 255f, 130f / 255f, 1.0f);
         START_TIME = (System.nanoTime() / 1000000);
     }
 
@@ -480,13 +480,13 @@ public class Voxels {
             updateView();
             processInput(getDelta());
             //if(fps % 6 == 0)
-            waterHandler.simulateWaters();
+            //waterHandler.simulateWaters();
 
             chunkManager.processBufferData();
             //npcManager.processMonsters();
             itemHandler.processItemPhysics();
             render();
-            //renderDebugText();
+            renderDebugText();
             updateFPS();
             Display.update();
             Display.sync(60);

@@ -68,9 +68,9 @@ public class WaterHandler {
                 boolean falling = false;
                 if (waters.containsKey(new Pair(water.x, water.y - 1, water.z).hashCode())) {
                     Water below = waters.get(new Pair(water.x, water.y - 1, water.z).hashCode());
-                    if (below.getLevel() < 7) {
+                    if (below.getLevel() < 10) {
                         water.setActive(true);
-                        below.setLevel(7);
+                        below.setLevel(10);
                         
                     }
                     falling = true;
@@ -79,7 +79,7 @@ public class WaterHandler {
                         Water below = stableWaters.remove(new Pair(water.x, water.y - 1, water.z).hashCode());
                         waters.put(new Pair(water.x, water.y - 1, water.z).hashCode(), below);
                         water.setActive(true);
-                        below.setLevel(7);
+                        below.setLevel(10);
                     }
                     falling = true;
                 } else {
@@ -264,7 +264,7 @@ public class WaterHandler {
             int x = water.x;
             int y = water.y;
             int z = water.z;
-            float h = (water.getLevel() / 7f);
+            float h = (water.getLevel() / 10f);
             vertexData.put(new float[]{0 + x, h + y, 0 + z, 0 + x, h + y, 1 + z, 1 + x, h + y, 1 + z, 1 + x, h + y, 0 + z, // top
                 0 + x, 0 + y, 0 + z, 1 + x, 0 + y, 0 + z, 1 + x, 0 + y, 1 + z, 0 + x, 0 + y, 1 + z, // bottom
                 0 + x, h + y, 0 + z, 0 + x, 0 + y, 0 + z, 0 + x, 0 + y, 1 + z, 0 + x, h + y, 1 + z, // left

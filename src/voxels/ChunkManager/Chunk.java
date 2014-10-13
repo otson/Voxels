@@ -20,7 +20,8 @@ public class Chunk implements Serializable {
     public static final int CHUNK_SIZE = 32;
     public static final int VERTICAL_CHUNKS = 8;
     public static final int WORLD_HEIGHT = CHUNK_SIZE * VERTICAL_CHUNKS;
-    public static final int WATER_HEIGHT = -1;
+    public static final int WATER_HEIGHT = 100;
+    public static final int SHORE_HEIGHT = 102;
     public static final int FORCED_AIR_LAYERS = 10;
     public static final float GROUND_SHARE = 0.9f;
     public static final int DIRT_LAYERS = 5;
@@ -114,8 +115,20 @@ public class Chunk implements Serializable {
                             }
 
                         }
+                        if (y + yCoordinate >= WATER_HEIGHT && y + yCoordinate <= SHORE_HEIGHT) {
+                            if (blocks[x][y][z] != Type.AIR) {
+                                blocks[x][y][z] = Type.SHORE;
+                            }
+                        }
+
+                        if (y + yCoordinate <= WATER_HEIGHT) {
+                            if (blocks[x][y][z] == Type.AIR) {
+                                blocks[x][y][z] = Type.WATER;
+                            }
+                        }
+
                         // add trees
-                        if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 1) {
+                        if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 1 && y + yCoordinate - 1 > SHORE_HEIGHT) {
                             if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate - 1, z + CHUNK_SIZE * zId) == 0) {
                                 if (types[x][z] == Type.DIRT) {
                                     createTree(x + CHUNK_SIZE * xId, y + yCoordinate, z + CHUNK_SIZE * zId);

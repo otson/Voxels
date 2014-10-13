@@ -46,6 +46,8 @@ public class WaterHandler {
         newWaters = new ConcurrentHashMap<>();
         this.chunkManager = chunkManager;
         this.chunkManager.setWaterHandler(this);
+        vertexHandle = glGenBuffers();
+        normalHandle = glGenBuffers();
     }
 
     public void add(Water water) {
@@ -58,12 +60,13 @@ public class WaterHandler {
     }
 
     public void simulateWaters() {
+        long start = System.nanoTime();
         for (Water water : waters.values()) {
             if (!water.isFresh()) {
                 boolean falling = false;
                 if (waters.containsKey(new Pair(water.x, water.y - 1, water.z).hashCode())) {
                     Water below = waters.get(new Pair(water.x, water.y - 1, water.z).hashCode());
-                    if (below.getLevel() != 10) {
+                    if (below.getLevel() < 10) {
                         int missing = 10 - below.getLevel();
                         if (missing >= water.getLevel()) {
                             below.increaseLevel(water.getLevel());
@@ -74,11 +77,18 @@ public class WaterHandler {
                             water.decreaseLevel(missing);
                             falling = true;
                         }
+//                        if(below.getLevel() < 10){
+//                            below.increaseLevel(1);
+//                            water.decreaseLevel(1);
+//                            falling = true;
+//                        }
                     }
                 } else {
-                    byte block = chunkManager.getActiveBlock(water.x, water.y - 1, water.z);
+                    int x = water.x < 0 ? water.x + 1 : water.x;
+                    int z = water.z < 0 ? water.z + 1 : water.z;
+                    byte block = chunkManager.getActiveBlock(x, (float) (water.y - 1), z);
                     if (block == Type.AIR) {
-                        chunkManager.setActiveBlock(new Vector3f(water.x, water.y, water.z), Type.AIR);
+                        chunkManager.setActiveBlock(new Vector3f(z, water.y, z), Type.AIR);
                         water.y--;
                         falling = true;
                     }
@@ -92,7 +102,9 @@ public class WaterHandler {
                                 water.decreaseLevel(1);
                             }
                         } else {
-                            byte block = chunkManager.getActiveBlock(water.x + 1, water.y, water.z);
+                            int x = water.x < 0 ? water.x + 1 : water.x;
+                            int z = water.z < 0 ? water.z + 1 : water.z;
+                            byte block = chunkManager.getActiveBlock(x + 1, water.y, z);
                             if (block == Type.AIR) {
                                 waters.put(new Pair(water.x + 1, water.y, water.z).hashCode(), new Water(water.x + 1, water.y, water.z, Type.WATER1));
                                 water.decreaseLevel(1);
@@ -108,7 +120,9 @@ public class WaterHandler {
                                 water.decreaseLevel(1);
                             }
                         } else {
-                            byte block = chunkManager.getActiveBlock(water.x - 1, water.y, water.z);
+                            int x = water.x < 0 ? water.x + 1 : water.x;
+                            int z = water.z < 0 ? water.z + 1 : water.z;
+                            byte block = chunkManager.getActiveBlock(x - 1, water.y, z);
                             if (block == Type.AIR) {
                                 waters.put(new Pair(water.x - 1, water.y, water.z).hashCode(), new Water(water.x - 1, water.y, water.z, Type.WATER1));
                                 water.decreaseLevel(1);
@@ -124,7 +138,9 @@ public class WaterHandler {
                                 water.decreaseLevel(1);
                             }
                         } else {
-                            byte block = chunkManager.getActiveBlock(water.x, water.y, water.z + 1);
+                            int x = water.x < 0 ? water.x + 1 : water.x;
+                            int z = water.z < 0 ? water.z + 1 : water.z;
+                            byte block = chunkManager.getActiveBlock(x, water.y, z + 1);
                             if (block == Type.AIR) {
                                 waters.put(new Pair(water.x, water.y, water.z + 1).hashCode(), new Water(water.x, water.y, water.z + 1, Type.WATER1));
                                 water.decreaseLevel(1);
@@ -139,7 +155,9 @@ public class WaterHandler {
                                 water.decreaseLevel(1);
                             }
                         } else {
-                            byte block = chunkManager.getActiveBlock(water.x, water.y, water.z - 1);
+                            int x = water.x < 0 ? water.x + 1 : water.x;
+                            int z = water.z < 0 ? water.z + 1 : water.z;
+                            byte block = chunkManager.getActiveBlock(x, water.y, z - 1);
                             if (block == Type.AIR) {
                                 waters.put(new Pair(water.x, water.y, water.z - 1).hashCode(), new Water(water.x, water.y, water.z - 1, Type.WATER1));
                                 water.decreaseLevel(1);
@@ -156,10 +174,16 @@ public class WaterHandler {
             if (water.getLevel() == 0) {
                 waters.remove(new Pair(water.x, water.y, water.z).hashCode());
                 System.out.println("removed");
+            } else {
+                int x = water.x < 0 ? water.x + 1 : water.x;
+                int z = water.z < 0 ? water.z + 1 : water.z;
+                chunkManager.setActiveBlock(new Vector3f(x, water.y, z), (byte) -water.getLevel());
             }
-            chunkManager.setActiveBlock(new Vector3f(water.x, water.y, water.z), (byte) -water.getLevel());
         }
+        //System.out.println("Time to simulate: " + (System.nanoTime() / start) / 1000000 + " ms.");
+        start = System.nanoTime();
         createVBO();
+        //System.out.println("Time to create VBO: " + (System.nanoTime() / start) / 1000000 + " ms.");
     }
 
     private void createVBO() {
@@ -192,12 +216,12 @@ public class WaterHandler {
         vertexData.flip();
         normalData.flip();
 
-        vertexHandle = glGenBuffers();
+        //vertexHandle = 100;//glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vertexHandle);
         glBufferData(GL_ARRAY_BUFFER, vertexData, GL_STREAM_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        normalHandle = glGenBuffers();
+        //normalHandle = 100;//glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, normalHandle);
         glBufferData(GL_ARRAY_BUFFER, normalData, GL_STREAM_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);

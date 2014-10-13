@@ -19,6 +19,7 @@ public class Water implements Serializable{
 
     private int level;
     private boolean fresh;
+    private int stillCount;
 
     public Water(int x, int y, int z,int level) {
         this.x = x;
@@ -26,6 +27,7 @@ public class Water implements Serializable{
         this.z = z;
         this.level = -level;
         fresh = true;
+        stillCount = 0;
     }
 
     public int getLevel() {

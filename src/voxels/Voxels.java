@@ -87,7 +87,7 @@ public class Voxels {
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 250;
+    public static final int TERRAIN_SMOOTHNESS = 25;
     public static final int THREE_DIM_SMOOTHNESS = 50;
     /**
      * Set player's height. One block's height is 1.
@@ -479,9 +479,9 @@ public class Voxels {
 
             updateView();
             processInput(getDelta());
-            //if (fps % 10 == 0) {
-                waterHandler.simulateWaters();
-            //}
+
+            waterHandler.simulateWaters();
+
             chunkManager.processBufferData();
             //npcManager.processMonsters();
             itemHandler.processItemPhysics();
@@ -609,8 +609,9 @@ public class Voxels {
             glTranslatef(-item.x * 2, -item.y * 2, -item.z * 2);
 
         }
-        glScalef(2f,2f,2f);
+        glScalef(2f, 2f, 2f);
         // render water
+        //glTranslatef(1,0,1);
         glBindBuffer(GL_ARRAY_BUFFER, waterHandler.vertexHandle);
         glVertexPointer(3, GL_FLOAT, 0, 0L);
         glBindBuffer(GL_ARRAY_BUFFER, waterHandler.normalHandle);
@@ -621,6 +622,7 @@ public class Voxels {
         glDisableClientState(GL_NORMAL_ARRAY);
         glDisableClientState(GL_VERTEX_ARRAY);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+        //glTranslatef(-1,0,-1);
 
         // set variables for debug info
         DebugInfo.activeItems = activeItems;
@@ -737,17 +739,18 @@ public class Voxels {
         }
 
         if (Mouse.isGrabbed()) {
-            if(Mouse.isButtonDown(0))
-                chunkManager.castRay(Type.WATER10);
-//            while (Mouse.next()) {
-//                if (Mouse.getEventButtonState()) {
-//                    if (Mouse.getEventButton() == 0) {
-//                        chunkManager.castRay(Type.WATER10);
-//                    } else if (Mouse.getEventButton() == 1) {
-//                        chunkManager.castRay(Type.AIR);
-//                    }
-//                }
+//            if (Mouse.isButtonDown(0)) {
+//                chunkManager.castRay(Type.WATER10);
 //            }
+            while (Mouse.next()) {
+                if (Mouse.getEventButtonState()) {
+                    if (Mouse.getEventButton() == 0) {
+                        chunkManager.castRay(Type.WATER10);
+                    } else if (Mouse.getEventButton() == 1) {
+                        chunkManager.castRay(Type.AIR);
+                    }
+                }
+            }
             camera.processMouse();
             camera.processKeyboard(delta, 1.4f);
 //            if (NIGHT_CYCLE) {
@@ -986,7 +989,7 @@ public class Voxels {
     }
 
     public static int toX(int x) {
-        if (x <= 0) {
+        if (x < 0) {
             x = Chunk.CHUNK_SIZE + x % Chunk.CHUNK_SIZE;
         }
         return x % Chunk.CHUNK_SIZE;
@@ -997,7 +1000,7 @@ public class Voxels {
     }
 
     public static int toZ(int z) {
-        if (z <= 0) {
+        if (z < 0) {
             z = Chunk.CHUNK_SIZE + z % Chunk.CHUNK_SIZE;
         }
         return z % Chunk.CHUNK_SIZE;
@@ -1104,15 +1107,15 @@ public class Voxels {
     }
 
     public static int toWorldX(float x) {
-        return (x >= 0) ? (int) x : (int) (x );
+        return (x >= 0) ? (int) x : (int) (x-1);
     }
 
     public static int toWorldY(float y) {
-        return (y >= 0) ? (int) y : (int) (y );
+        return (y >= 0) ? (int) y : (int) (y-1);
     }
 
     public static int toWorldZ(float z) {
-        return (z >= 0) ? (int) z : (int) (z );
+        return (z >= 0) ? (int) z : (int) (z-1);
     }
 
     public static void putToBuffer(byte type, int x, int y, int z) {

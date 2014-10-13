@@ -19,7 +19,8 @@ public class Water implements Serializable{
 
     private int level;
     private boolean fresh;
-    private int stillCount;
+    private boolean active;
+    private int prevLevel;
 
     public Water(int x, int y, int z,int level) {
         this.x = x;
@@ -27,7 +28,8 @@ public class Water implements Serializable{
         this.z = z;
         this.level = -level;
         fresh = true;
-        stillCount = 0;
+        active = true;
+        prevLevel = level;
     }
 
     public int getLevel() {
@@ -36,18 +38,22 @@ public class Water implements Serializable{
 
     public void setLevel(int level) {
         this.level = level;
+
     }
 
     public void decreaseLevel() {
         this.level--;
+
     }
     
     public void decreaseLevel(int i) {
         this.level-=i;
+
     }
 
     public void increaseLevel(int increase) {
         this.level += increase;
+        active = true;
     }
 
     public boolean isFresh() {
@@ -56,6 +62,22 @@ public class Water implements Serializable{
 
     public void setFresh(boolean fresh) {
         this.fresh = fresh;
+        active = true;
     }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void resetActive(){
+        prevLevel = level;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+    
+    
+    
     
 }

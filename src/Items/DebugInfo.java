@@ -17,5 +17,6 @@ public class DebugInfo {
     public static int chunksLoaded;
     public static int chunkTotal;
     public static int fps;
+    public static int waterVertices;
     
 }

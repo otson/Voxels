@@ -479,7 +479,7 @@ public class Voxels {
 
             updateView();
             processInput(getDelta());
-
+            //if(fps % 6 == 0)
             waterHandler.simulateWaters();
 
             chunkManager.processBufferData();
@@ -614,12 +614,8 @@ public class Voxels {
         //glTranslatef(1,0,1);
         glBindBuffer(GL_ARRAY_BUFFER, waterHandler.vertexHandle);
         glVertexPointer(3, GL_FLOAT, 0, 0L);
-        glBindBuffer(GL_ARRAY_BUFFER, waterHandler.normalHandle);
-        glNormalPointer(GL_FLOAT, 0, 0L);
         glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_NORMAL_ARRAY);
         glDrawArrays(GL_QUADS, 0, waterHandler.vertices);
-        glDisableClientState(GL_NORMAL_ARRAY);
         glDisableClientState(GL_VERTEX_ARRAY);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         //glTranslatef(-1,0,-1);
@@ -650,10 +646,11 @@ public class Voxels {
             font.drawString(5, 65, "Player rotation: " + df.format(camera.pitch()) + " " + df.format(camera.roll()) + " " + df.format(camera.yaw()));
             font.drawString(5, 85, "Active chunks (total chunks): " + DebugInfo.chunksLoaded + " (" + DebugInfo.chunkTotal + ")");
             font.drawString(5, 105, "Vertices: " + DebugInfo.verticesDrawn);
-            font.drawString(5, 125, "NPCs: " + DebugInfo.activeNPCs);
-            font.drawString(5, 145, "Items: " + DebugInfo.activeItems);
-            font.drawString(5, 165, "Draw distance (chunks): " + chunkRenderDistance);
-            font.drawString(5, 185, "Frames per Second: " + DebugInfo.fps);
+            font.drawString(5, 125, "Water vertices: " + DebugInfo.waterVertices);
+            font.drawString(5, 145, "NPCs: " + DebugInfo.activeNPCs);
+            font.drawString(5, 165, "Items: " + DebugInfo.activeItems);
+            font.drawString(5, 185, "Draw distance (chunks): " + chunkRenderDistance);
+            font.drawString(5, 205, "Frames per Second: " + DebugInfo.fps);
             //font.drawString(5, 205, "GPU memory: " + (DebugInfo.get_video_card_used_memory()/1024)+" MB / "+(DebugInfo.get_video_card_total_memory()/1024)+" MB");
             glEnable(GL_TEXTURE_2D);
             glMatrixMode(GL_PROJECTION);
@@ -745,7 +742,7 @@ public class Voxels {
             while (Mouse.next()) {
                 if (Mouse.getEventButtonState()) {
                     if (Mouse.getEventButton() == 0) {
-                        chunkManager.castRay(Type.WATER10);
+                        chunkManager.castRay(Type.WATER7);
                     } else if (Mouse.getEventButton() == 1) {
                         chunkManager.castRay(Type.AIR);
                     }
@@ -1107,15 +1104,15 @@ public class Voxels {
     }
 
     public static int toWorldX(float x) {
-        return (x >= 0) ? (int) x : (int) (x-1);
+        return (x >= 0) ? (int) x : (int) (x - 1);
     }
 
     public static int toWorldY(float y) {
-        return (y >= 0) ? (int) y : (int) (y-1);
+        return (y >= 0) ? (int) y : (int) (y - 1);
     }
 
     public static int toWorldZ(float z) {
-        return (z >= 0) ? (int) z : (int) (z-1);
+        return (z >= 0) ? (int) z : (int) (z - 1);
     }
 
     public static void putToBuffer(byte type, int x, int y, int z) {

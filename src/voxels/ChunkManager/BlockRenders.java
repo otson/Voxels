@@ -134,7 +134,7 @@ public class BlockRenders {
         glBufferData(GL_ARRAY_BUFFER, texData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         
-        return new Handle(vboVertexHandle, vboNormalHandle, vboTexHandle, vertices);
+        return new Handle(vboVertexHandle, vboNormalHandle, vboTexHandle, vertices, null);
     }
     
     public Handle getHandle(byte type){

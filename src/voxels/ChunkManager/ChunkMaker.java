@@ -79,9 +79,9 @@ public class ChunkMaker extends Thread {
 
     public ChunkMaker(ConcurrentHashMap<Integer, Integer> decompLengths, ArrayList<Data> dataToProcess, int chunkX, int chunkY, int chunkZ, int xOff, int yOff, int zOff, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager, BlockingQueue<Pair> queue) {
         this.decompLengths = decompLengths;
-        this.xOff = xOff;
-        this.yOff = yOff;
-        this.zOff = zOff;
+        this.xOff = 0;//xOff;
+        this.yOff = 0;//yOff;
+        this.zOff = 0;//zOff;
         this.chunkX = chunkX;
         this.chunkY = chunkY;
         this.chunkZ = chunkZ;
@@ -135,9 +135,9 @@ public class ChunkMaker extends Thread {
     public void update(Chunk chunk) {
         if (chunk != null) {
             this.chunk = chunk;
-            this.xOff = chunk.xCoordinate;
-            this.zOff = chunk.zCoordinate;
-            this.yOff = chunk.yId * Chunk.CHUNK_SIZE;
+            this.xOff = 0;//chunk.xCoordinate;
+            this.zOff = 0;//chunk.zCoordinate;
+            this.yOff = 0;//chunk.yCoordinate;
             updateAllBlocks();
             drawChunkVBO();
             chunk.setUpdateActive(true);

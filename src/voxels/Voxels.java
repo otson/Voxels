@@ -259,73 +259,8 @@ public class Voxels {
 //        }
     }
 
-    private static void initShaders2() {
-        shaderProgram = ShaderLoader.loadShaderPair("src/resources/shaders/vertex_phong_lighting.vs", "src/resources/shaders/vertex_phong_lighting.fs");
-    }
-
     private static void initShaders() {
-        shaderProgram = glCreateProgram();
-        int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        StringBuilder vertexShaderSource = new StringBuilder();
-        StringBuilder fragmentShaderSource = new StringBuilder();
-        BufferedReader reader = null;
-
-        try {
-            reader = new BufferedReader(new FileReader("src/resources/shaders/shader.vs"));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                vertexShaderSource.append(line).append('\n');
-            }
-        } catch (IOException e) {
-            System.err.println("Vertex shader wasn't loaded properly.");
-            e.printStackTrace();
-            Display.destroy();
-            System.exit(1);
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        BufferedReader reader2 = null;
-        try {
-            reader2 = new BufferedReader(new FileReader("src/resources/shaders/shader.fs"));
-            String line;
-            while ((line = reader2.readLine()) != null) {
-                fragmentShaderSource.append(line).append('\n');
-            }
-        } catch (IOException e) {
-            System.err.println("Fragment shader wasn't loaded properly.");
-            Display.destroy();
-            System.exit(1);
-        } finally {
-            if (reader2 != null) {
-                try {
-                    reader2.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        glShaderSource(vertexShader, vertexShaderSource);
-        glCompileShader(vertexShader);
-        if (glGetShaderi(vertexShader, GL_COMPILE_STATUS) == GL_FALSE) {
-            System.err.println("Vertex shader wasn't able to be compiled correctly.");
-        }
-        glShaderSource(fragmentShader, fragmentShaderSource);
-        glCompileShader(fragmentShader);
-        if (glGetShaderi(fragmentShader, GL_COMPILE_STATUS) == GL_FALSE) {
-            System.err.println("Fragment shader wasn't able to be compiled correctly.");
-        }
-        glAttachShader(shaderProgram, vertexShader);
-        glAttachShader(shaderProgram, fragmentShader);
-        glLinkProgram(shaderProgram);
-        glValidateProgram(shaderProgram);
+        shaderProgram = ShaderLoader.loadShaderPair("src/resources/shaders/vertex_phong_lighting.vs", "src/resources/shaders/vertex_phong_lighting.fs");
     }
 
     private static void initOpenGL() {
@@ -389,7 +324,7 @@ public class Voxels {
         glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
 
         // Set background to sky blue
-        glClearColor(0f / 255f, 0f / 255f, 150f / 255f, 1.0f);
+        glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
         START_TIME = (System.nanoTime() / 1000000);
     }
 
@@ -522,6 +457,7 @@ public class Voxels {
                     Handle handles = chunkManager.getHandle(getCurrentChunkXId() + x, y, getCurrentChunkZId() + z);
                     if (handles != null) {
                         activeChunks++;
+                        glTranslatef(handles.translateX(), handles.translateY(), handles.translateZ());
                         int vboVertexHandle = handles.vertexHandle;
                         int vboNormalHandle = handles.normalHandle;
                         int vboTexHandle = handles.texHandle;
@@ -546,6 +482,7 @@ public class Voxels {
                         glDisableClientState(GL_VERTEX_ARRAY);
 
                         glBindBuffer(GL_ARRAY_BUFFER, 0);
+                        glTranslatef(-handles.translateX(), -handles.translateY(), -handles.translateZ());
                     }
                 }
             }

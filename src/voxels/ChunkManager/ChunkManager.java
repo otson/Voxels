@@ -465,7 +465,7 @@ public class ChunkManager {
         glBufferData(GL_ARRAY_BUFFER, data.texData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         
-        handles.put(new Pair(data.chunkX, data.chunkY, data.chunkZ).hashCode(), new Handle(vboVertexHandle, vboNormalHandle, vboTexHandle, data.vertices));
+        handles.put(new Pair(data.chunkX, data.chunkY, data.chunkZ).hashCode(), new Handle(vboVertexHandle, vboNormalHandle, vboTexHandle, data.vertices, new Coordinates(data.chunkX*Chunk.CHUNK_SIZE, data.chunkY*Chunk.CHUNK_SIZE, data.chunkZ*Chunk.CHUNK_SIZE)));
     }
     
     public boolean isAtMax() {

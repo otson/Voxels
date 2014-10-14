@@ -8,6 +8,10 @@ package npc;
 import java.nio.FloatBuffer;
 import java.util.concurrent.ConcurrentHashMap;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.ARBVertexArrayObject;
+import static org.lwjgl.opengl.ARBVertexArrayObject.glBindVertexArray;
+import static org.lwjgl.opengl.GL11.GL_FALSE;
+import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
@@ -21,6 +25,13 @@ import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
@@ -31,6 +42,22 @@ import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import org.lwjgl.opengl.GL20;
+import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
+import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
+import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+
 import org.lwjgl.util.vector.Vector3f;
 import voxels.Camera.Camera;
 import voxels.ChunkManager.Chunk;
@@ -61,6 +88,8 @@ public class Monster {
     private float currentFallingSpeed = 0;
     private Camera camera;
     private ChunkManager chunkManager;
+
+    private int VAOHandle;
 
     Monster(float x, float y, float z, Camera camera, ChunkManager chunkManager) {
         this.x = x;
@@ -127,16 +156,17 @@ public class Monster {
                 moved = true;
             }
         }
-        
+
         //System.out.println("Speed: "+(movSpeed*xCoef+movSpeed*yCoef+movSpeed*zCoef));
     }
 
     private void jump() {
         if (currentFallingSpeed >= 0) {
-            if(Math.random() > 0.99)
+            if (Math.random() > 0.99) {
                 currentFallingSpeed = -0.8f;
-            else
+            } else {
                 currentFallingSpeed = -0.4f;
+            }
         }
     }
 
@@ -181,49 +211,64 @@ public class Monster {
             0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0 // back
     });
         vertexData.flip();
-        FloatBuffer normalData = BufferUtils.createFloatBuffer(amountOfVertices * vertexSize);
-        normalData.put(new float[]{0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, // top
-       
-             0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, // bottom
-            -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, // left
-            1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, // right
-            0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, // front
-            0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1 // back
-    });
-        normalData.flip();
-        
+//        FloatBuffer normalData = BufferUtils.createFloatBuffer(amountOfVertices * vertexSize);
+//        normalData.put(new float[]{0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, // top
+//
+//            0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, // bottom
+//            -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, // left
+//            1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, // right
+//            0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, // front
+//            0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1 // back
+//    });
+//        normalData.flip();
+
         float r = (float) Math.random();
         float g = (float) Math.random();
         float b = (float) Math.random();
-        
-        FloatBuffer colorData = BufferUtils.createFloatBuffer(amountOfVertices * vertexSize);
-        colorData.put(new float[]{r, g, b, r, g, b, r, g, b, r, g, b, // top
-            r, g, b, r, g, b, r, g, b, r, g, b, // bottom
-            r, g, b, r, g, b, r, g, b, r, g, b, // left
-            r, g, b, r, g, b, r, g, b, r, g, b, // right
-            r, g, b, r, g, b, r, g, b, r, g, b, // front
-            r, g, b, r, g, b, r, g, b, r, g, b, // back
-    });
-        colorData.flip();
 
+//        FloatBuffer colorData = BufferUtils.createFloatBuffer(amountOfVertices * vertexSize);
+//        colorData.put(new float[]{r, g, b, r, g, b, r, g, b, r, g, b, // top
+//            r, g, b, r, g, b, r, g, b, r, g, b, // bottom
+//            r, g, b, r, g, b, r, g, b, r, g, b, // left
+//            r, g, b, r, g, b, r, g, b, r, g, b, // right
+//            r, g, b, r, g, b, r, g, b, r, g, b, // front
+//            r, g, b, r, g, b, r, g, b, r, g, b, // back
+//    });
+//        colorData.flip();
+        //
+        int VAOHandleTemp = glGenVertexArrays();
+        glBindVertexArray(VAOHandleTemp);
+        
+        //
         int vboVertexHandle = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
-        glBufferData(GL_ARRAY_BUFFER, vertexData, GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
         
-        int vboNormalHandle = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vboNormalHandle);
-        glBufferData(GL_ARRAY_BUFFER, normalData, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, vertexData, GL_STATIC_DRAW);
+        
+        
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+        
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
 
-        int vboColorHandle = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
-        glBufferData(GL_ARRAY_BUFFER, colorData, GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+//        int vboNormalHandle = glGenBuffers();
+//        glBindBuffer(GL_ARRAY_BUFFER, vboNormalHandle);
+//        glBufferData(GL_ARRAY_BUFFER, normalData, GL_STATIC_DRAW);
+//        glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+        
+        
+
+//        int vboColorHandle = glGenBuffers();
+//        glBindBuffer(GL_ARRAY_BUFFER, vboColorHandle);
+//        glBufferData(GL_ARRAY_BUFFER, colorData, GL_STATIC_DRAW);
+//        glBindBuffer(GL_ARRAY_BUFFER, 0);
         vertexHandle = vboVertexHandle;
-        colorHandle = vboColorHandle;
-        normalHandle = vboNormalHandle;
+        VAOHandle = VAOHandleTemp;
+        //colorHandle = vboColorHandle;
+        //normalHandle = vboNormalHandle;
+        
         return vboVertexHandle;
     }
 
@@ -252,14 +297,20 @@ public class Monster {
     }
 
     public float getDistance() {
-        float xDist = x-camera.x();
-        float zDist = z-camera.z();
-        
-        return xDist*xDist+zDist*zDist;
+        float xDist = x - camera.x();
+        float zDist = z - camera.z();
+
+        return xDist * xDist + zDist * zDist;
     }
 
     public int getNormalHandle() {
         return normalHandle;
     }
+
+    public int getVAOHandle() {
+        return VAOHandle;
+    }
     
+    
+
 }

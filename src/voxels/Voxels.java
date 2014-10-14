@@ -33,12 +33,14 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import static org.lwjgl.opengl.GL11.*;
 
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
 
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.Vector3f;
@@ -157,11 +159,11 @@ public class Voxels {
         initDisplay();
         initOpenGL();
         //initFog();
-        initLighting();
-//        initShaders();
+        //initLighting();
+        initShaders();
 //        initShaderLighting();
         initFont();
-        initTextures();
+        //initTextures();
         initRenders();
         initSounds();
         initManagers();
@@ -254,18 +256,22 @@ public class Voxels {
         camera = InitCamera();
         itemHandler = new ItemHandler(chunkManager);
         npcManager = new npcHandler(chunkManager, camera);
-//        for (int i = 0; i < 100; i++) {
-//            npcManager.addNPC((float) (500f * Math.random() - 250f), (float) (150f * Math.random() + 100f), (float) (500f * Math.random() - 250f), chunkManager);
-//        }
+        for (int i = 0; i < 100; i++) {
+            npcManager.addNPC((float) (500f * Math.random() - 250f), (float) (150f * Math.random() + 100f), (float) (500f * Math.random() - 250f), chunkManager);
+        }
     }
 
     private static void initShaders() {
-        shaderProgram = ShaderLoader.loadShaderPair("src/resources/shaders/vertex_phong_lighting.vs", "src/resources/shaders/vertex_phong_lighting.fs");
+        shaderProgram = ShaderLoader.loadShaderPair("src/resources/shaders/shader.vs", "src/resources/shaders/shader.fs");
     }
 
     private static void initOpenGL() {
         glMatrixMode(GL_PROJECTION);
         glMatrixMode(GL_MODELVIEW);
+        
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
 
         glLoadIdentity();
 
@@ -420,8 +426,9 @@ public class Voxels {
             chunkManager.processBufferData();
             //npcManager.processMonsters();
             itemHandler.processItemPhysics();
+            //glUseProgram(shaderProgram);
             render();
-            renderDebugText();
+            //renderDebugText();
             updateFPS();
             Display.update();
             Display.sync(60);
@@ -472,7 +479,7 @@ public class Voxels {
 
                         glBindBuffer(GL_ARRAY_BUFFER, vboTexHandle);
                         glTexCoordPointer(2, GL_FLOAT, 0, 0L);
-
+                        //glEnableVertexAttribArray(0);
                         glEnableClientState(GL_VERTEX_ARRAY);
                         glEnableClientState(GL_NORMAL_ARRAY);
                         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -489,6 +496,7 @@ public class Voxels {
         }
         //glDisable(GL_CULL_FACE);
         int npcCount = 0;
+        glUseProgram(shaderProgram);
         for (Monster npc : npcManager.getMonsterList().values()) {
             vertexCount += 24;
             npcCount++;
@@ -497,24 +505,29 @@ public class Voxels {
             int vertices = 24;
             //System.out.println("handle: "+npc.getHandle());
 
-            glBindBuffer(GL_ARRAY_BUFFER, npc.getVertexHandle());
-            glVertexPointer(3, GL_FLOAT, 0, 0L);
-            glBindBuffer(GL_ARRAY_BUFFER, npc.getNormalHandle());
-            glNormalPointer(GL_FLOAT, 0, 0L);
-            glBindBuffer(GL_ARRAY_BUFFER, npc.getColorHandle());
-            glColorPointer(3, GL_FLOAT, 0, 0L);
-
-            glEnableClientState(GL_VERTEX_ARRAY);
-            glEnableClientState(GL_NORMAL_ARRAY);
-            glEnableClientState(GL_COLOR_ARRAY);
+//            glBindBuffer(GL_ARRAY_BUFFER, npc.getVertexHandle());
+//            glVertexPointer(3, GL_FLOAT, 0, 0L);
+//            glBindBuffer(GL_ARRAY_BUFFER, npc.getNormalHandle());
+//            glNormalPointer(GL_FLOAT, 0, 0L);
+//            glBindBuffer(GL_ARRAY_BUFFER, npc.getColorHandle());
+//            glColorPointer(3, GL_FLOAT, 0, 0L);
+            glBindVertexArray(npc.getVAOHandle());
             glDrawArrays(GL_QUADS, 0, vertices);
-            glDisableClientState(GL_COLOR_ARRAY);
-            glDisableClientState(GL_NORMAL_ARRAY);
-            glDisableClientState(GL_VERTEX_ARRAY);
-
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            glBindVertexArray(0);
+            //glfwSwapBuffers();
+//            glEnableClientState(GL_VERTEX_ARRAY);
+//            //glEnableClientState(GL_NORMAL_ARRAY);
+//            //glEnableClientState(GL_COLOR_ARRAY);
+//            glDrawArrays(GL_QUADS, 0, vertices);
+//            //glDisableClientState(GL_COLOR_ARRAY);
+//            //glDisableClientState(GL_NORMAL_ARRAY);
+//            glDisableClientState(GL_VERTEX_ARRAY);
+//
+//            glBindBuffer(GL_ARRAY_BUFFER, 0);
             glTranslatef(-npc.getX(), -npc.getY(), -npc.getZ());
         }
+        
+        glUseProgram(0);
         glScalef(0.5f, 0.5f, 0.5f);
         int activeItems = 0;
         for (ItemLocation item : itemHandler.getDroppedBlocks()) {
@@ -997,8 +1010,7 @@ public class Voxels {
         return i;
     }
 
-    public static Texture
-            loadTexture(String key) {
+    public static Texture loadTexture(String key) {
         InputStream resourceAsStream = Voxels.class
                 .getClassLoader().getResourceAsStream("resources/textures/" + key + ".png");
 

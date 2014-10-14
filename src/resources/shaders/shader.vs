@@ -1,6 +1,8 @@
-varying vec3 color;
+#version 150
+
+in vec3 vert;
 
 void main() {
-    color = gl_Color.rgb;
-    gl_Position = ftransform();
+    // does not alter the vertices at all
+    gl_Position = vec4(vert, 1);
 }

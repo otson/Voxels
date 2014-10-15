@@ -106,7 +106,7 @@ public class Voxels {
     /**
      * Set if 3D simplex noise is used to generate terrain.
      */
-    public static final boolean USE_3D_NOISE = true;
+    public static final boolean USE_3D_NOISE = false;
 
     /**
      * Set air block percentage if 3D noise is in use.
@@ -159,11 +159,11 @@ public class Voxels {
         initDisplay();
         initOpenGL();
         //initFog();
-        //initLighting();
+        initLighting();
         initShaders();
 //        initShaderLighting();
         initFont();
-        //initTextures();
+        initTextures();
         initRenders();
         initSounds();
         initManagers();
@@ -196,12 +196,14 @@ public class Voxels {
         HashMap<Integer, Chunk> hashMap = new HashMap<>();
         ChunkMaker maker = new ChunkMaker(null, null, chunkManager, null, null);
         long start = System.nanoTime();
-        for (int i = 0; i < 5000; i++) {
-            Chunk chunk = new Chunk(i, i, i);
-            chunkManager.getMap().put(new Pair(i, i, i).hashCode(), maker.toByte(chunk));
+        for (int y = 0; y < 16; y++) {
+            for (int i = 0; i < 100; i++) {
+                Chunk chunk = new Chunk(i, y, i);
+                //chunkManager.getMap().put(new Pair(i, i, i).hashCode(), maker.toByte(chunk));
+            }
         }
-        System.out.println("Putting chunks took: " + (System.nanoTime() - start) / 1000000 + " ms.");
-
+        System.out.println("Creating chunks took: " + (System.nanoTime() - start) / 1000000 + " ms.");
+        System.exit(0);
         start = System.nanoTime();
         for (int i = 0; i < 5000; i++) {
             Chunk chunk = chunkManager.getChunk(i, i, i);
@@ -268,7 +270,7 @@ public class Voxels {
     private static void initOpenGL() {
         glMatrixMode(GL_PROJECTION);
         glMatrixMode(GL_MODELVIEW);
-        
+
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
@@ -421,14 +423,14 @@ public class Voxels {
             updateView();
             processInput(getDelta());
             //if(fps % 6 == 0)
-            //waterHandler.simulateWaters();
+            waterHandler.simulateWaters();
 
             chunkManager.processBufferData();
             //npcManager.processMonsters();
             itemHandler.processItemPhysics();
             //glUseProgram(shaderProgram);
             render();
-            //renderDebugText();
+            renderDebugText();
             updateFPS();
             Display.update();
             Display.sync(60);
@@ -526,7 +528,7 @@ public class Voxels {
 //            glBindBuffer(GL_ARRAY_BUFFER, 0);
             glTranslatef(-npc.getX(), -npc.getY(), -npc.getZ());
         }
-        
+
         glUseProgram(0);
         glScalef(0.5f, 0.5f, 0.5f);
         int activeItems = 0;
@@ -692,7 +694,7 @@ public class Voxels {
             while (Mouse.next()) {
                 if (Mouse.getEventButtonState()) {
                     if (Mouse.getEventButton() == 0) {
-                        chunkManager.castRay(Type.WATER7);
+                        chunkManager.castRay(Type.WATER10);
                     } else if (Mouse.getEventButton() == 1) {
                         chunkManager.castRay(Type.AIR);
                     }

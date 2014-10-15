@@ -68,9 +68,9 @@ public class WaterHandler {
                 boolean falling = false;
                 if (waters.containsKey(new Pair(water.x, water.y - 1, water.z).hashCode())) {
                     Water below = waters.get(new Pair(water.x, water.y - 1, water.z).hashCode());
-                    if (below.getLevel() < 10) {
+                    if (below.getLevel() < 7) {
                         water.setActive(true);
-                        below.setLevel(10);
+                        below.setLevel(7);
                         
                     }
                     falling = true;
@@ -79,7 +79,7 @@ public class WaterHandler {
                         Water below = stableWaters.remove(new Pair(water.x, water.y - 1, water.z).hashCode());
                         waters.put(new Pair(water.x, water.y - 1, water.z).hashCode(), below);
                         water.setActive(true);
-                        below.setLevel(10);
+                        below.setLevel(7);
                     }
                     falling = true;
                 } else {
@@ -245,7 +245,8 @@ public class WaterHandler {
 //            chunkManager.updateChunk(chunkManager.getActiveChunk(coord.x, coord.y, coord.z));
 //        }
 //        chunksToUpdate.clear();
-        System.out.println("Active water blocks: " + waters.size());
+        
+       //System.out.println("Active water blocks: " + waters.size());
         //System.out.println("Time to update : " + (System.nanoTime() - start) / 1000000 + " ms.");
         start = System.nanoTime();
         if (updateVBO) {
@@ -264,7 +265,7 @@ public class WaterHandler {
             int x = water.x;
             int y = water.y;
             int z = water.z;
-            float h = (water.getLevel() / 10f);
+            float h = (water.getLevel() / 7f);
             vertexData.put(new float[]{0 + x, h + y, 0 + z, 0 + x, h + y, 1 + z, 1 + x, h + y, 1 + z, 1 + x, h + y, 0 + z, // top
                 0 + x, 0 + y, 0 + z, 1 + x, 0 + y, 0 + z, 1 + x, 0 + y, 1 + z, 0 + x, 0 + y, 1 + z, // bottom
                 0 + x, h + y, 0 + z, 0 + x, 0 + y, 0 + z, 0 + x, 0 + y, 1 + z, 0 + x, h + y, 1 + z, // left

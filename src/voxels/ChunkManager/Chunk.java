@@ -21,7 +21,7 @@ public class Chunk implements Serializable {
     public static final int VERTICAL_CHUNKS = 8;
     public static final int WORLD_HEIGHT = CHUNK_SIZE * VERTICAL_CHUNKS;
     public static final int WATER_HEIGHT = 85;
-    public static final int SHORE_HEIGHT = WATER_HEIGHT+2;
+    public static final int SHORE_HEIGHT = WATER_HEIGHT + 2;
     public static final int FORCED_AIR_LAYERS = 10;
     public static final float GROUND_SHARE = 0.9f;
     public static final int DIRT_LAYERS = 5;
@@ -50,10 +50,12 @@ public class Chunk implements Serializable {
     public byte[][] types;
 
     public byte[][][] blocks;
+    public float[][][] noiseValues;
+    public float[][][] noiseValues2;
 
     private boolean updateActive = false;
     private boolean updatePacked = false;
-    private boolean empty = false;
+    private boolean empty = true;
 
     public Chunk(int xId, int yId, int zId) {
         blocks = new byte[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
@@ -64,6 +66,7 @@ public class Chunk implements Serializable {
         zCoordinate = zId * CHUNK_SIZE;
         yCoordinate = yId * CHUNK_SIZE;
         initMaxHeights();
+        //initNoiseArray();
         //if(!empty || (Chunk.CHUNK_SIZE * yId+Chunk.CHUNK_SIZE) > WORLD_HEIGHT * GROUND_SHARE)
         setBlocks();
     }
@@ -75,6 +78,34 @@ public class Chunk implements Serializable {
             for (int z = 0; z < CHUNK_SIZE; z++) {
                 maxHeights[x][z] = (short) Voxels.getNoise(x + xCoordinate, z + zCoordinate);
                 types[x][z] = Voxels.getTypeNoise(x + xCoordinate, z + zCoordinate);
+                if (yCoordinate + CHUNK_SIZE >= maxHeights[x][z]) {
+                    empty = false;
+                }
+            }
+        }
+//        if(empty)
+//            System.out.println("empty");
+    }
+
+    private void initNoiseArray() {
+        int space = 4;
+        noiseValues = new float[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
+        noiseValues2 = new float[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
+        for (int y = 0; y < Chunk.CHUNK_SIZE; y += space) {
+            for (int x = 0; x < Chunk.CHUNK_SIZE; x += space) {
+                for (int z = 0; z < Chunk.CHUNK_SIZE; z += space) {
+                    noiseValues[x][y][z] = Voxels.get3DNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate);
+                    noiseValues2[x][y][z] = Voxels.get3DNoise(x + xCoordinate+10000, y + yCoordinate+10000, z + zCoordinate+10000);        
+                }
+            }
+        }
+        for (int y = 0; y < Chunk.CHUNK_SIZE; y++) {
+            for (int x = 0; x < Chunk.CHUNK_SIZE; x++) {
+                for (int z = 0; z < Chunk.CHUNK_SIZE; z++) {
+                    if(noiseValues[x][y][z] == 0){
+                        
+                    }
+                }
             }
         }
     }
@@ -103,37 +134,38 @@ public class Chunk implements Serializable {
 
                         //only add 3d noise to the upper part of the world (clouds)
                         if (y + Chunk.CHUNK_SIZE * yId > WORLD_HEIGHT * GROUND_SHARE) {
-                            float noise1 = Voxels.get3DNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate + 10) / (float) (CHUNK_SIZE * VERTICAL_CHUNKS);
-                            if (noise1 > 0.90f && y + Chunk.CHUNK_SIZE * yId < VERTICAL_CHUNKS * CHUNK_SIZE - FORCED_AIR_LAYERS) {
+                            float noise1 = Voxels.get3DNoise((x + xCoordinate), (y + yCoordinate) * 3, (z + zCoordinate)) / (float) (CHUNK_SIZE * VERTICAL_CHUNKS);
+                            if (noise1 > 0.93f && y + Chunk.CHUNK_SIZE * yId < VERTICAL_CHUNKS * CHUNK_SIZE - FORCED_AIR_LAYERS) {
                                 blocks[x][y][z] = Type.CLOUD;
                             }
                             // modify the ground portion of the world (caves)
-                        } else if (!empty && (yId != 1 || y != 0)) {
+                        } else if (!empty) {
+                            if (yId != 1 || y != 0) {
+                                if (Voxels.getCaveNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate)) {
+                                    blocks[x][y][z] = Type.AIR;
+                                }
 
-                            if (Voxels.getCaveNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate)) {
-                                blocks[x][y][z] = Type.AIR;
+                            }
+                            if (y + yCoordinate >= WATER_HEIGHT && y + yCoordinate <= SHORE_HEIGHT || y + yCoordinate < WATER_HEIGHT && y + yCoordinate == maxHeights[x][z]) {
+                                if (blocks[x][y][z] != Type.AIR) {
+                                    blocks[x][y][z] = Type.SHORE;
+                                }
                             }
 
-                        }
-                        if (y + yCoordinate >= WATER_HEIGHT && y + yCoordinate <= SHORE_HEIGHT || y + yCoordinate < WATER_HEIGHT && y + yCoordinate == maxHeights[x][z]) {
-                            if (blocks[x][y][z] != Type.AIR) {
-                                blocks[x][y][z] = Type.SHORE;
+                            if (y + yCoordinate <= WATER_HEIGHT) {
+                                if (blocks[x][y][z] == Type.AIR) {
+                                    blocks[x][y][z] = Type.WATER;
+                                }
                             }
-                        }
 
-                        if (y + yCoordinate <= WATER_HEIGHT) {
-                            if (blocks[x][y][z] == Type.AIR) {
-                                blocks[x][y][z] = Type.WATER;
-                            }
-                        }
-
-                        // add trees
-                        if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 1 && y + yCoordinate - 1 > SHORE_HEIGHT) {
-                            if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate - 1, z + CHUNK_SIZE * zId) == 0) {
-                                if (types[x][z] == Type.DIRT) {
-                                    createTree(x + CHUNK_SIZE * xId, y + yCoordinate, z + CHUNK_SIZE * zId);
-                                } else if (types[x][z] == Type.SAND) {
-                                    createCactus(x + CHUNK_SIZE * xId, y + yCoordinate, z + CHUNK_SIZE * zId);
+                            // add trees
+                            if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 1 && y + yCoordinate - 1 > SHORE_HEIGHT) {
+                                if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate - 1, z + CHUNK_SIZE * zId) == 0) {
+                                    if (types[x][z] == Type.DIRT) {
+                                        createTree(x + CHUNK_SIZE * xId, y + yCoordinate, z + CHUNK_SIZE * zId);
+                                    } else if (types[x][z] == Type.SAND) {
+                                        createCactus(x + CHUNK_SIZE * xId, y + yCoordinate, z + CHUNK_SIZE * zId);
+                                    }
                                 }
                             }
                         }

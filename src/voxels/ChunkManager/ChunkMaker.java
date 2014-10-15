@@ -212,6 +212,8 @@ public class ChunkMaker extends Thread {
                         bottomYOff = AtlasManager.getBottomYOff(type);
 
                         if (front[x][y][z]) {
+                            
+                            normalData.put(new float[]{0,0,1,0,0,1,0,0,1,0,0,1});
                             // 1st
                             // upper left - +
                             normalArray[nArrayPos] = 0;
@@ -221,11 +223,11 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = 1;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 0 + x + xOff;
+                            vertexArray[vArrayPos] = 0 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y + yOff;
+                            vertexArray[vArrayPos] = 1 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + z + zOff;
+                            vertexArray[vArrayPos] = 1 + z;
                             vArrayPos++;
 
                             texArray[tArrayPos] = frontXOff;
@@ -241,9 +243,9 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = 1;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 0 + x + xOff;
+                            vertexArray[vArrayPos] = 0 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y + yOff;
+                            vertexArray[vArrayPos] = 0 + y;
                             vArrayPos++;
                             vertexArray[vArrayPos] = 1 + z + zOff;
                             vArrayPos++;
@@ -261,11 +263,11 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = 1;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 1 + x + xOff;
+                            vertexArray[vArrayPos] = 1 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y + yOff;
+                            vertexArray[vArrayPos] = 0 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + z + zOff;
+                            vertexArray[vArrayPos] = 1 + z;
                             vArrayPos++;
 
                             texArray[tArrayPos] = frontXOff + tSize;
@@ -282,11 +284,11 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = 1;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 0 + x + xOff;
+                            vertexArray[vArrayPos] = 0 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y + yOff;
+                            vertexArray[vArrayPos] = 1 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + z + zOff;
+                            vertexArray[vArrayPos] = 1 + z;
                             vArrayPos++;
 
                             texArray[tArrayPos] = frontXOff;
@@ -302,11 +304,11 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = 1;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 1 + x + xOff;
+                            vertexArray[vArrayPos] = 1 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y + yOff;
+                            vertexArray[vArrayPos] = 0 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + z + zOff;
+                            vertexArray[vArrayPos] = 1 + z;
                             vArrayPos++;
 
                             texArray[tArrayPos] = frontXOff + tSize;
@@ -322,11 +324,11 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = 1;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 1 + x + xOff;
+                            vertexArray[vArrayPos] = 1 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y + yOff;
+                            vertexArray[vArrayPos] = 1 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + z + zOff;
+                            vertexArray[vArrayPos] = 1 + z;
                             vArrayPos++;
 
                             texArray[tArrayPos] = frontXOff + tSize;
@@ -336,6 +338,7 @@ public class ChunkMaker extends Thread {
 
                         }
                         if (back[x][y][z]) {
+                            normalData.put(new float[]{0,0,-1,0,0,-1,0,0,-1,0,0,-1});
                             texArray[tArrayPos] = backXOff;
                             tArrayPos++;
                             texArray[tArrayPos] = backYOff;
@@ -376,11 +379,11 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 1 + x + xOff;
+                            vertexArray[vArrayPos] = 1 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y + yOff;
+                            vertexArray[vArrayPos] = 1 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + z + zOff;
+                            vertexArray[vArrayPos] = 0 + z;
                             vArrayPos++;
                             // lower left + -
                             normalArray[nArrayPos] = 0;
@@ -390,11 +393,11 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 1 + x + xOff;
+                            vertexArray[vArrayPos] = 1 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y + yOff;
+                            vertexArray[vArrayPos] = 0 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + z + zOff;
+                            vertexArray[vArrayPos] = 0 + z;
                             vArrayPos++;
 
                             // lower right - -
@@ -405,11 +408,11 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 0 + x + xOff;
+                            vertexArray[vArrayPos] = 0 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y + yOff;
+                            vertexArray[vArrayPos] = 0 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + z + zOff;
+                            vertexArray[vArrayPos] = 0 + z;
                             vArrayPos++;
 
                             // 2nd
@@ -421,11 +424,11 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 1 + x + xOff;
+                            vertexArray[vArrayPos] = 1 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y + yOff;
+                            vertexArray[vArrayPos] = 1 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + z + zOff;
+                            vertexArray[vArrayPos] = 0 + z;
                             vArrayPos++;
                             // lower right - -
                             normalArray[nArrayPos] = 0;
@@ -435,11 +438,11 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 0 + x + xOff;
+                            vertexArray[vArrayPos] = 0 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y + yOff;
+                            vertexArray[vArrayPos] = 0 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + z + zOff;
+                            vertexArray[vArrayPos] = 0 + z;
                             vArrayPos++;
 
                             // upper right - +
@@ -450,16 +453,16 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = -1;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 0 + x + xOff;
+                            vertexArray[vArrayPos] = 0 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y + yOff;
+                            vertexArray[vArrayPos] = 1 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + z + zOff;
+                            vertexArray[vArrayPos] = 0 + z;
                             vArrayPos++;
 
                         }
                         if (right[x][y][z]) {
-
+                            normalData.put(new float[]{1,0,0,1,0,0,1,0,0,1,0,0});
                             texArray[tArrayPos] = rightXOff;
                             tArrayPos++;
                             texArray[tArrayPos] = rightYOff;
@@ -500,11 +503,11 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 1 + x + xOff;
+                            vertexArray[vArrayPos] = 1 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y + yOff;
+                            vertexArray[vArrayPos] = 1 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + z + zOff;
+                            vertexArray[vArrayPos] = 1 + z;
                             vArrayPos++;
 
                             // lower right - +
@@ -515,11 +518,11 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 1 + x + xOff;
+                            vertexArray[vArrayPos] = 1 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y + yOff;
+                            vertexArray[vArrayPos] = 0 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + z + zOff;
+                            vertexArray[vArrayPos] = 1 + z;
                             vArrayPos++;
 
                             // lower left - -
@@ -530,11 +533,11 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 1 + x + xOff;
+                            vertexArray[vArrayPos] = 1 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y + yOff;
+                            vertexArray[vArrayPos] = 0 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + z + zOff;
+                            vertexArray[vArrayPos] = 0 + z;
                             vArrayPos++;
 
                             // 2nd
@@ -546,11 +549,11 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 1 + x + xOff;
+                            vertexArray[vArrayPos] = 1 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y + yOff;
+                            vertexArray[vArrayPos] = 1 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + z + zOff;
+                            vertexArray[vArrayPos] = 1 + z;
                             vArrayPos++;
 
                             // lower left - -
@@ -561,11 +564,11 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 1 + x + xOff;
+                            vertexArray[vArrayPos] = 1 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y + yOff;
+                            vertexArray[vArrayPos] = 0 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + z + zOff;
+                            vertexArray[vArrayPos] = 0 + z;
                             vArrayPos++;
 
                             // upper left + -
@@ -576,15 +579,16 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 1 + x + xOff;
+                            vertexArray[vArrayPos] = 1 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y + yOff;
+                            vertexArray[vArrayPos] = 1 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + z + zOff;
+                            vertexArray[vArrayPos] = 0 + z;
                             vArrayPos++;
 
                         }
                         if (left[x][y][z]) {
+                            normalData.put(new float[]{-1,0,0,-1,0,0,-1,0,0,-1,0,0});
                             texArray[tArrayPos] = leftXOff;
                             tArrayPos++;
                             texArray[tArrayPos] = leftYOff;
@@ -625,11 +629,11 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 0 + x + xOff;
+                            vertexArray[vArrayPos] = 0 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y + yOff;
+                            vertexArray[vArrayPos] = 1 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + z + zOff;
+                            vertexArray[vArrayPos] = 0 + z;
                             vArrayPos++;
 
                             // lower right - -
@@ -640,11 +644,11 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 0 + x + xOff;
+                            vertexArray[vArrayPos] = 0 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y + yOff;
+                            vertexArray[vArrayPos] = 0 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + z + zOff;
+                            vertexArray[vArrayPos] = 0 + z;
                             vArrayPos++;
 
                             // lower left - +
@@ -655,11 +659,11 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 0 + x + xOff;
+                            vertexArray[vArrayPos] = 0 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y + yOff;
+                            vertexArray[vArrayPos] = 0 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + z + zOff;
+                            vertexArray[vArrayPos] = 1 + z;
                             vArrayPos++;
 
                             // 2nd
@@ -671,11 +675,11 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 0 + x + xOff;
+                            vertexArray[vArrayPos] = 0 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y + yOff;
+                            vertexArray[vArrayPos] = 1 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + z + zOff;
+                            vertexArray[vArrayPos] = 0 + z;
                             vArrayPos++;
 
                             // lower left - +
@@ -686,11 +690,11 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 0 + x + xOff;
+                            vertexArray[vArrayPos] = 0 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y + yOff;
+                            vertexArray[vArrayPos] = 0 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + z + zOff;
+                            vertexArray[vArrayPos] = 1 + z;
                             vArrayPos++;
 
                             // upper left + +
@@ -701,14 +705,15 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 0 + x + xOff;
+                            vertexArray[vArrayPos] = 0 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y + yOff;
+                            vertexArray[vArrayPos] = 1 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + z + zOff;
+                            vertexArray[vArrayPos] = 1 + z;
                             vArrayPos++;
                         }
                         if (top[x][y][z]) {
+                            normalData.put(new float[]{0,1,0,0,1,0,0,1,0,0,1,0});
                             // 1st
                             // upper left
                             normalArray[nArrayPos] = 0;
@@ -718,11 +723,11 @@ public class ChunkMaker extends Thread {
                             normalArray[nArrayPos] = 0;
                             nArrayPos++;
 
-                            vertexArray[vArrayPos] = 0 + x + xOff;
+                            vertexArray[vArrayPos] = 0 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y + yOff;
+                            vertexArray[vArrayPos] = 1 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + z + zOff;
+                            vertexArray[vArrayPos] = 0 + z;
                             vArrayPos++;
 
                             texArray[tArrayPos] = topXOff;
@@ -731,18 +736,18 @@ public class ChunkMaker extends Thread {
                             tArrayPos++;
 
                             // lower left
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 1;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 1;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
 
-                            vertexArray[vArrayPos] = 0 + x + xOff;
+                            vertexArray[vArrayPos] = 0 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y + yOff;
+                            vertexArray[vArrayPos] = 1 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + z + zOff;
+                            vertexArray[vArrayPos] = 1 + z;
                             vArrayPos++;
 
                             texArray[tArrayPos] = topXOff;
@@ -751,18 +756,18 @@ public class ChunkMaker extends Thread {
                             tArrayPos++;
 
                             // lower right
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 1;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 1;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
 
-                            vertexArray[vArrayPos] = 1 + x + xOff;
+                            vertexArray[vArrayPos] = 1 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y + yOff;
+                            vertexArray[vArrayPos] = 1 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + z + zOff;
+                            vertexArray[vArrayPos] = 1 + z;
                             vArrayPos++;
 
                             texArray[tArrayPos] = topXOff + tSize;
@@ -772,18 +777,18 @@ public class ChunkMaker extends Thread {
 
                             // 2nd
                             // upper left
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 1;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 1;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
 
-                            vertexArray[vArrayPos] = 0 + x + xOff;
+                            vertexArray[vArrayPos] = 0 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y + yOff;
+                            vertexArray[vArrayPos] = 1 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + z + zOff;
+                            vertexArray[vArrayPos] = 0 + z;
                             vArrayPos++;
 
                             texArray[tArrayPos] = topXOff;
@@ -792,18 +797,18 @@ public class ChunkMaker extends Thread {
                             tArrayPos++;
 
                             // lower right
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 1;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 1;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
 
-                            vertexArray[vArrayPos] = 1 + x + xOff;
+                            vertexArray[vArrayPos] = 1 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y + yOff;
+                            vertexArray[vArrayPos] = 1 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + z + zOff;
+                            vertexArray[vArrayPos] = 1 + z;
                             vArrayPos++;
 
                             texArray[tArrayPos] = topXOff + tSize;
@@ -812,18 +817,18 @@ public class ChunkMaker extends Thread {
                             tArrayPos++;
 
                             // upper right
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 1;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 1;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
 
-                            vertexArray[vArrayPos] = 1 + x + xOff;
+                            vertexArray[vArrayPos] = 1 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + y + yOff;
+                            vertexArray[vArrayPos] = 1 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + z + zOff;
+                            vertexArray[vArrayPos] = 0 + z;
                             vArrayPos++;
 
                             texArray[tArrayPos] = topXOff + tSize;
@@ -832,6 +837,7 @@ public class ChunkMaker extends Thread {
                             tArrayPos++;
                         }
                         if (bottom[x][y][z]) {
+                            normalData.put(new float[]{0,-1,0,0,-1,0,0,-1,0,0,-1,0});
                             texArray[tArrayPos] = bottomXOff;
                             tArrayPos++;
                             texArray[tArrayPos] = bottomYOff;
@@ -865,94 +871,94 @@ public class ChunkMaker extends Thread {
 
                             // 1st
                             // upper left + -
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = -1;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = -1;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
 
-                            vertexArray[vArrayPos] = 1 + x + xOff;
+                            vertexArray[vArrayPos] = 1 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y + yOff;
+                            vertexArray[vArrayPos] = 0 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + z + zOff;
+                            vertexArray[vArrayPos] = 0 + z;
                             vArrayPos++;
 
                             // lower right - +
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = -1;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = -1;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
 
-                            vertexArray[vArrayPos] = 0 + x + xOff;
+                            vertexArray[vArrayPos] = 0 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y + yOff;
+                            vertexArray[vArrayPos] = 0 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + z + zOff;
+                            vertexArray[vArrayPos] = 1 + z;
                             vArrayPos++;
 
                             // lower left - -
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = -1;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = -1;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
 
-                            vertexArray[vArrayPos] = 0 + x + xOff;
+                            vertexArray[vArrayPos] = 0 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y + yOff;
+                            vertexArray[vArrayPos] = 0 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + z + zOff;
+                            vertexArray[vArrayPos] = 0 + z;
                             vArrayPos++;
 
                             // 2nd
                             // upper left + -
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = -1;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = -1;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
 
-                            vertexArray[vArrayPos] = 1 + x + xOff;
+                            vertexArray[vArrayPos] = 1 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y + yOff;
+                            vertexArray[vArrayPos] = 0 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + z + zOff;
+                            vertexArray[vArrayPos] = 0 + z;
                             vArrayPos++;
 
                             // upper right + +
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = -1;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = -1;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
 
-                            vertexArray[vArrayPos] = 1 + x + xOff;
+                            vertexArray[vArrayPos] = 1 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y + yOff;
+                            vertexArray[vArrayPos] = 0 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + z + zOff;
+                            vertexArray[vArrayPos] = 1 + z;
                             vArrayPos++;
 
                             // lower right - +
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = -1;
-                            nArrayPos++;
-                            normalArray[nArrayPos] = 0;
-                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = -1;
+//                            nArrayPos++;
+//                            normalArray[nArrayPos] = 0;
+//                            nArrayPos++;
 
-                            vertexArray[vArrayPos] = 0 + x + xOff;
+                            vertexArray[vArrayPos] = 0 + x;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 0 + y + yOff;
+                            vertexArray[vArrayPos] = 0 + y;
                             vArrayPos++;
-                            vertexArray[vArrayPos] = 1 + z + zOff;
+                            vertexArray[vArrayPos] = 1 + z;
                             vArrayPos++;
 
                         }
@@ -2639,11 +2645,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = 1;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 0 + v.topLeftX + xOff;
+                vertexArray[vArrayPos] = 0 + v.topLeftX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.topLeftY + yOff;
+                vertexArray[vArrayPos] = 1 + v.topLeftY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.topLeftZ + zOff;
+                vertexArray[vArrayPos] = 1 + v.topLeftZ;
                 vArrayPos++;
 
                 texArray[tArrayPos] = frontXOff;
@@ -2659,11 +2665,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = 1;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 0 + v.bottomLeftX + xOff;
+                vertexArray[vArrayPos] = 0 + v.bottomLeftX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.bottomLeftY + yOff;
+                vertexArray[vArrayPos] = 0 + v.bottomLeftY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.bottomLeftZ + zOff;
+                vertexArray[vArrayPos] = 1 + v.bottomLeftZ;
                 vArrayPos++;
 
                 texArray[tArrayPos] = frontXOff;
@@ -2679,11 +2685,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = 1;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 1 + v.bottomRightX + xOff;
+                vertexArray[vArrayPos] = 1 + v.bottomRightX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.bottomRightY + yOff;
+                vertexArray[vArrayPos] = 0 + v.bottomRightY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.bottomRightZ + zOff;
+                vertexArray[vArrayPos] = 1 + v.bottomRightZ;
                 vArrayPos++;
 
                 texArray[tArrayPos] = frontXOff + tSize;
@@ -2699,11 +2705,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = 1;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 1 + v.topRightX + xOff;
+                vertexArray[vArrayPos] = 1 + v.topRightX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.topRightY + yOff;
+                vertexArray[vArrayPos] = 1 + v.topRightY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.topRightZ + zOff;
+                vertexArray[vArrayPos] = 1 + v.topRightZ;
                 vArrayPos++;
 
                 texArray[tArrayPos] = frontXOff + tSize;
@@ -2744,11 +2750,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = -1;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 1 + v.topLeftX + xOff;
+                vertexArray[vArrayPos] = 1 + v.topLeftX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.topLeftY + yOff;
+                vertexArray[vArrayPos] = 1 + v.topLeftY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.topLeftZ + zOff;
+                vertexArray[vArrayPos] = 0 + v.topLeftZ;
                 vArrayPos++;
                 // lower left + -
                 normalArray[nArrayPos] = 0;
@@ -2758,11 +2764,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = -1;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 1 + v.bottomLeftX + xOff;
+                vertexArray[vArrayPos] = 1 + v.bottomLeftX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.bottomLeftY + yOff;
+                vertexArray[vArrayPos] = 0 + v.bottomLeftY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.bottomLeftZ + zOff;
+                vertexArray[vArrayPos] = 0 + v.bottomLeftZ;
                 vArrayPos++;
 
                 // lower right - -
@@ -2773,11 +2779,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = -1;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 0 + v.bottomRightX + xOff;
+                vertexArray[vArrayPos] = 0 + v.bottomRightX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.bottomRightY + yOff;
+                vertexArray[vArrayPos] = 0 + v.bottomRightY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.bottomRightZ + zOff;
+                vertexArray[vArrayPos] = 0 + v.bottomRightZ;
                 vArrayPos++;
 
                 // upper right - +
@@ -2788,11 +2794,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = -1;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 0 + v.topRightX + xOff;
+                vertexArray[vArrayPos] = 0 + v.topRightX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.topRightY + yOff;
+                vertexArray[vArrayPos] = 1 + v.topRightY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.topRightZ + zOff;
+                vertexArray[vArrayPos] = 0 + v.topRightZ;
                 vArrayPos++;
 
             }
@@ -2826,11 +2832,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = 0;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 1 + v.topRightX + xOff;
+                vertexArray[vArrayPos] = 1 + v.topRightX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.topRightY + yOff;
+                vertexArray[vArrayPos] = 1 + v.topRightY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.bottomRightZ + zOff;
+                vertexArray[vArrayPos] = 1 + v.bottomRightZ;
                 vArrayPos++;
 
                 // lower right - +
@@ -2841,11 +2847,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = 0;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 1 + v.bottomRightX + xOff;
+                vertexArray[vArrayPos] = 1 + v.bottomRightX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.bottomRightY + yOff;
+                vertexArray[vArrayPos] = 0 + v.bottomRightY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.bottomRightZ + zOff;
+                vertexArray[vArrayPos] = 1 + v.bottomRightZ;
                 vArrayPos++;
 
                 // lower left - -
@@ -2856,11 +2862,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = 0;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 1 + v.bottomLeftX + xOff;
+                vertexArray[vArrayPos] = 1 + v.bottomLeftX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.bottomLeftY + yOff;
+                vertexArray[vArrayPos] = 0 + v.bottomLeftY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.bottomLeftZ + zOff;
+                vertexArray[vArrayPos] = 0 + v.bottomLeftZ;
                 vArrayPos++;
 
                 // upper left + -
@@ -2871,11 +2877,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = 0;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 1 + v.topLeftX + xOff;
+                vertexArray[vArrayPos] = 1 + v.topLeftX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.topLeftY + yOff;
+                vertexArray[vArrayPos] = 1 + v.topLeftY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.topLeftZ + zOff;
+                vertexArray[vArrayPos] = 0 + v.topLeftZ;
                 vArrayPos++;
             }
             if (v.side == Side.LEFT) {
@@ -2907,11 +2913,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = 0;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 0 + v.topRightX + xOff;
+                vertexArray[vArrayPos] = 0 + v.topRightX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.topRightY + yOff;
+                vertexArray[vArrayPos] = 1 + v.topRightY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.topRightZ + zOff;
+                vertexArray[vArrayPos] = 0 + v.topRightZ;
                 vArrayPos++;
 
                 // lower right - -
@@ -2922,11 +2928,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = 0;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 0 + v.bottomRightX + xOff;
+                vertexArray[vArrayPos] = 0 + v.bottomRightX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.bottomRightY + yOff;
+                vertexArray[vArrayPos] = 0 + v.bottomRightY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.bottomRightZ + zOff;
+                vertexArray[vArrayPos] = 0 + v.bottomRightZ;
                 vArrayPos++;
 
                 // lower left - +
@@ -2937,11 +2943,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = 0;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 0 + v.bottomLeftX + xOff;
+                vertexArray[vArrayPos] = 0 + v.bottomLeftX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.bottomLeftY + yOff;
+                vertexArray[vArrayPos] = 0 + v.bottomLeftY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.bottomLeftZ + zOff;
+                vertexArray[vArrayPos] = 1 + v.bottomLeftZ;
                 vArrayPos++;
 
                 // upper left + +
@@ -2952,11 +2958,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = 0;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 0 + v.topLeftX + xOff;
+                vertexArray[vArrayPos] = 0 + v.topLeftX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.topLeftY + yOff;
+                vertexArray[vArrayPos] = 1 + v.topLeftY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.bottomLeftZ + zOff;
+                vertexArray[vArrayPos] = 1 + v.bottomLeftZ;
                 vArrayPos++;
             }
             if (v.side == Side.TOP) {
@@ -2969,11 +2975,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = 0;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 0 + v.topLeftX + xOff;
+                vertexArray[vArrayPos] = 0 + v.topLeftX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.topLeftY + yOff;
+                vertexArray[vArrayPos] = 1 + v.topLeftY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.topLeftZ + zOff;
+                vertexArray[vArrayPos] = 0 + v.topLeftZ;
                 vArrayPos++;
 
                 texArray[tArrayPos] = topXOff;
@@ -2989,11 +2995,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = 0;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 0 + v.bottomLeftX + xOff;
+                vertexArray[vArrayPos] = 0 + v.bottomLeftX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.bottomLeftY + yOff;
+                vertexArray[vArrayPos] = 1 + v.bottomLeftY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.bottomLeftZ + zOff;
+                vertexArray[vArrayPos] = 1 + v.bottomLeftZ;
                 vArrayPos++;
 
                 texArray[tArrayPos] = topXOff;
@@ -3009,11 +3015,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = 0;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 1 + v.bottomRightX + xOff;
+                vertexArray[vArrayPos] = 1 + v.bottomRightX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.bottomRightY + yOff;
+                vertexArray[vArrayPos] = 1 + v.bottomRightY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.bottomRightZ + zOff;
+                vertexArray[vArrayPos] = 1 + v.bottomRightZ;
                 vArrayPos++;
 
                 texArray[tArrayPos] = topXOff + tSize;
@@ -3029,11 +3035,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = 0;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 1 + v.topRightX + xOff;
+                vertexArray[vArrayPos] = 1 + v.topRightX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.topRightY + yOff;
+                vertexArray[vArrayPos] = 1 + v.topRightY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.topRightZ + zOff;
+                vertexArray[vArrayPos] = 0 + v.topRightZ;
                 vArrayPos++;
 
                 texArray[tArrayPos] = topXOff + tSize;
@@ -3082,11 +3088,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = 0;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 1 + v.topRightX + xOff;
+                vertexArray[vArrayPos] = 1 + v.topRightX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.topRightY + yOff;
+                vertexArray[vArrayPos] = 0 + v.topRightY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.topRightZ + zOff;
+                vertexArray[vArrayPos] = 1 + v.topRightZ;
                 vArrayPos++;
 
                 // lower right - +
@@ -3097,11 +3103,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = 0;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 0 + v.bottomRightX + xOff;
+                vertexArray[vArrayPos] = 0 + v.bottomRightX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.bottomRightY + yOff;
+                vertexArray[vArrayPos] = 0 + v.bottomRightY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 1 + v.bottomRightZ + zOff;
+                vertexArray[vArrayPos] = 1 + v.bottomRightZ;
                 vArrayPos++;
 
                 // lower left - -
@@ -3112,11 +3118,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = 0;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 0 + v.bottomLeftX + xOff;
+                vertexArray[vArrayPos] = 0 + v.bottomLeftX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.bottomLeftY + yOff;
+                vertexArray[vArrayPos] = 0 + v.bottomLeftY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.bottomLeftZ + zOff;
+                vertexArray[vArrayPos] = 0 + v.bottomLeftZ;
                 vArrayPos++;
 
                 // 1st
@@ -3128,11 +3134,11 @@ public class ChunkMaker extends Thread {
                 normalArray[nArrayPos] = 0;
                 nArrayPos++;
 
-                vertexArray[vArrayPos] = 1 + v.topLeftX + xOff;
+                vertexArray[vArrayPos] = 1 + v.topLeftX;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.topLeftY + yOff;
+                vertexArray[vArrayPos] = 0 + v.topLeftY;
                 vArrayPos++;
-                vertexArray[vArrayPos] = 0 + v.topLeftZ + zOff;
+                vertexArray[vArrayPos] = 0 + v.topLeftZ;
                 vArrayPos++;
 
             }

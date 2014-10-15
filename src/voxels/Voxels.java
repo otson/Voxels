@@ -106,7 +106,7 @@ public class Voxels {
     /**
      * Set if 3D simplex noise is used to generate terrain.
      */
-    public static final boolean USE_3D_NOISE = false;
+    public static final boolean USE_3D_NOISE = true;
 
     /**
      * Set air block percentage if 3D noise is in use.
@@ -120,7 +120,7 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 2;
+    public static int chunkCreationDistance = 9;
     public static int inGameCreationDistance = 9;
     public static int chunkRenderDistance = 8;
     public static final int DISPLAY_WIDTH = 1280;
@@ -151,6 +151,8 @@ public class Voxels {
     private static boolean isDebug = true;
 
     private static int shaderProgram;
+    private static long startTime = 0;
+    private static long endTime = 0;
 
     static UnicodeFont font;
 
@@ -416,7 +418,7 @@ public class Voxels {
         );
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.start();
-
+        startTime = System.currentTimeMillis();
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -603,6 +605,13 @@ public class Voxels {
             font.drawString(5, 165, "Items: " + DebugInfo.activeItems);
             font.drawString(5, 185, "Draw distance (chunks): " + chunkRenderDistance);
             font.drawString(5, 205, "Frames per Second: " + DebugInfo.fps);
+            
+            if(DebugInfo.chunksLoaded == 2023){
+                font.drawString(5, 225, "Time to render all chunks: " + (endTime-startTime) +" ms." );
+            }
+            else{
+                endTime = System.currentTimeMillis();
+            }
             //font.drawString(5, 205, "GPU memory: " + (DebugInfo.get_video_card_used_memory()/1024)+" MB / "+(DebugInfo.get_video_card_total_memory()/1024)+" MB");
             glEnable(GL_TEXTURE_2D);
             glMatrixMode(GL_PROJECTION);

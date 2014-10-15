@@ -120,11 +120,11 @@ public class Voxels {
      * Set player's Field of View.
      */
     public static final int FIELD_OF_VIEW = 90;
-    public static int chunkCreationDistance = 2;
-    public static int inGameCreationDistance = 9;
-    public static int chunkRenderDistance = 8;
-    public static final int DISPLAY_WIDTH = 1650;
-    public static final int DISPLAY_HEIGHT = 1050;
+    public static int chunkCreationDistance = 0;
+    public static int inGameCreationDistance = 11;
+    public static int chunkRenderDistance = 10;
+    public static final int DISPLAY_WIDTH = 1280;
+    public static final int DISPLAY_HEIGHT = 800;
     public static Texture atlas;
     public static Sound running;
     public static Sound jumping;
@@ -151,6 +151,8 @@ public class Voxels {
     private static boolean isDebug = true;
 
     private static int shaderProgram;
+    private static long startTime = 0;
+    private static long endTime = 0;
 
     static UnicodeFont font;
 
@@ -158,7 +160,7 @@ public class Voxels {
         //testChunkSpeeds();
         initDisplay();
         initOpenGL();
-        //initFog();
+        initFog();
         initLighting();
         initShaders();
 //        initShaderLighting();
@@ -281,12 +283,12 @@ public class Voxels {
 
     private static void initFog() {
         glEnable(GL_FOG);
-        glFog(GL_FOG_COLOR, asFloatBuffer(new float[]{0.65f, 0.65f, 0.85f, 1f}));
+        glFog(GL_FOG_COLOR, asFloatBuffer(new float[]{0.4f, 0.6f, 0.9f, 1.0f}));
         //glFog(GL_FOG_COLOR, asFloatBuffer(new float[]{0f / 255f, 0f / 255f, 190f / 255f, 1.0f}));
 
         glFogi(GL_FOG_MODE, GL_LINEAR);
-        glFogf(GL_FOG_START, (float) (0.1 * Chunk.CHUNK_SIZE * Voxels.chunkRenderDistance));
-        glFogf(GL_FOG_END, Chunk.CHUNK_SIZE * Voxels.chunkRenderDistance * 2);
+        glFogf(GL_FOG_START, (float) (0.6 * Chunk.CHUNK_SIZE * Voxels.chunkRenderDistance));
+        glFogf(GL_FOG_END, Chunk.CHUNK_SIZE * Voxels.chunkRenderDistance);
     }
 
     public static void initSounds() {
@@ -416,7 +418,7 @@ public class Voxels {
         );
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.start();
-
+        startTime = System.currentTimeMillis();
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -603,6 +605,13 @@ public class Voxels {
             font.drawString(5, 165, "Items: " + DebugInfo.activeItems);
             font.drawString(5, 185, "Draw distance (chunks): " + chunkRenderDistance);
             font.drawString(5, 205, "Frames per Second: " + DebugInfo.fps);
+            
+            if(DebugInfo.chunksLoaded == 2023){
+                font.drawString(5, 225, "Time to render all chunks: " + (endTime-startTime) +" ms." );
+            }
+            else{
+                endTime = System.currentTimeMillis();
+            }
             //font.drawString(5, 205, "GPU memory: " + (DebugInfo.get_video_card_used_memory()/1024)+" MB / "+(DebugInfo.get_video_card_total_memory()/1024)+" MB");
             glEnable(GL_TEXTURE_2D);
             glMatrixMode(GL_PROJECTION);

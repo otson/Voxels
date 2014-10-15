@@ -50,8 +50,8 @@ public class Chunk implements Serializable {
     public byte[][] types;
 
     public byte[][][] blocks;
-    //public float[][][] noiseValues;
-    //public float[][][] noiseValues2;
+    public float[][][] noiseValues;
+    public float[][][] noiseValues2;
 
     private boolean updateActive = false;
     private boolean updatePacked = false;
@@ -87,28 +87,28 @@ public class Chunk implements Serializable {
 //            System.out.println("empty");
     }
 
-//    private void initNoiseArray() {
-//        int space = 4;
-//        noiseValues = new float[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
-//        noiseValues2 = new float[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
-//        for (int y = 0; y < Chunk.CHUNK_SIZE; y += space) {
-//            for (int x = 0; x < Chunk.CHUNK_SIZE; x += space) {
-//                for (int z = 0; z < Chunk.CHUNK_SIZE; z += space) {
-//                    noiseValues[x][y][z] = Voxels.get3DNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate);
-//                    noiseValues2[x][y][z] = Voxels.get3DNoise(x + xCoordinate+10000, y + yCoordinate+10000, z + zCoordinate+10000);        
-//                }
-//            }
-//        }
-//        for (int y = 0; y < Chunk.CHUNK_SIZE; y++) {
-//            for (int x = 0; x < Chunk.CHUNK_SIZE; x++) {
-//                for (int z = 0; z < Chunk.CHUNK_SIZE; z++) {
-//                    if(noiseValues[x][y][z] == 0){
-//                        
-//                    }
-//                }
-//            }
-//        }
-//    }
+    private void initNoiseArray() {
+        int space = 4;
+        noiseValues = new float[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
+        noiseValues2 = new float[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
+        for (int y = 0; y < Chunk.CHUNK_SIZE; y += space) {
+            for (int x = 0; x < Chunk.CHUNK_SIZE; x += space) {
+                for (int z = 0; z < Chunk.CHUNK_SIZE; z += space) {
+                    noiseValues[x][y][z] = Voxels.get3DNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate);
+                    noiseValues2[x][y][z] = Voxels.get3DNoise(x + xCoordinate+10000, y + yCoordinate+10000, z + zCoordinate+10000);        
+                }
+            }
+        }
+        for (int y = 0; y < Chunk.CHUNK_SIZE; y++) {
+            for (int x = 0; x < Chunk.CHUNK_SIZE; x++) {
+                for (int z = 0; z < Chunk.CHUNK_SIZE; z++) {
+                    if(noiseValues[x][y][z] == 0){
+                        
+                    }
+                }
+            }
+        }
+    }
 
     private void setBlocks() {
         for (int x = 0; x < blocks.length; x++) {

@@ -49,6 +49,7 @@ public class ChunkRenderChecker extends Thread {
                     Logger.getLogger(ChunkRenderChecker.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 if (current != null) {
+                    
                     if (map.containsKey(new Pair(current.x + 1, current.y, current.z).hashCode())
                             && map.containsKey(new Pair(current.x - 1, current.y, current.z).hashCode())
                             && map.containsKey(new Pair(current.x, current.y, current.z + 1).hashCode())

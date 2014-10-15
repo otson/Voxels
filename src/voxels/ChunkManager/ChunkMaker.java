@@ -1756,7 +1756,6 @@ public class ChunkMaker extends Thread {
     }
 
     public void drawChunkVBO() {
-
         createVertexHash();
 
         int vertices = vertexList.size() * 4;
@@ -1765,11 +1764,7 @@ public class ChunkMaker extends Thread {
         vertexArray = new float[vertices * vertexSize];
         normalArray = new float[vertices * normalSize];
         texArray = new float[vertices * texSize];
-
-        int vArrayPos = 0;
-        int nArrayPos = 0;
-        int tArrayPos = 0;
-
+        
         vertexData = BufferUtils.createFloatBuffer(vertices * vertexSize);
         normalData = BufferUtils.createFloatBuffer(vertices * vertexSize);
         texData = BufferUtils.createFloatBuffer(vertices * texSize);

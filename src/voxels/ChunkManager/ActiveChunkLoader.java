@@ -114,7 +114,9 @@ public class ActiveChunkLoader extends Thread {
         for(Chunk chunk : chunkMap.values()){
             if(chunk.checkBuffer()){
                 if(chunkManager.getHandle(chunk.xId, chunk.yId, chunk.zId) != null){
-                    chunkManager.createVBO(chunk);                }
+                    chunkManager.createVBO(chunk);   
+                    System.out.println("here");
+                }
             }
         }
         clearEntries();

@@ -59,10 +59,7 @@ public class ChunkRenderChecker extends Thread {
                             if (map.containsKey(new Pair(current.x, current.y + 1, current.z).hashCode())
                                     && map.containsKey(new Pair(current.x, current.y - 1, current.z).hashCode())) {
                                 i--;
-
-                                //count++;
                                 chunkManager.createVBO(chunkManager.getChunk(current.x, current.y, current.z));
-                                //System.out.println("Created VBO!" +count);
 
                             }
                         } else if (current.y == 1) {

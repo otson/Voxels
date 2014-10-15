@@ -477,15 +477,15 @@ public class EulerCamera implements Camera {
     public void moveFromLook(float dx, float dy, float dz) {
         if (!flying) {
 
-            byte upperBlock = chunkManager.getActiveBlock(new Vector3f(x - (float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))), y - 1, z));
-            byte lowerBlock = chunkManager.getActiveBlock(new Vector3f(x - (float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))), y - 2, z));
+            byte upperBlock = chunkManager.getActiveBlock(new Vector3f(x - (float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))), y - 0.2f, z));
+            byte lowerBlock = chunkManager.getActiveBlock(new Vector3f(x - (float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))), y - 1.2f, z));
 
             if ((upperBlock == Type.AIR || upperBlock == -1) && (lowerBlock == Type.AIR || lowerBlock == -1)) {
                 this.x -= dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw));
             }
 
-            upperBlock = chunkManager.getActiveBlock(new Vector3f(x, y - 1, z + (float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw)))));
-            lowerBlock = chunkManager.getActiveBlock(new Vector3f(x, y - 2, z + (float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw)))));
+            upperBlock = chunkManager.getActiveBlock(new Vector3f(x, y - 0.2f, z + (float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw)))));
+            lowerBlock = chunkManager.getActiveBlock(new Vector3f(x, y - 1.2f, z + (float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw)))));
 
             if ((upperBlock == Type.AIR || upperBlock == -1) && (lowerBlock == Type.AIR || lowerBlock == -1)) {
                 this.z += dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw));

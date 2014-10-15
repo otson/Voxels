@@ -12,20 +12,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL15.GL_STREAM_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import org.lwjgl.util.vector.Vector3f;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getZ;
 
 /**
  *

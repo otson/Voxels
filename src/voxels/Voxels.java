@@ -122,9 +122,9 @@ public class Voxels {
     public static final int FIELD_OF_VIEW = 90;
     public static int chunkCreationDistance = 0;
     public static int inGameCreationDistance = 11;
-    public static int chunkRenderDistance = 10;
-    public static final int DISPLAY_WIDTH = 1280;
-    public static final int DISPLAY_HEIGHT = 800;
+    public static int chunkRenderDistance = 9;
+    public static final int DISPLAY_WIDTH = 1650;
+    public static final int DISPLAY_HEIGHT = 1050;
     public static Texture atlas;
     public static Sound running;
     public static Sound jumping;
@@ -160,7 +160,7 @@ public class Voxels {
         //testChunkSpeeds();
         initDisplay();
         initOpenGL();
-        initFog();
+        //initFog();
         initLighting();
         initShaders();
 //        initShaderLighting();
@@ -180,7 +180,7 @@ public class Voxels {
         font.addAsciiGlyphs();
         ColorEffect e = new ColorEffect();
 
-        e.setColor(java.awt.Color.white);
+        //e.setColor(java.awt.Color.white);
 
         font.getEffects()
                 .add(e);
@@ -287,8 +287,8 @@ public class Voxels {
         //glFog(GL_FOG_COLOR, asFloatBuffer(new float[]{0f / 255f, 0f / 255f, 190f / 255f, 1.0f}));
 
         glFogi(GL_FOG_MODE, GL_LINEAR);
-        glFogf(GL_FOG_START, (float) (0.6 * Chunk.CHUNK_SIZE * Voxels.chunkRenderDistance));
-        glFogf(GL_FOG_END, Chunk.CHUNK_SIZE * Voxels.chunkRenderDistance);
+        glFogf(GL_FOG_START, (float) (0.85 * Chunk.CHUNK_SIZE * Voxels.chunkRenderDistance));
+        glFogf(GL_FOG_END, (float) (0.95*Chunk.CHUNK_SIZE * Voxels.chunkRenderDistance));
     }
 
     public static void initSounds() {
@@ -584,11 +584,13 @@ public class Voxels {
 
     private static void renderDebugText() {
         if (isDebug) {
+            glPushAttrib(GL_ALL_ATTRIB_BITS);
             DecimalFormat df = new DecimalFormat();
             df.setMaximumFractionDigits(0);
             glLoadIdentity();
             glDisable(GL_LIGHTING);
             glDisable(GL_LIGHT0);
+            glEnable(GL_BLEND);
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
             glOrtho(0, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0, -1, 1);
@@ -620,8 +622,11 @@ public class Voxels {
             glMatrixMode(GL_MODELVIEW);
             glEnable(GL_LIGHTING);
             glEnable(GL_LIGHT0);
+            glDisable(GL_BLEND);
+            
             glLoadIdentity();
             atlas.bind();
+            glPopAttrib();
         }
 
     }

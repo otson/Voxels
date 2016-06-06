@@ -89,7 +89,7 @@ public class BlockRenders {
         float bottomXOff = AtlasManager.getBottomXOff(type);
         float bottomYOff = AtlasManager.getBottomYOff(type);
 
-        float t = 1f / 8f;
+        float t = 1f / 16f;
  
        vertexData.put(new float[]{-0.5f, 0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, -0.5f, // top
             -0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, // bottom
@@ -109,12 +109,12 @@ public class BlockRenders {
     });
         normalData.flip();
 
-        texData.put(new float[]{topXOff, topYOff, topXOff, topYOff+t, topXOff+t, topYOff+t, topXOff+t, topYOff, // top
-            bottomXOff, bottomYOff, bottomXOff+t, bottomYOff, bottomXOff+t, bottomYOff+t, bottomXOff, bottomYOff+t, // bottom
-            leftXOff, leftYOff, leftXOff, leftYOff+t, leftXOff+t, leftYOff+t, leftXOff+t, leftYOff, // left
-            rightXOff, rightYOff, rightXOff, rightYOff+t, rightXOff+t, rightYOff+t, rightXOff+t, rightYOff, // right
-            frontXOff, frontYOff, frontXOff, frontYOff+t, frontXOff+t, frontYOff+t, frontXOff+t, frontYOff, // front
-            backXOff, backYOff+t, backXOff+t, backYOff+t, backXOff+t, backYOff, backXOff, backYOff // back
+        texData.put(new float[]{topXOff, topYOff, topXOff, topYOff+t, topXOff+1, topYOff+t, topXOff+1, topYOff, // top
+            bottomXOff, bottomYOff, bottomXOff+1, bottomYOff, bottomXOff+1, bottomYOff+t, bottomXOff, bottomYOff+t, // bottom
+            leftXOff, leftYOff, leftXOff, leftYOff+t, leftXOff+1, leftYOff+t, leftXOff+1, leftYOff, // left
+            rightXOff, rightYOff, rightXOff, rightYOff+t, rightXOff+1, rightYOff+t, rightXOff+1, rightYOff, // right
+            frontXOff, frontYOff, frontXOff, frontYOff+t, frontXOff+1, frontYOff+t, frontXOff+1, frontYOff, // front
+            backXOff, backYOff+t, backXOff+1, backYOff+t, backXOff+1, backYOff, backXOff, backYOff // back
     });
         texData.flip();
         

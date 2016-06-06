@@ -12,11 +12,11 @@ package voxels.ChunkManager;
 public class AtlasManager {
 
     public static float getX(int type) {
-        return type % 8 / 8f;
+        return 0;//type % 8 / 8f;
     }
 
     public static float getY(int type) {
-        return (type-type % 8) / 64f;
+        return type / 16f;
     }
     
     public static float getFrontXOff(short type){

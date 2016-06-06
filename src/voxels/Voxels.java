@@ -70,12 +70,13 @@ import voxels.ChunkManager.WaterHandler;
 import voxels.Noise.FastNoise;
 import voxels.Noise.SimplexNoise;
 import voxels.Shaders.ShaderLoader;
+import java.applet.Applet;
 
 /**
  *
  * @author otso
  */
-public class Voxels {
+public class Voxels extends Applet{
 
     /**
      * Title.
@@ -84,7 +85,7 @@ public class Voxels {
     /**
      * Texture file names.
      */
-    public static final String ATLAS = "atlas2";
+    public static final String ATLAS = "atlas4";
     /**
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
@@ -123,8 +124,8 @@ public class Voxels {
     public static int chunkCreationDistance = 0;
     public static int inGameCreationDistance = 11;
     public static int chunkRenderDistance = 9;
-    public static final int DISPLAY_WIDTH = 1650;
-    public static final int DISPLAY_HEIGHT = 1050;
+    public static final int DISPLAY_WIDTH = 1366;
+    public static final int DISPLAY_HEIGHT = 768;
     public static Texture atlas;
     public static Sound running;
     public static Sound jumping;
@@ -155,18 +156,32 @@ public class Voxels {
     private static long endTime = 0;
 
     static UnicodeFont font;
-
-    public static void main(String[] args) {
+    
+    public void start(){
         //testChunkSpeeds();
         initDisplay();
         initOpenGL();
         //initFog();
         initLighting();
-        initShaders();
+//        initShaders();
 //        initShaderLighting();
         initFont();
         initTextures();
-        initRenders();
+        initSounds();
+        initManagers();
+        gameLoop();
+    }
+
+   public static void main(String[] args) {
+        //testChunkSpeeds();
+        initDisplay();
+        initOpenGL();
+        //initFog();
+        initLighting();
+//        initShaders();
+//        initShaderLighting();
+        initFont();
+        initTextures();
         initSounds();
         initManagers();
         gameLoop();
@@ -260,9 +275,9 @@ public class Voxels {
         camera = InitCamera();
         itemHandler = new ItemHandler(chunkManager);
         npcManager = new npcHandler(chunkManager, camera);
-        for (int i = 0; i < 100; i++) {
-            npcManager.addNPC((float) (500f * Math.random() - 250f), (float) (150f * Math.random() + 100f), (float) (500f * Math.random() - 250f), chunkManager);
-        }
+//        for (int i = 0; i < 100; i++) {
+//            npcManager.addNPC((float) (500f * Math.random() - 250f), (float) (150f * Math.random() + 100f), (float) (500f * Math.random() - 250f), chunkManager);
+//        }
     }
 
     private static void initShaders() {
@@ -310,8 +325,8 @@ public class Voxels {
         atlas = loadTexture(ATLAS);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         atlas.bind();
     }
 
@@ -421,12 +436,8 @@ public class Voxels {
         startTime = System.currentTimeMillis();
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
             updateView();
             processInput(getDelta());
-            //if(fps % 6 == 0)
-            waterHandler.simulateWaters();
-
             chunkManager.processBufferData();
             //npcManager.processMonsters();
             itemHandler.processItemPhysics();
@@ -436,9 +447,8 @@ public class Voxels {
             updateFPS();
             Display.update();
             Display.sync(60);
-            //System.out.println("Chunks: "+chunkManager.getTotalChunks());
         }
-        glDeleteProgram(shaderProgram);
+        //glDeleteProgram(shaderProgram);
         Display.destroy();
         TinySound.shutdown();
 
@@ -498,9 +508,10 @@ public class Voxels {
                 }
             }
         }
+        glUseProgram(0);
         //glDisable(GL_CULL_FACE);
         int npcCount = 0;
-        glUseProgram(shaderProgram);
+        //glUseProgram(shaderProgram);
         for (Monster npc : npcManager.getMonsterList().values()) {
             vertexCount += 24;
             npcCount++;
@@ -509,25 +520,25 @@ public class Voxels {
             int vertices = 24;
             //System.out.println("handle: "+npc.getHandle());
 
-//            glBindBuffer(GL_ARRAY_BUFFER, npc.getVertexHandle());
-//            glVertexPointer(3, GL_FLOAT, 0, 0L);
-//            glBindBuffer(GL_ARRAY_BUFFER, npc.getNormalHandle());
-//            glNormalPointer(GL_FLOAT, 0, 0L);
-//            glBindBuffer(GL_ARRAY_BUFFER, npc.getColorHandle());
-//            glColorPointer(3, GL_FLOAT, 0, 0L);
+            glBindBuffer(GL_ARRAY_BUFFER, npc.getVertexHandle());
+            glVertexPointer(3, GL_FLOAT, 0, 0L);
+            glBindBuffer(GL_ARRAY_BUFFER, npc.getNormalHandle());
+            glNormalPointer(GL_FLOAT, 0, 0L);
+            glBindBuffer(GL_ARRAY_BUFFER, npc.getColorHandle());
+            glColorPointer(3, GL_FLOAT, 0, 0L);
             glBindVertexArray(npc.getVAOHandle());
             glDrawArrays(GL_QUADS, 0, vertices);
             glBindVertexArray(0);
-            //glfwSwapBuffers();
+            
 //            glEnableClientState(GL_VERTEX_ARRAY);
-//            //glEnableClientState(GL_NORMAL_ARRAY);
-//            //glEnableClientState(GL_COLOR_ARRAY);
+//            glEnableClientState(GL_NORMAL_ARRAY);
+//            glEnableClientState(GL_COLOR_ARRAY);
 //            glDrawArrays(GL_QUADS, 0, vertices);
-//            //glDisableClientState(GL_COLOR_ARRAY);
-//            //glDisableClientState(GL_NORMAL_ARRAY);
+//            glDisableClientState(GL_COLOR_ARRAY);
+//            glDisableClientState(GL_NORMAL_ARRAY);
 //            glDisableClientState(GL_VERTEX_ARRAY);
-//
-//            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
             glTranslatef(-npc.getX(), -npc.getY(), -npc.getZ());
         }
 
@@ -598,7 +609,7 @@ public class Voxels {
             glDisable(GL_TEXTURE_2D);
             font.drawString(5, 5, "Player world coordinates: " + df.format(camera.x()) + " " + df.format(camera.y()) + " " + df.format(camera.z()));
             font.drawString(5, 25, "Player chunk coordinates: " + getChunkX() + " " + getChunkY() + " " + getChunkZ());
-            font.drawString(5, 45, "Player in-chunk coordinates: " + getX() + " " + getY() + " " + getZ());
+            //font.drawString(5, 45, "Player in-chunk coordinates: " + getX() + " " + getY() + " " + getZ());
             font.drawString(5, 65, "Player rotation: " + df.format(camera.pitch()) + " " + df.format(camera.roll()) + " " + df.format(camera.yaw()));
             font.drawString(5, 85, "Active chunks (total chunks): " + DebugInfo.chunksLoaded + " (" + DebugInfo.chunkTotal + ")");
             font.drawString(5, 105, "Vertices: " + DebugInfo.verticesDrawn);
@@ -708,7 +719,7 @@ public class Voxels {
             while (Mouse.next()) {
                 if (Mouse.getEventButtonState()) {
                     if (Mouse.getEventButton() == 0) {
-                        chunkManager.castRay(Type.WATER10);
+                        chunkManager.castRay(Type.DIRT);
                     } else if (Mouse.getEventButton() == 1) {
                         chunkManager.castRay(Type.AIR);
                     }
@@ -793,7 +804,7 @@ public class Voxels {
      coordinates inside a chunk (0 - Chunksize-1)
      */
 
-    public final static int getX() {
+    public final int getX() {
         return getX(camera.x());
     }
 
@@ -805,7 +816,7 @@ public class Voxels {
         return value % Chunk.CHUNK_SIZE;
     }
 
-    public final static int getY() {
+    public final int getY() {
         return getY(camera.y());
     }
 
@@ -1110,9 +1121,6 @@ public class Voxels {
         return new Location(camera.x(), camera.y(), camera.z());
     }
 
-    private static void initRenders() {
-
-    }
 
     public static byte getTypeNoise(int x, int z) {
         double noise = FastNoise.noise(x / 1000f + 1000, z / 1000f, 7) / 255f;

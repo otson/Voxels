@@ -63,6 +63,7 @@ import voxels.Camera.Camera;
 import voxels.ChunkManager.Chunk;
 import voxels.ChunkManager.ChunkManager;
 import voxels.ChunkManager.Type;
+import voxels.Noise.RandomNumber;
 import voxels.Voxels;
 import static voxels.Voxels.toXid;
 import static voxels.Voxels.toYid;
@@ -98,7 +99,7 @@ public class Monster {
         this.chunkManager = chunkManager;
         id = staticId;
         staticId++;
-        movSpeed += (float) (movSpeed * 2 * Math.random());
+        movSpeed += (float) (movSpeed * 2 * RandomNumber.getRandom());
         this.camera = camera;
     }
 
@@ -162,7 +163,7 @@ public class Monster {
 
     private void jump() {
         if (currentFallingSpeed >= 0) {
-            if (Math.random() > 0.99) {
+            if (RandomNumber.getRandom() > 0.99) {
                 currentFallingSpeed = -0.8f;
             } else {
                 currentFallingSpeed = -0.4f;
@@ -222,9 +223,9 @@ public class Monster {
 //    });
 //        normalData.flip();
 
-        float r = (float) Math.random();
-        float g = (float) Math.random();
-        float b = (float) Math.random();
+        float r = (float) RandomNumber.getRandom();
+        float g = (float) RandomNumber.getRandom();
+        float b = (float) RandomNumber.getRandom();
 
 //        FloatBuffer colorData = BufferUtils.createFloatBuffer(amountOfVertices * vertexSize);
 //        colorData.put(new float[]{r, g, b, r, g, b, r, g, b, r, g, b, // top

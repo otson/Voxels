@@ -71,6 +71,10 @@ import voxels.Noise.FastNoise;
 import voxels.Noise.SimplexNoise;
 import voxels.Shaders.ShaderLoader;
 import java.applet.Applet;
+import static org.lwjgl.opengl.Display.create;
+import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
+import org.lwjgl.opengl.PixelFormat;
+import voxels.Noise.RandomNumber;
 
 /**
  *
@@ -90,7 +94,7 @@ public class Voxels extends Applet{
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 18;
+    public static final int TERRAIN_SMOOTHNESS = 11;
     public static final int THREE_DIM_SMOOTHNESS = 50;
     /**
      * Set player's height. One block's height is 1.
@@ -116,7 +120,7 @@ public class Voxels extends Applet{
     /**
      * Set seed for terrain generation.
      */
-    public static final int SEED = (int) (Math.random() * 20000) - 10000;
+    public static final int SEED = (int) (RandomNumber.getRandom() * 20000) - 10000;
     /**
      * Set player's Field of View.
      */
@@ -124,8 +128,8 @@ public class Voxels extends Applet{
     public static int chunkCreationDistance = 0;
     public static int inGameCreationDistance = 11;
     public static int chunkRenderDistance = 9;
-    public static final int DISPLAY_WIDTH = 1366;
-    public static final int DISPLAY_HEIGHT = 768;
+    public static final int DISPLAY_WIDTH = 1600;
+    public static final int DISPLAY_HEIGHT = 900;
     public static Texture atlas;
     public static Sound running;
     public static Sound jumping;
@@ -260,7 +264,7 @@ public class Voxels extends Applet{
             Display.setFullscreen(true);
             Display.setVSyncEnabled(true);
             Display.setTitle("Voxels");
-            Display.create();
+            Display.create(/*new PixelFormat(8, 8, 8, 4)*/);
         } catch (LWJGLException e) {
             e.printStackTrace();
             Display.destroy();
@@ -276,7 +280,7 @@ public class Voxels extends Applet{
         itemHandler = new ItemHandler(chunkManager);
         npcManager = new npcHandler(chunkManager, camera);
 //        for (int i = 0; i < 100; i++) {
-//            npcManager.addNPC((float) (500f * Math.random() - 250f), (float) (150f * Math.random() + 100f), (float) (500f * Math.random() - 250f), chunkManager);
+//            npcManager.addNPC((float) (500f * RandomNumber.getRandom() - 250f), (float) (150f * RandomNumber.getRandom() + 100f), (float) (500f * RandomNumber.getRandom() - 250f), chunkManager);
 //        }
     }
 
@@ -289,6 +293,7 @@ public class Voxels extends Applet{
         glMatrixMode(GL_MODELVIEW);
 
         glEnable(GL_DEPTH_TEST);
+        glEnable(GL_MULTISAMPLE);
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
 
@@ -618,6 +623,7 @@ public class Voxels extends Applet{
             font.drawString(5, 165, "Items: " + DebugInfo.activeItems);
             font.drawString(5, 185, "Draw distance (chunks): " + chunkRenderDistance);
             font.drawString(5, 205, "Frames per Second: " + DebugInfo.fps);
+            font.drawString(5, 225, "Selected block: " + Type.getBlockName(chunkManager.getSelectedBlock()));
             
             if(DebugInfo.chunksLoaded == 2023){
                 font.drawString(5, 225, "Time to render all chunks: " + (endTime-startTime) +" ms." );
@@ -716,10 +722,15 @@ public class Voxels extends Applet{
 //            if (Mouse.isButtonDown(0)) {
 //                chunkManager.castRay(Type.WATER10);
 //            }
+            //System.out.println(Mouse.getEventDWheel());
             while (Mouse.next()) {
+                if(Mouse.getEventDWheel() > 0)
+                        chunkManager.increaseSelectedBlock();
+                if(Mouse.getEventDWheel() < 0)
+                    chunkManager.decreaseSelectedBlock();
                 if (Mouse.getEventButtonState()) {
                     if (Mouse.getEventButton() == 0) {
-                        chunkManager.castRay(Type.DIRT);
+                        chunkManager.castRay(chunkManager.getSelectedBlock());
                     } else if (Mouse.getEventButton() == 1) {
                         chunkManager.castRay(Type.AIR);
                     }
@@ -935,8 +946,8 @@ public class Voxels extends Applet{
     }
 
     public static boolean getCaveNoise(float x, float y, float z) {
-        float noise1 = get3DNoise(x, y, z) / (float) (Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS);
-        float noise2 = get3DNoise(x + 10000, y + 10000, z + 10000) / (float) (Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS);
+        float noise1 = get3DNoise(x/2f, y/2f, z/2f) / (float) (Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS);
+        float noise2 = get3DNoise(x/2f + 10000, y/2f + 10000, z/2f + 10000) / (float) (Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS);
 
         return noise1 > Chunk.noiseOneMin && noise1 < Chunk.noiseOneMax && noise2 > Chunk.noiseTwoMin && noise2 < Chunk.noiseTwoMax;
     }

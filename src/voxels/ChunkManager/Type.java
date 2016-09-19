@@ -31,5 +31,9 @@ public final class Type {
     public static final byte WATER9 = -9;
     public static final byte WATER10 = -10;
     
+    private static final String[] blockNames = {"Air", "Water", "Wood", "Leaves", "Stone", "Cloud","Unbreakable","Grass","Dirt","Sand","Cactus","Rocksand","Shore"};
     
+    public static String getBlockName(byte b){
+        return blockNames[b];
+    }
 }

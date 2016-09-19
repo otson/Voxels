@@ -15,8 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.jpountz.lz4.LZ4Compressor;
-import net.jpountz.lz4.LZ4Factory;
 import org.lwjgl.BufferUtils;
 
 /**
@@ -52,11 +50,7 @@ public class ChunkMaker extends Thread {
     private int chunkX;
     private int chunkY;
     private int chunkZ;
-    private int xOff;
-    private int yOff;
-    private int zOff;
     private ConcurrentHashMap<Integer, byte[]> map;
-    private LinkedList<Pair> chunksToRender;
     private BlockingQueue<Pair> queue;
     private boolean ready = false;
 
@@ -69,8 +63,7 @@ public class ChunkMaker extends Thread {
     
     private ChunkManager chunkManager;
     private ArrayList<Data> dataToProcess;
-
-    LZ4Factory factory = LZ4Factory.fastestInstance();
+    
     private ConcurrentHashMap<Integer, Integer> decompLengths;
 
     private Data updateData;
@@ -79,9 +72,6 @@ public class ChunkMaker extends Thread {
 
     public ChunkMaker(ConcurrentHashMap<Integer, Integer> decompLengths, ArrayList<Data> dataToProcess, int chunkX, int chunkY, int chunkZ, int xOff, int yOff, int zOff, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager, BlockingQueue<Pair> queue) {
         this.decompLengths = decompLengths;
-        this.xOff = 0;//xOff;
-        this.yOff = 0;//yOff;
-        this.zOff = 0;//zOff;
         this.chunkX = chunkX;
         this.chunkY = chunkY;
         this.chunkZ = chunkZ;
@@ -135,9 +125,6 @@ public class ChunkMaker extends Thread {
     public void update(Chunk chunk) {
         if (chunk != null) {
             this.chunk = chunk;
-            this.xOff = 0;//chunk.xCoordinate;
-            this.zOff = 0;//chunk.zCoordinate;
-            this.yOff = 0;//chunk.yCoordinate;
             updateAllBlocks();
             drawChunkVBO();
             chunk.setUpdateActive(true);
@@ -156,28 +143,12 @@ public class ChunkMaker extends Thread {
     
 
     public byte[] toByte(Chunk chunk) {
-
-//        byte[] data = null;
-//        data = serialize(chunk);
-//        int decompressedLength = data.length;
-//        decompLengths.put(new Pair(chunk.xId,chunk.yId,chunk.zId).hashCode(), decompressedLength);
-//
-//        
-//        LZ4Compressor compressor = factory.fastCompressor();
-//        int maxCompressedLength = compressor.maxCompressedLength(decompressedLength);
-//        byte[] compressed = new byte[maxCompressedLength];
-//        //int compressedLength = compressor.compress(data, 0, decompressedLength, compressed, 0, maxCompressedLength);
-//        return compressed;
-        //long start = System.nanoTime();
         byte[] temp = LZFEncoder.encode(serialize(chunk));
-        //System.out.println("Encode (including serialize): " + (System.nanoTime() - start) / 1000000 + " ms.");
         return temp;
 
     }
 
     public static byte[] serialize(Object obj) {
-
-        long start = System.nanoTime();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         FSTObjectOutput os;
         try {
@@ -189,33 +160,6 @@ public class ChunkMaker extends Thread {
 
         byte[] temp = out.toByteArray();
         return temp;
-
-//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//        ObjectOutput out = null;
-//        byte[] yourBytes = null;
-//        try {
-//            out = new ObjectOutputStream(bos);
-//            out.writeObject(obj);
-//            yourBytes = bos.toByteArray();
-//        } catch (IOException ex) {
-//            Logger.getLogger(ChunkMaker.class.getName()).log(Level.SEVERE, null, ex);
-//        } finally {
-//            try {
-//                if (out != null) {
-//                    out.close();
-//                }
-//            } catch (IOException ex) {
-//                // ignore close exception
-//            }
-//            try {
-//                bos.close();
-//            } catch (IOException ex) {
-//                // ignore close exception
-//            }
-//        }
-        //System.out.println("Serializing: " + (System.nanoTime() - start) / 1000000 + " ms.");
-        //return yourBytes;
-        //return out.toByteArray();
     }
 
     public static int getNormalSize() {

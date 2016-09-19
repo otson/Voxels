@@ -5,6 +5,8 @@
  */
 package voxels.ChunkManager;
 
+import voxels.Noise.RandomNumber;
+
 /**
  *
  * @author otso
@@ -30,9 +32,9 @@ public class ItemLocation {
         this.y = y;
         this.z = z;
         rotY = 0;
-        fallingSpeed = (float) (-0.20f-Math.random()*0.06f);
-        xSpeed = (float) (0.05f-0.1f*Math.random());
-        zSpeed = (float) (0.05f-0.1f*Math.random());
+        fallingSpeed = (float) (-0.20f-RandomNumber.getRandom()*0.06f);
+        xSpeed = (float) (0.05f-0.1f*RandomNumber.getRandom());
+        zSpeed = (float) (0.05f-0.1f*RandomNumber.getRandom());
     }
 
     public void rotate() {

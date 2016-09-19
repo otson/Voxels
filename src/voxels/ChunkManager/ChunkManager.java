@@ -20,9 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.jpountz.lz4.LZ4Factory;
-import net.jpountz.lz4.LZ4FastDecompressor;
-import net.jpountz.lz4.LZ4SafeDecompressor;
 import org.lwjgl.opengl.Display;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
@@ -141,6 +138,7 @@ public class ChunkManager {
     private int waterCounter;
     private ItemHandler itemHandler;
     private WaterHandler waterHandler;
+    private byte selectedBlock = 7;
     
     public ChunkManager() {
         decompLengths = new ConcurrentHashMap<>();
@@ -165,6 +163,20 @@ public class ChunkManager {
         } else {
             return null;
         }
+    }
+    public void increaseSelectedBlock(){
+        selectedBlock++;
+        if(selectedBlock > 12)
+            selectedBlock = 1;
+    }
+    
+    public void decreaseSelectedBlock(){
+        selectedBlock--;
+        if(selectedBlock < 1)
+            selectedBlock = 12;
+    }
+    public byte getSelectedBlock(){
+        return selectedBlock;
     }
     
     public Handle getHandle(int x, int y, int z) {

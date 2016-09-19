@@ -11,6 +11,7 @@ import org.lwjgl.util.vector.Vector3f;
 import voxels.ChunkManager.ChunkManager;
 import voxels.ChunkManager.ItemLocation;
 import voxels.ChunkManager.Type;
+import voxels.Noise.RandomNumber;
 
 /**
  *
@@ -39,7 +40,7 @@ public class ItemHandler {
             if (block == Type.AIR || block == -1) {
                 item.fall();
             } else {
-                item.y = (int) item.y + (float)(0.2501+Math.random()*0.001f);
+                item.y = (int) item.y + (float)(0.2501+RandomNumber.getRandom()*0.001f);
                 item.setFallingSpeed(0);
                 item.setxSpeed(0);
                 item.setzSpeed(0);

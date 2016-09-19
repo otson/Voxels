@@ -6,7 +6,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.BlockingQueue;
+import voxels.Noise.RandomNumber;
 import voxels.Voxels;
 
 /**
@@ -56,8 +58,11 @@ public class Chunk implements Serializable {
     private boolean updateActive = false;
     private boolean updatePacked = false;
     private boolean empty = true;
+    
+    private Random r;
 
     public Chunk(int xId, int yId, int zId) {
+        r = new Random(xId*1000+yId*100+zId*10);
         blocks = new byte[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
         this.xId = xId;
         this.zId = zId;
@@ -178,11 +183,11 @@ public class Chunk implements Serializable {
         //();
     }
 
-    private static void createTree(int x, int y, int z) {
-        int width = (int) (4 + Math.random() * 5);
-        int height = (int) (5 + Math.random() * 12);
+    private void createTree(int x, int y, int z) {
+        int width = (int) (4 + r.nextDouble() * 5);
+        int height = (int) (5 + r.nextDouble() * 12);
         boolean bigTree = false;
-        if (Math.random() > 0.995f) {
+        if (r.nextDouble() > 0.995f) {
             width *= 3;
             height *= 5;
             bigTree = true;
@@ -209,7 +214,7 @@ public class Chunk implements Serializable {
         for (int yy = y + 1 + height / 3; yy < y + 1 + height / 3 + height; yy++) {
             for (int zz = -width / 2 + z; zz <= width / 2 + z; zz++) {
                 for (int xx = -width / 2 + x; xx <= width / 2 + x; xx++) {
-                    if (Math.random() < 0.65f) {
+                    if (r.nextDouble() < 0.65f) {
                         Voxels.putToBuffer(Type.LEAVES, xx, yy, zz);
                     }
 
@@ -220,8 +225,8 @@ public class Chunk implements Serializable {
 
     }
 
-    private static void createCactus(int x, int y, int z) {
-        int height = (int) (5 + Math.random() * 4);
+    private void createCactus(int x, int y, int z) {
+        int height = (int) (5 + r.nextDouble() * 4);
 
         if (y + height >= WORLD_HEIGHT) {
             height = WORLD_HEIGHT - 1 - y;
@@ -230,10 +235,10 @@ public class Chunk implements Serializable {
         for (int i = 0; i < height; i++) {
             Voxels.putToBuffer(Type.CACTUS, x, y + i, z);
         }
-        boolean leftBranch = Math.random() > 0.75f;
-        boolean rightBranch = Math.random() > 0.75f;
-        boolean frontBranch = Math.random() > 0.75f;
-        boolean backBranch = Math.random() > 0.75f;
+        boolean leftBranch = r.nextDouble() > 0.75f;
+        boolean rightBranch = r.nextDouble() > 0.75f;
+        boolean frontBranch = r.nextDouble() > 0.75f;
+        boolean backBranch = r.nextDouble() > 0.75f;
 
         if (leftBranch) {
             Voxels.putToBuffer(Type.CACTUS, x - 1, y + height / 2, z);

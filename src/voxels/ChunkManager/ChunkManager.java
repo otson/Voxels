@@ -138,7 +138,7 @@ public class ChunkManager {
     private int waterCounter;
     private ItemHandler itemHandler;
     private WaterHandler waterHandler;
-    private byte selectedBlock = 7;
+    private byte selectedBlock = 8;
     
     public ChunkManager() {
         decompLengths = new ConcurrentHashMap<>();
@@ -166,12 +166,16 @@ public class ChunkManager {
     }
     public void increaseSelectedBlock(){
         selectedBlock++;
+        if(selectedBlock == 7) // skip grass
+            selectedBlock = 8;
         if(selectedBlock > 12)
             selectedBlock = 1;
     }
     
     public void decreaseSelectedBlock(){
         selectedBlock--;
+        if(selectedBlock == 7) // skip grass
+            selectedBlock = 6;
         if(selectedBlock < 1)
             selectedBlock = 12;
     }
@@ -340,6 +344,64 @@ public class ChunkManager {
                                 } else {
                                     timeSinceDrop++;
                                 }
+                                int chunkX = getChunkX(temp.x);
+                                int chunkY = getChunkY(temp.y);
+                                int chunkZ = getChunkZ(temp.z);
+                                int xInChunk = getX(temp.x);
+                                int yInChunk = getY(temp.y);
+                                int zInChunk = getZ(temp.z);
+                                chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ).hashCode(), new Coordinates(chunkX, chunkY, chunkZ));
+                                if (xInChunk == 0) {
+                                    chunksToUpdate.putIfAbsent(new Pair(chunkX - 1, chunkY, chunkZ).hashCode(), new Coordinates(chunkX - 1, chunkY, chunkZ));
+                                }
+                                if (xInChunk == Chunk.CHUNK_SIZE - 1) {
+                                    chunksToUpdate.putIfAbsent(new Pair(chunkX + 1, chunkY, chunkZ).hashCode(), new Coordinates(chunkX + 1, chunkY, chunkZ));
+                                }
+                                if (yInChunk == 0) {
+                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY - 1, chunkZ).hashCode(), new Coordinates(chunkX, chunkY - 1, chunkZ));
+                                }
+                                if (yInChunk == Chunk.CHUNK_SIZE - 1) {
+                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY + 1, chunkZ).hashCode(), new Coordinates(chunkX, chunkY + 1, chunkZ));
+                                }
+                                if (zInChunk == 0) {
+                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ - 1).hashCode(), new Coordinates(chunkX, chunkY, chunkZ - 1));
+                                }
+                                if (zInChunk == Chunk.CHUNK_SIZE - 1) {
+                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ + 1).hashCode(), new Coordinates(chunkX, chunkY, chunkZ + 1));
+                                }
+                                
+                            }
+                        }
+                    }
+                }
+            }
+            if (found) {
+                break;
+            }
+        }
+        for (Coordinates coord : chunksToUpdate.values()) {
+            updateChunk(getActiveChunk(coord.x, coord.y, coord.z));
+        }
+    }
+    
+    public void bigAdd() {
+        int size = 12;
+        int maxDistance = 50;
+        float increment = 0.25f;
+        ConcurrentHashMap<Integer, Coordinates> chunksToUpdate = new ConcurrentHashMap<>();
+        boolean found = false;
+        for (float f = maxDistance; f > size/1.5f; f -= increment) {
+            Vector3f vector = Voxels.getDirectionVector(f);
+            byte block = getActiveBlock(vector);
+            if (block == Type.AIR && block != -1 && block != Type.UNBREAKABLE) {
+                found = true;
+                for (int i = -size / 2; i < size / 2; i++) {
+                    for (int j = -size / 2; j < size / 2; j++) {
+                        for (int w = -size / 2; w < size / 2; w++) {
+                            Vector3f temp = new Vector3f(vector.x + j, vector.y + i, vector.z + w);
+                            block = getActiveBlock(temp);
+                            if (block == Type.AIR && block != -1) {
+                                setActiveBlockNoUpdate(temp, getSelectedBlock());
                                 int chunkX = getChunkX(temp.x);
                                 int chunkY = getChunkY(temp.y);
                                 int chunkZ = getChunkZ(temp.z);

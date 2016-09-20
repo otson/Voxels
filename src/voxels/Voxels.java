@@ -94,7 +94,7 @@ public class Voxels extends Applet{
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 11;
+    public static final int TERRAIN_SMOOTHNESS = 60;
     public static final int THREE_DIM_SMOOTHNESS = 50;
     /**
      * Set player's height. One block's height is 1.
@@ -689,6 +689,9 @@ public class Voxels extends Applet{
 
             if (Keyboard.isKeyDown(Keyboard.KEY_X)) {
                 chunkManager.bigRemove();
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_C)) {
+                chunkManager.bigAdd();
             }
 
             if (Keyboard.isKeyDown(Keyboard.KEY_F)) {

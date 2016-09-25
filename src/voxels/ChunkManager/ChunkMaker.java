@@ -25,19 +25,13 @@ public class ChunkMaker extends Thread {
 
     private static int vertexSize = 3;
     private static int normalSize = 3;
-    private static int texSize = 2;
-    private static int colorSize = 3;
-
+    private static int textureSize = 2;
+    
     private FloatBuffer vertexData;
     private FloatBuffer normalData;
     private FloatBuffer texData;
     private FloatBuffer colorData;
-
-    private float[] vertexArray;
-    private float[] normalArray;
-    private float[] texArray;
-    private float[] colorArray;
-
+    
     private Chunk chunk;
     private boolean[][][] left;
     private boolean[][][] right;
@@ -180,18 +174,6 @@ public class ChunkMaker extends Thread {
 
     public FloatBuffer getColorData() {
         return colorData;
-    }
-
-    public float[] getVertexArray() {
-        return vertexArray;
-    }
-
-    public float[] getTexArray() {
-        return texArray;
-    }
-
-    public float[] getColorArray() {
-        return colorArray;
     }
 
     public Chunk getChunk() {
@@ -1703,14 +1685,20 @@ public class ChunkMaker extends Thread {
 
         int vertices = vertexList.size() * 4;
         chunk.setVertices(vertices);
-
+        
+        /* 
+            Size is determined by the number of coordinates.
+            vertexSize = 3
+            normalSizee = 3
+            textureSize = 2
+        
         vertexArray = new float[vertices * vertexSize];
         normalArray = new float[vertices * normalSize];
-        texArray = new float[vertices * texSize];
-        
+        texArray = new float[vertices * textureSize];
+        */ 
         vertexData = BufferUtils.createFloatBuffer(vertices * vertexSize);
         normalData = BufferUtils.createFloatBuffer(vertices * vertexSize);
-        texData = BufferUtils.createFloatBuffer(vertices * texSize);
+        texData = BufferUtils.createFloatBuffer(vertices * textureSize);
         float frontXOff;
         float frontYOff;
         float backXOff;

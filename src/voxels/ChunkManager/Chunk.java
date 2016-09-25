@@ -49,12 +49,9 @@ public class Chunk implements Serializable {
 
     //public Block[][][] blocks;
     public short[][] maxHeights;
-    public byte[][] types;
+    public byte[][] biomes;
 
     public byte[][][] blocks;
-    public float[][][] noiseValues;
-    public float[][][] noiseValues2;
-
     private boolean updateActive = false;
     private boolean updatePacked = false;
     private boolean empty = true;
@@ -78,11 +75,11 @@ public class Chunk implements Serializable {
 
     private void initMaxHeights() {
         maxHeights = new short[CHUNK_SIZE][CHUNK_SIZE];
-        types = new byte[CHUNK_SIZE][CHUNK_SIZE];
+        biomes = new byte[CHUNK_SIZE][CHUNK_SIZE];
         for (int x = 0; x < CHUNK_SIZE; x++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
                 maxHeights[x][z] = (short) Voxels.getNoise(x + xCoordinate, z + zCoordinate);
-                types[x][z] = Voxels.getTypeNoise(x + xCoordinate, z + zCoordinate);
+                biomes[x][z] = Voxels.getBiomeNoise(x + xCoordinate, z + zCoordinate);
                 if (yCoordinate + CHUNK_SIZE >= maxHeights[x][z]) {
                     empty = false;
                 }
@@ -90,29 +87,6 @@ public class Chunk implements Serializable {
         }
 //        if(empty)
 //            System.out.println("empty");
-    }
-
-    private void initNoiseArray() {
-        int space = 4;
-        noiseValues = new float[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
-        noiseValues2 = new float[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
-        for (int y = 0; y < Chunk.CHUNK_SIZE; y += space) {
-            for (int x = 0; x < Chunk.CHUNK_SIZE; x += space) {
-                for (int z = 0; z < Chunk.CHUNK_SIZE; z += space) {
-                    noiseValues[x][y][z] = Voxels.get3DNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate);
-                    noiseValues2[x][y][z] = Voxels.get3DNoise(x + xCoordinate+10000, y + yCoordinate+10000, z + zCoordinate+10000);        
-                }
-            }
-        }
-        for (int y = 0; y < Chunk.CHUNK_SIZE; y++) {
-            for (int x = 0; x < Chunk.CHUNK_SIZE; x++) {
-                for (int z = 0; z < Chunk.CHUNK_SIZE; z++) {
-                    if(noiseValues[x][y][z] == 0){
-                        
-                    }
-                }
-            }
-        }
     }
 
     private void setBlocks() {
@@ -127,7 +101,7 @@ public class Chunk implements Serializable {
                         } else if (y + Chunk.CHUNK_SIZE * yId <= maxHeights[x][z] - DIRT_LAYERS) {
                             blocks[x][y][z] = Type.STONE;
                         } else {
-                            blocks[x][y][z] = types[x][z];
+                            blocks[x][y][z] = biomes[x][z];
                         }
                     }
                     if (y == 0 && yId == 1) {
@@ -166,9 +140,9 @@ public class Chunk implements Serializable {
                             // add trees
                             if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 1 && y + yCoordinate - 1 > SHORE_HEIGHT) {
                                 if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate - 1, z + CHUNK_SIZE * zId) == 0) {
-                                    if (types[x][z] == Type.DIRT) {
+                                    if (biomes[x][z] == Type.DIRT) {
                                         createTree(x + CHUNK_SIZE * xId, y + yCoordinate, z + CHUNK_SIZE * zId);
-                                    } else if (types[x][z] == Type.SAND) {
+                                    } else if (biomes[x][z] == Type.SAND) {
                                         createCactus(x + CHUNK_SIZE * xId, y + yCoordinate, z + CHUNK_SIZE * zId);
                                     }
                                 }

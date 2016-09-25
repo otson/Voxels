@@ -75,6 +75,9 @@ import static org.lwjgl.opengl.Display.create;
 import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
 import org.lwjgl.opengl.PixelFormat;
 import voxels.Noise.RandomNumber;
+import static org.lwjgl.opengl.Display.create;
+import static org.lwjgl.opengl.Display.create;
+import static org.lwjgl.opengl.Display.create;
 
 /**
  *
@@ -89,12 +92,12 @@ public class Voxels extends Applet{
     /**
      * Texture file names.
      */
-    public static final String ATLAS = "atlas4";
+    public static final String ATLAS = "atlas4simpleborders";
     /**
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 60;
+    public static final int TERRAIN_SMOOTHNESS = 16;
     public static final int THREE_DIM_SMOOTHNESS = 50;
     /**
      * Set player's height. One block's height is 1.
@@ -1136,7 +1139,7 @@ public class Voxels extends Applet{
     }
 
 
-    public static byte getTypeNoise(int x, int z) {
+    public static byte getBiomeNoise(int x, int z) {
         double noise = FastNoise.noise(x / 1000f + 1000, z / 1000f, 7) / 255f;
         if (noise < 0.35f) {
             return Type.SAND;

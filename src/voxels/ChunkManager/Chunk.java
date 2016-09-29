@@ -121,7 +121,8 @@ public class Chunk implements Serializable {
                         } else if (!empty) {
                             if (yId != 1 || y != 0) {
                                 if (Voxels.getCaveNoise(x + xCoordinate, y + yCoordinate, z + zCoordinate)) {
-                                    blocks[x][y][z] = Type.AIR;
+                                    if(Voxels.MAKE_TREES_AND_CAVES)
+                                        blocks[x][y][z] = Type.AIR;
                                 }
 
                             }
@@ -138,12 +139,14 @@ public class Chunk implements Serializable {
                             }
 
                             // add trees
-                            if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 1 && y + yCoordinate - 1 > SHORE_HEIGHT) {
-                                if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate - 1, z + CHUNK_SIZE * zId) == 0) {
-                                    if (biomes[x][z] == Type.DIRT) {
-                                        createTree(x + CHUNK_SIZE * xId, y + yCoordinate, z + CHUNK_SIZE * zId);
-                                    } else if (biomes[x][z] == Type.SAND) {
-                                        createCactus(x + CHUNK_SIZE * xId, y + yCoordinate, z + CHUNK_SIZE * zId);
+                            if(Voxels.MAKE_TREES_AND_CAVES){
+                                if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 1 && y + yCoordinate - 1 > SHORE_HEIGHT) {
+                                    if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate - 1, z + CHUNK_SIZE * zId) == 0) {
+                                        if (biomes[x][z] == Type.DIRT) {
+                                            createTree(x + CHUNK_SIZE * xId, y + yCoordinate, z + CHUNK_SIZE * zId);
+                                        } else if (biomes[x][z] == Type.SAND) {
+                                            createCactus(x + CHUNK_SIZE * xId, y + yCoordinate, z + CHUNK_SIZE * zId);
+                                        }
                                     }
                                 }
                             }

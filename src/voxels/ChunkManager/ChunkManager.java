@@ -6,15 +6,9 @@ import com.ning.compress.lzf.LZFException;
 import de.ruedigermoeller.serialization.FSTObjectInput;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -22,250 +16,28 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.lwjgl.opengl.Display;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-
-import static org.lwjgl.opengl.GL15.glGenBuffers;
 import org.lwjgl.util.vector.Vector3f;
 import voxels.Voxels;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getCurrentChunkXId;
-import static voxels.Voxels.getCurrentChunkZId;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
 import static voxels.Voxels.removeBlock;
-import static voxels.Voxels.toWorldX;
-import static voxels.Voxels.toWorldY;
-import static voxels.Voxels.toWorldZ;
 import static voxels.Voxels.toX;
 import static voxels.Voxels.toXid;
 import static voxels.Voxels.toY;
 import static voxels.Voxels.toYid;
 import static voxels.Voxels.toZ;
 import static voxels.Voxels.toZid;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
+import static voxels.Voxels.getBlockX;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
+import static voxels.Voxels.getBlockY;
+import static voxels.Voxels.getBlockZ;
 import static voxels.Voxels.getChunkX;
 import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getChunkZ;
 import static voxels.Voxels.getChunkZ;
 import static voxels.Voxels.getCurrentChunkXId;
 import static voxels.Voxels.getCurrentChunkZId;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getCurrentChunkXId;
-import static voxels.Voxels.getCurrentChunkZId;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getCurrentChunkXId;
-import static voxels.Voxels.getCurrentChunkZId;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
 
 /**
  *
@@ -435,37 +207,32 @@ public class ChunkManager {
     public void castRay(byte type) {
         int maxDistance = 5;
         float increment = 0.25f;
-        Vector3f vector;
+        Vector3f pos;
         for (float f = 0f; f < maxDistance; f += increment) {
             if (type != Type.AIR) {
-                vector = Voxels.getDirectionVector(maxDistance - f);
+                pos = Voxels.getDirectionVector(maxDistance - f);
             } else {
-                vector = Voxels.getDirectionVector(f);
+                pos = Voxels.getDirectionVector(f);
             }
             
-            byte block = getActiveBlock(vector);
+            byte block = getBlock(pos);
             
             if (block == -1) {
                 return;
             } else {
                 if (type == Type.AIR) {
                     if (block != Type.UNBREAKABLE && block != Type.AIR) {
-                        setActiveBlock(vector, type);
-                        
+                        setBlock(pos, type);
                         removeBlock.play();
                         if (block > 0) {
-                            toDropped(vector, block);
+                            toDropped(pos, block);
                         }
                         return;
                     }
                 }
                 if (type != Type.AIR) {
                     if (block == Type.AIR) {
-                        setActiveBlock(vector, type);
-                        if (type < 0) {
-                            waterHandler.add(new Water(toWorldX(vector.x), toWorldY(vector.y), toWorldZ(vector.z), type));
-                        }
-                        
+                        setBlock(pos, type);
                         return;
                     }
                 }
@@ -481,7 +248,7 @@ public class ChunkManager {
         boolean found = false;
         for (float f = 0f; f < maxDistance; f += increment) {
             Vector3f vector = Voxels.getDirectionVector(f);
-            byte block = getActiveBlock(vector);
+            byte block = getBlock(vector);
             int removeAmount = 0;
             if (block != Type.AIR && block != -1 && block != Type.UNBREAKABLE) {
                 found = true;
@@ -489,7 +256,7 @@ public class ChunkManager {
                     for (int j = -size / 2; j < size / 2; j++) {
                         for (int w = -size / 2; w < size / 2; w++) {
                             Vector3f temp = new Vector3f(vector.x + j, vector.y + i, vector.z + w);
-                            block = getActiveBlock(temp);
+                            block = getBlock(temp);
                             if (block != Type.AIR && block != -1) {
                                 removeAmount++;
                             }
@@ -503,7 +270,7 @@ public class ChunkManager {
                     for (int j = -size / 2; j < size / 2; j++) {
                         for (int w = -size / 2; w < size / 2; w++) {
                             Vector3f temp = new Vector3f(vector.x + j, vector.y + i, vector.z + w);
-                            block = getActiveBlock(temp);
+                            block = getBlock(temp);
                             if (block != Type.AIR && block != -1 && block != Type.UNBREAKABLE) {
                                 setActiveBlockNoUpdate(temp, Type.AIR);
                                 if (timeSinceDrop >= interval) {
@@ -515,9 +282,9 @@ public class ChunkManager {
                                 int chunkX = getChunkX(temp.x);
                                 int chunkY = getChunkY(temp.y);
                                 int chunkZ = getChunkZ(temp.z);
-                                int xInChunk = getX(temp.x);
-                                int yInChunk = getY(temp.y);
-                                int zInChunk = getZ(temp.z);
+                                int xInChunk = getBlockX(temp.x);
+                                int yInChunk = getBlockY(temp.y);
+                                int zInChunk = getBlockZ(temp.z);
                                 chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ).hashCode(), new Coordinates(chunkX, chunkY, chunkZ));
                                 if (xInChunk == 0) {
                                     chunksToUpdate.putIfAbsent(new Pair(chunkX - 1, chunkY, chunkZ).hashCode(), new Coordinates(chunkX - 1, chunkY, chunkZ));
@@ -560,22 +327,22 @@ public class ChunkManager {
         boolean found = false;
         for (float f = maxDistance; f > size/1.5f; f -= increment) {
             Vector3f vector = Voxels.getDirectionVector(f);
-            byte block = getActiveBlock(vector);
+            byte block = getBlock(vector);
             if (block == Type.AIR && block != -1 && block != Type.UNBREAKABLE) {
                 found = true;
                 for (int i = -size / 2; i < size / 2; i++) {
                     for (int j = -size / 2; j < size / 2; j++) {
                         for (int w = -size / 2; w < size / 2; w++) {
                             Vector3f temp = new Vector3f(vector.x + j, vector.y + i, vector.z + w);
-                            block = getActiveBlock(temp);
+                            block = getBlock(temp);
                             if (block == Type.AIR && block != -1) {
                                 setActiveBlockNoUpdate(temp, getSelectedBlock());
                                 int chunkX = getChunkX(temp.x);
                                 int chunkY = getChunkY(temp.y);
                                 int chunkZ = getChunkZ(temp.z);
-                                int xInChunk = getX(temp.x);
-                                int yInChunk = getY(temp.y);
-                                int zInChunk = getZ(temp.z);
+                                int xInChunk = getBlockX(temp.x);
+                                int yInChunk = getBlockY(temp.y);
+                                int zInChunk = getBlockZ(temp.z);
                                 chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ).hashCode(), new Coordinates(chunkX, chunkY, chunkZ));
                                 if (xInChunk == 0) {
                                     chunksToUpdate.putIfAbsent(new Pair(chunkX - 1, chunkY, chunkZ).hashCode(), new Coordinates(chunkX - 1, chunkY, chunkZ));
@@ -716,17 +483,8 @@ public class ChunkManager {
     }
     
     public Chunk toChunk(byte[] bytes) {
-//        LZ4FastDecompressor decompressor = factory.fastDecompressor();
-//        //byte[] restored = new byte[decompressedLength];
-//        Chunk chunk = deserialize(decompressor.decompress(bytes, decompressedLength));
-//        return chunk;
-//        
-        //long start = System.nanoTime();
-        byte[] temp;
         try {
-            temp = LZFDecoder.decode(bytes);
-            //System.out.println("Decoding: " + (System.nanoTime() - start) / 1000000 + " ms.");
-            return deserialize(temp);
+            return deserialize(LZFDecoder.decode(bytes));
             
         } catch (LZFException ex) {
             Logger.getLogger(ChunkManager.class
@@ -743,31 +501,6 @@ public class ChunkManager {
             Logger.getLogger(ChunkManager.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
-//        long start = System.nanoTime();
-//        ByteArrayInputStream bis = new ByteArrayInputStream(data);
-//        ObjectInput in = null;
-//        try {
-//            in = new ObjectInputStream(bis);
-//            Chunk temp = (Chunk) in.readObject();
-//            //System.out.println("Deserializing: " + (System.nanoTime() - start) / 1000000 + " ms.");
-//
-//            return temp;//(Chunk) in.readObject();
-//        } catch (IOException | ClassNotFoundException ex) {
-//            Logger.getLogger(ChunkManager.class.getName()).log(Level.SEVERE, null, ex);
-//        } finally {
-//            try {
-//                bis.close();
-//            } catch (IOException ex) {
-//                // ignore close exception
-//            }
-//            try {
-//                if (in != null) {
-//                    in.close();
-//                }
-//            } catch (IOException ex) {
-//                // ignore close exception
-//            }
-//        }
         return null;
     }
     
@@ -890,18 +623,7 @@ public class ChunkManager {
         return chunk.blocks[toX(x)][toY(y)][toZ(z)];
     }
 
-//    public byte getActiveBlock(int x, int y, int z) {
-//        int xId = toXid(x);
-//        int yId = toYid(y);
-//        int zId = toZid(z);
-//        Chunk chunk = getActiveChunk(xId, yId, zId);
-//        if (chunk != null) {
-//            return chunk.blocks[toX(x)][toY(y)][toZ(z)];
-//        } else {
-//            return -1;
-//        }
-//    }
-    public void setActiveBlock(int x, int y, int z, byte type) {
+    public void updateBlock(int x, int y, int z, byte type) {
         int xId = toXid(x);
         int yId = toYid(y);
         int zId = toZid(z);
@@ -913,41 +635,39 @@ public class ChunkManager {
         }
     }
     
-    public byte getActiveBlock(Vector3f v) {
-        Chunk chunk = getActiveChunk(getChunkX(v.x), getChunkY(v.y), getChunkZ(v.z));
-        if (chunk != null) {
-            return chunk.blocks[getX(v.x)][getY(v.y)][getZ(v.z)];
-        } else {
-            return -1;
-        }
+public byte getBlock(Vector3f v) {
+    Chunk chunk = getActiveChunk(getChunkX(v.x), getChunkY(v.y), getChunkZ(v.z));
+    if (chunk != null) {
+        return chunk.blocks[getBlockX(v.x)][getBlockY(v.y)][getBlockZ(v.z)];
+    } else {
+        return -1;
     }
+}
     
     public byte getActiveBlock(float x, float y, float z) {
-        return getActiveBlock(new Vector3f(x, y, z));
+        return getBlock(new Vector3f(x, y, z));
     }
     
     public void setActiveBlock(float x, float y, float z, byte type) {
-        setActiveBlock(new Vector3f(x, y, z), type);
+        setBlock(new Vector3f(x, y, z), type);
     }
     
-    public void setActiveBlock(Vector3f v, byte type) {
-        Chunk chunk = getActiveChunk(getChunkX(v.x), getChunkY(v.y), getChunkZ(v.z));
+    public void setBlock(Vector3f pos, byte type) {
+        Chunk chunk = getActiveChunk(getChunkX(pos.x), getChunkY(pos.y), getChunkZ(pos.z));
         if (chunk != null) {
-            chunk.blocks[getX(v.x)][getY(v.y)][getZ(v.z)] = type;
-            if (type >= 0) {
+            chunk.blocks[getBlockX(pos.x)][getBlockY(pos.y)][getBlockZ(pos.z)] = type;
+            //if (type >= 0) {
                 updateThread.update(chunk);
-                checkAdjacentChunks(chunk, getX(v.x), getY(v.y), getZ(v.z));
-                //processBufferData();
+                checkAdjacentChunks(chunk, getBlockX(pos.x), getBlockY(pos.y), getBlockZ(pos.z));
                 chunkLoader.refresh();
-            }
+            //}
         }
-        
     }
     
     public void setActiveBlockNoUpdate(Vector3f v, byte type) {
         Chunk chunk = getActiveChunk(getChunkX(v.x), getChunkY(v.y), getChunkZ(v.z));
         if (chunk != null) {
-            chunk.blocks[getX(v.x)][getY(v.y)][getZ(v.z)] = type;
+            chunk.blocks[getBlockX(v.x)][getBlockY(v.y)][getBlockZ(v.z)] = type;
         }
     }
     

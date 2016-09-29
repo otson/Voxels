@@ -2,24 +2,13 @@ package voxels;
 
 import Items.DebugInfo;
 import Items.ItemHandler;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Toolkit;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import static java.lang.Math.PI;
 import java.nio.FloatBuffer;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -33,7 +22,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import static org.lwjgl.opengl.GL11.*;
@@ -42,25 +30,19 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 
-import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.Vector3f;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.font.effects.ColorEffect;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import voxels.Camera.EulerCamera;
-import voxels.ChunkManager.AtlasManager;
 import voxels.ChunkManager.BlockCoord;
 import voxels.ChunkManager.BlockRenders;
 import voxels.ChunkManager.Chunk;
 import static voxels.ChunkManager.Chunk.GROUND_SHARE;
-import static voxels.ChunkManager.Chunk.WORLD_HEIGHT;
 import voxels.ChunkManager.ChunkMaker;
 import voxels.ChunkManager.ChunkManager;
-import voxels.ChunkManager.Coordinates;
 import voxels.ChunkManager.Handle;
 import voxels.ChunkManager.ItemLocation;
 import voxels.ChunkManager.Location;
@@ -71,13 +53,8 @@ import voxels.Noise.FastNoise;
 import voxels.Noise.SimplexNoise;
 import voxels.Shaders.ShaderLoader;
 import java.applet.Applet;
-import static org.lwjgl.opengl.Display.create;
 import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
-import org.lwjgl.opengl.PixelFormat;
 import voxels.Noise.RandomNumber;
-import static org.lwjgl.opengl.Display.create;
-import static org.lwjgl.opengl.Display.create;
-import static org.lwjgl.opengl.Display.create;
 
 /**
  *
@@ -97,7 +74,7 @@ public class Voxels extends Applet{
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
      */
-    public static final int TERRAIN_SMOOTHNESS = 16;
+    public static final int TERRAIN_SMOOTHNESS = 22;
     public static final int THREE_DIM_SMOOTHNESS = 50;
     /**
      * Set player's height. One block's height is 1.
@@ -114,7 +91,11 @@ public class Voxels extends Applet{
     /**
      * Set if 3D simplex noise is used to generate terrain.
      */
-    public static final boolean USE_3D_NOISE = true;
+    public static final boolean USE_3D_NOISE = true; 
+    /*
+    Toggle trees and caves
+    */
+    public static final boolean MAKE_TREES_AND_CAVES = false;
 
     /**
      * Set air block percentage if 3D noise is in use.
@@ -129,7 +110,7 @@ public class Voxels extends Applet{
      */
     public static final int FIELD_OF_VIEW = 90;
     public static int chunkCreationDistance = 0;
-    public static int inGameCreationDistance = 11;
+    public static int inGameCreationDistance = 10;
     public static int chunkRenderDistance = 9;
     public static final int DISPLAY_WIDTH = 1600;
     public static final int DISPLAY_HEIGHT = 900;
@@ -822,37 +803,46 @@ public class Voxels extends Applet{
      */
 
     public final int getX() {
-        return getX(camera.x());
+        return getBlockX(camera.x());
     }
-
-    public final static int getX(float x) {
-        int value = (x >= 0) ? (int) x : (int) (x - 1);
+    // Convert world coordinate to block-coordinate inside a chunk
+    public final static int getBlockX(float x) {
+        int value = floatToInt(x);
         if (x < 0) {
-            value = Chunk.CHUNK_SIZE - (-value) % Chunk.CHUNK_SIZE;
+            value = Chunk.CHUNK_SIZE + value % Chunk.CHUNK_SIZE;
         }
         return value % Chunk.CHUNK_SIZE;
     }
-
-    public final int getY() {
-        return getY(camera.y());
+    
+    private static int floatToInt(float f){
+        /*
+        Convert float value to integer. If the value is
+        less than zero, subtract by one to get the correct
+        coordinate when casting it to an integer.
+        */
+        return (f >= 0) ? (int) f : (int) (f - 1);
     }
 
-    public final static int getY(float y) {
+    public final int getY() {
+        return getBlockY(camera.y());
+    }
+
+    public final static int getBlockY(float y) {
         int value = (y >= 0) ? (int) y : (int) (y - 1);
         if (y < 0) {
-            value = Chunk.CHUNK_SIZE - (-value) % Chunk.CHUNK_SIZE;
+            value = Chunk.CHUNK_SIZE + value % Chunk.CHUNK_SIZE;
         }
         return value % Chunk.CHUNK_SIZE;
     }
 
     public final static int getZ() {
-        return getZ(camera.z());
+        return getBlockZ(camera.z());
     }
 
-    public final static int getZ(float z) {
+    public final static int getBlockZ(float z) {
         int value = (z >= 0) ? (int) z : (int) (z - 1);
         if (z < 0) {
-            value = Chunk.CHUNK_SIZE - (-value) % Chunk.CHUNK_SIZE;
+            value = Chunk.CHUNK_SIZE + value % Chunk.CHUNK_SIZE;
         }
         return value % Chunk.CHUNK_SIZE;
     }
@@ -864,12 +854,11 @@ public class Voxels extends Applet{
     public final static int getChunkX() {
         return getChunkX(camera.x());
     }
-
+    // Convert world coordinate to chunk-coordinate
     public final static int getChunkX(float x) {
-        int value = (x >= 0) ? (int) x : (int) (x - 1);
+        int value = floatToInt(x);
         if (x < 0) {
             value -= Chunk.CHUNK_SIZE - 1;
-
         }
         return value / Chunk.CHUNK_SIZE;
     }

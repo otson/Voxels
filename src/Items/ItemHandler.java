@@ -22,7 +22,7 @@ public class ItemHandler {
     private BlockingQueue<ItemLocation> droppedBlocks = new LinkedBlockingQueue<>();
     private ChunkManager chunkManager;
     
-    private static int MAX_SIZE = 1000;
+    private static int MAX_SIZE = 0;
     
     public ItemHandler(ChunkManager chunkManager) {
         this.chunkManager = chunkManager;
@@ -36,7 +36,7 @@ public class ItemHandler {
                 adj *= -1;
             }
 
-            byte block = chunkManager.getActiveBlock(new Vector3f(item.x, item.y - item.getFallingSpeed() - adj, item.z));
+            byte block = chunkManager.getBlock(new Vector3f(item.x, item.y - item.getFallingSpeed() - adj, item.z));
             if (block == Type.AIR || block == -1) {
                 item.fall();
             } else {
@@ -46,7 +46,7 @@ public class ItemHandler {
                 item.setzSpeed(0);
             }
             if (item.getxSpeed() != 0) {
-                block = chunkManager.getActiveBlock(new Vector3f(item.x + item.getxSpeed(), item.y - adj, item.z));
+                block = chunkManager.getBlock(new Vector3f(item.x + item.getxSpeed(), item.y - adj, item.z));
                 if (block == Type.AIR || block == -1) {
                     item.x += item.getxSpeed();
                 } else {
@@ -55,7 +55,7 @@ public class ItemHandler {
                 }
             }
             if (item.getxSpeed() != 0) {
-                block = chunkManager.getActiveBlock(new Vector3f(item.x, item.y - 0.5f, item.z + item.getzSpeed()));
+                block = chunkManager.getBlock(new Vector3f(item.x, item.y - 0.5f, item.z + item.getzSpeed()));
                 if (block == Type.AIR || block == -1) {
                     item.z += item.getzSpeed();
                 } else {

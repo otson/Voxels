@@ -40,102 +40,8 @@ import voxels.ChunkManager.Chunk;
 import voxels.ChunkManager.ChunkManager;
 import voxels.ChunkManager.Type;
 import voxels.Voxels;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getCurrentChunkXId;
-import static voxels.Voxels.getCurrentChunkYId;
-import static voxels.Voxels.getCurrentChunkYId;
-import static voxels.Voxels.getCurrentChunkYId;
-import static voxels.Voxels.getCurrentChunkZId;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.impact;
-import static voxels.Voxels.jumping;
 import static voxels.Voxels.runOnStone;
 import static voxels.Voxels.running;
-import static voxels.Voxels.xInChunk;
-import static voxels.Voxels.yInChunk;
-import static voxels.Voxels.zInChunk;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getCurrentChunkXId;
-import static voxels.Voxels.getCurrentChunkYId;
-import static voxels.Voxels.getCurrentChunkYId;
-import static voxels.Voxels.getCurrentChunkYId;
-import static voxels.Voxels.getCurrentChunkZId;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.xInChunk;
-import static voxels.Voxels.yInChunk;
-import static voxels.Voxels.zInChunk;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getCurrentChunkXId;
-import static voxels.Voxels.getCurrentChunkYId;
-import static voxels.Voxels.getCurrentChunkYId;
-import static voxels.Voxels.getCurrentChunkYId;
-import static voxels.Voxels.getCurrentChunkZId;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.xInChunk;
-import static voxels.Voxels.yInChunk;
-import static voxels.Voxels.zInChunk;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkX;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkY;
-import static voxels.Voxels.getChunkZ;
-import static voxels.Voxels.getCurrentChunkXId;
-import static voxels.Voxels.getCurrentChunkYId;
-import static voxels.Voxels.getCurrentChunkYId;
-import static voxels.Voxels.getCurrentChunkYId;
-import static voxels.Voxels.getCurrentChunkZId;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getX;
-import static voxels.Voxels.getY;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.getZ;
-import static voxels.Voxels.xInChunk;
-import static voxels.Voxels.yInChunk;
-import static voxels.Voxels.zInChunk;
 
 /**
  * A camera set in 3D perspective. The camera uses Euler angles internally, so
@@ -484,7 +390,7 @@ public class EulerCamera implements Camera {
                 hAdj = Voxels.PLAYER_HEIGHT;
             }
 
-            byte block = chunkManager.getActiveBlock(new Vector3f(x, y - fallingSpeed - fallingSpeedIncrease - hAdj, z));
+            byte block = chunkManager.getBlock(new Vector3f(x, y - fallingSpeed - fallingSpeedIncrease - hAdj, z));
             if (block == Type.AIR || block == -1) {
                 fallingSpeed += fallingSpeedIncrease;
                 y -= fallingSpeed;
@@ -494,7 +400,7 @@ public class EulerCamera implements Camera {
                 oldFallingSpeed = fallingSpeed;
                 fallingSpeed = 0;
             }
-            byte underFeet = chunkManager.getActiveBlock(new Vector3f(x, y - Voxels.PLAYER_HEIGHT, z));
+            byte underFeet = chunkManager.getBlock(new Vector3f(x, y - Voxels.PLAYER_HEIGHT, z));
             if(underFeet != Type.DIRT){
                 running.stop();
             }
@@ -546,15 +452,15 @@ public class EulerCamera implements Camera {
     public void moveFromLook(float dx, float dy, float dz) {
         if (!flying) {
 
-            byte upperBlock = chunkManager.getActiveBlock(new Vector3f(x - (float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))), y - 0.2f, z));
-            byte lowerBlock = chunkManager.getActiveBlock(new Vector3f(x - (float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))), y - 1.2f, z));
+            byte upperBlock = chunkManager.getBlock(new Vector3f(x - (float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))), y - 0.2f, z));
+            byte lowerBlock = chunkManager.getBlock(new Vector3f(x - (float) (dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw))), y - 1.2f, z));
 
             if ((upperBlock == Type.AIR || upperBlock == -1) && (lowerBlock == Type.AIR || lowerBlock == -1)) {
                 this.x -= dx * (float) sin(toRadians(yaw - 90)) + dz * sin(toRadians(yaw));
             }
 
-            upperBlock = chunkManager.getActiveBlock(new Vector3f(x, y - 0.2f, z + (float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw)))));
-            lowerBlock = chunkManager.getActiveBlock(new Vector3f(x, y - 1.2f, z + (float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw)))));
+            upperBlock = chunkManager.getBlock(new Vector3f(x, y - 0.2f, z + (float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw)))));
+            lowerBlock = chunkManager.getBlock(new Vector3f(x, y - 1.2f, z + (float) (dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw)))));
 
             if ((upperBlock == Type.AIR || upperBlock == -1) && (lowerBlock == Type.AIR || lowerBlock == -1)) {
                 this.z += dx * (float) cos(toRadians(yaw - 90)) + dz * cos(toRadians(yaw));

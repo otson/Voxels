@@ -237,14 +237,12 @@ public class Chunk implements Serializable {
             Voxels.putToBuffer(Type.CACTUS, x, y + height / 2, z - 2);
             Voxels.putToBuffer(Type.CACTUS, x, y + height / 2 + 1, z - 2);
         }
-
     }
 
     public boolean checkBuffer() {
         boolean updated = false;
-        if (Voxels.getBlockBuffer().containsKey(new Pair(xId, yId, zId).hashCode())) {
-
-            BlockingQueue queue = Voxels.getBlockBuffer().get(new Pair(xId, yId, zId).hashCode());
+        if (Voxels.getBlockBuffer().containsKey(new Triple(xId, yId, zId).hashCode())) {
+            BlockingQueue queue = Voxels.getBlockBuffer().get(new Triple(xId, yId, zId).hashCode());
             Iterator i = queue.iterator();
             while (i.hasNext()) {
                 updated = true;
@@ -254,7 +252,6 @@ public class Chunk implements Serializable {
                 setUpdatePacked(true);
 
                 blocks[bc.x][bc.y][bc.z] = bc.Type;
-
             }
         }
         return updated;

@@ -24,7 +24,7 @@ import static org.lwjgl.BufferUtils.createFloatBuffer;
  */
 public class ChunkMaker extends Thread {
     
-    private static final boolean GREEDY_MESHING = false;
+    private static final boolean GREEDY_MESHING = true;
 
     private static int vertexSize = 3;
     private static int normalSize = 3;
@@ -48,7 +48,7 @@ public class ChunkMaker extends Thread {
     private int chunkY;
     private int chunkZ;
     private ConcurrentHashMap<Integer, byte[]> map;
-    private BlockingQueue<Pair> queue;
+    private BlockingQueue<Triple> queue;
     private boolean ready = false;
 
     private Chunk rightChunk;
@@ -67,7 +67,7 @@ public class ChunkMaker extends Thread {
 
     boolean update;
 
-    public ChunkMaker(ConcurrentHashMap<Integer, Integer> decompLengths, ArrayList<Data> dataToProcess, int chunkX, int chunkY, int chunkZ, int xOff, int yOff, int zOff, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager, BlockingQueue<Pair> queue) {
+    public ChunkMaker(ConcurrentHashMap<Integer, Integer> decompLengths, ArrayList<Data> dataToProcess, int chunkX, int chunkY, int chunkZ, int xOff, int yOff, int zOff, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager, BlockingQueue<Triple> queue) {
         this.decompLengths = decompLengths;
         this.chunkX = chunkX;
         this.chunkY = chunkY;
@@ -87,7 +87,7 @@ public class ChunkMaker extends Thread {
 
     }
 
-    public ChunkMaker(ConcurrentHashMap<Integer, Integer> decompLengths, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager, ArrayList<Data> dataToProcess, BlockingQueue<Pair> queue) {
+    public ChunkMaker(ConcurrentHashMap<Integer, Integer> decompLengths, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager, ArrayList<Data> dataToProcess, BlockingQueue<Triple> queue) {
         this.decompLengths = decompLengths;
         this.map = map;
         this.chunkManager = chunkManager;
@@ -103,13 +103,13 @@ public class ChunkMaker extends Thread {
 
     @Override
     public void run() {
-        if (!map.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
+        if (!map.containsKey(new Triple(chunkX, chunkY, chunkZ).hashCode())) {
             chunk = new Chunk(chunkX, chunkY, chunkZ);
-            map.put(new Pair(chunkX, chunkY, chunkZ).hashCode(), toByte(chunk));
+            map.put(new Triple(chunkX, chunkY, chunkZ).hashCode(), toByte(chunk));
             //chunkManager.getChunkLoader().getChunkMap().put(new Pair(chunkX, chunkY, chunkZ).hashCode(), chunk);
             //chunkManager.putUncompressed(chunk);
             try {
-                queue.offer(new Pair(chunkX, chunkY, chunkZ), 1, TimeUnit.DAYS);
+                queue.offer(new Triple(chunkX, chunkY, chunkZ), 1, TimeUnit.DAYS);
             } catch (InterruptedException ex) {
                 Logger.getLogger(ChunkMaker.class.getName()).log(Level.SEVERE, null, ex);
             }

@@ -30,6 +30,22 @@ import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
 
 /**
  *
@@ -56,7 +72,7 @@ public class WaterHandler {
     }
 
     public void add(Water water) {
-        int hash = new Pair(water.x, water.y, water.z).hashCode();
+        int hash = new Triple(water.x, water.y, water.z).hashCode();
         if (!waters.containsKey(hash)) {
             waters.put(hash, water);
         } else {
@@ -70,18 +86,18 @@ public class WaterHandler {
         for (Water water : waters.values()) {
             if (!water.isFresh()) {
                 boolean falling = false;
-                if (waters.containsKey(new Pair(water.x, water.y - 1, water.z).hashCode())) {
-                    Water below = waters.get(new Pair(water.x, water.y - 1, water.z).hashCode());
+                if (waters.containsKey(new Triple(water.x, water.y - 1, water.z).hashCode())) {
+                    Water below = waters.get(new Triple(water.x, water.y - 1, water.z).hashCode());
                     if (below.getLevel() < 7) {
                         water.setActive(true);
                         below.setLevel(7);
                         
                     }
                     falling = true;
-                } else if (stableWaters.containsKey(new Pair(water.x, water.y - 1, water.z).hashCode())) {
-                    if (stableWaters.get(new Pair(water.x, water.y - 1, water.z).hashCode()).getLevel() < 7) {
-                        Water below = stableWaters.remove(new Pair(water.x, water.y - 1, water.z).hashCode());
-                        waters.put(new Pair(water.x, water.y - 1, water.z).hashCode(), below);
+                } else if (stableWaters.containsKey(new Triple(water.x, water.y - 1, water.z).hashCode())) {
+                    if (stableWaters.get(new Triple(water.x, water.y - 1, water.z).hashCode()).getLevel() < 7) {
+                        Water below = stableWaters.remove(new Triple(water.x, water.y - 1, water.z).hashCode());
+                        waters.put(new Triple(water.x, water.y - 1, water.z).hashCode(), below);
                         water.setActive(true);
                         below.setLevel(7);
                     }
@@ -91,7 +107,7 @@ public class WaterHandler {
                     int z = water.z < 0 ? water.z + 1 : water.z;
                     byte block = chunkManager.getActiveBlock(x, (float) (water.y - 1), z);
                     if (block == Type.AIR) {
-                        waters.put(new Pair(water.x, water.y - 1, water.z).hashCode(), new Water(water.x, water.y - 1, water.z, -(water.getLevel())));
+                        waters.put(new Triple(water.x, water.y - 1, water.z).hashCode(), new Water(water.x, water.y - 1, water.z, -(water.getLevel())));
                         water.setActive(true);
                         water.setLevel(0);
                         falling = true;
@@ -99,15 +115,15 @@ public class WaterHandler {
                 }
                 if (!falling) {
                     if (water.getLevel() > 1) {
-                        if (waters.containsKey(new Pair(water.x + 1, water.y, water.z).hashCode())) {
-                            Water right = waters.get(new Pair(water.x + 1, water.y, water.z).hashCode());
+                        if (waters.containsKey(new Triple(water.x + 1, water.y, water.z).hashCode())) {
+                            Water right = waters.get(new Triple(water.x + 1, water.y, water.z).hashCode());
                             if (right.getLevel() + 1 < water.getLevel()) {
                                 right.setLevel(water.getLevel() - 1);
                                 water.setActive(true);
                             }
-                        } else if (stableWaters.containsKey(new Pair(water.x + 1, water.y, water.z).hashCode())) {
-                            Water right = stableWaters.remove(new Pair(water.x + 1, water.y, water.z).hashCode());
-                            waters.put(new Pair(water.x + 1, water.y, water.z).hashCode(), right);
+                        } else if (stableWaters.containsKey(new Triple(water.x + 1, water.y, water.z).hashCode())) {
+                            Water right = stableWaters.remove(new Triple(water.x + 1, water.y, water.z).hashCode());
+                            waters.put(new Triple(water.x + 1, water.y, water.z).hashCode(), right);
                             if (right.getLevel() + 1 < water.getLevel()) {
                                 right.setLevel(water.getLevel() - 1);
                                 water.setActive(true);
@@ -117,22 +133,22 @@ public class WaterHandler {
                             int z = water.z < 0 ? water.z + 1 : water.z;
                             byte block = chunkManager.getActiveBlock(x + 1, water.y, z);
                             if (block == Type.AIR) {
-                                waters.put(new Pair(water.x + 1, water.y, water.z).hashCode(), new Water(water.x + 1, water.y, water.z, -(water.getLevel() - 1)));
+                                waters.put(new Triple(water.x + 1, water.y, water.z).hashCode(), new Water(water.x + 1, water.y, water.z, -(water.getLevel() - 1)));
                                 water.setActive(true);
                             }
                         }
                     }
 
                     if (water.getLevel() > 1) {
-                        if (waters.containsKey(new Pair(water.x - 1, water.y, water.z).hashCode())) {
-                            Water left = waters.get(new Pair(water.x - 1, water.y, water.z).hashCode());
+                        if (waters.containsKey(new Triple(water.x - 1, water.y, water.z).hashCode())) {
+                            Water left = waters.get(new Triple(water.x - 1, water.y, water.z).hashCode());
                             if (left.getLevel() + 1 < water.getLevel()) {
                                 left.setLevel(water.getLevel() - 1);
                                 water.setActive(true);
                             }
-                        } else if (stableWaters.containsKey(new Pair(water.x - 1, water.y, water.z).hashCode())) {
-                            Water left = stableWaters.remove(new Pair(water.x - 1, water.y, water.z).hashCode());
-                            waters.put(new Pair(water.x - 1, water.y, water.z).hashCode(), left);
+                        } else if (stableWaters.containsKey(new Triple(water.x - 1, water.y, water.z).hashCode())) {
+                            Water left = stableWaters.remove(new Triple(water.x - 1, water.y, water.z).hashCode());
+                            waters.put(new Triple(water.x - 1, water.y, water.z).hashCode(), left);
                             if (left.getLevel() + 1 < water.getLevel()) {
                                 left.setLevel(water.getLevel() - 1);
                                 water.setActive(true);
@@ -142,22 +158,22 @@ public class WaterHandler {
                             int z = water.z < 0 ? water.z + 1 : water.z;
                             byte block = chunkManager.getActiveBlock(x - 1, water.y, z);
                             if (block == Type.AIR) {
-                                waters.put(new Pair(water.x - 1, water.y, water.z).hashCode(), new Water(water.x - 1, water.y, water.z, -(water.getLevel() - 1)));
+                                waters.put(new Triple(water.x - 1, water.y, water.z).hashCode(), new Water(water.x - 1, water.y, water.z, -(water.getLevel() - 1)));
                                 water.setActive(true);
                             }
                         }
                     }
 
                     if (water.getLevel() > 1) {
-                        if (waters.containsKey(new Pair(water.x, water.y, water.z + 1).hashCode())) {
-                            Water front = waters.get(new Pair(water.x, water.y, water.z + 1).hashCode());
+                        if (waters.containsKey(new Triple(water.x, water.y, water.z + 1).hashCode())) {
+                            Water front = waters.get(new Triple(water.x, water.y, water.z + 1).hashCode());
                             if (front.getLevel() + 1 < water.getLevel()) {
                                 front.setLevel(water.getLevel() - 1);
                                 water.setActive(true);
                             }
-                        } else if (stableWaters.containsKey(new Pair(water.x, water.y, water.z + 1).hashCode())) {
-                            Water front = stableWaters.remove(new Pair(water.x, water.y, water.z + 1).hashCode());
-                            waters.put(new Pair(water.x, water.y, water.z + 1).hashCode(), front);
+                        } else if (stableWaters.containsKey(new Triple(water.x, water.y, water.z + 1).hashCode())) {
+                            Water front = stableWaters.remove(new Triple(water.x, water.y, water.z + 1).hashCode());
+                            waters.put(new Triple(water.x, water.y, water.z + 1).hashCode(), front);
                             if (front.getLevel() + 1 < water.getLevel()) {
                                 front.setLevel(water.getLevel() - 1);
                                 water.setActive(true);
@@ -167,21 +183,21 @@ public class WaterHandler {
                             int z = water.z < 0 ? water.z + 1 : water.z;
                             byte block = chunkManager.getActiveBlock(x, water.y, z + 1);
                             if (block == Type.AIR) {
-                                waters.put(new Pair(water.x, water.y, water.z + 1).hashCode(), new Water(water.x, water.y, water.z + 1, -(water.getLevel() - 1)));
+                                waters.put(new Triple(water.x, water.y, water.z + 1).hashCode(), new Water(water.x, water.y, water.z + 1, -(water.getLevel() - 1)));
                                 water.setActive(true);
                             }
                         }
                     }
                     if (water.getLevel() > 1) {
-                        if (waters.containsKey(new Pair(water.x, water.y, water.z - 1).hashCode())) {
-                            Water back = waters.get(new Pair(water.x, water.y, water.z - 1).hashCode());
+                        if (waters.containsKey(new Triple(water.x, water.y, water.z - 1).hashCode())) {
+                            Water back = waters.get(new Triple(water.x, water.y, water.z - 1).hashCode());
                             if (back.getLevel() + 1 < water.getLevel()) {
                                 back.setLevel(water.getLevel() - 1);
                                 water.setActive(true);
                             }
-                        } else if (stableWaters.containsKey(new Pair(water.x, water.y, water.z - 1).hashCode())) {
-                            Water back = stableWaters.remove(new Pair(water.x, water.y, water.z - 1).hashCode());
-                            waters.put(new Pair(water.x, water.y, water.z - 1).hashCode(), back);
+                        } else if (stableWaters.containsKey(new Triple(water.x, water.y, water.z - 1).hashCode())) {
+                            Water back = stableWaters.remove(new Triple(water.x, water.y, water.z - 1).hashCode());
+                            waters.put(new Triple(water.x, water.y, water.z - 1).hashCode(), back);
                             if (back.getLevel() + 1 < water.getLevel()) {
                                 back.setLevel(water.getLevel() - 1);
                                 water.setActive(true);
@@ -191,7 +207,7 @@ public class WaterHandler {
                             int z = water.z < 0 ? water.z + 1 : water.z;
                             byte block = chunkManager.getActiveBlock(x, water.y, z - 1);
                             if (block == Type.AIR) {
-                                waters.put(new Pair(water.x, water.y, water.z - 1).hashCode(), new Water(water.x, water.y, water.z - 1, -(water.getLevel() - 1)));
+                                waters.put(new Triple(water.x, water.y, water.z - 1).hashCode(), new Water(water.x, water.y, water.z - 1, -(water.getLevel() - 1)));
                                 water.setActive(true);
                             }
                         }
@@ -205,7 +221,7 @@ public class WaterHandler {
 
         for (Water water : waters.values()) {
             if (water.getLevel() <= 0) {
-                waters.remove(new Pair(water.x, water.y, water.z).hashCode());
+                waters.remove(new Triple(water.x, water.y, water.z).hashCode());
             } else if (water.isActive()) {
                 updateVBO = true;
                 //int x = water.x < 0 ? water.x + 1 : water.x;
@@ -239,8 +255,8 @@ public class WaterHandler {
                 water.setActive(false);
             } else {
                 water.setActive(false);
-                waters.remove(new Pair(water.x, water.y, water.z).hashCode());
-                stableWaters.put(new Pair(water.x, water.y, water.z).hashCode(), water);
+                waters.remove(new Triple(water.x, water.y, water.z).hashCode());
+                stableWaters.put(new Triple(water.x, water.y, water.z).hashCode(), water);
             }
         }
 

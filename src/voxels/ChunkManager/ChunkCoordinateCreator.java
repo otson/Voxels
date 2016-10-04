@@ -70,7 +70,7 @@ public class ChunkCoordinateCreator {
         while (notAtMax()) {
             if (heightCount < Chunk.VERTICAL_CHUNKS) {
                 heightCount++;    
-                if (!map.containsKey(new Pair(x + currentChunkX, heightCount, z + currentChunkZ).hashCode())) {
+                if (!map.containsKey(new Triple(x + currentChunkX, heightCount, z + currentChunkZ).hashCode())) {
                     return new Coordinates(x + currentChunkX, heightCount, z + currentChunkZ);
                 }
             }

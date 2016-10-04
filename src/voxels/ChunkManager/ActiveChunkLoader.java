@@ -74,7 +74,7 @@ public class ActiveChunkLoader extends Thread {
     }
 
     public void put(Chunk chunk) {
-        chunkMap.put(new Pair(chunk.xId, chunk.yId, chunk.zId).hashCode(), chunk);
+        chunkMap.put(new Triple(chunk.xId, chunk.yId, chunk.zId).hashCode(), chunk);
     }
 
     private boolean hasMoved() {
@@ -103,9 +103,9 @@ public class ActiveChunkLoader extends Thread {
                 for (int z = -loadDistance; z <= loadDistance; z++) {
                     Chunk chunk = chunkManager.getChunk(currentChunkX + x, y, currentChunkZ + z);
                     if (chunk != null) {
-                        if (chunk.isUpdateActive() || !chunkMap.containsKey(new Pair(chunk.xId, chunk.yId, chunk.zId).hashCode())) {
+                        if (chunk.isUpdateActive() || !chunkMap.containsKey(new Triple(chunk.xId, chunk.yId, chunk.zId).hashCode())) {
                             chunk.setUpdateActive(false);
-                            chunkMap.put(new Pair(chunk.xId, chunk.yId, chunk.zId).hashCode(), chunk);
+                            chunkMap.put(new Triple(chunk.xId, chunk.yId, chunk.zId).hashCode(), chunk);
                         }
                     }
                 }
@@ -128,9 +128,9 @@ public class ActiveChunkLoader extends Thread {
                 if (chunk.isUpdatePacked()) {
                     chunk.setUpdatePacked(false);
                     chunkMaker.setChunk(chunk);
-                    chunkManager.getMap().put(new Pair(chunk.xId, chunk.yId, chunk.zId).hashCode(), chunkMaker.toByte(chunk));
+                    chunkManager.getMap().put(new Triple(chunk.xId, chunk.yId, chunk.zId).hashCode(), chunkMaker.toByte(chunk));
                 }
-                chunkMap.remove(new Pair(chunk.xId, chunk.yId, chunk.zId).hashCode());
+                chunkMap.remove(new Triple(chunk.xId, chunk.yId, chunk.zId).hashCode());
             }
         }
     }

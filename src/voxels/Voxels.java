@@ -46,7 +46,7 @@ import voxels.ChunkManager.ChunkManager;
 import voxels.ChunkManager.Handle;
 import voxels.ChunkManager.ItemLocation;
 import voxels.ChunkManager.Location;
-import voxels.ChunkManager.Pair;
+import voxels.ChunkManager.Triple;
 import voxels.ChunkManager.Type;
 import voxels.ChunkManager.WaterHandler;
 import voxels.Noise.FastNoise;
@@ -69,7 +69,7 @@ public class Voxels extends Applet{
     /**
      * Texture file names.
      */
-    public static final String ATLAS = "atlas4simpleborders";
+    public static final String ATLAS = "atlas4";
     /**
      * Set terrain smoothness. Value of one gives mountains widths a width of
      * one block, 30 gives enormous flat areas. Default value is 15.
@@ -95,7 +95,7 @@ public class Voxels extends Applet{
     /*
     Toggle trees and caves
     */
-    public static final boolean MAKE_TREES_AND_CAVES = false;
+    public static final boolean MAKE_TREES_AND_CAVES = true;
 
     /**
      * Set air block percentage if 3D noise is in use.
@@ -110,8 +110,8 @@ public class Voxels extends Applet{
      */
     public static final int FIELD_OF_VIEW = 90;
     public static int chunkCreationDistance = 0;
-    public static int inGameCreationDistance = 10;
-    public static int chunkRenderDistance = 9;
+    public static int inGameCreationDistance = 8;
+    public static int chunkRenderDistance = 7;
     public static final int DISPLAY_WIDTH = 1600;
     public static final int DISPLAY_HEIGHT = 900;
     public static Texture atlas;
@@ -176,9 +176,9 @@ public class Voxels extends Applet{
     }
 
     private static void initFont() {
-        Font awtFont = new Font("Calibri", Font.PLAIN, 14); //name, style (PLAIN, BOLD, or ITALIC), size
+        Font awtFont = new Font("Calibri", Font.PLAIN, 22); //name, style (PLAIN, BOLD, or ITALIC), size
 
-        font = new UnicodeFont(awtFont.deriveFont(0, 16));
+        font = new UnicodeFont(awtFont.deriveFont(0, 22));
 
         font.addAsciiGlyphs();
         ColorEffect e = new ColorEffect();
@@ -212,13 +212,13 @@ public class Voxels extends Applet{
         start = System.nanoTime();
         for (int i = 0; i < 5000; i++) {
             Chunk chunk = chunkManager.getChunk(i, i, i);
-            hashMap.put(new Pair(i, i, i).hashCode(), chunk); //17500 ms (no initial capacity)
+            hashMap.put(new Triple(i, i, i).hashCode(), chunk); //17500 ms (no initial capacity)
         }
         System.out.println("Getting chunks took: " + (System.nanoTime() - start) / 1000000 + " ms.");
 
         start = System.nanoTime();
         for (int i = 0; i < 5000; i++) {
-            Chunk chunk = hashMap.get(new Pair(i, i, i).hashCode());
+            Chunk chunk = hashMap.get(new Triple(i, i, i).hashCode());
             if (chunk == null) {
                 System.out.println("null");
             }
@@ -376,7 +376,7 @@ public class Voxels extends Applet{
         camera.setChunkManager(chunkManager);
         camera.applyPerspectiveMatrix();
         camera.applyOptimalStates();
-        camera.setPosition(camera.x(), Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS, camera.z());
+        camera.setPosition(0.5f, Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS, 0.5f);
         Mouse.setGrabbed(true);
         return camera;
     }
@@ -411,7 +411,6 @@ public class Voxels extends Applet{
                             }
                             try {
                                 Thread.sleep(10);
-
                             } catch (InterruptedException ex) {
                                 Logger.getLogger(Voxels.class
                                         .getName()).log(Level.SEVERE, null, ex);
@@ -423,20 +422,19 @@ public class Voxels extends Applet{
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.start();
         startTime = System.currentTimeMillis();
-        while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            updateView();
-            processInput(getDelta());
-            chunkManager.processBufferData();
-            //npcManager.processMonsters();
-            itemHandler.processItemPhysics();
-            //glUseProgram(shaderProgram);
-            render();
-            renderDebugText();
-            updateFPS();
-            Display.update();
-            Display.sync(60);
-        }
+while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    processInput(getDelta());
+    chunkManager.processBufferData();
+    //npcManager.processMonsters();
+    itemHandler.processItemPhysics();
+    //glUseProgram(shaderProgram);
+    render();
+    renderDebugText();
+    updateFPS();
+    Display.update();
+    Display.sync(60);
+}
         //glDeleteProgram(shaderProgram);
         Display.destroy();
         TinySound.shutdown();
@@ -461,10 +459,12 @@ public class Voxels extends Applet{
 
         vertexCount = 0;
         int activeChunks = 0;
-        for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
-            for (int z = -chunkRenderDistance; z <= chunkRenderDistance; z++) {
-                for (int y = 0; y < Chunk.VERTICAL_CHUNKS; y++) {
-                    Handle handles = chunkManager.getHandle(getCurrentChunkXId() + x, y, getCurrentChunkZId() + z);
+int playerChunkX = getCurrentChunkXId();
+int playerChunkZ = getCurrentChunkZId();
+for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
+    for (int z = -chunkRenderDistance; z <= chunkRenderDistance; z++) {
+        for (int y = 0; y < Chunk.VERTICAL_CHUNKS; y++) {
+            Handle handles = chunkManager.getHandle(playerChunkX + x, y, playerChunkZ + z);
                     if (handles != null) {
                         activeChunks++;
                         glTranslatef(handles.translateX(), handles.translateY(), handles.translateZ());
@@ -482,7 +482,7 @@ public class Voxels extends Applet{
 
                         glBindBuffer(GL_ARRAY_BUFFER, vboTexHandle);
                         glTexCoordPointer(2, GL_FLOAT, 0, 0L);
-                        //glEnableVertexAttribArray(0);
+
                         glEnableClientState(GL_VERTEX_ARRAY);
                         glEnableClientState(GL_NORMAL_ARRAY);
                         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -598,16 +598,16 @@ public class Voxels extends Applet{
             glDisable(GL_TEXTURE_2D);
             font.drawString(5, 5, "Player world coordinates: " + df.format(camera.x()) + " " + df.format(camera.y()) + " " + df.format(camera.z()));
             font.drawString(5, 25, "Player chunk coordinates: " + getChunkX() + " " + getChunkY() + " " + getChunkZ());
-            //font.drawString(5, 45, "Player in-chunk coordinates: " + getX() + " " + getY() + " " + getZ());
+            font.drawString(5, 45, "Player in-chunk coordinates: " + getBlockX() + " " + getBlockY() + " " + getZ());
             font.drawString(5, 65, "Player rotation: " + df.format(camera.pitch()) + " " + df.format(camera.roll()) + " " + df.format(camera.yaw()));
             font.drawString(5, 85, "Active chunks (total chunks): " + DebugInfo.chunksLoaded + " (" + DebugInfo.chunkTotal + ")");
             font.drawString(5, 105, "Vertices: " + DebugInfo.verticesDrawn);
-            font.drawString(5, 125, "Water vertices: " + DebugInfo.waterVertices);
-            font.drawString(5, 145, "NPCs: " + DebugInfo.activeNPCs);
-            font.drawString(5, 165, "Items: " + DebugInfo.activeItems);
-            font.drawString(5, 185, "Draw distance (chunks): " + chunkRenderDistance);
-            font.drawString(5, 205, "Frames per Second: " + DebugInfo.fps);
-            font.drawString(5, 225, "Selected block: " + Type.getBlockName(chunkManager.getSelectedBlock()));
+            //font.drawString(5, 125, "Water vertices: " + DebugInfo.waterVertices);
+            font.drawString(5, 125, "NPCs: " + DebugInfo.activeNPCs);
+            font.drawString(5, 145, "Items: " + DebugInfo.activeItems);
+            font.drawString(5, 165, "Draw distance (chunks): " + chunkRenderDistance);
+            font.drawString(5, 185, "Frames per Second: " + DebugInfo.fps);
+            font.drawString(5, 205, "Selected block: " + Type.getBlockName(chunkManager.getSelectedBlock()));
             
             if(DebugInfo.chunksLoaded == 2023){
                 font.drawString(5, 225, "Time to render all chunks: " + (endTime-startTime) +" ms." );
@@ -662,6 +662,8 @@ public class Voxels extends Applet{
     }
 
     private static void processInput(float delta) {
+        updateView();
+        
         while (Keyboard.next()) {
 
             if (Keyboard.isKeyDown(Keyboard.KEY_1)) {
@@ -802,7 +804,7 @@ public class Voxels extends Applet{
      coordinates inside a chunk (0 - Chunksize-1)
      */
 
-    public final int getX() {
+    public final static int getBlockX() {
         return getBlockX(camera.x());
     }
     // Convert world coordinate to block-coordinate inside a chunk
@@ -823,7 +825,7 @@ public class Voxels extends Applet{
         return (f >= 0) ? (int) f : (int) (f - 1);
     }
 
-    public final int getY() {
+    public final static int getBlockY() {
         return getBlockY(camera.y());
     }
 
@@ -1106,14 +1108,14 @@ public class Voxels extends Applet{
         int yInChunk = toY(y);
         int zInChunk = toZ(z);
 
-        if (!chunkManager.getBlockBuffer().containsKey(new Pair(chunkXId, chunkYId, chunkZId).hashCode())) {
+        if (!chunkManager.getBlockBuffer().containsKey(new Triple(chunkXId, chunkYId, chunkZId).hashCode())) {
             BlockingQueue<BlockCoord> queue = new LinkedBlockingQueue<>();
             queue.offer(new BlockCoord(type, xInChunk, yInChunk, zInChunk));
-            chunkManager.getBlockBuffer().put(new Pair(chunkXId, chunkYId, chunkZId).hashCode(), queue);
+            chunkManager.getBlockBuffer().put(new Triple(chunkXId, chunkYId, chunkZId).hashCode(), queue);
         } else {
-            BlockingQueue queue = chunkManager.getBlockBuffer().get(new Pair(chunkXId, chunkYId, chunkZId).hashCode());
+            BlockingQueue queue = chunkManager.getBlockBuffer().get(new Triple(chunkXId, chunkYId, chunkZId).hashCode());
             queue.offer(new BlockCoord(type, xInChunk, yInChunk, zInChunk));
-            chunkManager.getBlockBuffer().put(new Pair(chunkXId, chunkYId, chunkZId).hashCode(), queue);
+            chunkManager.getBlockBuffer().put(new Triple(chunkXId, chunkYId, chunkZId).hashCode(), queue);
         }
 
         //System.out.println("Buffer size: "+chunkManager.getBlockBuffer().size());

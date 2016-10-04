@@ -20,9 +20,9 @@ public class ChunkRenderChecker extends Thread {
     private ConcurrentHashMap<Integer, byte[]> map;
     private boolean running = false;
     private ChunkManager chunkManager;
-    private BlockingQueue<Pair> queue;
+    private BlockingQueue<Triple> queue;
 
-    public ChunkRenderChecker(BlockingQueue<Pair> queue, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager) {
+    public ChunkRenderChecker(BlockingQueue<Triple> queue, ConcurrentHashMap<Integer, byte[]> map, ChunkManager chunkManager) {
         this.queue = queue;
         this.map = map;
         this.chunkManager = chunkManager;
@@ -38,7 +38,7 @@ public class ChunkRenderChecker extends Thread {
     public void run() {
         running = true;
         int count = 0;
-        Pair current = null;
+        Triple current = null;
         while (running) {
             int size = queue.size();
             long start = System.nanoTime();
@@ -50,27 +50,27 @@ public class ChunkRenderChecker extends Thread {
                 }
                 if (current != null) {
                     
-                    if (map.containsKey(new Pair(current.x + 1, current.y, current.z).hashCode())
-                            && map.containsKey(new Pair(current.x - 1, current.y, current.z).hashCode())
-                            && map.containsKey(new Pair(current.x, current.y, current.z + 1).hashCode())
-                            && map.containsKey(new Pair(current.x, current.y, current.z - 1).hashCode())) {
+                    if (map.containsKey(new Triple(current.x + 1, current.y, current.z).hashCode())
+                            && map.containsKey(new Triple(current.x - 1, current.y, current.z).hashCode())
+                            && map.containsKey(new Triple(current.x, current.y, current.z + 1).hashCode())
+                            && map.containsKey(new Triple(current.x, current.y, current.z - 1).hashCode())) {
 
                         if (current.y != 1 && current.y != Chunk.WORLD_HEIGHT) {
-                            if (map.containsKey(new Pair(current.x, current.y + 1, current.z).hashCode())
-                                    && map.containsKey(new Pair(current.x, current.y - 1, current.z).hashCode())) {
+                            if (map.containsKey(new Triple(current.x, current.y + 1, current.z).hashCode())
+                                    && map.containsKey(new Triple(current.x, current.y - 1, current.z).hashCode())) {
                                 i--;
                                 chunkManager.createVBO(chunkManager.getChunk(current.x, current.y, current.z));
 
                             }
                         } else if (current.y == 1) {
-                            if (map.containsKey(new Pair(current.x, current.y + 1, current.z).hashCode())) {
+                            if (map.containsKey(new Triple(current.x, current.y + 1, current.z).hashCode())) {
                                 i--;
 
                                 chunkManager.createVBO(chunkManager.getChunk(current.x, current.y, current.z));
 
                             }
                         } else if (current.y == Chunk.WORLD_HEIGHT) {
-                            if (map.containsKey(new Pair(current.x, current.y - 1, current.z).hashCode())) {
+                            if (map.containsKey(new Triple(current.x, current.y - 1, current.z).hashCode())) {
                                 i--;
 
                                 chunkManager.createVBO(chunkManager.getChunk(current.x, current.y, current.z));

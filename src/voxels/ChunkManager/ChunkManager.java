@@ -38,6 +38,16 @@ import static voxels.Voxels.getChunkY;
 import static voxels.Voxels.getChunkZ;
 import static voxels.Voxels.getCurrentChunkXId;
 import static voxels.Voxels.getCurrentChunkZId;
+import static voxels.Voxels.getBlockX;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static voxels.Voxels.getBlockY;
+import static voxels.Voxels.getChunkX;
+import static voxels.Voxels.getChunkY;
+import static voxels.Voxels.getChunkZ;
+import static voxels.Voxels.getCurrentChunkXId;
+import static voxels.Voxels.getCurrentChunkZId;
 
 /**
  *
@@ -62,9 +72,9 @@ public class ChunkManager {
     private ChunkRenderChecker chunkRenderChecker;
     private ActiveChunkLoader chunkLoader;
     private ChunkMaker[] threads = new ChunkMaker[maxThreads];
-    private ChunkMaker updateThread;
+    private ChunkMaker ChunkVBOMaker;
     
-    private BlockingQueue<Pair> queue = new LinkedBlockingQueue<>();
+    private BlockingQueue<Triple> queue = new LinkedBlockingQueue<>();
     
     private ConcurrentHashMap<Integer, Integer> decompLengths;
     
@@ -90,16 +100,16 @@ public class ChunkManager {
         chunkCreator = new ChunkCoordinateCreator(map);
         chunkLoader = new ActiveChunkLoader(this, activeChunkMap);
         chunkLoader.setPriority(Thread.NORM_PRIORITY);
-        updateThread = new ChunkMaker(decompLengths, map, this, dataToProcess, queue);
+        ChunkVBOMaker = new ChunkMaker(decompLengths, map, this, dataToProcess, queue);
         chunkRenderChecker = new ChunkRenderChecker(queue, map, this);
         chunkRenderChecker.setPriority(Thread.MAX_PRIORITY);
     }
     
     public Chunk getChunk(int chunkX, int chunkY, int chunkZ) {
-        if (activeChunkMap.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
-            return activeChunkMap.get(new Pair(chunkX, chunkY, chunkZ).hashCode());
-        } else if (map.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode())) {
-            return toChunk(map.get(new Pair(chunkX, chunkY, chunkZ).hashCode()));
+        if (activeChunkMap.containsKey(new Triple(chunkX, chunkY, chunkZ).hashCode())) {
+            return activeChunkMap.get(new Triple(chunkX, chunkY, chunkZ).hashCode());
+        } else if (map.containsKey(new Triple(chunkX, chunkY, chunkZ).hashCode())) {
+            return toChunk(map.get(new Triple(chunkX, chunkY, chunkZ).hashCode()));
         } else {
             return null;
         }
@@ -124,15 +134,15 @@ public class ChunkManager {
     }
     
     public Handle getHandle(int x, int y, int z) {
-        if (handles.containsKey(new Pair(x, y, z).hashCode())) {
-            return handles.get(new Pair(x, y, z).hashCode());
+        if (handles.containsKey(new Triple(x, y, z).hashCode())) {
+            return handles.get(new Triple(x, y, z).hashCode());
         } else {
             return null;
         }
     }
     
     public boolean isChunk(int chunkX, int chunkY, int chunkZ) {
-        return map.containsKey(new Pair(chunkX, chunkY, chunkZ).hashCode());
+        return map.containsKey(new Triple(chunkX, chunkY, chunkZ).hashCode());
     }
     
     public void checkChunkUpdates() {
@@ -285,24 +295,24 @@ public class ChunkManager {
                                 int xInChunk = getBlockX(temp.x);
                                 int yInChunk = getBlockY(temp.y);
                                 int zInChunk = getBlockZ(temp.z);
-                                chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ).hashCode(), new Coordinates(chunkX, chunkY, chunkZ));
+                                chunksToUpdate.putIfAbsent(new Triple(chunkX, chunkY, chunkZ).hashCode(), new Coordinates(chunkX, chunkY, chunkZ));
                                 if (xInChunk == 0) {
-                                    chunksToUpdate.putIfAbsent(new Pair(chunkX - 1, chunkY, chunkZ).hashCode(), new Coordinates(chunkX - 1, chunkY, chunkZ));
+                                    chunksToUpdate.putIfAbsent(new Triple(chunkX - 1, chunkY, chunkZ).hashCode(), new Coordinates(chunkX - 1, chunkY, chunkZ));
                                 }
                                 if (xInChunk == Chunk.CHUNK_SIZE - 1) {
-                                    chunksToUpdate.putIfAbsent(new Pair(chunkX + 1, chunkY, chunkZ).hashCode(), new Coordinates(chunkX + 1, chunkY, chunkZ));
+                                    chunksToUpdate.putIfAbsent(new Triple(chunkX + 1, chunkY, chunkZ).hashCode(), new Coordinates(chunkX + 1, chunkY, chunkZ));
                                 }
                                 if (yInChunk == 0) {
-                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY - 1, chunkZ).hashCode(), new Coordinates(chunkX, chunkY - 1, chunkZ));
+                                    chunksToUpdate.putIfAbsent(new Triple(chunkX, chunkY - 1, chunkZ).hashCode(), new Coordinates(chunkX, chunkY - 1, chunkZ));
                                 }
                                 if (yInChunk == Chunk.CHUNK_SIZE - 1) {
-                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY + 1, chunkZ).hashCode(), new Coordinates(chunkX, chunkY + 1, chunkZ));
+                                    chunksToUpdate.putIfAbsent(new Triple(chunkX, chunkY + 1, chunkZ).hashCode(), new Coordinates(chunkX, chunkY + 1, chunkZ));
                                 }
                                 if (zInChunk == 0) {
-                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ - 1).hashCode(), new Coordinates(chunkX, chunkY, chunkZ - 1));
+                                    chunksToUpdate.putIfAbsent(new Triple(chunkX, chunkY, chunkZ - 1).hashCode(), new Coordinates(chunkX, chunkY, chunkZ - 1));
                                 }
                                 if (zInChunk == Chunk.CHUNK_SIZE - 1) {
-                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ + 1).hashCode(), new Coordinates(chunkX, chunkY, chunkZ + 1));
+                                    chunksToUpdate.putIfAbsent(new Triple(chunkX, chunkY, chunkZ + 1).hashCode(), new Coordinates(chunkX, chunkY, chunkZ + 1));
                                 }
                                 
                             }
@@ -343,24 +353,24 @@ public class ChunkManager {
                                 int xInChunk = getBlockX(temp.x);
                                 int yInChunk = getBlockY(temp.y);
                                 int zInChunk = getBlockZ(temp.z);
-                                chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ).hashCode(), new Coordinates(chunkX, chunkY, chunkZ));
+                                chunksToUpdate.putIfAbsent(new Triple(chunkX, chunkY, chunkZ).hashCode(), new Coordinates(chunkX, chunkY, chunkZ));
                                 if (xInChunk == 0) {
-                                    chunksToUpdate.putIfAbsent(new Pair(chunkX - 1, chunkY, chunkZ).hashCode(), new Coordinates(chunkX - 1, chunkY, chunkZ));
+                                    chunksToUpdate.putIfAbsent(new Triple(chunkX - 1, chunkY, chunkZ).hashCode(), new Coordinates(chunkX - 1, chunkY, chunkZ));
                                 }
                                 if (xInChunk == Chunk.CHUNK_SIZE - 1) {
-                                    chunksToUpdate.putIfAbsent(new Pair(chunkX + 1, chunkY, chunkZ).hashCode(), new Coordinates(chunkX + 1, chunkY, chunkZ));
+                                    chunksToUpdate.putIfAbsent(new Triple(chunkX + 1, chunkY, chunkZ).hashCode(), new Coordinates(chunkX + 1, chunkY, chunkZ));
                                 }
                                 if (yInChunk == 0) {
-                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY - 1, chunkZ).hashCode(), new Coordinates(chunkX, chunkY - 1, chunkZ));
+                                    chunksToUpdate.putIfAbsent(new Triple(chunkX, chunkY - 1, chunkZ).hashCode(), new Coordinates(chunkX, chunkY - 1, chunkZ));
                                 }
                                 if (yInChunk == Chunk.CHUNK_SIZE - 1) {
-                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY + 1, chunkZ).hashCode(), new Coordinates(chunkX, chunkY + 1, chunkZ));
+                                    chunksToUpdate.putIfAbsent(new Triple(chunkX, chunkY + 1, chunkZ).hashCode(), new Coordinates(chunkX, chunkY + 1, chunkZ));
                                 }
                                 if (zInChunk == 0) {
-                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ - 1).hashCode(), new Coordinates(chunkX, chunkY, chunkZ - 1));
+                                    chunksToUpdate.putIfAbsent(new Triple(chunkX, chunkY, chunkZ - 1).hashCode(), new Coordinates(chunkX, chunkY, chunkZ - 1));
                                 }
                                 if (zInChunk == Chunk.CHUNK_SIZE - 1) {
-                                    chunksToUpdate.putIfAbsent(new Pair(chunkX, chunkY, chunkZ + 1).hashCode(), new Coordinates(chunkX, chunkY, chunkZ + 1));
+                                    chunksToUpdate.putIfAbsent(new Triple(chunkX, chunkY, chunkZ + 1).hashCode(), new Coordinates(chunkX, chunkY, chunkZ + 1));
                                 }
                                 
                             }
@@ -378,13 +388,7 @@ public class ChunkManager {
     }
     
     public void updateChunk(Chunk chunk) {
-        updateThread.update(chunk);
-        chunkLoader.refresh();
-    }
-    
-    public void updateChunk(Chunk chunk, int x, int y, int z) {
-        updateThread.update(chunk);
-        checkAdjacentChunks(chunk, x, y, z);
+        ChunkVBOMaker.update(chunk);
         chunkLoader.refresh();
     }
     
@@ -446,36 +450,44 @@ public class ChunkManager {
     
     public void updateBuffers(Data data) {
         glBindBuffer(GL_ARRAY_BUFFER, data.vertexHandle);
-        glBufferData(GL_ARRAY_BUFFER, data.vertexData, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, data.vertexBuffer, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         
         glBindBuffer(GL_ARRAY_BUFFER, data.normalHandle);
-        glBufferData(GL_ARRAY_BUFFER, data.normalData, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, data.normalBuffer, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         
         glBindBuffer(GL_ARRAY_BUFFER, data.texHandle);
-        glBufferData(GL_ARRAY_BUFFER, data.texData, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, data.texBuffer, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
     
     public void createBuffers(Data data) {
-        
+
         int vboVertexHandle = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
-        glBufferData(GL_ARRAY_BUFFER, data.vertexData, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, data.vertexBuffer, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-        
+
         int vboNormalHandle = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboNormalHandle);
-        glBufferData(GL_ARRAY_BUFFER, data.normalData, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, data.normalBuffer, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-        
+
         int vboTexHandle = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboTexHandle);
-        glBufferData(GL_ARRAY_BUFFER, data.texData, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, data.texBuffer, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         
-        handles.put(new Pair(data.chunkX, data.chunkY, data.chunkZ).hashCode(), new Handle(vboVertexHandle, vboNormalHandle, vboTexHandle, data.vertices, new Coordinates(data.chunkX*Chunk.CHUNK_SIZE, data.chunkY*Chunk.CHUNK_SIZE, data.chunkZ*Chunk.CHUNK_SIZE)));
+        /*
+private ConcurrentHashMap<Integer, Handle> handles;
+int vertexCount = data.vertices;
+Handle h = new Handle(
+vboVertexHandle, vboNormalHandle, vboNormalHandle, vertexCount);
+handles.put(new Triple(data.chunkX, data.chunkY, data.chunkZ), h);
+        
+        */
+        handles.put(new Triple(data.chunkX, data.chunkY, data.chunkZ).hashCode(), new Handle(vboVertexHandle, vboNormalHandle, vboTexHandle, data.vertices, new Coordinates(data.chunkX*Chunk.CHUNK_SIZE, data.chunkY*Chunk.CHUNK_SIZE, data.chunkZ*Chunk.CHUNK_SIZE)));
     }
     
     public boolean isAtMax() {
@@ -553,29 +565,37 @@ public class ChunkManager {
         chunkLoader.put(chunk);
     }
     
-    private void checkAdjacentChunks(Chunk chunk, int x, int y, int z) {
+    private void checkAdjacentChunks(Vector3f position) {
+        
+        int xId = getChunkX(position.x);
+        int yId = getChunkX(position.y);
+        int zId = getChunkX(position.z);
+        
+        int xInChunk = getBlockX(position.x);
+        int yInChunk = getBlockX(position.y);
+        int zInChunk = getBlockX(position.z);
         /**
          *
          * For now, all the blocks are updated.
          *
          */
-        if (x == Chunk.CHUNK_SIZE - 1) {
-            updateThread.update(getActiveChunk(chunk.xId + 1, chunk.yId, chunk.zId));
+        if (xInChunk == Chunk.CHUNK_SIZE - 1) {
+            ChunkVBOMaker.update(getActiveChunk(xId + 1, yId, zId));
         }
-        if (x == 0) {
-            updateThread.update(getActiveChunk(chunk.xId - 1, chunk.yId, chunk.zId));
+        if (xInChunk == 0) {
+            ChunkVBOMaker.update(getActiveChunk(xId - 1, yId, zId));
         }
-        if (y == Chunk.CHUNK_SIZE - 1) {
-            updateThread.update(getActiveChunk(chunk.xId, chunk.yId + 1, chunk.zId));
+        if (yInChunk == Chunk.CHUNK_SIZE - 1) {
+            ChunkVBOMaker.update(getActiveChunk(xId, yId + 1, zId));
         }
-        if (y == 0) {
-            updateThread.update(getActiveChunk(chunk.xId, chunk.yId - 1, chunk.zId));
+        if (yInChunk == 0) {
+            ChunkVBOMaker.update(getActiveChunk(xId, yId - 1, zId));
         }
-        if (z == Chunk.CHUNK_SIZE - 1) {
-            updateThread.update(getActiveChunk(chunk.xId, chunk.yId, chunk.zId + 1));
+        if (zInChunk == Chunk.CHUNK_SIZE - 1) {
+            ChunkVBOMaker.update(getActiveChunk(xId, yId, zId + 1));
         }
-        if (z == 0) {
-            updateThread.update(getActiveChunk(chunk.xId, chunk.yId, chunk.zId - 1));
+        if (zInChunk == 0) {
+            ChunkVBOMaker.update(getActiveChunk(xId, yId, zId - 1));
         }
     }
     
@@ -600,7 +620,7 @@ public class ChunkManager {
     }
     
     public Chunk getActiveChunk(int currentChunkXId, int currentChunkYId, int currentChunkZId) {
-        Chunk chunk = activeChunkMap.get(new Pair(currentChunkXId, currentChunkYId, currentChunkZId).hashCode());
+        Chunk chunk = activeChunkMap.get(new Triple(currentChunkXId, currentChunkYId, currentChunkZId).hashCode());
         if (chunk == null) {
             return null;
         } else {
@@ -639,9 +659,10 @@ public byte getBlock(Vector3f v) {
     Chunk chunk = getActiveChunk(getChunkX(v.x), getChunkY(v.y), getChunkZ(v.z));
     if (chunk != null) {
         return chunk.blocks[getBlockX(v.x)][getBlockY(v.y)][getBlockZ(v.z)];
-    } else {
-        return -1;
     }
+    // Chunk does not exist or is not in active chunks.
+    else 
+       return -1;
 }
     
     public byte getActiveBlock(float x, float y, float z) {
@@ -653,14 +674,18 @@ public byte getBlock(Vector3f v) {
     }
     
     public void setBlock(Vector3f pos, byte type) {
-        Chunk chunk = getActiveChunk(getChunkX(pos.x), getChunkY(pos.y), getChunkZ(pos.z));
+        int chunkX = getChunkX(pos.x);
+        int chunkY = getChunkY(pos.y);
+        int chunkZ = getChunkZ(pos.z);
+        Chunk chunk = getChunk(chunkX, chunkY, chunkZ);
         if (chunk != null) {
-            chunk.blocks[getBlockX(pos.x)][getBlockY(pos.y)][getBlockZ(pos.z)] = type;
-            //if (type >= 0) {
-                updateThread.update(chunk);
-                checkAdjacentChunks(chunk, getBlockX(pos.x), getBlockY(pos.y), getBlockZ(pos.z));
-                chunkLoader.refresh();
-            //}
+            int blockX = getBlockX(pos.x);
+            int blockY = getBlockY(pos.y);
+            int blockZ = getBlockZ(pos.z);
+            chunk.blocks[blockX][blockY][blockZ] = type;
+            ChunkVBOMaker.update(chunk);
+            checkAdjacentChunks(pos);
+            chunkLoader.refresh();
         }
     }
     
@@ -679,7 +704,7 @@ public byte getBlock(Vector3f v) {
         return dataToProcess;
     }
     
-    public BlockingQueue<Pair> getQueue() {
+    public BlockingQueue<Triple> getQueue() {
         return queue;
     }
     

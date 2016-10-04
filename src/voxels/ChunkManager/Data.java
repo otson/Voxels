@@ -8,9 +8,9 @@ import java.nio.FloatBuffer;
  */
 public class Data {
 
-    public final FloatBuffer vertexData;
-    public final FloatBuffer normalData;
-    public final FloatBuffer texData;
+    public final FloatBuffer vertexBuffer;
+    public final FloatBuffer normalBuffer;
+    public final FloatBuffer texBuffer;
     public final int vertices;
     public final int chunkX;
     public final int chunkY;
@@ -32,9 +32,9 @@ public class Data {
      * @param update
      */
     public Data(int chunkX, int chunkY, int chunkZ, int vertices, FloatBuffer vertexData, FloatBuffer normalData, FloatBuffer texData, boolean update) {
-        this.vertexData = vertexData;
-        this.normalData = normalData;
-        this.texData = texData;
+        this.vertexBuffer = vertexData;
+        this.normalBuffer = normalData;
+        this.texBuffer = texData;
         this.vertices = vertices;
         this.chunkX = chunkX;
         this.chunkY = chunkY;
@@ -47,9 +47,9 @@ public class Data {
     }
 
     public Data(int chunkX, int chunkY, int chunkZ, int vertices, FloatBuffer vertexData, FloatBuffer normalData, FloatBuffer texData, int vertexHandle, int normalHandle, int texHandle, boolean update) {
-        this.vertexData = vertexData;
-        this.normalData = normalData;
-        this.texData = texData;
+        this.vertexBuffer = vertexData;
+        this.normalBuffer = normalData;
+        this.texBuffer = texData;
         this.vertices = vertices;
         this.chunkX = chunkX;
         this.chunkY = chunkY;

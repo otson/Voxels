@@ -1,3 +1,19 @@
+/* 
+ * Copyright (C) 2016 Otso Nuortimo
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package voxels.ChunkManager;
 
 import java.io.Serializable;
@@ -141,7 +157,7 @@ public class Chunk implements Serializable {
                             // add trees
                             if(Voxels.MAKE_TREES_AND_CAVES){
                                 if (y + Chunk.CHUNK_SIZE * yId == maxHeights[x][z] + 1 && y + yCoordinate - 1 > SHORE_HEIGHT) {
-                                    if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate - 1, z + CHUNK_SIZE * zId) == 0) {
+                                    if (Voxels.getTreeNoise(x + CHUNK_SIZE * xId, y + yCoordinate - 1, z + CHUNK_SIZE * zId)) {
                                         if (biomes[x][z] == Type.DIRT) {
                                             createTree(x + CHUNK_SIZE * xId, y + yCoordinate, z + CHUNK_SIZE * zId);
                                         } else if (biomes[x][z] == Type.SAND) {

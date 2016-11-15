@@ -1,3 +1,19 @@
+/* 
+ * Copyright (C) 2016 Otso Nuortimo
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package voxels;
 
 import Items.DebugInfo;
@@ -51,7 +67,6 @@ import voxels.ChunkManager.Type;
 import voxels.ChunkManager.WaterHandler;
 import voxels.Noise.FastNoise;
 import voxels.Noise.SimplexNoise;
-import voxels.Shaders.ShaderLoader;
 import java.applet.Applet;
 import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
 import voxels.Noise.RandomNumber;
@@ -268,9 +283,6 @@ public class Voxels extends Applet{
 //        }
     }
 
-    private static void initShaders() {
-        shaderProgram = ShaderLoader.loadShaderPair("src/resources/shaders/shader.vs", "src/resources/shaders/shader.fs");
-    }
 
     private static void initOpenGL() {
         glMatrixMode(GL_PROJECTION);
@@ -1020,25 +1032,20 @@ for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
         return noise;
     }
 
-    public static int getTreeNoise(float x, float y, float z) {
-        if (FastNoise.noise(x / 100f, z / 100f, 3) > 100f) {
-
-            int noise = (int) (FastNoise.noise(x + 1000, z + 1000, 3));
-            if (noise == 10 || noise == 50) {
-                if (getCaveNoise(x, y, z) == false) {
-                    return 0;
-                } else {
-                    return 1;
-                }
-            } else if (noise == 31) {
-                return 1;
+public static boolean getTreeNoise(float x, float y, float z) {
+    if (FastNoise.noise(x / 100f, z / 100f, 3) > 100f) {
+        int noise = (int) (FastNoise.noise(x + 1000, z + 1000, 3));
+        if (noise == 10 || noise == 50) {
+            if (getCaveNoise(x, y, z) == false) {
+                return true;
             } else {
-                return -1;
+                return false;
             }
         }
-        return -1;
-
+        return false;
     }
+    return false;
+}
 
     public static int get3DNoise(float x, float y, float z) {
         int i = (int) ((SimplexNoise.noise(x / (1f * THREE_DIM_SMOOTHNESS * 2f), y / (1f * THREE_DIM_SMOOTHNESS), z / (1f * THREE_DIM_SMOOTHNESS * 2f)) + 1) * 128 * (Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS / 256f));

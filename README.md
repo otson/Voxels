@@ -1,4 +1,4 @@
-# Voxels#
+#Voxels#
 
 Voxels is a 3D sandbox game written in Java. The game world is procedurally generated and freely modifiable by the player.
 

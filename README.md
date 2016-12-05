@@ -2,11 +2,20 @@
 
 Voxels is a 3D sandbox game written in Java. The game world is procedurally generated and freely modifiable by the player.
 
-### What is this repository for? ###
+### Features ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+* Varying biomes
+* Clouds
+* Caves
+* Trees
+* Sea
+* Terrain modification: the player can remove blocks and add blocks to the world.
+
+### Technical features ###
+
+* Terrain generation uses both Perlin and Simplex noise algorithms.
+* Data compression for far away terrain to minimize memory usage.
+* Greedy meshing to minimize the amount of quads used to draw the terrain.
 
 ### How do I get set up? ###
 

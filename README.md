@@ -24,5 +24,5 @@ Easiest way to try the game is to download the standalone executable jar-file fr
 
 If you have questions regarding the project, please contact me.
 
-Copyright (C) 2016 Otso Nuortimo
+Copyright (C) 2016 Otso Nuortimo  
 Released under GNU General Public License.

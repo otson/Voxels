@@ -2,8 +2,6 @@
 
 Voxels is a 3D sandbox game written in Java. The game world is procedurally generated and freely modifiable by the player.
 
-This README would normally document whatever steps are necessary to get your application up and running.
-
 ### What is this repository for? ###
 
 * Quick summary

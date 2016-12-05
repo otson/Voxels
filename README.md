@@ -1,4 +1,4 @@
-# Voxels - Procedural generation of 3D terrain in a game written in Java #
+# Voxels - Java game using procedurally generated, editable 3D terrain#
 
 This README would normally document whatever steps are necessary to get your application up and running.
 

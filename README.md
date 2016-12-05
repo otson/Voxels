@@ -1,6 +1,6 @@
 #Voxels#
 
-Voxels is a 3D sandbox game written in Java. The game world is procedurally generated and freely modifiable by the player.
+Voxels is a free open-source 3D sandbox game written in Java. The game world is procedurally generated and freely modifiable by the player.
 
 ### Features ###
 
@@ -16,22 +16,13 @@ Already created areas will stay the same regardless of how far away the player m
 * Data compression for far away terrain to minimize memory usage.
 * Greedy meshing to minimize the amount of quads used to draw the terrain.
 
-### How do I get set up? ###
+### Usage ###
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+Easiest way to try the game is to download the standalone executable jar-file from the runnable folder and run it.
 
-### Contribution guidelines ###
+### Contact ###
 
-* Writing tests
-* Code review
-* Other guidelines
+If you have questions regarding the project, please contact me.
 
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+Copyright (C) 2016 Otso Nuortimo
+Released under GNU General Public License.

@@ -75,7 +75,7 @@ import voxels.Noise.RandomNumber;
  *
  * @author otso
  */
-public class Voxels extends Applet{
+public class Voxels extends Applet {
 
     /**
      * Title.
@@ -106,10 +106,10 @@ public class Voxels extends Applet{
     /**
      * Set if 3D simplex noise is used to generate terrain.
      */
-    public static final boolean USE_3D_NOISE = true; 
+    public static final boolean USE_3D_NOISE = true;
     /*
     Toggle trees and caves
-    */
+     */
     public static final boolean MAKE_TREES_AND_CAVES = true;
 
     /**
@@ -153,21 +153,15 @@ public class Voxels extends Applet{
     private static long lastFrame = System.nanoTime();
     private static BlockRenders blockRenders;
     private static boolean isDebug = true;
-
-    private static int shaderProgram;
     private static long startTime = 0;
     private static long endTime = 0;
 
     static UnicodeFont font;
-    
-    public void start(){
-        //testChunkSpeeds();
+
+    public void start() {
         initDisplay();
         initOpenGL();
-        //initFog();
         initLighting();
-//        initShaders();
-//        initShaderLighting();
         initFont();
         initTextures();
         initSounds();
@@ -175,14 +169,10 @@ public class Voxels extends Applet{
         gameLoop();
     }
 
-   public static void main(String[] args) {
-        //testChunkSpeeds();
+    public static void main(String[] args) {
         initDisplay();
         initOpenGL();
-        //initFog();
         initLighting();
-//        initShaders();
-//        initShaderLighting();
         initFont();
         initTextures();
         initSounds();
@@ -198,8 +188,6 @@ public class Voxels extends Applet{
         font.addAsciiGlyphs();
         ColorEffect e = new ColorEffect();
 
-        //e.setColor(java.awt.Color.white);
-
         font.getEffects()
                 .add(e);
         try {
@@ -209,57 +197,20 @@ public class Voxels extends Applet{
         }
     }
 
-    private static void testChunkSpeeds() {
-
-        chunkManager = new ChunkManager();
-
-        HashMap<Integer, Chunk> hashMap = new HashMap<>();
-        ChunkMaker maker = new ChunkMaker(null, null, chunkManager, null, null);
-        long start = System.nanoTime();
-        for (int y = 0; y < 16; y++) {
-            for (int i = 0; i < 100; i++) {
-                Chunk chunk = new Chunk(i, y, i);
-                //chunkManager.getMap().put(new Pair(i, i, i).hashCode(), maker.toByte(chunk));
-            }
-        }
-        System.out.println("Creating chunks took: " + (System.nanoTime() - start) / 1000000 + " ms.");
-        System.exit(0);
-        start = System.nanoTime();
-        for (int i = 0; i < 5000; i++) {
-            Chunk chunk = chunkManager.getChunk(i, i, i);
-            hashMap.put(new Triple(i, i, i).hashCode(), chunk); //17500 ms (no initial capacity)
-        }
-        System.out.println("Getting chunks took: " + (System.nanoTime() - start) / 1000000 + " ms.");
-
-        start = System.nanoTime();
-        for (int i = 0; i < 5000; i++) {
-            Chunk chunk = hashMap.get(new Triple(i, i, i).hashCode());
-            if (chunk == null) {
-                System.out.println("null");
-            }
-            //hashMap.put(new Pair(i, i, i).hashCode(), chunk); //17500 ms (no initial capacity)
-        }
-        System.out.println("Getting chunks from uncompressed took: " + (System.nanoTime() - start) / 1000000 + " ms.");
-        while (true) {
-
-        }
-        //System.exit(0);
-    }
-
     private static void initDisplay() {
         try {
             DisplayMode displayMode = null;
-//            DisplayMode[] modes = Display.getAvailableDisplayModes();
-//
-//            for (int i = 0; i < modes.length; i++) {
-//                if (modes[i].getWidth() == DISPLAY_WIDTH
-//                        && modes[i].getHeight() == DISPLAY_HEIGHT
-//                        && modes[i].isFullscreenCapable()) {
-//                    displayMode = modes[i];
-//                }
-//            }
+            DisplayMode[] modes = Display.getAvailableDisplayModes();
 
-            Display.setDisplayMode(new DisplayMode(DISPLAY_WIDTH, DISPLAY_HEIGHT));
+            for (int i = 0; i < modes.length; i++) {
+                if (modes[i].getWidth() == DISPLAY_WIDTH
+                        && modes[i].getHeight() == DISPLAY_HEIGHT
+                        && modes[i].isFullscreenCapable()) {
+                    displayMode = modes[i];
+                }
+            }
+
+            Display.setDisplayMode(displayMode);
             Display.setFullscreen(true);
             Display.setVSyncEnabled(true);
             Display.setTitle("Voxels");
@@ -283,7 +234,6 @@ public class Voxels extends Applet{
 //        }
     }
 
-
     private static void initOpenGL() {
         glMatrixMode(GL_PROJECTION);
         glMatrixMode(GL_MODELVIEW);
@@ -304,7 +254,7 @@ public class Voxels extends Applet{
 
         glFogi(GL_FOG_MODE, GL_LINEAR);
         glFogf(GL_FOG_START, (float) (0.85 * Chunk.CHUNK_SIZE * Voxels.chunkRenderDistance));
-        glFogf(GL_FOG_END, (float) (0.95*Chunk.CHUNK_SIZE * Voxels.chunkRenderDistance));
+        glFogf(GL_FOG_END, (float) (0.95 * Chunk.CHUNK_SIZE * Voxels.chunkRenderDistance));
     }
 
     public static void initSounds() {
@@ -354,35 +304,6 @@ public class Voxels extends Applet{
         START_TIME = (System.nanoTime() / 1000000);
     }
 
-    private static void initShaderLighting() {
-
-        glMaterialf(GL_FRONT, GL_SHININESS, 120);
-        glShadeModel(GL_SMOOTH);
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_LIGHTING);
-        glEnable(GL_LIGHT0);
-        glLightModel(GL_LIGHT_MODEL_AMBIENT, asFloatBuffer(new float[]{0.05f, 0.05f, 0.05f, 1f}));
-        glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
-        glEnable(GL_COLOR_MATERIAL);
-        glColorMaterial(GL_FRONT, GL_DIFFUSE);
-        //glColorMaterial(GL_FRONT, GL_SPECULAR);
-//        glShadeModel(GL_SMOOTH);
-//        glEnable(GL_DEPTH_TEST);
-//        glEnable(GL_LIGHTING);
-//        glEnable(GL_LIGHT0);
-////        glLightModel(GL_LIGHT_MODEL_AMBIENT, BufferTools.asFlippedFloatBuffer(new float[]{0.05f, 0.05f, 0.05f, 1f}));
-////        glLight(GL_LIGHT0, GL_POSITION, BufferTools.asFlippedFloatBuffer(new float[]{0, 0, 0, 1}));
-//        glLightModel(GL_LIGHT_MODEL_AMBIENT, asFloatBuffer(new float[]{0.05f, 0.05f, 0.05f, 1f}));
-//        glLight(GL_LIGHT0, GL_POSITION, asFloatBuffer(light0Position));
-//        glEnable(GL_CULL_FACE);
-//        glCullFace(GL_BACK);
-//        glEnable(GL_COLOR_MATERIAL);
-//        glColorMaterial(GL_FRONT, GL_DIFFUSE);
-//        
-    }
-
     private static EulerCamera InitCamera() {
         camera = new EulerCamera.Builder().setAspectRatio((float) Display.getWidth() / (float) Display.getHeight()).setFieldOfView(FIELD_OF_VIEW).build();
         camera.setChunkManager(chunkManager);
@@ -416,41 +337,37 @@ public class Voxels extends Applet{
         chunkCreationDistance = inGameCreationDistance;
         Thread thread = new Thread(
                 new Runnable() {
-                    public void run() {
-                        while (true) {
-                            for (int i = 0; i < ChunkManager.maxThreads; i++) {
-                                chunkManager.checkChunkUpdates();
-                            }
-                            try {
-                                Thread.sleep(10);
-                            } catch (InterruptedException ex) {
-                                Logger.getLogger(Voxels.class
-                                        .getName()).log(Level.SEVERE, null, ex);
-                            }
-                        }
+            public void run() {
+                while (true) {
+                    for (int i = 0; i < ChunkManager.maxThreads; i++) {
+                        chunkManager.checkChunkUpdates();
+                    }
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Voxels.class
+                                .getName()).log(Level.SEVERE, null, ex);
                     }
                 }
+            }
+        }
         );
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.start();
         startTime = System.currentTimeMillis();
-while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    processInput(getDelta());
-    chunkManager.processBufferData();
-    //npcManager.processMonsters();
-    itemHandler.processItemPhysics();
-    //glUseProgram(shaderProgram);
-    render();
-    renderDebugText();
-    updateFPS();
-    Display.update();
-    Display.sync(60);
-}
-        //glDeleteProgram(shaderProgram);
+        while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            processInput(getDelta());
+            chunkManager.processBufferData();
+            itemHandler.processItemPhysics();
+            render();
+            renderDebugText();
+            updateFPS();
+            Display.update();
+            Display.sync(60);
+        }
         Display.destroy();
         TinySound.shutdown();
-
         System.exit(0);
     }
 
@@ -471,12 +388,12 @@ while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) 
 
         vertexCount = 0;
         int activeChunks = 0;
-int playerChunkX = getCurrentChunkXId();
-int playerChunkZ = getCurrentChunkZId();
-for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
-    for (int z = -chunkRenderDistance; z <= chunkRenderDistance; z++) {
-        for (int y = 0; y < Chunk.VERTICAL_CHUNKS; y++) {
-            Handle handles = chunkManager.getHandle(playerChunkX + x, y, playerChunkZ + z);
+        int playerChunkX = getCurrentChunkXId();
+        int playerChunkZ = getCurrentChunkZId();
+        for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
+            for (int z = -chunkRenderDistance; z <= chunkRenderDistance; z++) {
+                for (int y = 0; y < Chunk.VERTICAL_CHUNKS; y++) {
+                    Handle handles = chunkManager.getHandle(playerChunkX + x, y, playerChunkZ + z);
                     if (handles != null) {
                         activeChunks++;
                         glTranslatef(handles.translateX(), handles.translateY(), handles.translateZ());
@@ -509,10 +426,10 @@ for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
                 }
             }
         }
+        /*
         glUseProgram(0);
         //glDisable(GL_CULL_FACE);
         int npcCount = 0;
-        //glUseProgram(shaderProgram);
         for (Monster npc : npcManager.getMonsterList().values()) {
             vertexCount += 24;
             npcCount++;
@@ -530,19 +447,10 @@ for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
             glBindVertexArray(npc.getVAOHandle());
             glDrawArrays(GL_QUADS, 0, vertices);
             glBindVertexArray(0);
-            
-//            glEnableClientState(GL_VERTEX_ARRAY);
-//            glEnableClientState(GL_NORMAL_ARRAY);
-//            glEnableClientState(GL_COLOR_ARRAY);
-//            glDrawArrays(GL_QUADS, 0, vertices);
-//            glDisableClientState(GL_COLOR_ARRAY);
-//            glDisableClientState(GL_NORMAL_ARRAY);
-//            glDisableClientState(GL_VERTEX_ARRAY);
-            
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             glTranslatef(-npc.getX(), -npc.getY(), -npc.getZ());
         }
-
+        */
         glUseProgram(0);
         glScalef(0.5f, 0.5f, 0.5f);
         int activeItems = 0;
@@ -589,7 +497,7 @@ for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
         // set variables for debug info
         DebugInfo.activeItems = activeItems;
         DebugInfo.verticesDrawn = vertexCount;
-        DebugInfo.activeNPCs = npcCount;
+        DebugInfo.activeNPCs = 0;//npcCount;
         DebugInfo.chunksLoaded = activeChunks;
         DebugInfo.chunkTotal = chunkManager.getHandles().size();
     }
@@ -620,11 +528,10 @@ for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
             font.drawString(5, 165, "Draw distance (chunks): " + chunkRenderDistance);
             font.drawString(5, 185, "Frames per Second: " + DebugInfo.fps);
             font.drawString(5, 205, "Selected block: " + Type.getBlockName(chunkManager.getSelectedBlock()));
-            
-            if(DebugInfo.chunksLoaded == 2023){
-                font.drawString(5, 225, "Time to render all chunks: " + (endTime-startTime) +" ms." );
-            }
-            else{
+
+            if (DebugInfo.chunksLoaded == 2023) {
+                font.drawString(5, 225, "Time to render all chunks: " + (endTime - startTime) + " ms.");
+            } else {
                 endTime = System.currentTimeMillis();
             }
             //font.drawString(5, 205, "GPU memory: " + (DebugInfo.get_video_card_used_memory()/1024)+" MB / "+(DebugInfo.get_video_card_total_memory()/1024)+" MB");
@@ -636,7 +543,7 @@ for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
             glEnable(GL_LIGHTING);
             glEnable(GL_LIGHT0);
             glDisable(GL_BLEND);
-            
+
             glLoadIdentity();
             atlas.bind();
             glPopAttrib();
@@ -675,7 +582,7 @@ for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
 
     private static void processInput(float delta) {
         updateView();
-        
+
         while (Keyboard.next()) {
 
             if (Keyboard.isKeyDown(Keyboard.KEY_1)) {
@@ -725,10 +632,12 @@ for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
 //            }
             //System.out.println(Mouse.getEventDWheel());
             while (Mouse.next()) {
-                if(Mouse.getEventDWheel() > 0)
-                        chunkManager.increaseSelectedBlock();
-                if(Mouse.getEventDWheel() < 0)
+                if (Mouse.getEventDWheel() > 0) {
+                    chunkManager.increaseSelectedBlock();
+                }
+                if (Mouse.getEventDWheel() < 0) {
                     chunkManager.decreaseSelectedBlock();
+                }
                 if (Mouse.getEventButtonState()) {
                     if (Mouse.getEventButton() == 0) {
                         chunkManager.castRay(chunkManager.getSelectedBlock());
@@ -811,6 +720,7 @@ for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
         }
         return x / Chunk.CHUNK_SIZE;
     }
+
     /*
      Methods to convert float coordinate values to
      coordinates inside a chunk (0 - Chunksize-1)
@@ -819,6 +729,7 @@ for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
     public final static int getBlockX() {
         return getBlockX(camera.x());
     }
+
     // Convert world coordinate to block-coordinate inside a chunk
     public final static int getBlockX(float x) {
         int value = floatToInt(x);
@@ -827,13 +738,13 @@ for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
         }
         return value % Chunk.CHUNK_SIZE;
     }
-    
-    private static int floatToInt(float f){
+
+    private static int floatToInt(float f) {
         /*
         Convert float value to integer. If the value is
         less than zero, subtract by one to get the correct
         coordinate when casting it to an integer.
-        */
+         */
         return (f >= 0) ? (int) f : (int) (f - 1);
     }
 
@@ -868,6 +779,7 @@ for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
     public final static int getChunkX() {
         return getChunkX(camera.x());
     }
+
     // Convert world coordinate to chunk-coordinate
     public final static int getChunkX(float x) {
         int value = floatToInt(x);
@@ -955,8 +867,8 @@ for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
     }
 
     public static boolean getCaveNoise(float x, float y, float z) {
-        float noise1 = get3DNoise(x/2f, y/2f, z/2f) / (float) (Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS);
-        float noise2 = get3DNoise(x/2f + 10000, y/2f + 10000, z/2f + 10000) / (float) (Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS);
+        float noise1 = get3DNoise(x / 2f, y / 2f, z / 2f) / (float) (Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS);
+        float noise2 = get3DNoise(x / 2f + 10000, y / 2f + 10000, z / 2f + 10000) / (float) (Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS);
 
         return noise1 > Chunk.noiseOneMin && noise1 < Chunk.noiseOneMax && noise2 > Chunk.noiseTwoMin && noise2 < Chunk.noiseTwoMax;
     }
@@ -1032,20 +944,20 @@ for (int x = -chunkRenderDistance; x <= chunkRenderDistance; x++) {
         return noise;
     }
 
-public static boolean getTreeNoise(float x, float y, float z) {
-    if (FastNoise.noise(x / 100f, z / 100f, 3) > 100f) {
-        int noise = (int) (FastNoise.noise(x + 1000, z + 1000, 3));
-        if (noise == 10 || noise == 50) {
-            if (getCaveNoise(x, y, z) == false) {
-                return true;
-            } else {
-                return false;
+    public static boolean getTreeNoise(float x, float y, float z) {
+        if (FastNoise.noise(x / 100f, z / 100f, 3) > 100f) {
+            int noise = (int) (FastNoise.noise(x + 1000, z + 1000, 3));
+            if (noise == 10 || noise == 50) {
+                if (getCaveNoise(x, y, z) == false) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
+            return false;
         }
         return false;
     }
-    return false;
-}
 
     public static int get3DNoise(float x, float y, float z) {
         int i = (int) ((SimplexNoise.noise(x / (1f * THREE_DIM_SMOOTHNESS * 2f), y / (1f * THREE_DIM_SMOOTHNESS), z / (1f * THREE_DIM_SMOOTHNESS * 2f)) + 1) * 128 * (Chunk.CHUNK_SIZE * Chunk.VERTICAL_CHUNKS / 256f));
@@ -1135,7 +1047,6 @@ public static boolean getTreeNoise(float x, float y, float z) {
     public static Location getPlayerLocation() {
         return new Location(camera.x(), camera.y(), camera.z());
     }
-
 
     public static byte getBiomeNoise(int x, int z) {
         double noise = FastNoise.noise(x / 1000f + 1000, z / 1000f, 7) / 255f;

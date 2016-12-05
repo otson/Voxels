@@ -5,10 +5,9 @@ Voxels is a 3D sandbox game written in Java. The game world is procedurally gene
 ### Features ###
 
 * Varying biomes
-* Clouds
-* Caves
-* Trees
-* Sea
+* Clouds, caves, trees, sea
+* New terrain is continuously generated around the player as they move to new areas.
+  Once created areas will stay the same regardless how far away the player moves from them.
 * Terrain modification: the player can remove blocks and add blocks to the world.
 
 ### Technical features ###

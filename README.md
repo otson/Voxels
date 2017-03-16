@@ -15,7 +15,7 @@ Already created areas will stay the same regardless of how far away the player m
 ### Technical features ###
 
 * Terrain generation uses both Perlin and Simplex noise algorithms.
-* Data compression for far away terrain to minimize memory usage.
+* Data compression for faraway terrain to minimize memory usage.
 * Greedy meshing to minimize the amount of quads used to draw the terrain.
 
 ### Usage ###
@@ -26,5 +26,5 @@ Easiest way to try the game is to download the standalone executable jar-file fr
 
 If you have questions regarding the project, please contact me.
 
-Copyright (C) 2016 Otso Nuortimo  
+Copyright (C) 2017 Otso Nuortimo  
 Released under GNU General Public License.

@@ -1,10 +1,8 @@
-#Voxels#
+# Voxels
 
 Voxels is a free open-source 3D sandbox game written in Java. The game world is procedurally generated and freely modifiable by the player.
 
-    
-
-![image1.jpg](https://bitbucket.org/repo/5Mknbj/images/958740802-image1.jpg)
+![In-game view](http://i.imgur.com/vlynbDY.jpg "In-game view")
 
 ### Features ###
 

@@ -153,6 +153,7 @@ public class Voxels extends Applet {
     private static long lastFrame = System.nanoTime();
     private static BlockRenders blockRenders;
     private static boolean isDebug = true;
+    private static boolean isWireFrame = false;
     private static long startTime = 0;
     private static long endTime = 0;
 
@@ -211,7 +212,7 @@ public class Voxels extends Applet {
             }
 
             Display.setDisplayMode(displayMode);
-            Display.setFullscreen(true);
+            Display.setFullscreen(false);
             Display.setVSyncEnabled(true);
             Display.setTitle("Voxels");
             Display.create(/*new PixelFormat(8, 8, 8, 4)*/);
@@ -504,6 +505,8 @@ public class Voxels extends Applet {
 
     private static void renderDebugText() {
         if (isDebug) {
+            if(isWireFrame)
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             glPushAttrib(GL_ALL_ATTRIB_BITS);
             DecimalFormat df = new DecimalFormat();
             df.setMaximumFractionDigits(0);
@@ -528,7 +531,27 @@ public class Voxels extends Applet {
             font.drawString(5, 165, "Draw distance (chunks): " + chunkRenderDistance);
             font.drawString(5, 185, "Frames per Second: " + DebugInfo.fps);
             font.drawString(5, 205, "Selected block: " + Type.getBlockName(chunkManager.getSelectedBlock()));
-
+            font.drawString(5, 245, "Controls:");
+            font.drawString(5, 265, "Move: W,A,S,D or Arrow Keys");
+            font.drawString(5, 285, "Look: Mouse");
+            font.drawString(5, 305, "Jump: Space");
+            font.drawString(5, 325, "Add Block: Left Mouse");
+            font.drawString(5, 345, "Remove Block: Right Mouse");
+            font.drawString(5, 365, "Change Block: Mouse Scrollwheel");
+            font.drawString(5, 385, "Big Remove: X");
+            font.drawString(5, 405, "Big Add: C");
+            font.drawString(5, 425, "Decrease Render Distance: F8");
+            font.drawString(5, 445, "Decrease Render Distance: F9");
+            font.drawString(5, 465, "Zoom View: Hold Z");
+            font.drawString(5, 485, "Fast Movement: Hold Left Ctrl");
+            font.drawString(5, 505, "Exit: ESC");
+            font.drawString(5, 525, "Toggle Menu: M");
+            font.drawString(5, 545, "Toggle Wireframe Mode: F7");
+            font.drawString(5, 565, "Toggle Fly NoClip Mode: F");
+            font.drawString(5, 585, "While Flying:");
+            font.drawString(5, 605, "Up: Space");
+            font.drawString(5, 625, "Down: Left Shift");
+            
             if (DebugInfo.chunksLoaded == 2023) {
                 font.drawString(5, 225, "Time to render all chunks: " + (endTime - startTime) + " ms.");
             } else {
@@ -547,6 +570,8 @@ public class Voxels extends Applet {
             glLoadIdentity();
             atlas.bind();
             glPopAttrib();
+            if(isWireFrame)
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         }
 
     }
@@ -585,11 +610,12 @@ public class Voxels extends Applet {
 
         while (Keyboard.next()) {
 
-            if (Keyboard.isKeyDown(Keyboard.KEY_1)) {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            }
-            if (Keyboard.isKeyDown(Keyboard.KEY_2)) {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            if (Keyboard.isKeyDown(Keyboard.KEY_F7)) {
+                isWireFrame = !isWireFrame;
+                if(isWireFrame)
+                   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                else
+                   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             }
 
             if (Keyboard.isKeyDown(Keyboard.KEY_X)) {
@@ -618,10 +644,10 @@ public class Voxels extends Applet {
             if (Keyboard.isKeyDown(Keyboard.KEY_B)) {
                 chunkManager.getChunkLoader().loadChunks();
             }
-            if (Keyboard.isKeyDown(Keyboard.KEY_M)) {
+            if (Keyboard.isKeyDown(Keyboard.KEY_N)) {
                 npcManager.toggle();
             }
-            if (Keyboard.isKeyDown(Keyboard.KEY_F5)) {
+            if (Keyboard.isKeyDown(Keyboard.KEY_M)) {
                 isDebug = !isDebug;
             }
         }

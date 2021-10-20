@@ -12,6 +12,12 @@ Voxels is a free open-source 3D sandbox game written in Java. The game world is 
 Already created areas will stay the same regardless of how far away the player moves from them.
 * Terrain modification: the player can remove blocks and add blocks to the world.
 
+
+
+https://user-images.githubusercontent.com/59139705/138158865-4460486b-60c6-414d-bddb-6f69297d99b2.mp4
+
+
+
 ### Technical features ###
 
 * Terrain generation uses both Perlin and Simplex noise algorithms.
